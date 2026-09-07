@@ -65,6 +65,26 @@ AssertFalse(TaskQueueContinuationPolicy.ShouldInsertGoHome("WebhookAction"),
     "MFAA Webhook 特殊任务前不应插入回本丸");
 AssertFalse(TaskQueueContinuationPolicy.ShouldInsertGoHome(null),
     "没有下一个任务时不应插入回本丸");
+AssertFalse(FormationNameMatcher.IsExactMatch("次郎太刀", "太郎太刀"),
+    "刀剑一字之差不得命中，避免次郎太刀被误选");
+AssertTrue(FormationNameMatcher.IsExactMatch("太郎太刀", "太郎太刀"),
+    "刀剑同名必须命中");
+AssertTrue(FormationNameMatcher.IsExactMatch("05 太郎太刀", "太郎太刀"),
+    "刀剑带序号前缀应命中");
+AssertTrue(FormationNameMatcher.IsExactMatch("鶴丸国永", "鹤丸国永"),
+    "刀剑应容忍鶴/鹤字形差异");
+AssertTrue(FormationNameMatcher.IsExactMatch("山姥切国厂", "山姥切国广"),
+    "刀剑应容忍厂/广形近误识");
+AssertTrue(FormationNameMatcher.IsExactMatch("軽歩兵", "轻步"),
+    "刀装应容忍軽歩字形差异并命中完整显示名");
+AssertFalse(FormationNameMatcher.IsExactMatch("重歩兵", "轻步"),
+    "刀装不得因一字之差命中异种刀装");
+AssertFalse(FormationNameMatcher.IsExactMatch("高黑", "高楯黑"),
+    "刀装不启用丢字容错");
+AssertTrue(FormationNameMatcher.IsLegacyFuzzyMatch("高黑", "高楯黑"),
+    "马匹保留 OCR 丢字容错");
+AssertTrue(FormationNameMatcher.IsLegacyFuzzyMatch("次郎太刀", "太郎太刀"),
+    "马匹维持原有一字差容错");
 var rootViewSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml.cs"));
 var rootViewMarkup = File.ReadAllText(Path.Combine(

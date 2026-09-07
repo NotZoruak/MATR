@@ -42,8 +42,10 @@ public static class FormationScan
         return JsonConvert.DeserializeObject<MaaExtensions.RecognitionQuery>(detail.Detail);
     }
 
-    /// <summary>滚动扫描循环：OCR 找目标文本（得分 ≥ 阈值），命中执行点击动作；未命中上滑；与上屏相同判定到底返回 false</summary>
-    public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll, Func<List<int>, bool> clickAction, string logTag) where T : IMaaContext
+    /// <summary>滚动扫描循环：OCR 找目标文本（得分 ≥ 阈值），命中执行点击动作；未命中上滑；与上屏相同判定到底返回 false。
+    /// exactMatch=true 时用刀剑/刀装的字形归一精确匹配（一字之差不命中）；false 时用马匹的原有丢字容错匹配。</summary>
+    public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll, Func<List<int>, bool> clickAction,
+        string logTag, bool exactMatch = false) where T : IMaaContext
     {
         string lastOcr = string.Empty;
         while (true)
@@ -61,7 +63,9 @@ public static class FormationScan
             var all = query?.All ?? [];
             // 命中多个时取最上方（y 最小）的匹配
             var hit = all
-                .Where(r => r.Score >= MinScore && r.Text != null && MatchText(r.Text, target))
+                .Where(r => r.Score >= MinScore && r.Text != null && (exactMatch
+                    ? FormationNameMatcher.IsExactMatch(r.Text, target)
+                    : FormationNameMatcher.IsLegacyFuzzyMatch(r.Text, target)))
                 .Where(r => r.Box is { Count: >= 4 })
                 .OrderBy(r => r.Box![1])
                 .FirstOrDefault();
@@ -86,35 +90,6 @@ public static class FormationScan
             ScrollUp(context, scroll);
             ActionParamHelper.SleepWithStopCheck(context, 300);
         }
-    }
-
-    /// <summary>目标文本匹配：OCR 文本包含目标；或目标 ≥ 2 字时，去除 OCR 文本中的数字/字母后与目标编辑距离 ≤ 1（容忍 OCR 丢字，如「高楯黑」识别为「高黑」）</summary>
-    private static bool MatchText(string ocrText, string target)
-    {
-        if (ocrText.Contains(target, StringComparison.Ordinal))
-            return true;
-        if (target.Length < 2)
-            return false;
-        // 清洗 OCR 文本中的 ASCII 数字前缀（如「05」）与数量后缀（如「x1」）；注意不能用 char.IsLetter，它对中文字符也返回 true
-        var cleaned = new string(ocrText.Where(c => !char.IsAsciiLetterOrDigit(c)).ToArray());
-        return cleaned.Length > 0 && LevenshteinDistance(cleaned, target) <= 1;
-    }
-
-    /// <summary>计算两个短字符串的编辑距离（Levenshtein）</summary>
-    private static int LevenshteinDistance(string a, string b)
-    {
-        int m = a.Length, n = b.Length;
-        if (m == 0) return n;
-        if (n == 0) return m;
-        var dp = new int[m + 1, n + 1];
-        for (int i = 0; i <= m; i++) dp[i, 0] = i;
-        for (int j = 0; j <= n; j++) dp[0, j] = j;
-        for (int i = 1; i <= m; i++)
-            for (int j = 1; j <= n; j++)
-                dp[i, j] = Math.Min(
-                    Math.Min(dp[i - 1, j] + 1, dp[i, j - 1] + 1),
-                    dp[i - 1, j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1));
-        return dp[m, n];
     }
 
     /// <summary>刀装/马匹确定按钮 OCR 区域（右侧按钮列）</summary>

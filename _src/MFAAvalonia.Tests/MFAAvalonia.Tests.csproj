@@ -50,5 +50,6 @@
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\CaptainSettingsDecision.cs" Link="CaptainSettingsDecision.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\EquipmentFallbackDecision.cs" Link="EquipmentFallbackDecision.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\DrillDangerDecision.cs" Link="DrillDangerDecision.cs" />
+    <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\FormationNameMatcher.cs" Link="FormationNameMatcher.cs" />
   </ItemGroup>
 </Project>
