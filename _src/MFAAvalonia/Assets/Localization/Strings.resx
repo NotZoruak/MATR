@@ -1917,7 +1917,7 @@
         <value>设置启动路径</value>
     </data>
     <data name="TutorialStepSoftwarePathDesc" xml:space="preserve">
-        <value>在此填写模拟器或游戏的启动路径，实现全自动挂机。注意：需要在「连接操作」中选择「启动游戏」或「启动并执行」，或在「连接设置」中开启「连接失败时尝试启动」，启动路径才会生效。</value>
+        <value>在此填写模拟器或游戏的启动路径，实现全自动挂机。在「连接操作」中选择「启动游戏」或「启动并执行」，或在「连接设置」中开启「连接失败时尝试启动」后生效。使用 ADB 时，开启连接失败后重启 ADB 的任一选项，也会在连接失败且路径有效时尝试启动模拟器。</value>
     </data>
     <data name="TutorialStepRewatchTitle" xml:space="preserve">
         <value>重新观看教程</value>

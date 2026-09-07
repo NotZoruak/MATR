@@ -1202,6 +1202,9 @@ public class MaaProcessor
     private bool _screencapDisconnectedLogPending;
     private bool _screencapFailureLogged;
     private int _isConnecting;
+    private readonly TaskRecoveryMonitor _recoveryMonitor = new();
+    private readonly Stopwatch _recoveryClock = Stopwatch.StartNew();
+    public bool IsGameRecoveryRunning { get; internal set; }
     private readonly SemaphoreSlim _connectionGate = new(1, 1);
     private bool _suppressConnectionAttemptErrorToast;
     public bool IsConnecting => _isConnecting != 0;
@@ -1905,6 +1908,7 @@ public class MaaProcessor
 
     public void HandleCallBack(object? sender, MaaCallbackEventArgs args)
     {
+        _recoveryMonitor.RecordCallback(_recoveryClock.Elapsed);
         if (OperatingSystem.IsAndroid())
         {
             // MaaFramework invokes callbacks synchronously while some native action
@@ -1944,6 +1948,13 @@ public class MaaProcessor
         }
 
         var callbackName = jObject["name"]?.ToString() ?? string.Empty;
+        if (args.Message.StartsWith(MaaMsg.Node.Action.Succeeded, StringComparison.Ordinal))
+        {
+            var details = jObject["action_details"];
+            if (details?["box"] is JArray box && box.Count >= 2)
+                _recoveryMonitor.FeedAction(callbackName, details["action"]?.ToString() ?? string.Empty,
+                    (int)Math.Round(box[0].Value<double>()), (int)Math.Round(box[1].Value<double>()));
+        }
         var shouldTraceNodeEvent = ShouldTraceNodeEvent(jObject, args.Message);
         if (CancellationTokenSource?.IsCancellationRequested != true
             && (shouldTraceNodeEvent || args.Message.Equals("Node.PipelineNode.Starting", StringComparison.Ordinal)))
@@ -4355,7 +4366,7 @@ public class MaaProcessor
                 return;
         }
 
-        if (!InstanceConfiguration.GetValue(ConfigurationKeys.RetryOnDisconnected, false))
+        if (!ShouldLaunchEmulatorOnConnectionFailure())
             return;
 
         if (!CanStartSoftware(out var reason))
@@ -4380,7 +4391,7 @@ public class MaaProcessor
         {
             async t =>
             {
-                if (!InstanceConfiguration.GetValue(ConfigurationKeys.RetryOnDisconnected, false))
+                if (!ShouldLaunchEmulatorOnConnectionFailure())
                     return false;
 
                 if (!CanStartSoftware(out var reason))
@@ -4415,9 +4426,14 @@ public class MaaProcessor
             && InstanceConfiguration.GetValue(ConfigurationKeys.RememberAdb, true)
             && InstanceConfiguration.TryGetValue(ConfigurationKeys.AdbDevice, out AdbDeviceInfo _,
                 new UniversalEnumConverter<AdbInputMethods>(), new UniversalEnumConverter<AdbScreencapMethods>())
-            && InstanceConfiguration.GetValue(ConfigurationKeys.RetryOnDisconnected, false)
+            && ShouldLaunchEmulatorOnConnectionFailure()
             && CanStartSoftware(out _);
     }
+
+    private bool ShouldLaunchEmulatorOnConnectionFailure() => TaskRecoveryMonitor.ShouldStartEmulator(
+        InstanceConfiguration.GetValue(ConfigurationKeys.RetryOnDisconnected, false),
+        InstanceConfiguration.GetValue(ConfigurationKeys.AllowAdbRestart, true),
+        InstanceConfiguration.GetValue(ConfigurationKeys.AllowAdbHardRestart, true));
 
     async private Task<bool> RetryConnectionAsync(CancellationToken token, bool showMessage, Func<Task> action, string logKey, bool enable = true, Action? other = null)
     {
@@ -4503,10 +4519,75 @@ public class MaaProcessor
     {
         if (maa == null || task == null) return MaaJobStatus.Invalid;
 
-        var job = maa.AppendTask(task, param ?? "{}");
-        TelemetryService.SetActiveTaskId(InstanceId, job.Id);
-        return await TaskManager.RunTaskAsync(() => job.Wait(), token, (ex) => throw ex,
-            name: "队列任务", catchException: true, shouldLog: false);
+        while (true)
+        {
+            token.ThrowIfCancellationRequested();
+            _recoveryMonitor.Start(_recoveryClock.Elapsed);
+            try
+            {
+                var job = maa.AppendTask(task, param ?? "{}");
+                TelemetryService.SetActiveTaskId(InstanceId, job.Id);
+                var completion = TaskManager.RunTaskAsync(() => job.Wait(), token, (ex) => throw ex,
+                    name: "队列任务", catchException: true, shouldLog: false);
+                string? reason = null;
+                while (!completion.IsCompleted)
+                {
+                    await Task.WhenAny(completion, Task.Delay(TimeSpan.FromSeconds(5), token));
+                    token.ThrowIfCancellationRequested();
+                    if (completion.IsCompleted) break;
+                    var option = Interface?.GlobalSelectOptions?.FirstOrDefault(o => o.Name == "卡死重启");
+                    var timeout = 120;
+                    var timeoutOption = option?.SubOptions?.FirstOrDefault(o => o.Name == "卡死等待时间");
+                    if (timeoutOption?.Data?.TryGetValue("timeout_seconds", out var value) == true
+                        && int.TryParse(value, out var seconds) && seconds > 0)
+                        timeout = seconds;
+                    reason = _recoveryMonitor.GetReason(_recoveryClock.Elapsed, TimeSpan.FromSeconds(timeout),
+                        option?.Index == 0 && ViewModel?.CurrentController == MaaControllerTypes.Adb
+                        && !PlatformControllerFactory.CanInitializeWithoutDevice
+                        && !TaskQueueContinuationPolicy.SpecialActionNames.Contains(task),
+                        _isWaitingForModal || Custom.SmartWaitTracker.IsInWaitWindow() || IsGameRecoveryRunning);
+                    if (reason != null) break;
+                }
+                if (reason == null) return await completion;
+
+                _recoveryMonitor.Stop();
+                token.ThrowIfCancellationRequested();
+                LogAutoRecovery(reason);
+                // 停止请求与外部恢复并行：模拟器挂起时不能先等待底层停止完成。
+                var stopping = Task.Run(() => maa.Stop().Wait());
+                try
+                {
+                    await Task.Run(() => Custom.RestartGameAction.RestartAndReloadGame(
+                        logAutoRecovery: false, processor: this, token: token), token);
+                    if (await stopping.WaitAsync(TimeSpan.FromSeconds(30), token) != MaaJobStatus.Succeeded)
+                        throw new InvalidOperationException("卡死恢复时底层执行器未能停止。");
+                    await completion.WaitAsync(TimeSpan.FromSeconds(30), token);
+                    token.ThrowIfCancellationRequested();
+                    // 模拟器重启后不能复用仍报告已连接的旧控制器。
+                    SetTasker();
+                    await ReconnectAsync(token);
+                }
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    LogAutoRecovery($"恢复失败，停止队列：{ex.Message}");
+                    // 旧执行器未安全退出时，不允许继续向它追加后续任务。
+                    CancelOperations();
+                    Stop(MFATask.MFATaskStatus.FAILED);
+                    throw;
+                }
+                maa = MaaTasker ?? throw new InvalidOperationException("卡死恢复后未能重建任务执行器。");
+                LogAutoRecovery($"重连完成，继续中断任务 {task}");
+                // 仅重建当前任务，外层队列和已完成轮次保持原位。
+            }
+            finally
+            {
+                _recoveryMonitor.Stop();
+            }
+        }
     }
 
     async private Task RunScript(string str = "Prescript")

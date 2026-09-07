@@ -23,11 +23,19 @@ public class RestartGameAction : IMaaCustomAction
     private string? _mumuProcessName;    // 旧版要杀的进程名
     private bool _isMuMu12;              // 是否为 MuMu 12+（支持 CLI）
 
-    private void EnsureAdbInfo()
+    private CancellationToken _recoveryToken;
+
+    private void WaitForRecovery(int milliseconds)
+    {
+        if (_recoveryToken.WaitHandle.WaitOne(milliseconds))
+            _recoveryToken.ThrowIfCancellationRequested();
+    }
+
+    private void EnsureAdbInfo(MaaProcessor? owner = null)
     {
         if (_adbPath != null) return;
 
-        var processor = MaaProcessorManager.Instance.Current;
+        var processor = owner ?? MaaProcessorManager.Instance.Current;
         if (processor != null)
         {
             _adbPath = processor.Config.AdbDevice.AdbPath;
@@ -105,6 +113,12 @@ public class RestartGameAction : IMaaCustomAction
 
     private bool RestartEmulator()
     {
+        _recoveryToken.ThrowIfCancellationRequested();
+        if (!OperatingSystem.IsWindows())
+        {
+            LoggerHelper.Warning("[RestartGameAction] 当前平台不支持 MuMu Windows 重启命令");
+            return false;
+        }
         if (_isMuMu12)
         {
             return RestartEmulatorViaCli();
@@ -118,6 +132,7 @@ public class RestartGameAction : IMaaCustomAction
     /// </summary>
     private bool RestartEmulatorViaCli()
     {
+        _recoveryToken.ThrowIfCancellationRequested();
         if (string.IsNullOrWhiteSpace(_mumuCliExe))
         {
             LoggerHelper.Info("[RestartGameAction] 未找到 mumu-cli.exe，跳过模拟器重启");
@@ -174,7 +189,7 @@ public class RestartGameAction : IMaaCustomAction
 
         // 等待 ADB 重新连接
         LoggerHelper.Info("[RestartGameAction] 等待模拟器启动...");
-        Thread.Sleep(10000);
+        WaitForRecovery(10000);
         if (!WaitForAdbReady(30))
         {
             LoggerHelper.Info("[RestartGameAction] 模拟器启动超时，尝试强制重启模拟器进程");
@@ -190,6 +205,7 @@ public class RestartGameAction : IMaaCustomAction
     /// </summary>
     private bool RestartEmulatorForce()
     {
+        _recoveryToken.ThrowIfCancellationRequested();
         // 1. 强杀设备进程（无响应进程强杀不需要进程响应）
         LoggerHelper.Info("[RestartGameAction] 强制结束 MuMuNxDevice.exe...");
         var killPsi = new ProcessStartInfo("taskkill", "/F /IM MuMuNxDevice.exe /T")
@@ -207,7 +223,7 @@ public class RestartGameAction : IMaaCustomAction
         {
             LoggerHelper.Info($"[RestartGameAction] 强杀模拟器进程异常: {e.Message}");
         }
-        Thread.Sleep(5000);
+        WaitForRecovery(5000);
 
         // 2. 用 mumu-cli 重新启动实例
         if (!string.IsNullOrWhiteSpace(_mumuCliExe))
@@ -240,7 +256,7 @@ public class RestartGameAction : IMaaCustomAction
 
         // 3. 等待 ADB 重新连接
         LoggerHelper.Info("[RestartGameAction] 等待模拟器启动...");
-        Thread.Sleep(10000);
+        WaitForRecovery(10000);
         var ready = WaitForAdbReady(30);
         if (!ready)
             LoggerHelper.Info("[RestartGameAction] 模拟器启动超时，继续后续流程");
@@ -253,6 +269,7 @@ public class RestartGameAction : IMaaCustomAction
     /// <returns>是否成功执行了模拟器重启（无可用主程序时返回 false）</returns>
     private bool RestartEmulatorLegacy()
     {
+        _recoveryToken.ThrowIfCancellationRequested();
         if (string.IsNullOrWhiteSpace(_mumuLegacyExe) || string.IsNullOrWhiteSpace(_mumuProcessName))
         {
             LoggerHelper.Info("[RestartGameAction] 未找到 MuMu 主程序，跳过模拟器重启");
@@ -275,7 +292,7 @@ public class RestartGameAction : IMaaCustomAction
         {
             LoggerHelper.Info($"[RestartGameAction] 关闭模拟器异常: {e.Message}");
         }
-        Thread.Sleep(3000);
+        WaitForRecovery(3000);
 
         LoggerHelper.Info($"[RestartGameAction] 正在启动模拟器（{_mumuLegacyExe}）...");
         var startArgs = _mumuIndex > 0 ? $"-v {_mumuIndex}" : "";
@@ -294,7 +311,7 @@ public class RestartGameAction : IMaaCustomAction
         }
 
         LoggerHelper.Info("[RestartGameAction] 等待模拟器启动...");
-        Thread.Sleep(15000);
+        WaitForRecovery(15000);
         if (!WaitForAdbReady(30))
             LoggerHelper.Info("[RestartGameAction] 模拟器启动超时，继续后续流程");
         return true;
@@ -307,6 +324,7 @@ public class RestartGameAction : IMaaCustomAction
     {
         for (int i = 0; i < maxAttempts; i++)
         {
+            _recoveryToken.ThrowIfCancellationRequested();
             try
             {
                 var checkPsi = new ProcessStartInfo(_adbPath!, $"shell echo ready")
@@ -321,7 +339,7 @@ public class RestartGameAction : IMaaCustomAction
                 using var checkProc = Process.Start(checkPsi);
                 if (checkProc == null)
                 {
-                    Thread.Sleep(2000);
+                    WaitForRecovery(2000);
                     continue;
                 }
                 checkProc.WaitForExit(timeoutMs);
@@ -336,7 +354,7 @@ public class RestartGameAction : IMaaCustomAction
             {
                 LoggerHelper.Info($"[RestartGameAction] ADB 检查异常: {e.Message}");
             }
-            Thread.Sleep(2000);
+            WaitForRecovery(2000);
         }
         return false;
     }
@@ -344,8 +362,9 @@ public class RestartGameAction : IMaaCustomAction
     /// <summary>
     /// 执行一条 adb 命令，并返回命令是否成功
     /// </summary>
-    private static bool RunAdbCommand(string adbPath, string adbSerial, string args, out string output)
+    private bool RunAdbCommand(string adbPath, string adbSerial, string args, out string output)
     {
+        _recoveryToken.ThrowIfCancellationRequested();
         output = "";
         var psi = new ProcessStartInfo(adbPath, args)
         {
@@ -393,7 +412,7 @@ public class RestartGameAction : IMaaCustomAction
         }
     }
 
-    private static bool RunAdbCommand(string adbPath, string adbSerial, string args)
+    private bool RunAdbCommand(string adbPath, string adbSerial, string args)
     {
         return RunAdbCommand(adbPath, adbSerial, args, out _);
     }
@@ -422,10 +441,11 @@ public class RestartGameAction : IMaaCustomAction
 
     private bool TryRestartGame(string package)
     {
+        _recoveryToken.ThrowIfCancellationRequested();
         LoggerHelper.Info($"[RestartGameAction] 强制停止游戏进程: {package}");
         if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am force-stop {package}"))
             LoggerHelper.Warning("[RestartGameAction] 强制停止游戏失败，继续尝试启动游戏");
-        Thread.Sleep(2000);
+        WaitForRecovery(2000);
 
         LoggerHelper.Info($"[RestartGameAction] 重新启动游戏: {package}");
         if (TryResolveLaunchActivity(package, out var launchActivity))
@@ -453,29 +473,43 @@ public class RestartGameAction : IMaaCustomAction
     /// 从当前处理器收集模拟器环境，优先重启游戏；仅在游戏重启失败时重启模拟器后重试。
     /// 供 pipeline node 与 MATR 层卡死循环检测恢复复用。
     /// </summary>
-    public static void RestartAndReloadGame(bool logAutoRecovery = true)
+    public static void RestartAndReloadGame(bool logAutoRecovery = true, MaaProcessor? processor = null,
+        CancellationToken token = default)
     {
-        if (logAutoRecovery)
-            MaaProcessorManager.Instance.Current?.LogAutoRecovery("任务流程触发重启");
-        var action = new RestartGameAction();
-        action.EnsureAdbInfo();
-
-        var package = GetPackageName();
-
-        if (action.TryRestartGame(package))
-            return;
-
-        LoggerHelper.Warning("[RestartGameAction] 游戏重启失败，开始重启模拟器");
-        if (!action.RestartEmulator())
+        token.ThrowIfCancellationRequested();
+        processor ??= MaaProcessorManager.Instance.Current;
+        if (!token.CanBeCanceled && processor?.CancellationTokenSource != null)
+            token = processor.CancellationTokenSource.Token;
+        token.ThrowIfCancellationRequested();
+        if (processor != null) processor.IsGameRecoveryRunning = true;
+        try
         {
-            LoggerHelper.Error("[RestartGameAction] 模拟器重启失败，无法继续恢复游戏");
-            throw new InvalidOperationException("模拟器重启失败，请检查模拟器路径、实例状态和 ADB 连接");
+            if (logAutoRecovery)
+                processor?.LogAutoRecovery("任务流程触发重启");
+            var action = new RestartGameAction { _recoveryToken = token };
+            action.EnsureAdbInfo(processor);
+
+            var package = GetPackageName();
+
+            if (action.TryRestartGame(package))
+                return;
+
+            LoggerHelper.Warning("[RestartGameAction] 游戏重启失败，开始重启模拟器");
+            if (!action.RestartEmulator())
+            {
+                LoggerHelper.Error("[RestartGameAction] 模拟器重启失败，无法继续恢复游戏");
+                throw new InvalidOperationException("模拟器重启失败，请检查模拟器路径、实例状态和 ADB 连接");
+            }
+
+            if (!action.TryRestartGame(package))
+            {
+                LoggerHelper.Warning("[RestartGameAction] 模拟器重启成功，但游戏启动失败，继续交由任务流程进入主枢纽");
+                return;
+            }
         }
-
-        if (!action.TryRestartGame(package))
+        finally
         {
-            LoggerHelper.Warning("[RestartGameAction] 模拟器重启成功，但游戏启动失败，继续交由任务流程进入主枢纽");
-            return;
+            if (processor != null) processor.IsGameRecoveryRunning = false;
         }
     }
 

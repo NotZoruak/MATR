@@ -12,6 +12,43 @@ using System.Linq;
 using System.Reflection;
 
 var actualWindowSize = WindowSizePersistence.GetValidSize(1366, 768);
+var recoveryMonitor = new TaskRecoveryMonitor();
+var recoveryTimeout = TimeSpan.FromSeconds(120);
+recoveryMonitor.Start(TimeSpan.Zero);
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(119), recoveryTimeout, true, false) == null,
+    "静默未达到阈值不能触发恢复");
+AssertTrue(recoveryMonitor.GetReason(recoveryTimeout, recoveryTimeout, true, false) != null,
+    "底层一直没有回调时必须独立触发恢复");
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(130), recoveryTimeout, false, false) == null,
+    "关闭卡死重启时不能恢复");
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(300), recoveryTimeout, true, true) == null,
+    "智能等待和人工弹窗期间不能恢复");
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(301), recoveryTimeout, true, false) == null,
+    "合法等待结束后必须重新计算静默时间");
+recoveryMonitor.RecordCallback(TimeSpan.FromSeconds(410));
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(420), recoveryTimeout, true, false) == null,
+    "收到回调后应重置静默计时");
+for (var i = 0; i < 110; i++) recoveryMonitor.FeedAction("测试", "Click", 1, 2);
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(421), recoveryTimeout, true, false) != null,
+    "持续收到相同点击也必须识别画面冻结");
+recoveryMonitor.Stop();
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(999), recoveryTimeout, true, false) == null,
+    "任务结束或停止后不能触发恢复");
+recoveryMonitor.Start(TimeSpan.Zero);
+for (var i = 0; i < 110; i++) recoveryMonitor.FeedAction("测试", "DoNothing", 1, 2);
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(1), recoveryTimeout, true, false) == null,
+    "空动作不能作为画面冻结证据");
+for (var i = 0; i < 200; i++) recoveryMonitor.FeedAction("测试", "Click", i % 2, 2);
+AssertTrue(recoveryMonitor.GetReason(TimeSpan.FromSeconds(2), recoveryTimeout, true, false) == null,
+    "点击位置发生变化时应放弃冻结判定");
+var otherRecoveryMonitor = new TaskRecoveryMonitor();
+otherRecoveryMonitor.Start(TimeSpan.Zero);
+otherRecoveryMonitor.RecordCallback(TimeSpan.FromSeconds(119));
+AssertTrue(recoveryMonitor.GetReason(recoveryTimeout, recoveryTimeout, true, false) != null,
+    "其他实例的回调不能重置当前实例的静默计时");
+AssertTrue(TaskRecoveryMonitor.ShouldStartEmulator(false, true, false), "只开 ADB 重启也应允许按已配置路径启动模拟器");
+AssertTrue(TaskRecoveryMonitor.ShouldStartEmulator(false, false, true), "只开强制 ADB 重启也应允许启动模拟器");
+AssertFalse(TaskRecoveryMonitor.ShouldStartEmulator(false, false, false), "关闭所有恢复选项时不能自动启动模拟器");
 AssertTrue(actualWindowSize is { Width: 1366, Height: 768 },
     "窗口保存应使用用户拖拽后的实际客户区尺寸");
 AssertTrue(TaskQueueContinuationPolicy.CanContinue(true, true),
@@ -40,6 +77,10 @@ var taskQueueViewModelSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Pages", "TaskQueueViewModel.cs"));
 var taskStartProcessorSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs"));
+AssertTrue(taskStartProcessorSource.Contains("_recoveryMonitor.RecordCallback", StringComparison.Ordinal)
+    && taskStartProcessorSource.Contains("_recoveryMonitor.FeedAction", StringComparison.Ordinal)
+    && taskStartProcessorSource.Contains("_recoveryMonitor.GetReason", StringComparison.Ordinal),
+    "升级上游后必须保留无回调与动作循环检测的接入及独立检查，避免挂起后只能等待 pipeline");
 var mfaTaskSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ValueType", "MFATask.cs"));
 var sortieRepeatSource = ExtractSourceSection(

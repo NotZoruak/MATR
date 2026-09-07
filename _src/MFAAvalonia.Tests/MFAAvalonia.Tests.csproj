@@ -9,6 +9,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\MFAAvalonia\Helper\TaskRecoveryMonitor.cs" Link="TaskRecoveryMonitor.cs" />
+    <Compile Include="..\MFAAvalonia\Helper\LoopDetector.cs" Link="LoopDetector.cs" />
     <Compile Include="..\MFAAvalonia\Configuration\ConfigurationKeys.cs" Link="ConfigurationKeys.cs" />
     <Compile Include="..\MFAAvalonia\Helper\TaskQueueContinuationPolicy.cs" Link="TaskQueueContinuationPolicy.cs" />
     <Compile Include="..\MFAAvalonia\Helper\LiveViewFrameAvailability.cs" Link="LiveViewFrameAvailability.cs" />
