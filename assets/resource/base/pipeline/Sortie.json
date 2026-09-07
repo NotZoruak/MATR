@@ -2021,8 +2021,8 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
+        "roi": [563, 4, 153, 45],
+        "expected": "部队选择"
       }
     },
     "action": {
@@ -2030,7 +2030,7 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "[刀装补充] 补充刀装"}
     },
-    "next": ["S_IsPreSortieConfirm", "S_PreConfirmSupply"],
+    "next": ["S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_GuiFatigueLog": {
@@ -2364,7 +2364,7 @@
       }
     },
     "post_delay": 500,
-    "next": ["S_FallbackConfirmRecord", "S_GuiSupplyLog"],
+    "next": ["S_FallbackConfirmRecord", "S_GuiSupplyLog", "S_PreConfirmSupply"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_FallbackConfirmRecord": {
@@ -2400,7 +2400,7 @@
       "type": "Click",
       "param": {"target": [1024, 519, 99, 48]}
     },
-    "next": ["S_FallbackVerifyTeamSelect"],
+    "next": [],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_FallbackVerifyTeamSelect": {

@@ -1101,7 +1101,7 @@
       "type": "Click",
       "param": {"target": [1024, 519, 99, 48]}
     },
-    "next": ["U_FallbackVerifyTeamSelect"],
+    "next": [],
     "on_error": ["U_GuiSupplyLog"]
   },
   "U_FallbackVerifyTeamSelect": {

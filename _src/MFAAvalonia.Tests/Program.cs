@@ -662,9 +662,12 @@ foreach (var (prefix, pipeline) in new[] { ("S_", sortiePipeline), ("U_", underg
     AssertTrue(pipeline[$"{prefix}PreConfirmSupply"]?["post_delay"]?.Value<int>() == 500,
         $"{prefix}部队记录确认后应等待500毫秒，确保确认弹窗完全出现");
     var fallbackOverride = fallbackOption?["cases"]?.Children<JObject>().Single()["pipeline_override"];
+    var expectedPreConfirmNext = prefix == "S_"
+        ? new[] { "S_FallbackConfirmRecord", "S_GuiSupplyLog", "S_PreConfirmSupply" }
+        : new[] { "U_FallbackConfirmRecord", "U_GuiSupplyLog" };
     AssertTrue(pipeline[$"{prefix}PreConfirmSupply"]?["next"]?.Values<string>()
-            .SequenceEqual([$"{prefix}FallbackConfirmRecord", $"{prefix}GuiSupplyLog"]) == true,
-        $"{prefix}部队记录确认后应固定优先检查记录确认页");
+            .SequenceEqual(expectedPreConfirmNext) == true,
+        $"{prefix}部队记录确认后应检查记录确认页、输出 GUI 日志并重试确认");
     var downstreamFallbackNodes = new[]
     {
         $"{prefix}FallbackVerifyTeamSelect",
@@ -675,12 +678,15 @@ foreach (var (prefix, pipeline) in new[] { ("S_", sortiePipeline), ("U_", underg
     var expectedFallbackError = prefix == "S_"
         ? new[] { "S_DetectWhereAmI" }
         : new[] { "U_GuiSupplyLog" };
+    var supplementOverride = supplementOption?["cases"]?.Children<JObject>().Single()["pipeline_override"];
     AssertTrue(fallbackOverride?[$"{prefix}PreConfirmSupply"] == null
-        && fallbackOverride?[$"{prefix}FallbackConfirmRecord"]?["enabled"]?.Value<bool>() == true
-        && downstreamFallbackNodes.All(nodeName => fallbackOverride?[nodeName] == null)
+        && fallbackOverride?[$"{prefix}FallbackConfirmRecord"] == null
+        && fallbackOverride?[$"{prefix}FallbackConfirmRecordClick"]?["next"]?.Values<string>()
+            .SequenceEqual([$"{prefix}FallbackVerifyTeamSelect"]) == true
+        && supplementOverride?[$"{prefix}FallbackConfirmRecord"]?["enabled"]?.Value<bool>() == true
         && pipeline[$"{prefix}FallbackConfirmRecord"]?["enabled"]?.Value<bool>() == false
         && downstreamFallbackNodes.All(nodeName => pipeline[nodeName]?["enabled"]?.Value<bool>() == true),
-        $"{prefix}一键装备子选项应只启用兜底入口，后续 node 应默认开启");
+        $"{prefix}补充刀装主选项应启用记录确认弹窗处理链；子选项覆写确认后的去向进入一键装备兜底，其余兜底 node 应默认开启");
     AssertTrue(pipeline[$"{prefix}FallbackConfirmRecord"]?["action"]?["custom_action"]?.Value<string>()
             == "GuiLogAction"
         && pipeline[$"{prefix}FallbackConfirmRecord"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
@@ -697,9 +703,8 @@ foreach (var (prefix, pipeline) in new[] { ("S_", sortiePipeline), ("U_", underg
         && pipeline[$"{prefix}FallbackConfirmRecordLog"]?["next"]?.Values<string>()
             .SequenceEqual([$"{prefix}FallbackConfirmRecordClick"]) == true
         && pipeline[$"{prefix}FallbackConfirmRecordClick"]?["action"]?["type"]?.Value<string>() == "Click"
-        && pipeline[$"{prefix}FallbackConfirmRecordClick"]?["next"]?.Values<string>()
-            .SequenceEqual([$"{prefix}FallbackVerifyTeamSelect"]) == true,
-        $"{prefix}记录确认后应写入文件日志，再点击确认按钮并验证部队选择页");
+        && pipeline[$"{prefix}FallbackConfirmRecordClick"]?["next"]?.Values<string>().Any() == false,
+        $"{prefix}记录确认点击后应默认结束任务，一键装备兜底去向由子选项覆写 next");
     AssertTrue(pipeline[$"{prefix}FallbackConfirmRecord"]?["recognition"]?["param"]?["expected"]?.Value<string>()
             == "记录确认"
         && pipeline[$"{prefix}FallbackConfirmRecord"]?["recognition"]?["param"]?["roi"]?.Values<int>()
@@ -716,9 +721,10 @@ foreach (var (prefix, pipeline) in new[] { ("S_", sortiePipeline), ("U_", underg
 }
 AssertTrue(sortiePipeline["S_GuiSupplyLog"]?["recognition"]?["type"]?.Value<string>() == "OCR"
     && sortiePipeline["S_GuiSupplyLog"]?["recognition"]?["param"]?["roi"]?.Values<int>()
-        .SequenceEqual([576, 151, 126, 34]) == true
-    && sortiePipeline["S_GuiSupplyLog"]?["recognition"]?["param"]?["expected"]?.Value<string>() == "部队记录",
-    "合战场补充刀装日志应仅在部队记录页面命中");
+        .SequenceEqual([563, 4, 153, 45]) == true
+    && sortiePipeline["S_GuiSupplyLog"]?["recognition"]?["param"]?["expected"]?.Value<string>() == "部队选择"
+    && sortiePipeline["S_GuiSupplyLog"]?["next"]?.Values<string>().SequenceEqual(["S_IsPreSortieConfirm"]) == true,
+    "合战场补充刀装日志应在部队选择页输出，并直接进入出阵确认");
 
 AssertTrue(MixGreedySelectionDecision.TryGetRarity(90, 90, 90, out var rarity) && rarity == 1,
     "稀有度1的颜色应正确映射");

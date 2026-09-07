@@ -2129,7 +2129,8 @@
             "S_PreCheckTroopRecord": {"enabled": true},
             "S_PreCheckUseRecord": {"enabled": true},
             "S_PreCheckUseRecordBtn": {"enabled": true},
-            "S_PreConfirmSupply": {"enabled": true}
+            "S_PreConfirmSupply": {"enabled": true},
+            "S_FallbackConfirmRecord": {"enabled": true}
           }
         }
       ],
@@ -2143,7 +2144,7 @@
         {
           "name": "",
           "pipeline_override": {
-            "S_FallbackConfirmRecord": {"enabled": true}
+            "S_FallbackConfirmRecordClick": {"next": ["S_FallbackVerifyTeamSelect"]}
           }
         }
       ],
@@ -3323,7 +3324,8 @@
             "U_PreCheckTroopRecord": {"enabled": true},
             "U_PreCheckUseRecord": {"enabled": true},
             "U_PreCheckUseRecordBtn": {"enabled": true},
-            "U_PreConfirmSupply": {"enabled": true}
+            "U_PreConfirmSupply": {"enabled": true},
+            "U_FallbackConfirmRecord": {"enabled": true}
           }
         }
       ],
@@ -3337,7 +3339,7 @@
         {
           "name": "",
           "pipeline_override": {
-            "U_FallbackConfirmRecord": {"enabled": true}
+            "U_FallbackConfirmRecordClick": {"next": ["U_FallbackVerifyTeamSelect"]}
           }
         }
       ],
