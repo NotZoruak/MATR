@@ -116,6 +116,17 @@
       "notes": "RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径，并覆盖 DT_DetectWhereAmI 的卡死等待时间。"
     },
     {
+      "id": "adb.mumu-emulator-extras-input",
+      "title": "MuMu 自动输入方式补全",
+      "purpose": "避免 MaaFramework 漏报 MuMu 专用输入时，连续手势退回到不支持拖动的 ADB Shell。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "仅在 ADB 输入方式为自动且设备名包含 MuMu 时，以按位或补充 EmulatorExtras；保留 MaaFramework 已发现的输入方式，不覆盖用户手动设置。",
+      "verification": ["自动模式下 MuMu 输入掩码包含 EmulatorExtras", "多页习合素材列表可连续上滑翻页", "用户手动选择输入方式保持不变"],
+      "notes": "MaaFramework 可返回仅缺少 EmulatorExtras 位的 MuMu 输入掩码；不能仅在返回 Default 时补偿。"
+    },
+    {
       "id": "runtime.resource-path-and-packaging",
       "title": "资源路径兼容、桌面发布与 agent 移除",
       "purpose": "保留大小写容错资源解析、MATR 图标、GUI 子系统、libloader 启动钩子和跨平台发布布局，同时不使用 Python agent。",

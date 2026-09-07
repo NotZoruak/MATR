@@ -97,6 +97,12 @@ MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调�
 
 恢复流程必须区分模拟器重启失败与游戏启动失败：模拟器重启失败时记录错误并让恢复动作失败；模拟器已恢复但游戏启动失败时记录警告，并将控制权交回任务 pipeline，继续尝试游戏图标、登录和主枢纽流程。升级 MFAAvalonia 的自定义动作注册、ADB 配置读取或任务错误处理时，必须保留该行为。
 
+### `adb.mumu-emulator-extras-input`
+
+ADB 输入方式设为“自动”时，`MaaProcessor` 必须为名称包含 `MuMu` 的设备补充 `EmulatorExtras`，并保留 MaaFramework 已发现的全部输入方式。MaaFramework 某些 MuMu 版本会返回缺少该位的掩码，导致连续触控退回至不支持拖动的 `AdbShell`，使习合素材列表无法翻页。
+
+用户显式选择的输入方式不得被覆盖。验证自动模式下 MuMu 的输入掩码包含 `EmulatorExtras`，并通过多页习合素材列表确认连续上滑可用。
+
 ### `runtime.resource-path-and-packaging`
 
 保留资源大小写兼容、桌面发布结构、图标与 `libloader` 启动钩子；不恢复 Python agent。验证完整包资源加载、Windows/macOS 发布及 agent 排除。

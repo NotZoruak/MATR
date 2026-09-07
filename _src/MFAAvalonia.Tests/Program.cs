@@ -97,6 +97,13 @@ var taskQueueViewModelSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Pages", "TaskQueueViewModel.cs"));
 var taskStartProcessorSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs"));
+var adbInputSelectionSource = ExtractSourceSection(
+    taskStartProcessorSource,
+    "private AdbInputMethods ConfigureAdbInputTypes()",
+    "private AdbScreencapMethods ConfigureAdbScreenCapTypes()");
+AssertTrue(adbInputSelectionSource.Contains("IsMuMuDeviceName()", StringComparison.Ordinal)
+    && adbInputSelectionSource.Contains("detected | AdbInputMethods.EmulatorExtras", StringComparison.Ordinal),
+    "自动模式必须为 MuMu 设备保留已发现输入方式并补充 EmulatorExtras，避免连续上滑退回 AdbShell");
 AssertTrue(taskStartProcessorSource.Contains("_recoveryMonitor.RecordCallback", StringComparison.Ordinal)
     && taskStartProcessorSource.Contains("_recoveryMonitor.FeedAction", StringComparison.Ordinal)
     && taskStartProcessorSource.Contains("_recoveryMonitor.GetReason", StringComparison.Ordinal),

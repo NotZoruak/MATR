@@ -2986,10 +2986,22 @@ public class MaaProcessor
             new UniversalEnumConverter<AdbInputMethods>());
         return inputType switch
         {
-            AdbInputMethods.None => Config.AdbDevice.Info?.InputMethods ?? AdbInputMethods.Default,
+            AdbInputMethods.None => GetEffectiveAdbInputMethods(),
             _ => inputType
         };
     }
+
+    /// <summary>自动模式下为 MuMu 设备补充支持连续手势的专用输入方式。</summary>
+    private AdbInputMethods GetEffectiveAdbInputMethods()
+    {
+        var detected = Config.AdbDevice.Info?.InputMethods ?? AdbInputMethods.Default;
+        return IsMuMuDeviceName()
+            ? detected | AdbInputMethods.EmulatorExtras
+            : detected;
+    }
+
+    private bool IsMuMuDeviceName() =>
+        Config.AdbDevice.Name.Contains("MuMu", StringComparison.OrdinalIgnoreCase);
 
     private AdbScreencapMethods ConfigureAdbScreenCapTypes()
     {
