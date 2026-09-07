@@ -616,9 +616,6 @@
   "DT_LoginRewardHub": {
     "enabled": false,
     "next": [
-      "DT_LoginRewardAnnouncement1",
-      "DT_LoginRewardAnnouncement2",
-      "DT_LoginRewardSignIn",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -632,6 +629,9 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_LoginRewardAnnouncement1",
+      "DT_LoginRewardAnnouncement2",
+      "DT_LoginRewardSignIn",
       "DT_LoginRewardFallbackWait"
     ]
   },
@@ -849,8 +849,6 @@
   "DT_WarmGiftHub": {
     "enabled": false,
     "next": [
-      "DT_WarmGiftClickStore",
-      "DT_WarmGiftDetectPrice",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -864,6 +862,8 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_WarmGiftClickStore",
+      "DT_WarmGiftDetectPrice",
       "DT_WarmGiftClickMenu",
       "DT_WarmGiftFallbackWait"
     ]
@@ -1078,10 +1078,6 @@
   "DT_MixHub": {
     "enabled": false,
     "next": [
-      "DT_MixClickEnhance",
-      "DT_MixSelectSword",
-      "DT_MixMaterialPage",
-      "DT_MixClickCombine1",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -1095,6 +1091,10 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_MixClickEnhance",
+      "DT_MixSelectSword",
+      "DT_MixMaterialPage",
+      "DT_MixClickCombine1",
       "DT_MixClickMenu",
       "DT_MixFallbackWait"
     ]
@@ -1260,9 +1260,6 @@
   "DT_ForgeHub": {
     "enabled": false,
     "next": [
-      "DT_ForgeClickForge",
-      "DT_ForgeDetectStatus",
-      "DT_ForgeReturnFromDisassemble",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -1276,6 +1273,9 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_ForgeClickForge",
+      "DT_ForgeDetectStatus",
+      "DT_ForgeReturnFromDisassemble",
       "DT_ForgeClickMenu",
       "DT_ForgeFallbackWait"
     ]
@@ -2203,8 +2203,6 @@
   "DT_DrillHub": {
     "enabled": false,
     "next": [
-      "DT_DrillClickDrill",
-      "DT_DrillDetectOpponentSelect",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -2218,6 +2216,8 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_DrillClickDrill",
+      "DT_DrillDetectOpponentSelect",
       "DT_DrillClickMenu",
       "DT_DrillFallbackWait"
     ]
@@ -2293,13 +2293,20 @@
     "on_error": ["DT_DrillOpponent1Hub"]
   },
   "DT_DrillVictory1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1113, 145, 140, 77],
+        "expected": "胜利"
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "DrillVictoryAction",
       "custom_action_param": {"position": 1}
     },
-    "next": ["DT_DrillVictoryLimitCheck1"],
-    "on_error": ["DT_DrillFinishThreeVictories"]
+    "next": ["DT_DrillVictoryLimitCheck1", "DT_DrillOpponent2Hub"],
+    "on_error": ["DT_DrillOpponent2Hub"]
   },
   "DT_DrillVictoryLimitCheck1": {
     "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
@@ -2401,13 +2408,20 @@
     "on_error": ["DT_DrillOpponent2Hub"]
   },
   "DT_DrillVictory2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1118, 253, 141, 78],
+        "expected": "胜利"
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "DrillVictoryAction",
       "custom_action_param": {"position": 2}
     },
-    "next": ["DT_DrillVictoryLimitCheck2"],
-    "on_error": ["DT_DrillFinishThreeVictories"]
+    "next": ["DT_DrillVictoryLimitCheck2", "DT_DrillOpponent3Hub"],
+    "on_error": ["DT_DrillOpponent3Hub"]
   },
   "DT_DrillVictoryLimitCheck2": {
     "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
@@ -2509,13 +2523,20 @@
     "on_error": ["DT_DrillOpponent3Hub"]
   },
   "DT_DrillVictory3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1116, 368, 141, 78],
+        "expected": "胜利"
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "DrillVictoryAction",
       "custom_action_param": {"position": 3}
     },
-    "next": ["DT_DrillVictoryLimitCheck3"],
-    "on_error": ["DT_DrillFinishThreeVictories"]
+    "next": ["DT_DrillVictoryLimitCheck3", "DT_DrillOpponent4Hub"],
+    "on_error": ["DT_DrillOpponent4Hub"]
   },
   "DT_DrillVictoryLimitCheck3": {
     "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
@@ -2617,13 +2638,20 @@
     "on_error": ["DT_DrillOpponent4Hub"]
   },
   "DT_DrillVictory4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1117, 481, 141, 78],
+        "expected": "胜利"
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "DrillVictoryAction",
       "custom_action_param": {"position": 4}
     },
-    "next": ["DT_DrillVictoryLimitCheck4"],
-    "on_error": ["DT_DrillFinishThreeVictories"]
+    "next": ["DT_DrillVictoryLimitCheck4", "DT_DrillOpponent5Hub"],
+    "on_error": ["DT_DrillOpponent5Hub"]
   },
   "DT_DrillVictoryLimitCheck4": {
     "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
@@ -2725,13 +2753,20 @@
     "on_error": ["DT_DrillOpponent5Hub"]
   },
   "DT_DrillVictory5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1118, 590, 141, 78],
+        "expected": "胜利"
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "DrillVictoryAction",
       "custom_action_param": {"position": 5}
     },
-    "next": ["DT_DrillVictoryLimitCheck5"],
-    "on_error": ["DT_DrillFinishThreeVictories"]
+    "next": ["DT_DrillVictoryLimitCheck5", "DT_DrillFinishFive"],
+    "on_error": ["DT_DrillFinishFive"]
   },
   "DT_DrillVictoryLimitCheck5": {
     "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
@@ -2976,7 +3011,7 @@
     "on_error": ["DT_DrillBattle1Hub"]
   },
   "DT_DrillCheckOutcome1": {
-    "next": ["DT_DrillChallenge1", "DT_DrillFailure1", "DT_DrillVictory1"],
+    "next": ["DT_DrillChallenge1", "DT_DrillFailure1", "DT_DrillVictory1", "DT_DrillBattle1Hub"],
     "on_error": ["DT_DrillOpponent1Hub"]
   },
   "DT_DrillLogFailure1": {
@@ -3145,7 +3180,7 @@
     "on_error": ["DT_DrillBattle2Hub"]
   },
   "DT_DrillCheckOutcome2": {
-    "next": ["DT_DrillChallenge2", "DT_DrillFailure2", "DT_DrillVictory2"],
+    "next": ["DT_DrillChallenge2", "DT_DrillFailure2", "DT_DrillVictory2", "DT_DrillBattle2Hub"],
     "on_error": ["DT_DrillOpponent2Hub"]
   },
   "DT_DrillLogFailure2": {
@@ -3314,7 +3349,7 @@
     "on_error": ["DT_DrillBattle3Hub"]
   },
   "DT_DrillCheckOutcome3": {
-    "next": ["DT_DrillChallenge3", "DT_DrillFailure3", "DT_DrillVictory3"],
+    "next": ["DT_DrillChallenge3", "DT_DrillFailure3", "DT_DrillVictory3", "DT_DrillBattle3Hub"],
     "on_error": ["DT_DrillOpponent3Hub"]
   },
   "DT_DrillLogFailure3": {
@@ -3483,7 +3518,7 @@
     "on_error": ["DT_DrillBattle4Hub"]
   },
   "DT_DrillCheckOutcome4": {
-    "next": ["DT_DrillChallenge4", "DT_DrillFailure4", "DT_DrillVictory4"],
+    "next": ["DT_DrillChallenge4", "DT_DrillFailure4", "DT_DrillVictory4", "DT_DrillBattle4Hub"],
     "on_error": ["DT_DrillOpponent4Hub"]
   },
   "DT_DrillLogFailure4": {
@@ -3652,7 +3687,7 @@
     "on_error": ["DT_DrillBattle5Hub"]
   },
   "DT_DrillCheckOutcome5": {
-    "next": ["DT_DrillChallenge5", "DT_DrillFailure5", "DT_DrillVictory5"],
+    "next": ["DT_DrillChallenge5", "DT_DrillFailure5", "DT_DrillVictory5", "DT_DrillBattle5Hub"],
     "on_error": ["DT_DrillOpponent5Hub"]
   },
   "DT_DrillLogFailure5": {
@@ -4047,9 +4082,6 @@
   "DT_RewardHub": {
     "enabled": false,
     "next": [
-      "DT_RewardClickTaskEntry",
-      "DT_RewardClickTask",
-      "DT_RewardDetectTaskList",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -4063,6 +4095,9 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_RewardClickTaskEntry",
+      "DT_RewardClickTask",
+      "DT_RewardDetectTaskList",
       "DT_RewardFallbackWait"
     ]
   },
@@ -4314,10 +4349,6 @@
   "DT_MailResourceHub": {
     "enabled": false,
     "next": [
-      "DT_MailResourceOpenFromHome",
-      "DT_MailResourceOpenFromMenu",
-      "DT_MailResourceOpenFilter",
-      "DT_MailResourceIsFilter",
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
       "[JumpBack]DT_HandleAnnouncementPopup",
@@ -4331,6 +4362,10 @@
       "[JumpBack]DT_HandleInGameUpdatePopup",
       "[JumpBack]DT_HandleNetworkRequestTimeout",
       "[JumpBack]DT_HandleConnectionInterrupted",
+      "DT_MailResourceOpenFromHome",
+      "DT_MailResourceOpenFromMenu",
+      "DT_MailResourceOpenFilter",
+      "DT_MailResourceIsFilter",
       "DT_MailResourceFallbackWait"
     ],
     "on_error": ["DT_RestartGame"]
