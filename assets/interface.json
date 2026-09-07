@@ -2015,7 +2015,19 @@
         {
           "name": "",
           "pipeline_override": {
-            "S_DisableAutoMarch": {"enabled": false}
+            "S_DisableAutoMarch": {
+              "enabled": false
+            },
+            "S_EnableAutoMarch": {
+              "enabled": true
+            },
+            "S_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [713, 580, 150, 50]
+                }
+              }
+            }
           }
         }
       ],
