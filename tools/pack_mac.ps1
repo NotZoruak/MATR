@@ -7,7 +7,7 @@
 
 $ErrorActionPreference = 'Stop'
 
-$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$Root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $Platform = "macos-arm64"
 $StagingDir = Join-Path $Root '_temp_macos'
 $AppDir = Join-Path $StagingDir 'MATR.app'
@@ -61,8 +61,21 @@ $BundleExecutable = Join-Path $MacOsDir 'MATR'
 if (-not (Test-Path -LiteralPath $BundleExecutable)) {
     throw "macOS 发布产物缺少入口程序: $BundleExecutable"
 }
-Copy-Item (Join-Path $Root 'assets\interface.json') -Destination (Join-Path $MacOsDir 'assets\interface.json') -Force
-Copy-Item (Join-Path $Root 'assets\resource') -Destination (Join-Path $MacOsDir 'assets\resource') -Recurse -Force
+$SourceInterface = Join-Path $Root 'assets\interface.json'
+$SourceResource = Join-Path $Root 'assets\resource'
+$TargetInterface = Join-Path $MacOsDir 'assets\interface.json'
+$TargetResource = Join-Path $MacOsDir 'assets\resource'
+Copy-Item -LiteralPath $SourceInterface -Destination $TargetInterface -Force
+Copy-Item -LiteralPath $SourceResource -Destination $TargetResource -Recurse -Force
+if (-not (Test-Path -LiteralPath $TargetInterface)) {
+    throw "macOS 打包未复制资源接口文件: $TargetInterface"
+}
+
+$SourceResourceFileCount = @(Get-ChildItem -LiteralPath $SourceResource -Recurse -File).Count
+$TargetResourceFileCount = @(Get-ChildItem -LiteralPath $TargetResource -Recurse -File).Count
+if ($TargetResourceFileCount -ne $SourceResourceFileCount) {
+    throw "macOS 打包资源文件数量不一致: 源=$SourceResourceFileCount, 目标=$TargetResourceFileCount"
+}
 Copy-Item (Join-Path $Root 'README.md') -Destination $MacOsDir -Force
 Copy-Item (Join-Path $Root 'LICENSE') -Destination $MacOsDir -Force
 

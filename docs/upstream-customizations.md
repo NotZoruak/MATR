@@ -113,7 +113,7 @@ Windows 发布目录可能同时在 `runtimes/libs` 与根级 `libs` 放置托�
 
 MATR 的资源包固定在 `assets/`：`AppPaths.InterfaceJsonPath`、`AppPaths.InterfaceJsoncPath` 和 `AppPaths.ResourceDirectory` 必须分别解析到 `assets/interface.json`、`assets/interface.jsonc` 与 `assets/resource`。上游若改回程序根目录布局，会触发默认资源兜底并显示空任务列表。
 
-`VersionChecker` 必须兼容完整程序包和仅资源包的更新结构：完整程序包中的 `assets/interface.json` 与 `assets/resource` 需要保留 `assets` 路径并识别程序文件；仅资源包根目录中的 `interface.json` 与 `resource` 则必须映射到 `assets/interface.json` 与 `assets/resource`。增量更新的资源文件、目录删除和目录创建也必须使用同一套路径映射，避免更新后程序从错误的根目录读取资源并提示资源加载失败。
+`VersionChecker` 必须兼容完整程序包和仅资源包的更新结构：完整程序包中的 `assets/interface.json` 与 `assets/resource` 需要保留 `assets` 路径并识别程序文件；仅资源包根目录中的 `interface.json` 与 `resource` 则必须映射到 `assets/interface.json` 与 `assets/resource`。增量更新的资源文件、目录删除和目录创建，以及更新结束时的版本元数据回写，都必须使用同一套路径映射，避免更新后程序从错误的根目录读取资源、在根目录创建 `interface.json` 或提示资源加载失败。
 
 `MaaProcessor.ProjectDir` 必须解析为 `interface.json` 所在目录（MATR 即 `assets/`），并且所有 resource 路径均以它替换 `{PROJECT_DIR}`。`MaaProcessor.CheckInterface` 的默认资源路径必须为 `{PROJECT_DIR}/resource/base`；两项必须配套，最终解析到 `assets/resource/base`，不得在程序根目录创建不需要的 `resource/base/pipeline/sample.json`。
 

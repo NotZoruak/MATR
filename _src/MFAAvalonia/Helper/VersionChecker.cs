@@ -1138,7 +1138,7 @@ public static class VersionChecker
         }
 
         // 所有数据和安装文件成功写入后再提交版本元数据。
-        var newInterfacePath = Path.Combine(wpfDir, "interface.json");
+        var newInterfacePath = AppPaths.InterfaceJsonPath;
         if (File.Exists(interfacePath))
         {
             var jsonContent = await File.ReadAllTextAsync(interfacePath);

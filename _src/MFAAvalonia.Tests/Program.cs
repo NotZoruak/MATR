@@ -141,6 +141,8 @@ AssertTrue(versionCheckerSource.Contains("GetDataRootRelativePath", StringCompar
     && versionCheckerSource.Contains("Path.Combine(candidateRoot, \"assets\", \"interface.json\")", StringComparison.Ordinal)
     && versionCheckerSource.Contains("Path.Combine(candidateRoot, \"assets\", \"resource\")", StringComparison.Ordinal),
     "资源更新必须将资源包内容映射到 assets 目录，并识别包含程序文件的完整资源包根目录");
+AssertTrue(versionCheckerSource.Contains("var newInterfacePath = AppPaths.InterfaceJsonPath;", StringComparison.Ordinal),
+    "资源更新写入版本元数据时必须使用 assets/interface.json，不能在程序根目录创建 interface.json");
 var maaLogRotatorSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "MaaLogRotator.cs"));
 var workRecordsViewModelSource = File.ReadAllText(Path.Combine(
