@@ -7,6 +7,17 @@
   },
   "customizations": [
     {
+      "id": "task-captain.skip-positions",
+      "title": "换队长跳过位置参数注入",
+      "purpose": "确保当前任务勾选的跳过位置实际传递给拖拽动作。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/CaptainSettingsHelper.cs", "_src/MFAAvalonia/Extensions/MaaFW/CaptainSettingsDecision.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DragCaptainAction.cs", "assets/interface.json"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留任务序列化前的 skip_positions 注入，仅覆盖 action 参数，保留疲劳处理的 next 与 enabled。",
+      "verification": ["各任务使用各自勾选的位置", "取消勾选或关闭换队长后传入空数组", "疲劳撤退与刷花同时开启时仍注入跳过位置", "战术强化传入空数组"],
+      "notes": "不能仅保留界面选项和 DragCaptainAction 而漏接运行参数。"
+    },
+    {
       "id": "settings.background-image-description-spacing",
       "title": "背景图片说明留白修正",
       "purpose": "避免固定宽度按钮与过大的说明右边距将中文挤成逐字换行。",

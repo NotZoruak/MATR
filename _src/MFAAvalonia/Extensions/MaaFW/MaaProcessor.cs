@@ -3989,6 +3989,25 @@ public class MaaProcessor
         if (task.InterfaceItem?.Entry == "FormationConfig" || task.InterfaceItem?.Entry == "DailyTask")
             ApplyFormationPresetOverride(ref taskModels, task);
 
+        // 每次运行显式注入当前任务的跳过位置，空数组用于清除上次运行的选择。
+        var dragNodeName = CaptainSettingsDecision.GetDragNodeName(task.InterfaceItem?.Entry);
+        if (dragNodeName != null)
+        {
+            taskModels.Merge(new Dictionary<string, JToken>
+            {
+                [dragNodeName] = new JObject
+                {
+                    ["action"] = new JObject
+                    {
+                        ["custom_action_param"] = new JObject
+                        {
+                            ["skip_positions"] = new JArray(CaptainSettingsHelper.GetSelectedSkipPositions(task.InterfaceItem))
+                        }
+                    }
+                }
+            });
+        }
+
         var taskParams = SerializeTaskParams(taskModels);
         // 异去重复次数位于“过去/异去”选项的下级选项中，不能受任务本身 repeatable=false 的限制。
         var repeatCount = task.InterfaceItem?.RepeatCount;

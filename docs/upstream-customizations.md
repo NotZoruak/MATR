@@ -33,6 +33,12 @@
 
 预设选择页支持新增、编辑、复制、粘贴、删除和切换当前预设。运行前由 `MaaProcessor` 将所选预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖；每日任务的“预设部队”也复用同一套预设及装备编辑页。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
 
+### `task-captain.skip-positions`
+
+任务运行前，`MaaProcessor.CreateNodeAndParam` 必须读取当前任务的换队长下级选项，通过 `CaptainSettingsHelper` 和 `CaptainSettingsDecision` 将 `skip_positions` 注入对应拖拽 action。合战场、地下城、联队战和江户城分别使用各自的配置；未勾选位置或关闭换队长时显式传入空数组，战术强化同样传入空数组。
+
+注入只覆盖 action 参数，保留疲劳处理选项设置的 `next` 和 `enabled`。升级上游时不能仅保留设置界面与拖拽动作而漏掉运行参数注入。验证任务参数包含已选位置，取消勾选后为空数组，并确认疲劳撤退与刷花组合下仍保留该参数。
+
 ### `ui.matr-tools-and-layout`
 
 保留 MATR 的业务工具入口、中文界面布局及任务区宽度。桌面 UI 以新上游根窗口为基础；`Views/Mobile/RootViewContent` 是桌面和移动端共用的根级导航壳，必须随桌面端迁入。仅独立的移动端宿主与页面不在本次范围。

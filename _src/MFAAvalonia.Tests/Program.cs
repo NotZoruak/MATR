@@ -407,6 +407,12 @@ AssertTrue(equipmentFallbackTarget?.ToString() == "(966, 201)",
     "一键装备按钮应保持缺装模板命中行的 y 坐标，并使用固定 x=966");
 var maaProcessorSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs"));
+var createTaskParamsSource = maaProcessorSource.Split("private NodeAndParam CreateNodeAndParam", 2)[1]
+    .Split("var taskParams = SerializeTaskParams(taskModels);", 2)[0];
+AssertTrue(createTaskParamsSource.Contains("CaptainSettingsHelper.GetSelectedSkipPositions(task.InterfaceItem)", StringComparison.Ordinal)
+    && createTaskParamsSource.Contains("CaptainSettingsDecision.GetDragNodeName(task.InterfaceItem?.Entry)", StringComparison.Ordinal)
+    && createTaskParamsSource.Contains("[\"skip_positions\"]", StringComparison.Ordinal),
+    "任务序列化前必须将当前任务的跳过位置注入对应拖拽动作，不能仅保存界面选项");
 AssertTrue(maaProcessorSource.Contains(
         "tasker.Resource.Register(new Custom.EquipmentFallbackAction());",
         StringComparison.Ordinal),
