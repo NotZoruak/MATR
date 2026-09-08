@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.13.0-beta.6",
+  "version": "v0.13.0-beta.7",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.13.0-beta.6 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.13.0-beta.7 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -30,6 +30,15 @@
     }
   ],
   "task": [
+    {
+      "name": "唤醒本丸",
+      "entry": "WakeHome",
+      "default_check": false,
+      "repeatable": false,
+      "repeat_count": 0,
+      "label": "唤醒本丸",
+      "description": "启动游戏，处理启动期间的已知弹窗，直至进入本丸。请确保在全局设置中正确配置了游戏客户端。"
+    },
     {
       "name": "更新数据",
       "entry": "UpdateData",
@@ -226,7 +235,7 @@
       "description": "后勤（远征+修刀+内番）任务自动化。推荐通过其它任务的「同步后勤」选项调用，而不是单独运行。\n\n* **远征**：定时检查并派遣部队远征，五队可分别设置远征地图或休息。\n* **修刀**：检查远征队伍后，启用空闲工坊自动修复受损刀剑（避开编入队伍的刀剑），不使用加速符。可自定义使用的工坊和筛选条件。\n* **内番**：检查远征队伍后，若内番位置空闲，自动进入今日内番表指派内番。\n\n> ⚠️若停止后勤任务后启动其他任务失败，重启 MATR 即可。"
     }
   ],
-  "global_option": ["远征智能调度", "长期远征计划", "卡死重启"],
+  "global_option": ["客户端类型", "远征智能调度", "长期远征计划", "卡死重启"],
   "option": {
     "部队一": {
       "name": "部队一",
@@ -5687,7 +5696,6 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["卡死等待时间", "目标应用"],
           "pipeline_override": {
             "S_FallbackWait": {"enabled": false},
             "LR_FallbackWait": {"enabled": false},
@@ -5816,16 +5824,33 @@
         }
       ]
     },
-    "目标应用": {
-      "name": "目标应用",
-      "label": "目标应用",
+    "客户端类型": {
+      "name": "客户端类型",
+      "label": "客户端类型",
+      "inline_sub_options": true,
+      "default_case": "官方服",
+      "cases": [
+        {
+          "name": "官方服",
+          "label": "官服"
+        },
+        {
+          "name": "其它",
+          "label": "其它",
+          "option": ["其它客户端包名"]
+        }
+      ]
+    },
+    "其它客户端包名": {
+      "name": "其它客户端包名",
+      "label": "其它客户端包名",
       "type": "input",
-      "description": "如何获取游戏包名：在模拟器中右键游戏图标 → 发送到桌面。在桌面右键快捷方式 → 属性 → 目标，复制 -p 与 -v 之间的内容至输入框。\n若出现游戏闪退、模拟器卡死或无响应，MATR 会尝试重启模拟器与游戏并重连；已完成的任务不会重跑，从中断任务继续执行。",
+      "description": "如何获取包名：在模拟器中右键游戏图标，选择“发送到桌面”。在桌面右键快捷方式，打开“属性”，复制目标栏中 -p 与 -v 之间的内容。",
       "inputs": [
         {
           "name": "package_name",
-          "label": "应用包名",
-          "default": "com.youzu.djlw",
+          "label": "包名",
+          "default": "",
           "pipeline_type": "string"
         }
       ]

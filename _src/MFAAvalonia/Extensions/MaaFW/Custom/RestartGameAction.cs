@@ -104,11 +104,13 @@ public class RestartGameAction : IMaaCustomAction
     private static string GetPackageName()
     {
         var globalOpts = MaaProcessor.Interface?.GlobalSelectOptions;
-        var restartOpt = globalOpts?.FirstOrDefault(o => o.Name == "卡死重启");
-        var targetOpt = restartOpt?.SubOptions?.FirstOrDefault(o => o.Name == "目标应用");
-        if (targetOpt?.Data != null && targetOpt.Data.TryGetValue("package_name", out var pkg) && !string.IsNullOrWhiteSpace(pkg))
-            return pkg.Trim();
-        return "com.youzu.djlw";
+        var clientTypeOption = globalOpts?.FirstOrDefault(o => o.Name == "客户端类型");
+        var customPackageOption = clientTypeOption?.SubOptions?.FirstOrDefault(o => o.Name == "其它客户端包名");
+        string? customPackageName = null;
+        if (customPackageOption?.Data != null)
+            customPackageOption.Data.TryGetValue("package_name", out customPackageName);
+        var clientType = clientTypeOption?.Index == 1 ? ClientPackageType.Other : ClientPackageType.Official;
+        return ClientPackageSettings.ResolvePackageName(clientType, customPackageName);
     }
 
     private bool RestartEmulator()
@@ -518,7 +520,9 @@ public class RestartGameAction : IMaaCustomAction
         try
         {
             ActionParamHelper.ThrowIfStopping(context);
-            RestartAndReloadGame();
+            var parameters = ActionParamHelper.Parse(args.ActionParam);
+            var logAutoRecovery = (bool?)parameters["log_auto_recovery"] ?? true;
+            RestartAndReloadGame(logAutoRecovery);
             return true;
         }
         catch (MaaStopException)

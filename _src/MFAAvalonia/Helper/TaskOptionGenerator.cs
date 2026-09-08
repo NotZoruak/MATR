@@ -170,11 +170,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
     /// </summary>
     public void GenerateGlobalPanelContent(StackPanel panel)
     {
-        panel.Children.Add(CreateAllowListEntryRow());
-
         foreach (var option in MaaProcessor.Interface?.GlobalSelectOptions ?? [])
         {
             AddOption(panel, option, null!);
+            if (option.Name == "客户端类型")
+                panel.Children.Add(CreateAllowListEntryRow());
         }
 
         panel.Children.Add(CreateSwordDropNotificationRow());

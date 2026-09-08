@@ -148,6 +148,11 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
         var existingDict = maaInterface.GlobalSelectOptions?.ToDictionary(o => o.Name ?? string.Empty)
             ?? new Dictionary<string, MaaInterface.MaaInterfaceSelectOption>();
 
+        var legacyPackageName = savedDict.TryGetValue("卡死重启", out var legacyRestartOption)
+            ? legacyRestartOption.SubOptions?.FirstOrDefault(o => o.Name == "目标应用")?.Data?.GetValueOrDefault("package_name")
+            : null;
+        var migratedClientPackage = ClientPackageSettings.MigrateLegacyPackageName(legacyPackageName);
+
         maaInterface.GlobalSelectOptions = maaInterface.GlobalOption.Select(optionName =>
         {
             if (savedDict.TryGetValue(optionName, out var saved))
@@ -168,10 +173,33 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
                 SetDefaultOptionValue(maaInterface, existing);
                 return existing;
             }
+            if (optionName == "客户端类型" && !string.IsNullOrWhiteSpace(legacyPackageName))
+            {
+                var migratedOption = new MaaInterface.MaaInterfaceSelectOption
+                {
+                    Name = optionName,
+                    Index = migratedClientPackage.Type == ClientPackageType.Other ? 1 : 0,
+                    SubOptions = migratedClientPackage.Type == ClientPackageType.Other
+                        ? [new MaaInterface.MaaInterfaceSelectOption
+                        {
+                            Name = "其它客户端包名",
+                            Data = new Dictionary<string, string?>
+                            {
+                                ["package_name"] = migratedClientPackage.CustomPackageName,
+                            },
+                        }]
+                        : null,
+                };
+                SetDefaultOptionValue(maaInterface, migratedOption);
+                return migratedOption;
+            }
             var opt = new MaaInterface.MaaInterfaceSelectOption { Name = optionName };
             SetDefaultOptionValue(maaInterface, opt);
             return opt;
         }).ToList();
+
+        if (!string.IsNullOrWhiteSpace(legacyPackageName))
+            config.SetValue(ConfigurationKeys.GlobalOptionItems, maaInterface.GlobalSelectOptions);
     }
 
     /// <summary>

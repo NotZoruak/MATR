@@ -1,0 +1,428 @@
+{
+    "WakeHome": {
+        "next": ["WH_RestartGame"],
+        "on_error": ["WH_RestartGame"]
+    },
+    "WH_RestartGame": {
+        "action": {
+            "type": "Custom",
+            "custom_action": "RestartGameAction",
+            "custom_action_param": {
+                "log_auto_recovery": false
+            }
+        },
+        "next": ["WH_MainHub"],
+        "on_error": ["WH_RestartGame"]
+    },
+    "WH_MainHub": {
+        "timeout": 120000,
+        "next": [
+            "[JumpBack]WH_HandleExperience",
+            "[JumpBack]WH_HandleSwordDrop",
+            "[JumpBack]WH_HandleAnnouncementPopup",
+            "[JumpBack]WH_HandleTrainingLetter",
+            "WH_HandleLoginReward",
+            "[JumpBack]WH_HandleInternalReport",
+            "[JumpBack]WH_HandleLeaveTroopRecord",
+            "[JumpBack]WH_HandleAdvertisementPopup",
+            "[JumpBack]WH_HandleGameIcon",
+            "[JumpBack]WH_HandleLoginButton",
+            "[JumpBack]WH_HandleGameUpdatePopup",
+            "[JumpBack]WH_HandleInGameUpdatePopup",
+            "[JumpBack]WH_HandleNetworkRequestTimeout",
+            "[JumpBack]WH_HandleConnectionInterrupted",
+            "[JumpBack]WH_HandleTrainingApplication",
+            "[JumpBack]WH_OpenMenuByOcr",
+            "WH_OpenMenuDirectory"
+        ],
+        "on_error": ["WH_RestartGame"]
+    },
+    "WH_HandleExperience": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [388, 59, 54, 25],
+                "expected": "经验"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [180, 11, 25, 28]
+            }
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleSwordDrop": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [598, 543, 66, 1],
+                "upper": [96, 56, 10],
+                "lower": [88, 48, 2]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [1067, 558, 120, 79]
+            }
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleAnnouncementPopup": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [1056, 463, 63, 193],
+                "template": "Common/公告弹窗.png",
+                "green_mask": true,
+                "threshold": [0.95]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleTrainingLetter": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [1037, 438, 206, 76],
+                "template": "Common/修行书信.png",
+                "green_mask": true,
+                "threshold": [0.95]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleLoginReward": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": "Common/登录奖励.png",
+                "green_mask": true,
+                "threshold": [0.98],
+                "target": [816, 577, 182, 59]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": ["WH_LoginRewardClick2"],
+        "on_error": ["WH_MainHub"],
+        "post_wait_freezes": {
+            "time": 200,
+            "target": [240, 104, 803, 561]
+        }
+    },
+    "WH_LoginRewardClick2": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [1092, 318, 1, 1]
+            }
+        },
+        "next": ["WH_LoginRewardClick3"],
+        "on_error": ["WH_MainHub"],
+        "post_wait_freezes": {
+            "time": 200,
+            "target": [240, 104, 803, 561]
+        }
+    },
+    "WH_LoginRewardClick3": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [1092, 318, 1, 1]
+            }
+        },
+        "next": ["WH_MainHub"],
+        "on_error": ["WH_MainHub"]
+    },
+    "WH_HandleInternalReport": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [569, 322, 138, 31],
+                "template": "Common/内番报告.png",
+                "green_mask": true,
+                "threshold": [0.98]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleLeaveTroopRecord": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [577, 8, 130, 35],
+                "template": "Common/部队记录页面.png",
+                "green_mask": true,
+                "threshold": [0.95]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [63, 28, 17, 17]
+            }
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleAdvertisementPopup": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [1017, 101, 62, 21],
+                "template": "Common/广告.png",
+                "threshold": [0.8]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [1095, 103, 14, 15]
+            }
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleGameIcon": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [0, 0, 1600, 900],
+                "template": "Common/游戏图标.png",
+                "green_mask": true,
+                "threshold": [0.8]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 3000,
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleLoginButton": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [665, 529, 124, 78],
+                "template": "Common/登录.png",
+                "green_mask": true,
+                "threshold": [0.98]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 3000,
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleGameUpdatePopup": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [443, 431, 120, 46],
+                "template": "Common/游戏更新.png",
+                "green_mask": true,
+                "threshold": [0.98]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleInGameUpdatePopup": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [498, 291, 77, 50],
+                "expected": "更新"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [578, 440, 130, 55]
+            }
+        },
+        "pre_delay": 100,
+        "post_delay": 2000,
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleNetworkRequestTimeout": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [524, 304, 56, 35],
+                "expected": "网络"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [599, 442, 93, 55]
+            }
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleConnectionInterrupted": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [588, 274, 96, 25],
+                "expected": "连接中断"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [738, 449, 100, 39]
+            }
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_HandleTrainingApplication": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [101, 590, 399, 42],
+                "expected": "一样"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [197, 600, 52, 26]
+            }
+        },
+        "next": ["WH_ClickTrainingApplication", "WH_HandleTrainingApplication", "WH_CancelTrainingApplication"],
+        "on_error": ["WH_MainHub"],
+        "repeat": 5,
+        "repeat_delay": 500
+    },
+    "WH_ClickTrainingApplication": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [96, 558, 54, 38],
+                "template": "Common/修行申请_狐之助.png",
+                "green_mask": true,
+                "threshold": [0.98]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [96, 558, 54, 38]
+            }
+        },
+        "next": ["WH_CancelTrainingApplication", "WH_ClickTrainingApplication"],
+        "on_error": ["WH_MainHub"]
+    },
+    "WH_CancelTrainingApplication": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [460, 587, 69, 37],
+                "expected": "取消"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [460, 587, 69, 37]
+            }
+        },
+        "next": ["WH_CancelTrainingApplication", "WH_MainHub"],
+        "on_error": ["WH_MainHub"]
+    },
+    "WH_OpenMenuByOcr": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [1186, 19, 38, 36],
+                "expected": "目"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 200,
+            "target": [1186, 19, 38, 36]
+        },
+        "next": [],
+        "on_error": []
+    },
+    "WH_OpenMenuDirectory": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [581, 28, 112, 57],
+                "template": "Common/菜单目录.png",
+                "green_mask": true,
+                "threshold": [0.98]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [1037, 169, 110, 44]
+            }
+        },
+        "next": ["WH_CheckHomeBrightness"],
+        "on_error": ["WH_MainHub"],
+        "post_wait_freezes": {
+            "time": 200,
+            "target": [1037, 169, 110, 44]
+        }
+    },
+    "WH_CheckHomeBrightness": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [66, 58, 11, 13],
+                "upper": [40, 155, 30],
+                "lower": [23, 95, 15]
+            }
+        },
+        "next": ["WH_CheckIsHome", "WH_MainHub"],
+        "on_error": ["WH_MainHub"]
+    },
+    "WH_CheckIsHome": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [8, 1, 71, 107],
+                "template": "Common/本丸.png",
+                "green_mask": true,
+                "threshold": [0.98]
+            }
+        },
+        "on_error": ["WH_MainHub"]
+    }
+}

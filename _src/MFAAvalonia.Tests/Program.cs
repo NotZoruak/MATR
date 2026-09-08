@@ -1,7 +1,7 @@
 using MFAAvalonia.Models;
 using MFAAvalonia.Services;
-using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Extensions.MaaFW.Custom;
+using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Configuration;
 using MFAAvalonia.Helper;
 using MFAAvalonia.ViewModels.Pages;
@@ -12,6 +12,55 @@ using System.Linq;
 using System.Reflection;
 
 var actualWindowSize = WindowSizePersistence.GetValidSize(1366, 768);
+var interfaceDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "interface.json")));
+var wakeHomeDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "WakeHome.json");
+AssertTrue(File.Exists(wakeHomeDefinitionPath), "唤醒本丸任务必须提供独立的流程定义");
+var wakeHomeDefinition = JObject.Parse(File.ReadAllText(wakeHomeDefinitionPath));
+AssertTrue(wakeHomeDefinition["WakeHome"]?["next"]?.Values<string>().SequenceEqual(["WH_RestartGame"]) == true,
+    "唤醒本丸必须先关闭并重新启动游戏");
+AssertTrue(wakeHomeDefinition["WH_RestartGame"]?["action"]?["custom_action_param"]?["log_auto_recovery"]?.Value<bool>() == false,
+    "唤醒本丸重启游戏时不得输出卡死重启日志");
+var wakeHomeHub = wakeHomeDefinition["WH_MainHub"]?["next"]?.Values<string>().ToList() ?? [];
+AssertTrue(wakeHomeHub.Contains("[JumpBack]WH_HandleExperience")
+    && wakeHomeHub.Contains("[JumpBack]WH_HandleTrainingApplication")
+    && wakeHomeHub.Contains("[JumpBack]WH_HandleConnectionInterrupted")
+    && wakeHomeHub.Contains("WH_HandleLoginReward"),
+    "主枢纽必须覆盖启动阶段的已知弹窗处理项");
+AssertTrue(wakeHomeDefinition["WH_HandleLoginReward"]?["next"]?.Values<string>()
+        .SequenceEqual(["WH_LoginRewardClick2"]) == true
+    && wakeHomeDefinition["WH_LoginRewardClick3"]?["next"]?.Values<string>()
+        .SequenceEqual(["WH_MainHub"]) == true,
+    "登录奖励处理完成后必须返回主枢纽");
+AssertTrue(wakeHomeDefinition["WH_CheckIsHome"]?["next"] == null
+    && wakeHomeDefinition["WH_CheckIsHome"]?["on_error"]?.Values<string>().SequenceEqual(["WH_MainHub"]) == true,
+    "本丸识别成功后必须结束任务，未命中时返回主枢纽");
+AssertTrue(interfaceDefinition["task"]?.Any(item => item?["name"]?.Value<string>() == "唤醒本丸"
+    && item?["entry"]?.Value<string>() == "WakeHome") == true,
+    "资源接口必须注册唤醒本丸任务入口");
+var restartEnabledCase = interfaceDefinition["option"]?["卡死重启"]?["cases"]?
+    .FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes");
+AssertFalse(restartEnabledCase?["option"]?.Values<string>().Contains("卡死等待时间") == true,
+    "卡死等待时间不应在常规界面中作为卡死重启的附属选项显示");
+AssertTrue(interfaceDefinition["option"]?["卡死等待时间"]?["inputs"]?[0]?["default"]?.Value<string>() == "120",
+    "隐藏界面入口后仍必须保留卡死等待时间的 120 秒默认值");
+AssertTrue(ClientPackageSettings.ResolvePackageName(ClientPackageType.Official, "com.example.other") == "com.youzu.djlw",
+    "选择官服时必须始终使用官服包名，不能误用手动输入");
+AssertTrue(ClientPackageSettings.ResolvePackageName(ClientPackageType.Other, "  com.example.other  ") == "com.example.other",
+    "选择其它客户端时必须读取并去除手动包名两端空白");
+AssertTrue(ClientPackageSettings.ResolvePackageName(ClientPackageType.Other, "") == "com.youzu.djlw",
+    "其它客户端未填写包名时必须安全回退官服包名");
+var migratedLegacyPackage = ClientPackageSettings.MigrateLegacyPackageName("com.example.legacy");
+AssertTrue(migratedLegacyPackage.Type == ClientPackageType.Other && migratedLegacyPackage.CustomPackageName == "com.example.legacy",
+    "旧目标应用中的自定义包名必须迁移为其它客户端配置");
+var migratedOfficialPackage = ClientPackageSettings.MigrateLegacyPackageName("com.youzu.djlw");
+AssertTrue(migratedOfficialPackage.Type == ClientPackageType.Official && migratedOfficialPackage.CustomPackageName == null,
+    "旧目标应用中的官服默认包名必须迁移为官服配置");
+var wakeHomeRecords = WorkRecordBuilder.Build([
+    new LogEntry(DateTime.Now, "INF", "开始任务：唤醒本丸"),
+    new LogEntry(DateTime.Now.AddSeconds(1), "INF", "停止前状态：SUCCEEDED"),
+]);
+AssertTrue(wakeHomeRecords.Count == 0, "唤醒本丸不应生成工作记录");
 var recoveryMonitor = new TaskRecoveryMonitor();
 var recoveryTimeout = TimeSpan.FromSeconds(120);
 recoveryMonitor.Start(TimeSpan.Zero);
@@ -590,12 +639,13 @@ var sortieTask = optionInterfaceJson["task"]!.Children<JObject>()
 var undergroundTask = optionInterfaceJson["task"]!.Children<JObject>()
     .Single(task => task["name"]?.Value<string>() == "地下城");
 var defaultTasks = optionInterfaceJson["task"]!.Children<JObject>().ToList();
-AssertTrue(defaultTasks[0]["name"]?.Value<string>() == "更新数据"
-    && defaultTasks[1]["name"]?.Value<string>() == "日课",
-    "默认任务排序中一键日课应紧跟在更新数据下面");
+AssertTrue(defaultTasks[0]["name"]?.Value<string>() == "唤醒本丸"
+    && defaultTasks[1]["name"]?.Value<string>() == "更新数据"
+    && defaultTasks[2]["name"]?.Value<string>() == "日课",
+    "默认任务排序应将唤醒本丸置于首位，并保持一键日课紧跟在更新数据后面");
 foreach (var task in optionInterfaceJson["task"]!.Children<JObject>())
 {
-    var taskOptions = task["option"]!.Values<string>().ToList();
+    var taskOptions = task["option"]?.Values<string>().ToList() ?? [];
     var syncOption = taskOptions.FirstOrDefault(optionName =>
         optionName.EndsWith("同步远征", StringComparison.Ordinal)
         || optionName.EndsWith("同步后勤", StringComparison.Ordinal));

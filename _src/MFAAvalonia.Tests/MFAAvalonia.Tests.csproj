@@ -15,6 +15,7 @@
     <Compile Include="..\MFAAvalonia\Helper\TaskQueueContinuationPolicy.cs" Link="TaskQueueContinuationPolicy.cs" />
     <Compile Include="..\MFAAvalonia\Helper\LiveViewFrameAvailability.cs" Link="LiveViewFrameAvailability.cs" />
     <Compile Include="..\MFAAvalonia\Helper\WindowSizePersistence.cs" Link="WindowSizePersistence.cs" />
+    <Compile Include="..\MFAAvalonia\Extensions\MaaFW\ClientPackageSettings.cs" Link="ClientPackageSettings.cs" />
     <Compile Include="..\MFAAvalonia\Configuration\InstanceConfiguration.cs" Link="InstanceConfiguration.cs" />
     <Compile Include="..\MFAAvalonia\Models\FormationPreset.cs" Link="FormationPreset.cs" />
     <Compile Include="..\MFAAvalonia\Models\WorkRecord.cs" Link="WorkRecord.cs" />
