@@ -751,7 +751,7 @@ public static class ExternalNotificationHelper
             string info = "",
             CancellationToken cancellationToken = default)
         {
-            var apiEndpoint = $"{serverUrl}/send/{apiKey}";
+            var apiEndpoint = $"{serverUrl}/v3/send/{apiKey}";
 
             try
             {

@@ -242,10 +242,16 @@ var toastHelperSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ToastHelper.cs"));
 var swordDropLogActionSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "SwordDropLogAction.cs"));
+var externalNotificationHelperSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ExternalNotificationHelper.cs"));
 AssertTrue(swordDropLogActionSource.Contains(
         "ExternalNotificationHelper.ExternalNotificationAsync(message)",
         StringComparison.Ordinal),
     "刀剑掉落播报名单命中时应同时发送外部通知");
+AssertTrue(externalNotificationHelperSource.Contains(
+        "var apiEndpoint = $\"{serverUrl}/v3/send/{apiKey}\";",
+        StringComparison.Ordinal),
+    "QMsg 通知必须调用当前 v3 推送接口，避免旧接口导致发送测试失败");
 AssertTrue(taskStartProcessorSource.Contains(
         "ToastNotification.Show(LangKeys.TaskFailed.ToLocalization());",
         StringComparison.Ordinal),

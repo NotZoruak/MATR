@@ -142,3 +142,9 @@ MATR 的资源包包含运行时动态编译的自定义动作。`MFAExtensions.
 MATR 的 `TelemetryService` 是不采集、不保存、不发送信息的兼容入口。关于页面不得显示上游“帮助改进软件”开关；它会默认显示开启，却没有实际效果并误导用户。升级时保留服务兼容入口以避免上游调用点失效，但移除该无效 UI。
 
 导出日志成功提示仍应提供人工反馈入口：`FileLogExporter` 调用 `ToastHelper.SuccessWithSurvey`，由用户自行点击“去反馈bug”打开问卷链接。该入口不采集或发送任何遥测数据。
+
+### `external-notification.qmsg-v3`
+
+QMsg 酱已升级至 v3 推送接口。`ExternalNotificationHelper.QMsg.SendAsync` 必须向 `{serverUrl}/v3/send/{apiKey}` 提交表单参数 `qq` 与 `msg`；不得恢复旧版的 `/send/{apiKey}` 路径，否则外部通知设置中的 QMsg 发送测试会失败。
+
+升级时保留该接口路径，并通过测试项目的源码回归断言确认。用户填写的服务器地址为 `https://qmsg.zendee.cn`，机器人 QQ 字段可留空。

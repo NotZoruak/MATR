@@ -171,6 +171,17 @@
       "notes": "CleanupOldDebugLogs 使用跨平台 Path API；MaaLogRotator 每 30 秒检查一次。不得只保留切块器而遗漏 App 启动调用，否则运行期切块不会生效。"
     },
     {
+      "id": "external-notification.qmsg-v3",
+      "title": "QMsg 酱 v3 推送接口兼容",
+      "purpose": "确保外部通知中的 QMsg 配置可使用当前官方接口发送 QQ 私聊消息。",
+      "files": ["_src/MFAAvalonia/Helper/ExternalNotificationHelper.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 /v3/send/{apiKey} 路径及 qq、msg 表单参数，不回退至旧版 /send/{apiKey}。",
+      "verification": ["测试项目断言 QMsg 使用 /v3/send/{apiKey}", "桌面项目构建成功", "在设置页填写 QMsg Key 与接收 QQ 后可发送测试消息"],
+      "notes": "QMsg 官方 v3 文档要求使用 /v3/send/{key}。机器人 QQ 为可选项，官方 v3 推送只要求 qq 和 msg。"
+    },
+    {
       "id": "privacy.telemetry-disabled",
       "title": "禁用遥测与移除无效开关",
       "purpose": "MATR 不采集、不保存且不发送任何遥测信息，避免误导用户开启无效选项。",
