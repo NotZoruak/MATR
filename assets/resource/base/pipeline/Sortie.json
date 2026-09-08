@@ -3155,6 +3155,17 @@
     },
     "next": ["S_DetectWhereAmI"]
   },
+  "S_AvoidKebiRestart": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction",
+      "custom_action_param": {
+        "log_auto_recovery": false
+      }
+    },
+    "next": ["S_DetectWhereAmI"],
+    "on_error": ["S_DetectWhereAmI"]
+  },
   "S_DragCaptain": {
     "enabled": false,
     "action": {

@@ -108,12 +108,12 @@
       "id": "recovery.game-and-emulator-restart",
       "title": "游戏与模拟器卡死恢复",
       "purpose": "保留 MATR 对 MFAAvalonia 恢复动作和日课卡死路径的二次开发，兼容不同模拟器的应用启动方式。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia.Tests/Program.cs", "assets/interface.json", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "_src/MFAAvalonia.Tests/Program.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。",
-      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离"],
-      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径，并覆盖 DT_DetectWhereAmI 的卡死等待时间。"
+      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节"],
+      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径，并覆盖 DT_DetectWhereAmI 的卡死等待时间。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。"
     },
     {
       "id": "adb.mumu-emulator-extras-input",

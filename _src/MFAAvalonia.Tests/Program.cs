@@ -14,6 +14,29 @@ using System.Reflection;
 var actualWindowSize = WindowSizePersistence.GetValidSize(1366, 768);
 var interfaceDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "interface.json")));
+var sortieDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Sortie.json")));
+var pastMode = interfaceDefinition["option"]?["过去/异去"]?["cases"]?
+    .FirstOrDefault(item => item?["name"]?.Value<string>() == "过去");
+var avoidKebiOption = interfaceDefinition["option"]?["S_避战检非"];
+AssertTrue(pastMode?["option"]?.Values<string>().Contains("S_避战检非") == true
+    && avoidKebiOption?["type"]?.Value<string>() == "checkbox"
+    && avoidKebiOption?["default_case"]?.Values<string>().Any() == false,
+    "过去模式必须提供默认关闭的避战检非选项");
+var avoidKebiCase = avoidKebiOption?["cases"]?.FirstOrDefault();
+var avoidKebiOverrides = avoidKebiCase?["pipeline_override"];
+var avoidKebiNodes = new[] { "S_IsKebiishi1", "S_IsKebiishi2", "S_PostKebiishi1", "S_PostKebiishi2" };
+AssertTrue(avoidKebiNodes.All(nodeName =>
+        avoidKebiOverrides?[nodeName]?["action"]?["custom_action"]?.Value<string>() == "GuiLogAction"
+        && avoidKebiOverrides?[nodeName]?["action"]?["custom_action_param"]?["message"]?.Value<string>() == "warn:[重启游戏] 遭遇检非"
+        && avoidKebiOverrides?[nodeName]?["next"]?.Values<string>().SequenceEqual(["S_AvoidKebiRestart"]) == true)
+    && avoidKebiOverrides?["S_IsKebiishi2"]?["repeat"]?.Value<int>() == 1
+    && avoidKebiOverrides?["S_PostKebiishi2"]?["repeat"]?.Value<int>() == 1,
+    "避战检非必须覆盖全部四个检非识别，并分别写入警告日志后进入一次性重启链");
+AssertTrue(sortieDefinition["S_AvoidKebiRestart"]?["action"]?["custom_action"]?.Value<string>() == "RestartGameAction"
+    && sortieDefinition["S_AvoidKebiRestart"]?["action"]?["custom_action_param"]?["log_auto_recovery"]?.Value<bool>() == false
+    && sortieDefinition["S_AvoidKebiRestart"]?["next"]?.Values<string>().SequenceEqual(["S_DetectWhereAmI"]) == true,
+    "避战检非重启必须不写入卡死恢复日志并回到主枢纽");
 var resourcePointLogActionSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ResourcePointLogAction.cs"));
 AssertTrue(
@@ -335,12 +358,16 @@ AssertTrue(restartGameActionSource.Contains(
     && restartGameActionSource.Contains("shell am start -n {launchActivity}", StringComparison.Ordinal),
     "重启游戏应先解析实际启动 Activity，再使用组件名启动，兼容包名没有可解析默认 Intent 的模拟器");
 AssertTrue(restartGameActionSource.Contains(
-        "模拟器重启成功，但游戏启动失败，继续交由任务流程进入主枢纽",
+        "LogRestartEvent(\"重启游戏\", \"模拟器重启完成，但游戏启动失败\", true)",
         StringComparison.Ordinal)
     && restartGameActionSource.Contains(
-        "模拟器重启失败，无法继续恢复游戏",
+        "LogRestartEvent(\"重启模拟器\", \"模拟器重启失败，停止任务\", true)",
         StringComparison.Ordinal),
     "游戏启动失败不能直接判定任务失败，必须与模拟器重启失败分开记录并继续主枢纽流程");
+AssertTrue(restartGameActionSource.Contains("LogRestartEvent(\"重启游戏\", \"检测到游戏疑似卡死\", true)", StringComparison.Ordinal)
+    && restartGameActionSource.Contains("LogRestartEvent(\"重启模拟器\", \"游戏重启失败，重启模拟器\", true)", StringComparison.Ordinal)
+    && restartGameActionSource.Contains("LogRestartEvent(\"重启游戏\", \"游戏重启完成\", false)", StringComparison.Ordinal),
+    "重启动作必须分别记录游戏重启、模拟器重启和游戏重启完成事件");
 var startTaskSource = ExtractSourceSection(
     taskStartProcessorSource,
     "public async Task StartTask(",
@@ -1176,15 +1203,15 @@ AssertTrue(
 
 var autoRecoveryRecords = WorkRecordBuilder.Build([
     new LogEntry(logStart, "INF", "开始任务：合战场"),
-    new LogEntry(logStart.AddSeconds(1), "WRN", "[卡死重启] 动作循环卡死：node=S_IsBattleResult_Exp, action=Click"),
-    new LogEntry(logStart.AddSeconds(2), "WRN", "[卡死重启] 模拟器无响应：超过 120 秒无回调"),
+    new LogEntry(logStart.AddSeconds(1), "WRN", "[重启游戏] 检测到游戏疑似卡死：动作循环：node=S_IsBattleResult_Exp, action=Click"),
+    new LogEntry(logStart.AddSeconds(2), "WRN", "[重启模拟器] 游戏重启失败，重启模拟器"),
 ]);
 AssertTrue(
     autoRecoveryRecords.Count == 1
         && autoRecoveryRecords[0].SpecialEvents.Count == 2
-        && autoRecoveryRecords[0].SpecialEvents[0].Description.Contains("S_IsBattleResult_Exp")
-        && autoRecoveryRecords[0].SpecialEvents[1].Description.Contains("120 秒无回调"),
-    "所有卡死重启类型都应完整进入工作记录特殊情况");
+        && autoRecoveryRecords[0].SpecialEvents[0].Description == "检测到游戏疑似卡死：动作循环：node=S_IsBattleResult_Exp, action=Click"
+        && autoRecoveryRecords[0].SpecialEvents[1].Description == "游戏重启失败，重启模拟器",
+    "重启游戏与重启模拟器必须以不同的具体文案进入工作记录特殊情况");
 
 var earlyEndRecord = WorkRecordBuilder.Build([
     new LogEntry(logStart, "INF", "开始任务：合战场"),
@@ -1382,6 +1409,15 @@ var sortieRepairRecord = WorkRecordBuilder.Build([
 AssertTrue(sortieRepairRecord.SpecialEvents.Count == 1
     && sortieRepairRecord.SpecialEvents[0].Description == "修复 太郎太刀 632/185/未识别/474",
     "出阵任务产生的修刀 Warning 词条应显示在特殊情况板块");
+
+var avoidKebiRecord = WorkRecordBuilder.Build([
+    new LogEntry(logStart, "INF", "开始任务：常驻作战"),
+    new LogEntry(logStart.AddSeconds(1), "WRN", "[cfg=Default][inst=配置 1/default][src=Monitor][op=MonitorLog] [Record] [重启游戏] 遭遇检非"),
+    new LogEntry(logStart.AddSeconds(2), "INF", "停止前状态：SUCCEEDED"),
+]).Single();
+AssertTrue(avoidKebiRecord.SpecialEvents.Count == 1
+    && avoidKebiRecord.SpecialEvents[0].Description == "遭遇检非违使，重启游戏",
+    "避战检非的重启警告必须显示在工作记录的特殊情况中");
 
 var firstSavedSource = new WorkRecord
 {

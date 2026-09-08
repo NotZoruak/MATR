@@ -309,7 +309,8 @@ public class MaaProcessor
         string weight = "Regular",
         bool changeColor = true,
         bool showTime = true,
-        bool useMarkdown = false)
+        bool useMarkdown = false,
+        bool recordAsWarning = false)
     {
         brush ??= Brushes.Black;
 
@@ -387,7 +388,10 @@ public class MaaProcessor
             LogItemViewModels.Add(log);
             PublishPlatformLog(log);
             using var logScope = BeginInstanceLogScope("MonitorLog", "Monitor");
-            LoggerHelper.Info($"[Record] {content}");
+            if (recordAsWarning)
+                LoggerHelper.Warning($"[Record] {content}");
+            else
+                LoggerHelper.Info($"[Record] {content}");
 
             TrimExcessLogs();
         });
@@ -398,23 +402,33 @@ public class MaaProcessor
         string weight = "Regular",
         bool changeColor = true,
         bool showTime = true,
-        bool useMarkdown = false)
+        bool useMarkdown = false,
+        bool recordAsWarning = false)
     {
         var brush = BrushHelper.ConvertToBrush(color, Brushes.Black);
-        AddLog(content, brush, weight, changeColor, showTime, useMarkdown);
+        AddLog(content, brush, weight, changeColor, showTime, useMarkdown, recordAsWarning);
     }
 
     /// <summary>记录卡死恢复事件，同时写入文件日志和实时日志面板。</summary>
     public void LogAutoRecovery(string reason)
+        => LogRestartEvent("重启游戏", $"检测到游戏疑似卡死：{TaskRecoveryMonitor.GetDisplayReason(reason)}", true);
+
+    /// <summary>记录重启阶段事件，同时写入文件日志和实时日志面板。</summary>
+    public void LogRestartEvent(string category, string message, bool isWarning)
     {
-        var content = $"[卡死重启] {reason}";
+        var content = $"[{category}] {message}";
         using (BeginInstanceLogScope("AutoRecovery", "Monitor"))
-            LoggerHelper.Warning(content);
+        {
+            if (isWarning)
+                LoggerHelper.Warning(content);
+            else
+                LoggerHelper.Info(content);
+        }
 
         DispatcherHelper.PostOnMainThread(() =>
         {
-            LogItemViewModels.Add(new LogItemViewModel(content, Brushes.Orange, "Regular", "HH':'mm':'ss",
-                showTime: true, changeColor: false));
+            LogItemViewModels.Add(new LogItemViewModel(content, isWarning ? Brushes.Orange : Brushes.Black,
+                "Regular", "HH':'mm':'ss", showTime: true, changeColor: !isWarning));
             TrimExcessLogs();
         });
     }
@@ -3915,7 +3929,7 @@ public class MaaProcessor
         UpdateTaskDictionary(ref taskModels, task.InterfaceItem?.Option, task.InterfaceItem?.Advanced);
 
         // 5. 同步后勤任务复用当前实例的远征队伍、修刀、内番和刷新间隔配置
-        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "TacticalTraining" or "EdoCastle")
+        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "Hanapai" or "TacticalTraining" or "EdoCastle")
         {
             var syncExpEnabled = task.InterfaceItem.Option
                 ?.FirstOrDefault(o => (o.Name ?? string.Empty).EndsWith("同步远征")
@@ -3954,6 +3968,7 @@ public class MaaProcessor
                         {
                             "Sortie" => "S_NavigateToSortie",
                             "Underground" => "U_NavigateToUnderground",
+                            "Hanapai" => "HP_NavigateToActivity",
                             "TacticalTraining" => "TT_NavigateToActivity",
                             "EdoCastle" => "EC_NavigateToActivity",
                             _ => "LR_NavigateToActivity"
@@ -4604,14 +4619,14 @@ public class MaaProcessor
                 }
                 catch (Exception ex)
                 {
-                    LogAutoRecovery($"恢复失败，停止队列：{ex.Message}");
+                    LogRestartEvent("重启游戏", $"恢复失败，停止任务：{ex.Message}", true);
                     // 旧执行器未安全退出时，不允许继续向它追加后续任务。
                     CancelOperations();
                     Stop(MFATask.MFATaskStatus.FAILED);
                     throw;
                 }
                 maa = MaaTasker ?? throw new InvalidOperationException("卡死恢复后未能重建任务执行器。");
-                LogAutoRecovery($"重连完成，继续中断任务 {task}");
+                LogRestartEvent("重启游戏", $"重连完成，继续中断任务 {task}", false);
                 // 仅重建当前任务，外层队列和已完成轮次保持原位。
             }
             finally

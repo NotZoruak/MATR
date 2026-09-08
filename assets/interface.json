@@ -2990,7 +2990,7 @@
         {
           "name": "过去",
           "DisplayName": "过去",
-          "option": ["S_王点前撤退", "S_道中撤退"]
+          "option": ["S_王点前撤退", "S_道中撤退", "S_避战检非"]
         },
         {
           "name": "异去",
@@ -3021,6 +3021,62 @@
           "option": ["异去_重复次数", "异去_不购买门票"]
         }
       ]
+    },
+    "S_避战检非": {
+      "name": "S_避战检非",
+      "label": "避战检非",
+      "type": "checkbox",
+      "description": "检测到检非违使后重启游戏。",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "S_IsKebiishi1": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "GuiLogAction",
+                "custom_action_param": {
+                  "message": "warn:[重启游戏] 遭遇检非"
+                }
+              },
+              "next": ["S_AvoidKebiRestart"]
+            },
+            "S_IsKebiishi2": {
+                "action": {
+                    "type": "Custom",
+                    "custom_action": "GuiLogAction",
+                "custom_action_param": {
+                  "message": "warn:[重启游戏] 遭遇检非"
+                }
+              },
+                "next": ["S_AvoidKebiRestart"],
+                "repeat": 1
+            },
+            "S_PostKebiishi1": {
+                "action": {
+                    "type": "Custom",
+                    "custom_action": "GuiLogAction",
+                    "custom_action_param": {
+                        "message": "warn:[重启游戏] 遭遇检非"
+                    }
+                },
+                "next": ["S_AvoidKebiRestart"]
+            },
+            "S_PostKebiishi2": {
+                "action": {
+                    "type": "Custom",
+                    "custom_action": "GuiLogAction",
+                    "custom_action_param": {
+                        "message": "warn:[重启游戏] 遭遇检非"
+                    }
+                },
+                "next": ["S_AvoidKebiRestart"],
+                "repeat": 1
+            }
+          }
+        }
+      ],
+      "default_case": []
     },
     "异去_重复次数": {
       "name": "异去_重复次数",

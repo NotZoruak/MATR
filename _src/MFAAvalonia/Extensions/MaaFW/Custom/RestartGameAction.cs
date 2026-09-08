@@ -446,7 +446,7 @@ public class RestartGameAction : IMaaCustomAction
         _recoveryToken.ThrowIfCancellationRequested();
         LoggerHelper.Info($"[RestartGameAction] 强制停止游戏进程: {package}");
         if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am force-stop {package}"))
-            LoggerHelper.Warning("[RestartGameAction] 强制停止游戏失败，继续尝试启动游戏");
+            LoggerHelper.Info("[RestartGameAction] 强制停止游戏失败，继续尝试启动游戏");
         WaitForRecovery(2000);
 
         LoggerHelper.Info($"[RestartGameAction] 重新启动游戏: {package}");
@@ -454,7 +454,7 @@ public class RestartGameAction : IMaaCustomAction
         {
             if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am start -n {launchActivity}"))
             {
-                LoggerHelper.Warning("[RestartGameAction] 使用已解析的 Activity 启动游戏失败");
+                LoggerHelper.Info("[RestartGameAction] 使用已解析的 Activity 启动游戏失败");
                 return false;
             }
         }
@@ -463,7 +463,7 @@ public class RestartGameAction : IMaaCustomAction
                      _adbSerial ?? "",
                      $"shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p {package}"))
         {
-            LoggerHelper.Warning("[RestartGameAction] 游戏启动失败");
+            LoggerHelper.Info("[RestartGameAction] 游戏启动失败");
             return false;
         }
 
@@ -487,27 +487,32 @@ public class RestartGameAction : IMaaCustomAction
         try
         {
             if (logAutoRecovery)
-                processor?.LogAutoRecovery("任务流程触发重启");
+                processor?.LogRestartEvent("重启游戏", "检测到游戏疑似卡死", true);
             var action = new RestartGameAction { _recoveryToken = token };
             action.EnsureAdbInfo(processor);
 
             var package = GetPackageName();
 
             if (action.TryRestartGame(package))
+            {
+                processor?.LogRestartEvent("重启游戏", "游戏重启完成", false);
                 return;
+            }
 
-            LoggerHelper.Warning("[RestartGameAction] 游戏重启失败，开始重启模拟器");
+            processor?.LogRestartEvent("重启模拟器", "游戏重启失败，重启模拟器", true);
             if (!action.RestartEmulator())
             {
-                LoggerHelper.Error("[RestartGameAction] 模拟器重启失败，无法继续恢复游戏");
+                processor?.LogRestartEvent("重启模拟器", "模拟器重启失败，停止任务", true);
                 throw new InvalidOperationException("模拟器重启失败，请检查模拟器路径、实例状态和 ADB 连接");
             }
 
             if (!action.TryRestartGame(package))
             {
-                LoggerHelper.Warning("[RestartGameAction] 模拟器重启成功，但游戏启动失败，继续交由任务流程进入主枢纽");
+                processor?.LogRestartEvent("重启游戏", "模拟器重启完成，但游戏启动失败", true);
                 return;
             }
+
+            processor?.LogRestartEvent("重启游戏", "游戏重启完成", false);
         }
         finally
         {

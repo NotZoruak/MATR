@@ -25,10 +25,10 @@ public static class WorkRecordBuilder
         @"停止前状态：([A-Z_]+)", RegexOptions.Compiled);
 
     // 词表行：[地下城] 出阵 / [后勤] 派遣远征 部队3已派遣至 4-3
-    // 内容行开头可能有 [cfg=Default][src=Monitor] 等上下文块,先跳过(key=value 带等号),再捕获 [前缀] 行为词
-    // 前缀排除 = 与空白,避免 [cfg=Default] 等上下文块被误捕获为前缀(如系统 Warning 日志会显示进特殊情况)
+    // 内容行开头可能有 [cfg=Default][src=Monitor] 等上下文块和 [Record] 记录标记，先跳过后再捕获 [前缀] 行为词。
+    // 前缀排除 = 与空白，避免 [cfg=Default] 等上下文块被误捕获为前缀。
     private static readonly Regex WordRegex = new(
-        @"^(?:\[[a-zA-Z]+\s*=[^\]]*\]\s*)*\[([^\]\s=]+)\]\s+(\S+)(?:\s+(.*))?$", RegexOptions.Compiled);
+        @"^(?:\[[a-zA-Z]+\s*=[^\]]*\]\s*)*(?:\[Record\]\s*)?\[([^\]\s=]+)\]\s+(\S+)(?:\s+(.*))?$", RegexOptions.Compiled);
 
     /// <summary>状态码 → 中文（NOT_STARTED 语义见 Build 中按是否执行过区分）</summary>
     public static readonly Dictionary<string, string> StatusMap = new()
@@ -250,6 +250,7 @@ public static class WorkRecordBuilder
             "地下城" => ["Underground"],
             "合战场" or "常驻作战" => ["Sortie"],
             "联队战" or "海陆联队" => ["LRentaisen"],
+            "秘宝之里" or "花牌" => ["Hanapai"],
             "战术强化" => ["TacticalTraining"],
             _ => [],
         };
@@ -399,6 +400,9 @@ public static class WorkRecordBuilder
                     var repairDetail = string.IsNullOrWhiteSpace(detail) ? action : $"{action} {detail}";
                     record.SpecialEvents.Add(new SpecialEvent(time, repairDetail));
                 }
+                break;
+            case "遭遇检非" when prefix == "重启游戏":
+                record.SpecialEvents.Add(new SpecialEvent(time, "遭遇检非违使，重启游戏"));
                 break;
             default:
                 if (prefix == "远征计时" && action == "倒计时结束")

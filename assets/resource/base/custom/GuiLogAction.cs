@@ -1,3 +1,4 @@
+using System;
 using MaaFramework.Binding;
 using MaaFramework.Binding.Custom;
 using MFAAvalonia.Extensions.MaaFW;
@@ -17,7 +18,9 @@ public class GuiLogAction : IMaaCustomAction
 
         try
         {
-            MaaProcessorManager.Instance.Current?.AddLog(message);
+            var isWarning = message.StartsWith("warn:", StringComparison.OrdinalIgnoreCase)
+                || message.StartsWith("warning:", StringComparison.OrdinalIgnoreCase);
+            MaaProcessorManager.Instance.Current?.AddLog(message, recordAsWarning: isWarning);
         }
         catch
         {

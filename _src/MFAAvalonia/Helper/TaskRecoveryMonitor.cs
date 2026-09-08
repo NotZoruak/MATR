@@ -66,4 +66,13 @@ public sealed class TaskRecoveryMonitor
 
     public static bool ShouldStartEmulator(bool retryLaunch, bool restartAdb, bool hardRestartAdb)
         => retryLaunch || restartAdb || hardRestartAdb;
+
+    public static string GetDisplayReason(string reason)
+    {
+        if (reason.StartsWith("动作循环卡死", StringComparison.Ordinal))
+            return $"动作循环{reason["动作循环卡死".Length..]}";
+        if (reason.StartsWith("画面冻结", StringComparison.Ordinal))
+            return $"动作循环{reason["画面冻结".Length..]}";
+        return reason;
+    }
 }
