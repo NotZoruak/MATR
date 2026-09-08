@@ -28,8 +28,7 @@ public class ResourcePointLogAction : IMaaCustomAction
         var startTime = System.DateTime.UtcNow;
 
         var text = ReadText(context, roi);
-        LoggerHelper.Info($"[资源点] OCR 识别结果: {text}");
-        LogGained(prefix, text);
+        var lastVisibleText = text;
 
         while ((System.DateTime.UtcNow - startTime).TotalMilliseconds < timeout)
         {
@@ -39,12 +38,18 @@ public class ResourcePointLogAction : IMaaCustomAction
             text = ReadText(context, roi);
             if (!text.Replace(" ", string.Empty).Contains(expected, System.StringComparison.Ordinal))
             {
+                LoggerHelper.Info($"[资源点] OCR 稳定识别结果: {lastVisibleText}");
+                LogGained(prefix, lastVisibleText);
                 LoggerHelper.Info($"[资源点] OCR 已无法识别“{expected}”，结束等待");
                 return true;
             }
+
+            lastVisibleText = text;
         }
 
         LoggerHelper.Warning($"[资源点] 等待 OCR 消失超时（{timeout}ms），当前结果: {text}");
+        LoggerHelper.Info($"[资源点] OCR 稳定识别结果: {lastVisibleText}");
+        LogGained(prefix, lastVisibleText);
         return true;
     }
 

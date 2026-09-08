@@ -14,6 +14,38 @@ using System.Reflection;
 var actualWindowSize = WindowSizePersistence.GetValidSize(1366, 768);
 var interfaceDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "interface.json")));
+var resourcePointLogActionSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ResourcePointLogAction.cs"));
+AssertTrue(
+    resourcePointLogActionSource.IndexOf("LogGained(prefix, lastVisibleText);", StringComparison.Ordinal)
+        > resourcePointLogActionSource.IndexOf("while ((System.DateTime.UtcNow - startTime).TotalMilliseconds < timeout)", StringComparison.Ordinal),
+    "资源点奖励必须在提示消失后按最后一次 OCR 结果记录，不能采用动画首帧的截断数量");
+var hanapaiDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Hanapai.json");
+AssertTrue(File.Exists(hanapaiDefinitionPath), "秘宝之里必须提供独立的流程定义");
+var hanapaiDefinition = JObject.Parse(File.ReadAllText(hanapaiDefinitionPath));
+AssertFalse(interfaceDefinition["task"]?.Any(item => item?["entry"]?.Value<string>() == "Hanapai") == true,
+    "活动未上线时不得在资源接口注册秘宝之里任务");
+AssertTrue(hanapaiDefinition["HP_DetectWhereAmI"]?["on_error"]?.Values<string>().SequenceEqual(["HP_RestartGame"]) == true,
+    "秘宝之里的状态识别超时必须进入卡死重启链路");
+AssertTrue(hanapaiDefinition["HP_ClickMarching"]?["action"]?["custom_action_param"]?["message"]?.Value<string>() == "[秘宝之里] 点击行军",
+    "秘宝之里的行军必须写入工作记录词表");
+AssertTrue(hanapaiDefinition["HP_RoundComplete"]?["action"]?["custom_action_param"]?["message"]?.Value<string>() == "[秘宝之里] 完成一圈",
+    "秘宝之里必须在特殊掉落结算后写入完成一圈记录");
+AssertTrue(CaptainSettingsDecision.GetDragNodeName("Hanapai") == "HP_DragCaptain"
+    && CaptainSettingsDecision.GetSkipOptionName("Hanapai") == "HP_跳过位置",
+    "秘宝之里的换队长必须支持任务专属跳过位置");
+var hanapaiRecords = WorkRecordBuilder.Build([
+    new LogEntry(DateTime.Now, "INF", "开始任务：花牌"),
+    new LogEntry(DateTime.Now.AddSeconds(1), "INF", "[秘宝之里] 出阵"),
+    new LogEntry(DateTime.Now.AddSeconds(2), "INF", "[秘宝之里] 点击行军"),
+    new LogEntry(DateTime.Now.AddSeconds(3), "INF", "[秘宝之里] 完成一圈"),
+    new LogEntry(DateTime.Now.AddSeconds(4), "INF", "停止前状态：SUCCEEDED"),
+]);
+AssertTrue(hanapaiRecords.Count == 1
+    && hanapaiRecords[0].SortieCount == 1
+    && hanapaiRecords[0].MarchCount == 1
+    && hanapaiRecords[0].RoundCount == 1,
+    "工作记录必须解析秘宝之里的出阵、行军和完成圈数日志");
 var wakeHomeDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "WakeHome.json");
 AssertTrue(File.Exists(wakeHomeDefinitionPath), "唤醒本丸任务必须提供独立的流程定义");
 var wakeHomeDefinition = JObject.Parse(File.ReadAllText(wakeHomeDefinitionPath));
