@@ -441,13 +441,18 @@ public sealed partial class WarehouseOtherItemViewModel : ObservableObject
     }
 }
 
-public sealed class WarehouseChartViewModel
+public sealed partial class WarehouseChartViewModel : ObservableObject
 {
     public const double ChartWidth = 650;
     public const double ChartHeight = 170;
     private const double AxisY = 145;
+    private readonly WarehouseChartRangeSelection _rangeSelection = new();
+    private WarehouseChartPointViewModel? _firstSelectedPoint;
+    private WarehouseChartPointViewModel? _secondSelectedPoint;
     public ObservableCollection<WarehouseChartPointViewModel> Points { get; } = [];
     public ObservableCollection<WarehouseChartTimeAxisLabel> AxisLabels { get; } = [];
+    [ObservableProperty] private bool _hasCompletedSelection;
+    [ObservableProperty] private string _selectionSummaryText = string.Empty;
 
     public WarehouseChartViewModel(string name, IEnumerable<(WarehouseResourceSnapshot Snapshot, int Index)> history,
         IReadOnlyList<WarehouseResourceSnapshot> fullHistory,
@@ -512,7 +517,7 @@ public sealed class WarehouseChartViewModel
             var y = 10 + height - (values[i] - minimum) / span * height;
             var change = FindChange(fullHistory, snapshots[i].Index, name, values[i]);
             Points.Add(new WarehouseChartPointViewModel(x, y, values[i], change, snapshots[i].Snapshot.RecordedAt,
-                snapshots[i].Index, name, deletePoint));
+                snapshots[i].Index, name, deletePoint, SelectPoint));
         }
 
         if (Points.Count < 2)
@@ -528,6 +533,38 @@ public sealed class WarehouseChartViewModel
         LineGeometry = geometry;
     }
 
+    private void SelectPoint(WarehouseChartPointViewModel point)
+    {
+        var startsNewSelection = _rangeSelection.End != null;
+        if (startsNewSelection)
+            ClearSelectedPoints();
+
+        var result = _rangeSelection.Select(point.RecordedAt, point.Value);
+        if (startsNewSelection || _firstSelectedPoint == null)
+        {
+            _firstSelectedPoint = point;
+        }
+        else
+        {
+            _secondSelectedPoint = point;
+        }
+
+        point.IsSelected = true;
+        HasCompletedSelection = result != null;
+        SelectionSummaryText = result?.SummaryText ?? string.Empty;
+    }
+
+    private void ClearSelectedPoints()
+    {
+        if (_firstSelectedPoint != null)
+            _firstSelectedPoint.IsSelected = false;
+        if (_secondSelectedPoint != null)
+            _secondSelectedPoint.IsSelected = false;
+
+        _firstSelectedPoint = null;
+        _secondSelectedPoint = null;
+    }
+
     private static int? FindChange(IReadOnlyList<WarehouseResourceSnapshot> history, int index, string name, int value)
     {
         for (var previousIndex = index - 1; previousIndex >= 0; previousIndex--)
@@ -540,10 +577,11 @@ public sealed class WarehouseChartViewModel
     }
 }
 
-public sealed class WarehouseChartPointViewModel
+public sealed partial class WarehouseChartPointViewModel : ObservableObject
 {
     public WarehouseChartPointViewModel(double x, double y, int value, int? change, DateTime recordedAt,
-        int historyIndex, string resourceName, Action<string, int> deletePoint)
+        int historyIndex, string resourceName, Action<string, int> deletePoint,
+        Action<WarehouseChartPointViewModel> selectPoint)
     {
         X = x;
         Y = y;
@@ -551,6 +589,7 @@ public sealed class WarehouseChartPointViewModel
         Change = change;
         RecordedAt = recordedAt;
         DeleteCommand = new RelayCommand(() => deletePoint(resourceName, historyIndex));
+        SelectCommand = new RelayCommand(() => selectPoint(this));
     }
 
     public double X { get; }
@@ -573,4 +612,11 @@ public sealed class WarehouseChartPointViewModel
     };
     public string TooltipText => WarehouseChartTooltipFormatter.Format(RecordedAt, Value, Change);
     public ICommand DeleteCommand { get; }
+    public ICommand SelectCommand { get; }
+    [ObservableProperty] private bool _isSelected;
+    public IBrush PointBrush => IsSelected
+        ? new SolidColorBrush(Color.Parse("#F0A93A"))
+        : new SolidColorBrush(Color.Parse("#5B8FF9"));
+
+    partial void OnIsSelectedChanged(bool value) => OnPropertyChanged(nameof(PointBrush));
 }

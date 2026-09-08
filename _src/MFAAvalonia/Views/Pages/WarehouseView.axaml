@@ -128,10 +128,13 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="pages:WarehouseChartViewModel">
                                     <Border Background="{DynamicResource SukiBackgroundColor}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
-                                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="110,*" ColumnSpacing="12" RowSpacing="4">
+                                        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="110,*" ColumnSpacing="12" RowSpacing="4">
                                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                             <TextBlock Grid.Column="1" Text="{Binding SummaryText}" Foreground="{DynamicResource SukiLowText}" VerticalAlignment="Center" />
-                                            <Viewbox Grid.Row="1" Grid.ColumnSpan="2" Height="170"
+                                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding SelectionSummaryText}"
+                                                       Foreground="#B5791F" TextWrapping="Wrap"
+                                                       IsVisible="{Binding HasCompletedSelection}" />
+                                            <Viewbox Grid.Row="2" Grid.ColumnSpan="2" Height="170"
                                                      HorizontalAlignment="Stretch" Stretch="Fill"
                                                      IsVisible="{Binding HasHistory}">
                                                 <Canvas Width="650" Height="170">
@@ -159,8 +162,8 @@
                                                     </ItemsControl.ItemsPanel>
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="pages:WarehouseChartPointViewModel">
-                                                            <Ellipse Width="12" Height="12" Fill="#5B8FF9" Stroke="White" StrokeThickness="2"
-                                                                     >
+                                                            <Ellipse Width="12" Height="12" Fill="{Binding PointBrush}" Stroke="White" StrokeThickness="2"
+                                                                     PointerPressed="ChartPoint_OnPointerPressed">
                                                                 <ToolTip.Tip>
                                                                     <ToolTip>
                                                                         <Border Padding="12,8" CornerRadius="8" Background="#FFFFFF">

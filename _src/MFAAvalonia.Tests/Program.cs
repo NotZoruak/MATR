@@ -1535,6 +1535,26 @@ AssertTrue(WarehouseChartTooltipFormatter.Format(filterNow, 12000, -345)
         == "2026-09-05 12:00:00\n当前：12,000\n变动：-345",
     "图表数据点悬停提示应显示负向变动量");
 
+var chartSelection = new WarehouseChartRangeSelection();
+var laterPoint = new DateTime(2026, 9, 5, 13, 30, 0, DateTimeKind.Local);
+var earlierPoint = new DateTime(2026, 9, 5, 10, 0, 0, DateTimeKind.Local);
+AssertTrue(chartSelection.Select(laterPoint, 1200) == null,
+    "首次选择图表记录点时不应立即形成区间");
+var selectedRange = chartSelection.Select(earlierPoint, 800);
+AssertTrue(selectedRange != null
+    && selectedRange.Start.RecordedAt == earlierPoint
+    && selectedRange.End.RecordedAt == laterPoint
+    && selectedRange.Duration == TimeSpan.FromHours(3.5)
+    && selectedRange.Change == 400,
+    "两点选择应按时间排序，并计算相隔时长和资源变化量");
+AssertTrue(selectedRange?.SummaryText
+    == "起始：2026-09-05 10:00:00 · 终止：2026-09-05 13:30:00\n相隔：3小时30分钟 · 变化：+400",
+    "完成两点选择后应生成可直接展示的区间摘要");
+AssertTrue(chartSelection.Select(new DateTime(2026, 9, 5, 15, 0, 0, DateTimeKind.Local), 1300) == null
+    && chartSelection.Start?.Value == 1300
+    && chartSelection.End == null,
+    "完成区间后再次选择应以新点开启下一段区间");
+
 var updateDataConfigRoot = Path.Combine(Path.GetTempPath(), $"matr-update-data-config-{Guid.NewGuid():N}");
 Directory.CreateDirectory(updateDataConfigRoot);
 AppPaths.InstancesDirectory = updateDataConfigRoot;

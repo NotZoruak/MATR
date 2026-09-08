@@ -22,6 +22,20 @@ public partial class WarehouseView : UserControl
         DataContext = App.Services.GetRequiredService<WarehouseViewModel>();
     }
 
+    private void ChartPoint_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Control control || control.DataContext is not WarehouseChartPointViewModel point)
+            return;
+
+        if (!e.GetCurrentPoint(control).Properties.IsLeftButtonPressed)
+            return;
+
+        if (point.SelectCommand.CanExecute(null))
+            point.SelectCommand.Execute(null);
+
+        e.Handled = true;
+    }
+
     private void OtherItemDragHandle_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Control handle || handle.DataContext is not WarehouseOtherItemViewModel item)
