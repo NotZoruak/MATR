@@ -232,7 +232,7 @@
         "RefreshInterval"
       ],
       "label": "本丸后勤",
-      "description": "后勤（远征+修刀+内番）任务自动化。推荐通过其它任务的「同步后勤」选项调用，而不是单独运行。\n\n* **远征**：定时检查并派遣部队远征，五队可分别设置远征地图或休息。\n* **修刀**：检查远征队伍后，启用空闲工坊自动修复受损刀剑（避开编入队伍的刀剑），不使用加速符。可自定义使用的工坊和筛选条件。\n* **内番**：检查远征队伍后，若内番位置空闲，自动进入今日内番表指派内番。\n\n> ⚠️若停止后勤任务后启动其他任务失败，重启 MATR 即可。"
+      "description": "后勤（远征+修刀+内番）任务自动化。推荐通过其它任务的「同步后勤」选项调用，而不是单独运行。\n\n* **远征**：定时检查并派遣部队远征，五队可分别设置远征地图或休息。\n* **修刀**：检查远征队伍后，启用空闲工坊自动修复受损刀剑（避开编入队伍的刀剑），不使用加速符。可自定义使用的工坊和筛选条件。\n* **内番**：检查远征队伍后，若内番位置空闲，自动进入今日内番表指派内番。点击右侧齿轮可设置「联动本丸刀帐」。\n\n> ⚠️若停止后勤任务后启动其他任务失败，重启 MATR 即可。"
     }
   ],
   "global_option": ["客户端类型", "远征智能调度", "长期远征计划", "卡死重启"],
@@ -6329,8 +6329,67 @@
         {
           "name": "Yes",
           "label": "开启",
+          "option": ["联动本丸刀帐"],
           "pipeline_override": {
             "E_NaibanHub": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "联动本丸刀帐": {
+      "name": "联动本丸刀帐",
+      "label": "联动本丸刀帐",
+      "description": "安排内番后，识别到内番服立绘时，自动同步保存至本丸刀帐。使用该功能前，请先识别并保存刀帐中的立绘信息。\n关于自动刷取内番服：会从已保存的刀帐中选出至多两把刀剑，仅考虑“已拥有”但未勾选“内番服”的条目。当某已极化刀剑有极化后内番服而无普刀内番服时，会被跳过。不足两把候选，或未找到目标时，改选当前列表中第一把可用刀剑。只调整两个饲马位置，不会调整耕作与切磋设置。",
+      "type": "switch",
+      "inline_sub_options": true,
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "E_NaibanOutfitFinish": {
+              "action": {
+                "custom_action_param": {"mode": "finish", "sync_swordbook": false}
+              }
+            }
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["自动刷取内番服"],
+          "pipeline_override": {
+            "E_NaibanOutfitFinish": {
+              "action": {
+                "custom_action_param": {"mode": "finish", "sync_swordbook": true}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "自动刷取内番服": {
+      "name": "自动刷取内番服",
+      "label": "自动刷取内番服",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "E_NaibanVerifyTodayTable": {"enabled": false}
+          }
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "E_NaibanVerifyTodayTable": {"enabled": true},
+            "E_NaibanClickEntry": {
+              "next": ["E_NaibanVerifyTodayTable", "E_NaibanClickEntry"]
+            }
           }
         }
       ]

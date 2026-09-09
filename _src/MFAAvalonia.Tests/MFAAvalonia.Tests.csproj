@@ -38,6 +38,7 @@
     <Compile Include="..\MFAAvalonia\Services\UpdateDataScheduleService.cs" Link="UpdateDataScheduleService.cs" />
     <Compile Include="..\MFAAvalonia\Services\DailyTaskCompletionService.cs" Link="DailyTaskCompletionService.cs" />
     <Compile Include="..\MFAAvalonia\Services\UpdateDataPersistenceService.cs" Link="UpdateDataPersistenceService.cs" />
+    <Compile Include="..\MFAAvalonia\Services\SwordBookNaibanOutfitService.cs" Link="SwordBookNaibanOutfitService.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\RepairFilterSelection.cs" Link="RepairFilterSelection.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\RepairCooldownState.cs" Link="RepairCooldownState.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\FatigueCheckDecision.cs" Link="FatigueCheckDecision.cs" />

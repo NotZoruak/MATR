@@ -21,6 +21,9 @@ public static class UpdateDataPersistenceService
     /// <summary>刀帐正式数据保存完成时触发。</summary>
     public static event Action? SwordBookDataSaved;
 
+    /// <summary>通知刀帐页面重新读取已保存状态。</summary>
+    public static void NotifySwordBookDataSaved() => SwordBookDataSaved?.Invoke();
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -61,7 +64,7 @@ public static class UpdateDataPersistenceService
             states,
             Newtonsoft.Json.JsonSerializer.Create(serializerSettings));
         ConfigurationManager.Current.SetValue(ConfigurationKeys.SwordBookEntries, serializedStates);
-        SwordBookDataSaved?.Invoke();
+        NotifySwordBookDataSaved();
         return true;
     }
 

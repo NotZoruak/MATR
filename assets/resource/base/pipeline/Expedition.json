@@ -2462,6 +2462,288 @@
     "on_error": ["E_AllTeamsBusy"],
     "post_wait_freezes": {"time": 200}
   },
+  "E_NaibanVerifyTodayTable": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [554, 7, 177, 42],
+        "expected": "今日内番表"
+      }
+    },
+    "next": ["E_NaibanRemoveAssignedHub", "E_NaibanVerifyTodayTable"],
+    "on_error": ["E_NaibanClickEntry"]
+  },
+  "E_NaibanRemoveAssignedHub": {
+    "next": ["E_NaibanRemoveAssignedComplete", "E_NaibanRemoveAssigned", "E_NaibanRemoveAssignedHub"],
+    "on_error": ["E_NaibanClickEntry"]
+  },
+  "E_NaibanRemoveAssignedComplete": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [94, 363, 231, 157],
+        "template": "Common/内番移除完成.png",
+        "threshold": [0.9]
+      }
+    },
+    "next": ["E_NaibanPrepareSwordSelection"],
+    "on_error": ["E_NaibanRemoveAssignedHub"]
+  },
+  "E_NaibanRemoveAssigned": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [300, 357, 45, 155],
+        "template": "Common/移除内番安排.png",
+        "threshold": [0.9]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanRemoveAssignedHub"],
+    "on_error": ["E_NaibanRemoveAssignedHub"],
+    "post_wait_freezes": {"time": 200}
+  },
+  "E_NaibanPrepareSwordSelection": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "NaibanOutfitSelectionAction"
+    },
+    "next": ["E_NaibanOpenSwordSelector1"],
+    "on_error": ["E_GoHome"]
+  },
+  "E_NaibanOpenSwordSelector1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [182, 380, 55, 27],
+        "expected": "选择"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanVerifySwordSelector1", "E_NaibanOpenSwordSelector1"],
+    "on_error": ["E_NaibanPrepareSwordSelection"],
+    "post_wait_freezes": {"time": 200, "target": [182, 380, 55, 27]}
+  },
+  "E_NaibanVerifySwordSelector1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [574, 7, 140, 42],
+        "expected": "饲马选择"
+      }
+    },
+    "next": ["E_NaibanSortAscending1", "E_NaibanSortDescending1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanSortAscending1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1013, 83, 26, 25],
+        "expected": "升"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanVerifySwordSelector1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"],
+    "post_wait_freezes": {"time": 200, "target": [1013, 83, 26, 25]}
+  },
+  "E_NaibanSortDescending1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1013, 83, 26, 25],
+        "expected": "降"
+      }
+    },
+    "next": ["E_NaibanOpenFilter1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanOpenFilter1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [881, 81, 107, 28],
+        "expected": "筛选"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanVerifyFilter1", "E_NaibanOpenFilter1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"],
+    "post_wait_freezes": {"time": 200, "target": [881, 81, 107, 28]}
+  },
+  "E_NaibanVerifyFilter1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [496, 66, 77, 37],
+        "expected": "筛选"
+      }
+    },
+    "next": ["E_NaibanClickFilterCondition1_1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanClickFilterCondition1_1": {
+    "action": {"type": "Click", "param": {"target": [748, 136, 102, 31]}},
+    "post_delay": 500,
+    "next": ["E_NaibanClickFilterCondition1_2"],
+    "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanClickFilterCondition1_2": {
+    "action": {"type": "Click", "param": {"target": [959, 137, 106, 30]}},
+    "post_delay": 500,
+    "next": ["E_NaibanClickFilterCondition1_3"],
+    "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanClickFilterCondition1_3": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "NaibanFilterClickAction",
+      "custom_action_param": {"slot": 1}
+    },
+    "post_delay": 500,
+    "next": ["E_NaibanConfirmFilter1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanConfirmFilter1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [583, 604, 119, 42],
+        "expected": "确"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanFindSword1"],
+    "on_error": ["E_NaibanOpenSwordSelector1"],
+    "post_wait_freezes": {"time": 200, "target": [593, 133, 500, 557]}
+  },
+  "E_NaibanFindSword1": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "NaibanFindSwordAction",
+      "custom_action_param": {"slot": 1}
+    },
+    "next": ["E_NaibanOpenSwordSelector2", "E_NaibanFindSword1"],
+    "on_error": ["E_NaibanFindSword1"]
+  },
+  "E_NaibanOpenSwordSelector2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [178, 473, 66, 30],
+        "expected": "选择"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanVerifySwordSelector2", "E_NaibanOpenSwordSelector2"],
+    "on_error": ["E_NaibanFindSword1"],
+    "post_wait_freezes": {"time": 200, "target": [178, 473, 66, 30]}
+  },
+  "E_NaibanVerifySwordSelector2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [574, 7, 140, 42],
+        "expected": "饲马选择"
+      }
+    },
+    "next": ["E_NaibanSortAscending2", "E_NaibanSortDescending2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanSortAscending2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1013, 83, 26, 25],
+        "expected": "升"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanVerifySwordSelector2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"],
+    "post_wait_freezes": {"time": 200, "target": [1013, 83, 26, 25]}
+  },
+  "E_NaibanSortDescending2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1013, 83, 26, 25],
+        "expected": "降"
+      }
+    },
+    "next": ["E_NaibanOpenFilter2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanOpenFilter2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [881, 81, 107, 28],
+        "expected": "筛选"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanVerifyFilter2", "E_NaibanOpenFilter2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"],
+    "post_wait_freezes": {"time": 200, "target": [881, 81, 107, 28]}
+  },
+  "E_NaibanVerifyFilter2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [496, 66, 77, 37],
+        "expected": "筛选"
+      }
+    },
+    "next": ["E_NaibanClickFilterCondition2_1"],
+    "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanClickFilterCondition2_1": {
+    "action": {"type": "Click", "param": {"target": [748, 136, 102, 31]}},
+    "post_delay": 500,
+    "next": ["E_NaibanClickFilterCondition2_2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanClickFilterCondition2_2": {
+    "action": {"type": "Click", "param": {"target": [959, 137, 106, 30]}},
+    "post_delay": 500,
+    "next": ["E_NaibanClickFilterCondition2_3"],
+    "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanClickFilterCondition2_3": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "NaibanFilterClickAction",
+      "custom_action_param": {"slot": 2}
+    },
+    "post_delay": 500,
+    "next": ["E_NaibanConfirmFilter2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanConfirmFilter2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [583, 604, 119, 42],
+        "expected": "确"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanFindSword2"],
+    "on_error": ["E_NaibanOpenSwordSelector2"],
+    "post_wait_freezes": {"time": 200, "target": [593, 133, 500, 557]}
+  },
+  "E_NaibanFindSword2": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "NaibanFindSwordAction",
+      "custom_action_param": {"slot": 2}
+    },
+    "next": ["E_NaibanVerifyTable", "E_NaibanFindSword2"],
+    "on_error": ["E_NaibanFindSword2"]
+  },
   "E_NaibanVerifyTable": {
     "recognition": {
       "type": "OCR",

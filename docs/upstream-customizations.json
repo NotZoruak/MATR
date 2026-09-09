@@ -160,6 +160,17 @@
       "notes": "MFAFramework 的 IMaaContext.GetImage() 返回 IMaaImageBuffer。若扩展方法只接受 MaaImageBuffer，动态编译失败后 MaaFramework 会在执行相关动作时报告 Action is null。资源路径混用会使旧脚本覆盖或补充当前资源动作，必须保持当前资源边界。"
     },
     {
+      "id": "resource.naiban-outfit-swordbook-link",
+      "title": "内番服与本丸刀帐联动",
+      "purpose": "将内番服识别结果同步至已保存的刀帐，并可按刀帐自动安排待刷取内番服的刀剑。",
+      "files": ["assets/interface.json", "assets/resource/base/pipeline/Expedition.json", "assets/resource/base/custom/NaibanOutfitLogAction.cs", "assets/resource/base/custom/NaibanOutfitSelectionAction.cs", "assets/resource/base/custom/NaibanFilterClickAction.cs", "assets/resource/base/custom/NaibanFindSwordAction.cs", "_src/MFAAvalonia/Services/SwordBookNaibanOutfitService.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/NaibanOutfitSelectionContext.cs", "_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留已保存刀帐的读取与持久化边界；自动流程由入口开关覆盖 next，先移除既有安排再完成两位选刀，最后复用原开始内番流程。",
+      "verification": ["识别内番服后同名已拥有条目中序号最大的记录拥有内番服", "没有已拥有同名条目时最小序号记录同时登记拥有和内番服", "关闭自动刷取时直接进入原开始内番流程", "开启自动刷取时先确认今日内番表并移除既有安排", "自动流程优先选择至多两把已拥有且缺少内番服的刀剑", "目标不足或不可选时选择任意可用刀剑", "自定义 action 可动态编译并注册"],
+      "notes": "自动选刀按同名已拥有条目的最大序号判断是否缺少内番服，与识别同步的同名选择规则一致。自动流程只在联动本丸刀帐开启时显示；入口覆盖不得让 E_NaibanVerifyTable 在移除和选刀之前点击开始。"
+    },
+    {
       "id": "runtime.debug-log-maintenance",
       "title": "磁盘日志轮转与自动清理",
       "purpose": "避免 debug 目录因 MaaFramework 日志和错误截图持续累积而无限增长，同时保留近期排障证据。",

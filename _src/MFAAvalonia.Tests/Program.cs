@@ -1973,6 +1973,84 @@ AssertTrue(unchangedWarehouseAfterSwordBookInvalid.CoreResources["木炭"] == 10
     && unchangedWarehouseAfterSwordBookInvalid.CoreResources["玉钢"] == 20,
     "刀帐草稿损坏时不应影响仓库数据");
 
+var naibanOutfitCatalogPath = Path.Combine(Path.GetTempPath(), $"matr-naiban-outfit-catalog-{Guid.NewGuid():N}.json");
+var logisticsNaibanOption = interfaceDefinition["option"]?["内番"];
+var honmaruPortraitLinkOption = interfaceDefinition["option"]?["联动本丸刀帐"];
+var honmaruPortraitLinkCases = honmaruPortraitLinkOption?["cases"];
+var autoNaibanOutfitOption = interfaceDefinition["option"]?["自动刷取内番服"];
+var autoNaibanOutfitCases = autoNaibanOutfitOption?["cases"];
+var expeditionDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Expedition.json")));
+AssertTrue(
+    logisticsNaibanOption?["cases"]?.FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes")?["option"]?.Values<string>()
+        .SequenceEqual(["联动本丸刀帐"]) == true
+    && honmaruPortraitLinkOption?["label"]?.Value<string>() == "联动本丸刀帐"
+    && honmaruPortraitLinkOption?["type"]?.Value<string>() == "switch"
+    && honmaruPortraitLinkOption?["inline_sub_options"]?.Value<bool>() == true
+    && honmaruPortraitLinkCases?.FirstOrDefault(item => item?["name"]?.Value<string>() == "No")?["pipeline_override"]?["E_NaibanOutfitFinish"]?["action"]?["custom_action_param"]?["sync_swordbook"]?.Value<bool>() == false
+    && honmaruPortraitLinkCases?.FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes")?["pipeline_override"]?["E_NaibanOutfitFinish"]?["action"]?["custom_action_param"]?["sync_swordbook"]?.Value<bool>() == true,
+    "内番设置必须提供默认关闭的联动本丸刀帐开关，并通过收尾 action 参数控制同步");
+AssertTrue(
+    honmaruPortraitLinkCases?.FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes")?["option"]?.Values<string>()
+        .SequenceEqual(["自动刷取内番服"]) == true
+    && autoNaibanOutfitOption?["type"]?.Value<string>() == "switch"
+    && autoNaibanOutfitOption?["default_case"]?.Value<string>() == "No"
+    && autoNaibanOutfitCases?.FirstOrDefault(item => item?["name"]?.Value<string>() == "No")?["pipeline_override"]?["E_NaibanVerifyTodayTable"]?["enabled"]?.Value<bool>() == false
+    && autoNaibanOutfitCases?.FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes")?["pipeline_override"]?["E_NaibanVerifyTodayTable"]?["enabled"]?.Value<bool>() == true
+    && autoNaibanOutfitCases?.FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes")?["pipeline_override"]?["E_NaibanClickEntry"]?["next"]?.Values<string>()
+        .SequenceEqual(["E_NaibanVerifyTodayTable", "E_NaibanClickEntry"]) == true
+    && expeditionDefinition["E_NaibanVerifyTodayTable"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([554, 7, 177, 42]) == true
+    && expeditionDefinition["E_NaibanOpenSwordSelector1"]?["post_wait_freezes"]?["time"]?.Value<int>() == 200
+    && expeditionDefinition["E_NaibanOpenSwordSelector2"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([178, 473, 66, 30]) == true
+    && expeditionDefinition["E_NaibanSortAscending1"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([1013, 83, 26, 25]) == true
+    && expeditionDefinition["E_NaibanOpenFilter1"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([881, 81, 107, 28]) == true
+    && expeditionDefinition["E_NaibanFindSword1"]?["action"]?["custom_action"]?.Value<string>() == "NaibanFindSwordAction",
+    "自动刷取内番服必须从入口分流，并使用已确认的今日内番表与选刀坐标");
+var naibanOutfitActionSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "NaibanOutfitLogAction.cs"));
+AssertTrue(naibanOutfitActionSource.Contains("sync_swordbook", StringComparison.Ordinal),
+    "内番服收尾 action 必须读取联动本丸刀帐开关");
+File.WriteAllText(naibanOutfitCatalogPath,
+    """
+    [
+      { "number": "3", "type": "太刀", "name": "三日月宗近" },
+      { "number": "4", "type": "太刀", "name": "三日月宗近" },
+      { "number": "99", "type": "短刀", "name": "今剑" },
+      { "number": "100", "type": "短刀", "name": "今剑" },
+      { "number": "101", "type": "打刀", "name": "加州清光" }
+    ]
+    """);
+ConfigurationManager.Current.Reset();
+ConfigurationManager.Current.SetValue(ConfigurationKeys.SwordBookEntries,
+new List<SwordBookPortraitState>
+{
+    new SwordBookPortraitState("3", true, true, false, false, true),
+    new SwordBookPortraitState("4", true, false, true, false, false),
+    new SwordBookPortraitState("99", false, false, false, false, false),
+    new SwordBookPortraitState("100", false, false, false, false, false),
+    new SwordBookPortraitState("101", true, false, false, false, false),
+});
+var naibanOutfitTargets = SwordBookNaibanOutfitService.SelectMissingOutfitTargets(naibanOutfitCatalogPath);
+AssertTrue(naibanOutfitTargets.Select(target => target.Name).SequenceEqual(["三日月宗近", "加州清光"])
+    && naibanOutfitTargets.Select(target => target.Type).SequenceEqual(["太刀", "打刀"]),
+    "自动内番必须按同名已拥有条目中序号最大的未拥有内番服条目，选择至多两把目标刀剑");
+var markedNaibanOutfitNames = InvokeMarkNaibanOutfits(["三日月宗近", "今剑", "不存在"], naibanOutfitCatalogPath);
+var naibanOutfitStates = ConfigurationManager.Current.GetValue(ConfigurationKeys.SwordBookEntries, new List<SwordBookPortraitState>());
+AssertTrue(markedNaibanOutfitNames.SequenceEqual(["三日月宗近", "今剑"])
+    && naibanOutfitStates.Single(state => state.Number == "3").InnerCare == false
+    && naibanOutfitStates.Single(state => state.Number == "4").InnerCare
+    && naibanOutfitStates.Single(state => state.Number == "4").TrueSword
+    && naibanOutfitStates.Single(state => state.Number == "99").Owned
+    && naibanOutfitStates.Single(state => state.Number == "99").InnerCare
+    && naibanOutfitStates.Single(state => state.Number == "100").Owned == false
+    && naibanOutfitStates.Single(state => state.Number == "100").InnerCare == false,
+    "内番服同步必须更新同名已拥有条目中序号最大的内番状态；没有已拥有条目时应为最小序号同时勾选已拥有和内番");
+DeleteIfExists(naibanOutfitCatalogPath);
+
 var naibanOutfitState = new NaibanOutfitRecognitionState();
 naibanOutfitState.Begin();
 AssertTrue(naibanOutfitState.TryRecord("今剑"), "首次识别到的内番服应被记录");
@@ -2030,6 +2108,9 @@ static bool InvokeTrySaveWarehouseDraft(string draftPath) =>
 
 static bool InvokeTrySaveSwordBookDraft(string draftPath) =>
     (bool)InvokeStaticMethod("MFAAvalonia.Services.UpdateDataPersistenceService", "TrySaveSwordBookDraft", draftPath)!;
+
+static IReadOnlyList<string> InvokeMarkNaibanOutfits(IReadOnlyList<string> swordNames, string catalogPath) =>
+    (IReadOnlyList<string>)InvokeStaticMethod("MFAAvalonia.Services.SwordBookNaibanOutfitService", "MarkOwnedOutfits", swordNames, catalogPath)!;
 
 static object? InvokeStaticMethod(string typeName, string methodName, params object?[] arguments)
 {

@@ -127,6 +127,12 @@ MATR 使用 `SwordDropLogAction` 记录合战场、地下城、联队战和战�
 
 特化和极化仍由动画 ROI 的 OCR 识别。升级资源或自定义动作时，必须保留四个 pipeline 挂载点、颜色匹配规则和 `debug/sword_drop/` 截图行为。
 
+### `resource.naiban-outfit-swordbook-link`
+
+内番可联动本丸刀帐：识别到内番服时，基于已保存的刀帐状态同步拥有与内番服标记；同名条目优先更新已拥有条目中序号最大的记录，没有已拥有条目时更新最小序号记录并同时登记拥有。自动刷取内番服开启后，入口先确认今日内番表、移除现有安排，再优先选择已拥有且缺少内番服的两把刀剑；不足的位置选择任意可用刀剑。
+
+升级时必须保留运行期目标固化、同名序号选择规则、开关对入口 `next` 的覆盖，以及资源 `custom` 目录中三项内番选刀 action 的动态编译。关闭自动刷取时必须保留原有直接开始内番流程。
+
 ### `runtime.custom-action-loading-isolation`
 
 MATR 的资源包包含运行时动态编译的自定义动作。`MFAExtensions.ToBitmap` 必须接受 MFAFramework 返回的 `IMaaImageBuffer` 接口，否则使用 `IMaaContext.GetImage()` 的动作会在编译阶段失败，随后在 pipeline 中表现为 `Action is null`。

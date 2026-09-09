@@ -3,10 +3,12 @@ using MaaFramework.Binding.Custom;
 using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
+using MFAAvalonia.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -47,7 +49,19 @@ public class NaibanOutfitLogAction : IMaaCustomAction
                 if (_state.TryFinishMissingOutfit())
                     LoggerHelper.Info("[后勤] 未显示内番服立绘");
                 else if (_state.SwordNames.Count > 0)
+                {
                     LoggerHelper.Info($"[后勤] 内番服 {string.Join("、", _state.SwordNames)}");
+                    if (json["sync_swordbook"]?.Value<bool>() == true)
+                    {
+                        var catalogPath = Path.Combine(AppPaths.ResourceDirectory, "base", "SwordBookCatalog.json");
+                        var synchronizedNames = SwordBookNaibanOutfitService.MarkOwnedOutfits(_state.SwordNames, catalogPath);
+                        if (synchronizedNames.Count > 0)
+                            LoggerHelper.Info($"[后勤] 已同步刀帐内番服 {string.Join("、", synchronizedNames)}");
+                        var unsynchronizedNames = _state.SwordNames.Except(synchronizedNames, StringComparer.Ordinal).ToList();
+                        if (unsynchronizedNames.Count > 0)
+                            LoggerHelper.Warning($"[后勤] 刀帐中未找到已拥有的内番服刀剑 {string.Join("、", unsynchronizedNames)}");
+                    }
+                }
                 return true;
             case "recognize":
                 RecognizeAndClick(context, json);
