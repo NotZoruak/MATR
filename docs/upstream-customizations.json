@@ -74,13 +74,13 @@
     {
       "id": "daily-task.per-game-day-completion",
       "title": "一键日课游戏日完成台账",
-      "purpose": "记录登录奖励、暖心礼包、合成、刀解和锻刀在当前游戏日是否已实际完成，避免重复执行。",
-      "files": ["assets/interface.json", "assets/resource/base/pipeline/DailyTask.json", "_src/MFAAvalonia/Helper/AppPaths.cs", "_src/MFAAvalonia/Services/DailyTaskCompletionService.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionMarkAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia.Tests/Program.cs", "_src/MFAAvalonia.Tests/ConfigurationTestStubs.cs", "_src/MFAAvalonia.Tests/MFAAvalonia.Tests.csproj"],
+      "purpose": "记录登录奖励、暖心礼包、合成、刀解和锻刀在当前游戏日是否已实际完成；首次刀解与收刀腾位刀解共用当天刀解完成记录。",
+      "files": ["assets/interface.json", "assets/resource/base/pipeline/DailyTask.json", "_src/MFAAvalonia/Helper/AppPaths.cs", "_src/MFAAvalonia/Services/DailyTaskCompletionService.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionMarkAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ForgeDisassembleSelectAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia.Tests/Program.cs", "_src/MFAAvalonia.Tests/ConfigurationTestStubs.cs", "_src/MFAAvalonia.Tests/MFAAvalonia.Tests.csproj"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留 debug/logs/daily-task-completion.log 的完成日期记录，以每日 5:00 计算游戏日；保留检查与写入自定义 action 的注册，并按日课项目的实际成功路径重放 pipeline 覆盖。",
-      "verification": ["同一游戏日重复运行时跳过已完成项目", "每日 5:00 后允许再次执行", "日志文件可被重新读取并恢复完成状态", "无合成素材时不写入合成完成记录", "刀解素材不足时不写入刀解完成记录", "未完成 3 次锻刀时不写入锻刀完成记录", "登录奖励和暖心礼包的已领取完成路径会写入记录"],
-      "notes": "完成记录不是临时内存状态；由 DailyTaskCompletionService 持久化到 debug/logs/daily-task-completion.log。游戏日按本地时间每日 5:00 切换。只有输出完成结果的实际成功路径才能调用写入 action，跳过、素材不足和锻刀未完成路径不得标记。"
+      "verification": ["同一游戏日重复运行时跳过已完成项目", "每日 5:00 后允许再次执行", "日志文件可被重新读取并恢复完成状态", "首次刀解至少一把，收刀腾位时按刀位缺口选择", "当天已刀解但收刀缺位时仍按缺口刀解", "当天锻刀已完成时仍收取已有完成刀剑且不新建锻刀", "无合成素材时不写入合成完成记录", "刀解素材不足时不写入刀解完成记录", "未完成 3 次锻刀时不写入锻刀完成记录", "登录奖励和暖心礼包的已领取完成路径会写入记录"],
+      "notes": "完成记录不是临时内存状态；由 DailyTaskCompletionService 持久化到 debug/logs/daily-task-completion.log。游戏日按本地时间每日 5:00 切换。首次刀解与收刀腾位刀解均调用同一写入 action；当天已完成仅跳过额外的首次刀解，收刀所需刀位不足时仍进入按缺口腾位的刀解路径。ForgeDisassembleSelectAction 必须在每页点击前读取已选数量，并只选择剩余所需数量，不能一次选择当前页全部许可刀剑。锻刀完成记录只阻止新建锻刀，收取完成刀剑结束后才检查是否允许开始新的锻刀。只有输出完成结果的实际成功路径才能调用写入 action，跳过、素材不足和锻刀未完成路径不得标记。"
     },
     {
       "id": "work-records.name-dialog-registration",

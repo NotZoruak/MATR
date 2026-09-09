@@ -41,8 +41,6 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
             while (true)
             {
                 ActionParamHelper.ThrowIfStopping(context);
-                SelectAllowedSwordsOnCurrentPage(context, allowList);
-
                 using var image = context.GetImage();
                 if (image == null)
                 {
@@ -60,7 +58,26 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
                 if (selectedCount >= requiredCount || selectedCount == 30)
                     return true;
 
-                if (IsAtBottom(image))
+                SelectAllowedSwordsOnCurrentPage(context, allowList, requiredCount - selectedCount);
+
+                using var updatedImage = context.GetImage();
+                if (updatedImage == null)
+                {
+                    LoggerHelper.Warning("[日课 锻刀] 获取刀解列表截图失败");
+                    return false;
+                }
+
+                if (!TryReadSelectedCount(context, updatedImage, out selectedCount))
+                {
+                    LoggerHelper.Warning("[日课 锻刀] 未能识别已选刀剑数量");
+                    return false;
+                }
+
+                LoggerHelper.Info($"[日课 刀解锻刀] 当前已选择 {selectedCount}/30，把需刀解数量为 {requiredCount}");
+                if (selectedCount >= requiredCount || selectedCount == 30)
+                    return true;
+
+                if (IsAtBottom(updatedImage))
                 {
                     LoggerHelper.Warning("日课 锻刀 刀位不足 可刀解刀剑不足");
                     return false;
@@ -81,9 +98,12 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
         }
     }
 
-    /// <summary>识别当前页中所有许可名单内的刀剑名称并逐个点击。</summary>
-    private static void SelectAllowedSwordsOnCurrentPage<T>(T context, IReadOnlyCollection<string> allowList) where T : IMaaContext
+    /// <summary>在当前页的许可名单内选择不超过所需数量的刀剑。</summary>
+    private static void SelectAllowedSwordsOnCurrentPage<T>(T context, IReadOnlyCollection<string> allowList, int maximumSelectCount) where T : IMaaContext
     {
+        if (maximumSelectCount <= 0)
+            return;
+
         using var image = context.GetImage();
         if (image == null)
             throw new InvalidOperationException("获取刀解列表截图失败");
@@ -97,7 +117,7 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
             .OrderBy(item => item.Box![1])
             .ToList() ?? [];
 
-        foreach (var candidate in candidates)
+        foreach (var candidate in candidates.Take(maximumSelectCount))
         {
             ActionParamHelper.ThrowIfStopping(context);
             var box = candidate.Box!;

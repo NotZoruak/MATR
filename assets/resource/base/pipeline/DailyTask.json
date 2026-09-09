@@ -1272,8 +1272,8 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 锻刀 今日已完成，跳过"}
     },
-    "next": ["DT_DrillGate"],
-    "on_error": ["DT_DrillGate"]
+    "next": ["DT_ForgeHub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeHub": {
     "enabled": false,
@@ -1347,11 +1347,17 @@
       "type": "Custom",
       "custom_action": "ForgeCapacityCheckAction"
     },
-    "next": ["DT_ForgeDailyDisassembleOnceCheck", "DT_ForgeClaimCompletedHub"],
+    "next": ["DT_ForgeClaimCompletedHub"],
     "on_error": ["DT_ForgeSkipDisassemble"]
   },
   "DT_ForgeSkipDisassemble": {
-    "action": {"type": "DoNothing"},
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {
+        "message": "warn:日课 锻刀 待收取刀剑超过空余刀位，未开启刀解，跳过收刀与锻刀"
+      }
+    },
     "next": ["DT_ForgeReturnHomeHub"],
     "on_error": ["DT_ForgeReturnHomeHub"]
   },
@@ -1371,14 +1377,24 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 刀解 今日已完成，跳过"}
     },
-    "next": ["DT_ForgeClaimCompletedHub", "DT_ForgeReturnHomeHub"],
+    "next": ["DT_ForgeCheckCapacity"],
     "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeClaimCompletedHub": {
     "enabled": false,
     "timeout": 3000,
     "next": ["DT_ForgeClaimSkipDropAnimation", "DT_ForgeClaimIsSwordDropColor", "DT_ForgeClaimCompleted", "DT_ForgeClaimTenCompleted", "DT_ForgeClaimTenClaim"],
-    "on_error": ["DT_ForgeFindFreeSlot1Hub"]
+    "on_error": ["DT_ForgeStartForgeOnceCheck"]
+  },
+  "DT_ForgeStartForgeOnceCheck": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskCompletionCheckAction",
+      "custom_action_param": {"item": "forge"}
+    },
+    "next": ["DT_ForgeFindFreeSlot1Hub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeClaimSkipDropAnimation": {
     "recognition": {

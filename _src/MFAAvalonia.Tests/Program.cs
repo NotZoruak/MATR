@@ -1064,6 +1064,48 @@ var dailyPipeline = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "DailyTask.json")));
 var interfaceJson = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "interface.json")));
+var dailyDisassembleEnabledOverride = interfaceJson["option"]?["D_刀解"]?["cases"]?
+    .FirstOrDefault(item => (string?)item?["name"] == "Yes")?["pipeline_override"] as JObject;
+AssertTrue(
+    dailyPipeline["DT_ForgeCheckCapacity"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeClaimCompletedHub"]) == true
+    && dailyPipeline["DT_ForgeCheckCapacity"]?["on_error"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeSkipDisassemble"]) == true
+    && dailyPipeline["DT_ForgeSkipDisassemble"]?["action"]?["custom_action"]?.Value<string>() == "GuiLogAction",
+    "未开启刀解时，收刀所需刀位不足必须跳过收刀和锻刀");
+AssertTrue(
+    dailyDisassembleEnabledOverride?["DT_ForgeDetectStatus"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeDailyDisassembleOnceCheck"]) == true
+    && dailyDisassembleEnabledOverride?["DT_ForgeDailyDisassembleOnceCheck"]?["enabled"]?.Value<bool>() == true
+    && dailyPipeline["DT_ForgeDailyDisassembleAlreadyCompleted"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeCheckCapacity"]) == true
+    && dailyDisassembleEnabledOverride?["DT_ForgeCheckCapacity"]?["on_error"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeDisassembleHub"]) == true,
+    "开启刀解时，首次刀解后或当天已刀解后都必须检查收刀缺口并在必要时腾位");
+AssertTrue(
+    dailyPipeline["DT_ForgeDisassembleSelectAllowed"]?["action"]?["custom_action_param"]?["minimum_count"]?.Value<int>() == 1
+    && dailyPipeline["DT_ForgeDisassembleCompleted"]?["action"]?["custom_action_param"]?["item"]?.Value<string>() == "disassemble",
+    "首次刀解至少选择一把，收刀腾位刀解同样必须写入当天刀解完成记录");
+var forgeEnabledOverride = interfaceJson["option"]?["D_锻刀"]?["cases"]?
+    .FirstOrDefault(item => (string?)item?["name"] == "Yes")?["pipeline_override"] as JObject;
+AssertTrue(
+    dailyPipeline["DT_ForgeAlreadyCompleted"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeHub"]) == true
+    && dailyPipeline["DT_ForgeClaimCompletedHub"]?["on_error"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeStartForgeOnceCheck"]) == true
+    && dailyPipeline["DT_ForgeStartForgeOnceCheck"]?["action"]?["custom_action"]?.Value<string>() == "DailyTaskCompletionCheckAction"
+    && dailyPipeline["DT_ForgeStartForgeOnceCheck"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeFindFreeSlot1Hub"]) == true
+    && dailyPipeline["DT_ForgeStartForgeOnceCheck"]?["on_error"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeReturnHomeHub"]) == true
+    && forgeEnabledOverride?["DT_ForgeStartForgeOnceCheck"]?["enabled"]?.Value<bool>() == true,
+    "当天锻刀已完成时必须先收取已有完成刀剑，再跳过新建锻刀");
+var forgeDisassembleSelectActionSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ForgeDisassembleSelectAction.cs"));
+AssertTrue(
+    forgeDisassembleSelectActionSource.Contains("requiredCount - selectedCount", StringComparison.Ordinal)
+    && forgeDisassembleSelectActionSource.Contains(".Take(maximumSelectCount)", StringComparison.Ordinal),
+    "刀解选择必须只点击当前剩余所需数量，不能将当前页全部许可刀剑都选中");
 var freezeRestartOverride = interfaceJson["option"]?["卡死重启"]?["cases"]?
     .FirstOrDefault(item => (string?)item?["name"] == "Yes")?["pipeline_override"] as JObject;
 var fallbackWaitNames = Directory.GetFiles(Path.Combine(
