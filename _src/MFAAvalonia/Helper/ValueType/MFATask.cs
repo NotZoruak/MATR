@@ -44,6 +44,12 @@ public partial class MFATask : ObservableObject
     public DragItemViewModel? SourceItem { get; set; }
     public long RunId { get; set; }
     public bool ContinueOnError { get; set; }
+    public TaskEarlyCompletionRequest EarlyCompletionRequest { get; } = new();
+
+    /// <summary>
+    /// 请求跳过当前队列项尚未执行的重复次数。
+    /// </summary>
+    public bool RequestEarlyCompletion(string? reason) => EarlyCompletionRequest.Request(reason);
 
     public async Task<RunResult> Run(CancellationToken token)
     {
@@ -106,7 +112,17 @@ public partial class MFATask : ObservableObject
                     await Action();
                     token.ThrowIfCancellationRequested();
                 }
-                OwnerViewModel?.MarkTaskIterationCompleted(SourceItem, RunId);
+                var iterationDecision = TaskIterationDecision.Resolve(EarlyCompletionRequest);
+                if (!iterationDecision.ShouldContinueRepeating)
+                {
+                    OwnerViewModel?.AddLog(
+                        $"[{LanguageHelper.GetLocalizedString(Name)}] 任务结束 原因：{iterationDecision.Reason}",
+                        recordAsWarning: true);
+                    break;
+                }
+
+                if (iterationDecision.ShouldCountIteration)
+                    OwnerViewModel?.MarkTaskIterationCompleted(SourceItem, RunId);
                 // 有限重复任务每轮成功后输出完成进度；无限任务与单次任务不重复输出。
                 if (!infinite && Count > 1 && Type == MFATaskType.MAAFW)
                 {

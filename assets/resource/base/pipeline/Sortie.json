@@ -2253,6 +2253,7 @@
       }
     },
     "action": {"type": "Click"},
+    "next": ["S_CompleteCurrentTaskAfterDamageRepair"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_LogRepairDone": {
@@ -2400,7 +2401,7 @@
       "type": "Click",
       "param": {"target": [1024, 519, 99, 48]}
     },
-    "next": [],
+    "next": ["S_CompleteCurrentTaskAfterEquipmentRecordShortage"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_FallbackVerifyTeamSelect": {
@@ -3086,6 +3087,7 @@
       }
     },
     "action": {"type": "Click"},
+    "next": ["S_CompleteCurrentTaskAfterEquipmentDamage"],
     "on_error": ["S_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
@@ -3138,6 +3140,47 @@
       "type": "Custom",
       "custom_action": "StopOnDamageAction"
     },
+    "next": ["S_CompleteCurrentTaskAfterDamage"],
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterDamageRepair": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤修刀后停止"}
+    },
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterEquipmentRecordShortage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "部队记录刀装不足"}
+    },
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterEquipmentDamage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "刀装破坏停止"}
+    },
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterDamage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤停止"}
+    },
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterIsekaiNoTicket": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "通行令牌不足"}
+    },
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_LogStopOnDamageRepair": {
@@ -3145,6 +3188,15 @@
       "type": "Custom",
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，任务终止"}
+    },
+    "next": ["S_CompleteCurrentTaskAfterDamageRepairFallback"],
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterDamageRepairFallback": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤停止（修刀流程兜底）"}
     },
     "on_error": ["S_DetectWhereAmI"]
   },

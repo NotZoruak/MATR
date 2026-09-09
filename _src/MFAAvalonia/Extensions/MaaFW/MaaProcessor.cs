@@ -3500,6 +3500,16 @@ public class MaaProcessor
     } = new();
     private DateTime? _startTime;
     private List<DragItemViewModel> _tempTasks = [];
+    private MFATask? _activeQueueTask;
+
+    /// <summary>
+    /// 请求提前结束当前正在执行的队列项，保留后续队列项。
+    /// </summary>
+    public bool RequestEarlyCompletionForActiveTask(string? reason)
+    {
+        var activeTask = Volatile.Read(ref _activeQueueTask);
+        return activeTask?.RequestEarlyCompletion(reason) == true;
+    }
 
     public async Task StartTask(List<DragItemViewModel>? tasks, bool onlyStart = false, bool checkUpdate = false)
     {
@@ -3582,7 +3592,16 @@ public class MaaProcessor
             }
             if (token.IsCancellationRequested) break;
 
-            var result = await task.Run(token);
+            Volatile.Write(ref _activeQueueTask, task);
+            MFATask.RunResult result;
+            try
+            {
+                result = await task.Run(token);
+            }
+            finally
+            {
+                Interlocked.CompareExchange(ref _activeQueueTask, null, task);
+            }
             if (result.Status == MFATask.MFATaskStatus.FAILED)
             {
                 completedWithFailures = true;

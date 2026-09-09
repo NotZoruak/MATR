@@ -97,12 +97,12 @@
       "id": "queue.resume-and-continue-on-error",
       "title": "任务队列断点续跑与失败继续",
       "purpose": "保留任务轮次统计、成功后的恢复索引、失败继续开关、用户停止语义和任务结束后操作边界。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/ValueType/MFATask.cs", "_src/MFAAvalonia/Helper/TaskQueueContinuationPolicy.cs", "_src/MFAAvalonia/Helper/MaaLogRotator.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/ViewModels/UsersControls/AddTaskDialogViewModel.cs"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/ValueType/MFATask.cs", "_src/MFAAvalonia/Helper/TaskEarlyCompletionRequest.cs", "_src/MFAAvalonia/Helper/TaskIterationDecision.cs", "_src/MFAAvalonia/Helper/TaskQueueContinuationPolicy.cs", "_src/MFAAvalonia/Helper/MaaLogRotator.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia/ViewModels/UsersControls/AddTaskDialogViewModel.cs", "assets/resource/base/custom/CompleteCurrentTaskAction.cs", "_src/MFAAvalonia.Tests/Program.cs"],
       "baseline_upstream": "2.13.0",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "以 2.16.1 RunResult 和取消模型为基础重放，不复制旧队列主循环。",
-      "verification": ["失败且关闭继续时停止", "失败且开启继续时继续", "用户停止不触发后续操作", "恢复索引仅在成功后推进", "异步任务队列完整结束后才进入停止流程", "正常完成的任务不被记录为手动停止", "普通任务之间自动插入回本丸", "最后一个任务后不插入回本丸", "MFAA 特殊任务前不插入回本丸", "任务添加界面与队列插入逻辑共用特殊任务 Entry 集合", "任务失败时发送系统通知", "异去模式从过去/异去的下级重复次数读取轮数，repeatable 为 false 时仍按正整数或 -1 生效", "有限重复任务每轮成功后在 GUI 日志输出任务完成与 X/Y 进度"],
-      "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 特殊任务由 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知。合战场异去的重复次数存储在过去/异去选项的下级异去_重复次数中；CreateNodeAndParam 必须读取该值并绕过合战场 repeatable=false 的单次限制，-1 表示无限循环；过去模式维持三轮策略。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。"
+      "verification": ["失败且关闭继续时停止", "失败且开启继续时继续", "用户停止不触发后续操作", "恢复索引仅在成功后推进", "异步任务队列完整结束后才进入停止流程", "正常完成的任务不被记录为手动停止", "普通任务之间自动插入回本丸", "最后一个任务后不插入回本丸", "MFAA 特殊任务前不插入回本丸", "任务添加界面与队列插入逻辑共用特殊任务 Entry 集合", "任务失败时发送系统通知", "异去模式从过去/异去的下级重复次数读取轮数，repeatable 为 false 时仍按正整数或 -1 生效", "有限重复任务每轮成功后在 GUI 日志输出任务完成与 X/Y 进度", "提前结束请求只消费一次，且不计入当前轮", "提前结束当前队列项后继续后续队列项", "提前结束原因以 Warning 词表写入工作记录特殊情况"],
+      "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知。合战场异去的重复次数存储在过去/异去选项的下级异去_重复次数中；CreateNodeAndParam 必须读取该值并绕过合战场 repeatable=false 的单次限制，-1 表示无限循环；过去模式维持三轮策略。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
     },
     {
       "id": "recovery.game-and-emulator-restart",

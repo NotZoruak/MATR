@@ -13,6 +13,8 @@
     <Compile Include="..\MFAAvalonia\Helper\LoopDetector.cs" Link="LoopDetector.cs" />
     <Compile Include="..\MFAAvalonia\Configuration\ConfigurationKeys.cs" Link="ConfigurationKeys.cs" />
     <Compile Include="..\MFAAvalonia\Helper\TaskQueueContinuationPolicy.cs" Link="TaskQueueContinuationPolicy.cs" />
+    <Compile Include="..\MFAAvalonia\Helper\TaskEarlyCompletionRequest.cs" Link="TaskEarlyCompletionRequest.cs" />
+    <Compile Include="..\MFAAvalonia\Helper\TaskIterationDecision.cs" Link="TaskIterationDecision.cs" />
     <Compile Include="..\MFAAvalonia\Helper\LiveViewFrameAvailability.cs" Link="LiveViewFrameAvailability.cs" />
     <Compile Include="..\MFAAvalonia\Helper\WindowSizePersistence.cs" Link="WindowSizePersistence.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\ClientPackageSettings.cs" Link="ClientPackageSettings.cs" />

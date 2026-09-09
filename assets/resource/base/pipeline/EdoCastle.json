@@ -714,7 +714,15 @@
         "message": "[江户潜入] 无票终止"
       }
     },
-    "next": [],
+    "next": ["EC_CompleteCurrentTaskAfterNoTicket"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_CompleteCurrentTaskAfterNoTicket": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "通行令牌不足"}
+    },
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ConfirmEnterMap": {

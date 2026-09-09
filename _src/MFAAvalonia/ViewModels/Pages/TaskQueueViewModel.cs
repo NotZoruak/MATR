@@ -1296,18 +1296,20 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         IBrush? brush,
         string weight = "Regular",
         bool changeColor = true,
-        bool showTime = true)
+        bool showTime = true,
+        bool recordAsWarning = false)
     {
-        Processor.AddLog(content, brush, weight, changeColor, showTime);
+        Processor.AddLog(content, brush, weight, changeColor, showTime, recordAsWarning: recordAsWarning);
     }
 
     public void AddLog(string content,
         string color = "",
         string weight = "Regular",
         bool changeColor = true,
-        bool showTime = true)
+        bool showTime = true,
+        bool recordAsWarning = false)
     {
-        Processor.AddLog(content, color, weight, changeColor, showTime);
+        Processor.AddLog(content, color, weight, changeColor, showTime, recordAsWarning: recordAsWarning);
     }
 
     public void AddLogByKey(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true, params string[] formatArgsKeys)

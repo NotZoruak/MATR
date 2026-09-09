@@ -12,10 +12,28 @@ using System.Linq;
 using System.Reflection;
 
 var actualWindowSize = WindowSizePersistence.GetValidSize(1366, 768);
+var earlyCompletionRequest = new TaskEarlyCompletionRequest();
+AssertTrue(earlyCompletionRequest.Request("目标 PT 已达成"), "首次提前结束请求必须成功");
+AssertTrue(earlyCompletionRequest.TryConsume(out var earlyCompletionReason)
+    && earlyCompletionReason == "目标 PT 已达成", "提前结束请求必须返回原始原因");
+AssertFalse(earlyCompletionRequest.TryConsume(out _), "同一提前结束请求不得被重复消费");
+var normalIteration = TaskIterationDecision.Resolve(new TaskEarlyCompletionRequest());
+AssertTrue(normalIteration.ShouldCountIteration && normalIteration.ShouldContinueRepeating,
+    "没有提前结束请求时必须计入当前轮并继续重复");
+var terminatingRequest = new TaskEarlyCompletionRequest();
+terminatingRequest.Request("门票不足");
+var terminatingIteration = TaskIterationDecision.Resolve(terminatingRequest);
+AssertFalse(terminatingIteration.ShouldCountIteration || terminatingIteration.ShouldContinueRepeating,
+    "提前结束请求不得计入当前轮且必须停止重复");
+AssertTrue(terminatingIteration.Reason == "门票不足", "提前结束决策必须保留结束原因");
 var interfaceDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "interface.json")));
 var sortieDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Sortie.json")));
+var isekaiNoTicketOption = interfaceDefinition["option"]?["异去_不购买门票"];
+var isekaiNoTicketOverride = isekaiNoTicketOption?["cases"]?.FirstOrDefault()?["pipeline_override"]?["S_IsIsekaiNoTicket"];
+AssertTrue(isekaiNoTicketOverride?["enabled"]?.Value<bool>() == true,
+    "勾选异去不买门票时必须显式启用无票处理，避免无票界面回退并循环");
 var pastMode = interfaceDefinition["option"]?["过去/异去"]?["cases"]?
     .FirstOrDefault(item => item?["name"]?.Value<string>() == "过去");
 var avoidKebiOption = interfaceDefinition["option"]?["S_避战检非"];
@@ -811,6 +829,9 @@ foreach (var (prefix, pipeline) in new[] { ("S_", sortiePipeline), ("U_", underg
         && pipeline[$"{prefix}FallbackConfirmRecord"]?["on_error"]?.Values<string>()
             .SequenceEqual(expectedFallbackError) == true,
         $"{prefix}记录确认后应先向界面输出刀装不足日志；未出现确认页时应保留原补充路径");
+    var expectedFallbackCompletionNext = prefix == "S_"
+        ? new[] { "S_CompleteCurrentTaskAfterEquipmentRecordShortage" }
+        : Array.Empty<string>();
     AssertTrue(pipeline[$"{prefix}FallbackConfirmRecordLog"]?["action"]?["custom_action"]?.Value<string>()
             == "LogAction"
         && pipeline[$"{prefix}FallbackConfirmRecordLog"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
@@ -818,8 +839,9 @@ foreach (var (prefix, pipeline) in new[] { ("S_", sortiePipeline), ("U_", underg
         && pipeline[$"{prefix}FallbackConfirmRecordLog"]?["next"]?.Values<string>()
             .SequenceEqual([$"{prefix}FallbackConfirmRecordClick"]) == true
         && pipeline[$"{prefix}FallbackConfirmRecordClick"]?["action"]?["type"]?.Value<string>() == "Click"
-        && pipeline[$"{prefix}FallbackConfirmRecordClick"]?["next"]?.Values<string>().Any() == false,
-        $"{prefix}记录确认点击后应默认结束任务，一键装备兜底去向由子选项覆写 next");
+        && pipeline[$"{prefix}FallbackConfirmRecordClick"]?["next"]?.Values<string>()
+            .SequenceEqual(expectedFallbackCompletionNext) == true,
+        $"{prefix}记录确认点击后的默认去向应符合任务结束或一键装备兜底设计");
     AssertTrue(pipeline[$"{prefix}FallbackConfirmRecord"]?["recognition"]?["param"]?["expected"]?.Value<string>()
             == "记录确认"
         && pipeline[$"{prefix}FallbackConfirmRecord"]?["recognition"]?["param"]?["roi"]?.Values<int>()
@@ -1265,6 +1287,14 @@ AssertTrue(earlyEndRecord.Count == 1 && earlyEndRecord[0].ReturnHomeCount == 0,
     "撤退原因本身不应重复计入返回本丸次数");
 AssertTrue(earlyEndRecord[0].DisplayStatus == "结束",
     "手动停止或任务失败导致的结束应在工作记录中显示为结束");
+
+var earlyCompletionReasonRecord = WorkRecordBuilder.Build([
+    new LogEntry(logStart, "INF", "开始任务：合战场"),
+    new LogEntry(logStart.AddSeconds(1), "WRN", "[Record] [合战场] 任务结束 原因：重伤停止"),
+    new LogEntry(logStart.AddSeconds(2), "INF", "停止前状态：SUCCEEDED"),
+]).Single();
+AssertTrue(earlyCompletionReasonRecord.SpecialEvents.Exists(item => item.Description == "任务结束 原因：重伤停止"),
+    "提前结束原因必须以 Warning 词表行进入工作记录特殊情况");
 
 var retreatFilterRecord = WorkRecordBuilder.Build([
     new LogEntry(logStart, "INF", "开始任务：合战场"),

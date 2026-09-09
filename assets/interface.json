@@ -3102,13 +3102,14 @@
           "name": "",
           "pipeline_override": {
             "S_IsIsekaiNoTicket": {
+              "enabled": true,
               "action": {
                 "type": "Click",
                 "param": {
                   "target": [1028, 38, 25, 26]
                 }
               },
-              "next": []
+              "next": ["S_CompleteCurrentTaskAfterIsekaiNoTicket"]
             }
           }
         }
