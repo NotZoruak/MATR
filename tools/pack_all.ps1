@@ -1,5 +1,5 @@
 ﻿# 一键打包 win-x64 与 macos-arm64 两个发布包（本地手动发布用）
-# 用法: pwsh tools/pack_all.ps1 -Version v0.13.0
+# 用法: pwsh tools/pack_all.ps1 -Version v0.13.1-beta.1
 # 产物: MATR-$Version-win-x64.zip 与 MATR-$Version-macos-arm64.zip（仓库根目录）
 param(
     [Parameter(Mandatory = $true)]

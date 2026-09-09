@@ -72,6 +72,7 @@ public static class CaptainSettingsHelper
         "Sortie" => "S_换队长",
         "Underground" => "U_换队长",
         "LRentaisen" => "LR_换队长",
+        "Hanapai" => "HP_换队长",
         "EdoCastle" => "EC_换队长",
         "TacticalTraining" => "TT_换队长",
         _ => null

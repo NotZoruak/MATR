@@ -1,0 +1,240 @@
+{
+    "Hanapai": {
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_DetectWhereAmI": {
+        "timeout": 120000,
+        "next": [
+            "HP_IsHome",
+            "HP_IsEventPage",
+            "HP_IsTeamSelect",
+            "HP_IsTicketPopup",
+            "HP_IsMarching",
+            "HP_IsBattleResult",
+            "HP_IsSwordDrop",
+            "HP_IsSpecialDrop",
+            "HP_WaitLoop"
+        ],
+        "on_error": ["HP_RestartGame"]
+    },
+    "HP_IsHome": {
+        "enabled": false,
+        "next": ["HP_NavigateToActivity"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_NavigateToActivity": {
+        "enabled": false,
+        "next": ["HP_ClickActivityInMenu"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ClickActivityInMenu": {
+        "enabled": false,
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsEventPage": {
+        "enabled": false,
+        "next": ["HP_SelectDifficulty"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_SelectDifficulty": {
+        "enabled": false,
+        "next": ["HP_ClickDifficulty"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ClickDifficulty": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_VerifyDifficulty"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_VerifyDifficulty": {
+        "enabled": false,
+        "next": ["HP_EnterEvent"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_EnterEvent": {
+        "enabled": false,
+        "next": ["HP_IsTeamSelect"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsTeamSelect": {
+        "enabled": false,
+        "next": ["HP_ClickTeam"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ClickTeam": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_CaptainHub"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_CaptainHub": {
+        "next": ["HP_IsPreSortieConfirm"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_DragCaptain": {
+        "enabled": false,
+        "action": {
+            "type": "Custom",
+            "custom_action": "DragCaptainAction"
+        },
+        "next": ["HP_IsPreSortieConfirm"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_FatigueCheck": {
+        "enabled": false,
+        "action": {
+            "type": "Custom",
+            "custom_action": "FatigueCheckAction",
+            "custom_action_param": {
+                "mode": "check_first",
+                "threshold": 30
+            }
+        },
+        "next": ["HP_IsPreSortieConfirm"],
+        "on_error": ["SF_Hub"]
+    },
+    "HP_IsPreSortieConfirm": {
+        "enabled": false,
+        "next": ["HP_DetectTicket"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_DetectTicket": {
+        "enabled": false,
+        "next": ["HP_HandleNoTicket", "HP_ConfirmEnterMap"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_HandleNoTicket": {
+        "enabled": false,
+        "next": ["HP_ReplenishTicket", "HP_TerminateNoTicket"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsTicketPopup": {
+        "enabled": false,
+        "next": ["HP_HandleTicketPopup"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_HandleTicketPopup": {
+        "next": ["HP_ReplenishTicket", "HP_TerminateNoTicket"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ReplenishTicket": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_ReplenishTicketConfirm"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ReplenishTicketConfirm": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_TerminateNoTicket": {
+        "action": {
+            "type": "Custom",
+            "custom_action": "LogAction",
+            "custom_action_param": {
+                "level": "Warning",
+                "message": "[秘宝之里] 无票终止"
+            }
+        },
+        "next": [],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ConfirmEnterMap": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsMarching": {
+        "enabled": false,
+        "next": ["HP_CheckCaptainDamage", "HP_ClickMarching"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_CheckCaptainDamage": {
+        "enabled": false,
+        "next": ["HP_RetreatOnCaptainDamage"],
+        "on_error": ["HP_ClickMarching"]
+    },
+    "HP_RetreatOnCaptainDamage": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_ConfirmCaptainRetreat"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ConfirmCaptainRetreat": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_ClickMarching": {
+        "action": {
+            "type": "Custom",
+            "custom_action": "LogAction",
+            "custom_action_param": {
+                "level": "Info",
+                "message": "[秘宝之里] 点击行军"
+            }
+        },
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsBattleResult": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsSwordDrop": {
+        "enabled": false,
+        "action": {
+            "type": "Custom",
+            "custom_action": "SwordDropLogAction",
+            "custom_action_param": {
+                "task": "秘宝之里"
+            }
+        },
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_IsSpecialDrop": {
+        "enabled": false,
+        "action": {"type": "DoNothing"},
+        "next": ["HP_RoundComplete"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_RoundComplete": {
+        "action": {
+            "type": "Custom",
+            "custom_action": "LogAction",
+            "custom_action_param": {
+                "level": "Info",
+                "message": "[秘宝之里] 完成一圈"
+            }
+        },
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_WaitRefresh": {
+        "enabled": false,
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_WaitLoop": {
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    },
+    "HP_RestartGame": {
+        "action": {
+            "type": "Custom",
+            "custom_action": "RestartGameAction"
+        },
+        "next": ["HP_DetectWhereAmI"],
+        "on_error": ["HP_DetectWhereAmI"]
+    }
+}

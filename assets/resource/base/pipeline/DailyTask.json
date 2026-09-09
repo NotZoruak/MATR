@@ -361,6 +361,8 @@
       }
     },
     "action": {"type": "Click"},
+    "repeat": 3,
+    "repeat_delay": 500,
     "next": ["DT_IsAnnouncementPopup", "DT_DetectWhereAmI"],
     "on_error": ["DT_DetectWhereAmI"],
     "post_wait_freezes": {
@@ -775,7 +777,7 @@
     }
   },
   "DT_LoginRewardClosePopupHub": {
-    "next": ["DT_LoginRewardClosePopup", "DT_LoginRewardFinished"],
+    "next": ["DT_LoginRewardClosePopup", "DT_LoginRewardFinished", "DT_LoginRewardCatalogFinished"],
     "on_error": ["DT_LoginRewardHub"]
   },
   "DT_LoginRewardClosePopup": {
@@ -800,6 +802,22 @@
       "param": {
         "roi": [1192, 20, 26, 38],
         "expected": "目"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskCompletionMarkAction",
+      "custom_action_param": {"item": "login_reward"}
+    },
+    "next": ["DT_LoginRewardCompletedLog"],
+    "on_error": ["DT_LoginRewardClosePopupHub"]
+  },
+  "DT_LoginRewardCatalogFinished": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [587, 33, 108, 52],
+        "expected": "目录"
       }
     },
     "action": {
@@ -5113,7 +5131,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_PrepareHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnPrepareHub"]
   },
   "DT_RestartGameReturnPresetHub": {
@@ -5121,7 +5139,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_PresetHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnPresetHub"]
   },
   "DT_RestartGameReturnLoginRewardHub": {
@@ -5137,7 +5155,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_LoginRewardClosePopupHub"],
+    "next": ["DT_LoginRewardHub"],
     "on_error": ["DT_RestartGameReturnLoginRewardClosePopupHub"]
   },
   "DT_RestartGameReturnWarmGiftHub": {
@@ -5153,7 +5171,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_WarmGiftFinishClaimHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnWarmGiftFinishClaimHub"]
   },
   "DT_RestartGameReturnMixHub": {
@@ -5177,7 +5195,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_ForgeClaimCompletedHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnForgeClaimCompletedHub"]
   },
   "DT_RestartGameReturnForgeFindFreeSlot1Hub": {
@@ -5185,7 +5203,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_ForgeFindFreeSlot1Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnForgeFindFreeSlot1Hub"]
   },
   "DT_RestartGameReturnForgeFindFreeSlot2Hub": {
@@ -5193,7 +5211,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_ForgeFindFreeSlot2Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnForgeFindFreeSlot2Hub"]
   },
   "DT_RestartGameReturnForgeFindFreeSlot3Hub": {
@@ -5201,7 +5219,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_ForgeFindFreeSlot3Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnForgeFindFreeSlot3Hub"]
   },
   "DT_RestartGameReturnForgeDisassembleHub": {
@@ -5209,7 +5227,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_ForgeDisassembleHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnForgeDisassembleHub"]
   },
   "DT_RestartGameReturnDrillHub": {
@@ -5225,7 +5243,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillOpponent1Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillOpponent1Hub"]
   },
   "DT_RestartGameReturnDrillBattle1Hub": {
@@ -5233,7 +5251,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillBattle1Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillBattle1Hub"]
   },
   "DT_RestartGameReturnDrillOpponent2Hub": {
@@ -5241,7 +5259,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillOpponent2Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillOpponent2Hub"]
   },
   "DT_RestartGameReturnDrillBattle2Hub": {
@@ -5249,7 +5267,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillBattle2Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillBattle2Hub"]
   },
   "DT_RestartGameReturnDrillOpponent3Hub": {
@@ -5257,7 +5275,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillOpponent3Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillOpponent3Hub"]
   },
   "DT_RestartGameReturnDrillBattle3Hub": {
@@ -5265,7 +5283,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillBattle3Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillBattle3Hub"]
   },
   "DT_RestartGameReturnDrillOpponent4Hub": {
@@ -5273,7 +5291,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillOpponent4Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillOpponent4Hub"]
   },
   "DT_RestartGameReturnDrillBattle4Hub": {
@@ -5281,7 +5299,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillBattle4Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillBattle4Hub"]
   },
   "DT_RestartGameReturnDrillOpponent5Hub": {
@@ -5289,7 +5307,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillOpponent5Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillOpponent5Hub"]
   },
   "DT_RestartGameReturnDrillBattle5Hub": {
@@ -5297,7 +5315,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillBattle5Hub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillBattle5Hub"]
   },
   "DT_RestartGameReturnKebiHub": {
@@ -5313,7 +5331,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_KebiPrepareFinishHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnKebiPrepareFinishHub"]
   },
   "DT_RestartGameReturnRewardHub": {
@@ -5329,7 +5347,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardDailyClaimHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardDailyClaimHub"]
   },
   "DT_RestartGameReturnRewardAfterDailyHub": {
@@ -5337,7 +5355,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardAfterDailyHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardAfterDailyHub"]
   },
   "DT_RestartGameReturnRewardMonthlyClaimHub": {
@@ -5345,7 +5363,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardMonthlyClaimHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardMonthlyClaimHub"]
   },
   "DT_RestartGameReturnRewardAfterMonthlyHub": {
@@ -5353,7 +5371,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardAfterMonthlyHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardAfterMonthlyHub"]
   },
   "DT_RestartGameReturnRewardMainlineClaimHub": {
@@ -5361,7 +5379,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardMainlineClaimHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardMainlineClaimHub"]
   },
   "DT_RestartGameReturnRewardAfterMainlineHub": {
@@ -5369,7 +5387,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardAfterMainlineHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardAfterMainlineHub"]
   },
   "DT_RestartGameReturnRewardActivityClaimHub": {
@@ -5377,7 +5395,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardActivityClaimHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardActivityClaimHub"]
   },
   "DT_RestartGameReturnRewardClosePopupHub": {
@@ -5385,7 +5403,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_RewardClosePopupHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnRewardClosePopupHub"]
   },
   "DT_RestartGameReturnLoginRewardReturnHomeHub": {
@@ -5393,7 +5411,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_LoginRewardReturnHomeHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnLoginRewardReturnHomeHub"]
   },
   "DT_RestartGameReturnWarmGiftReturnHomeHub": {
@@ -5401,7 +5419,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_WarmGiftReturnHomeHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnWarmGiftReturnHomeHub"]
   },
   "DT_RestartGameReturnMixReturnHomeHub": {
@@ -5409,7 +5427,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_MixReturnHomeHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnMixReturnHomeHub"]
   },
   "DT_RestartGameReturnForgeReturnHomeHub": {
@@ -5417,7 +5435,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_ForgeReturnHomeHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnForgeReturnHomeHub"]
   },
   "DT_RestartGameReturnDrillReturnHomeHub": {
@@ -5425,7 +5443,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DrillReturnHomeHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnDrillReturnHomeHub"]
   },
   "DT_RestartGameReturnKebiReturnHomeHub": {
@@ -5433,7 +5451,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_KebiReturnHomeHub"],
+    "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnKebiReturnHomeHub"]
   },
   "DT_RestartGameReturnMailResourceHub": {
