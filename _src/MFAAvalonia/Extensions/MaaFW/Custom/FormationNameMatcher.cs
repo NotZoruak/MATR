@@ -36,7 +36,18 @@ public static class FormationNameMatcher
         ['称'] = '祢',
     };
 
-    /// <summary>刀剑与刀装匹配：原文包含目标即命中；否则归一化字形后包含或全等才算命中，不做丢字容错。</summary>
+    /// <summary>
+    /// OCR 容易整字漏识的生僻字。刀帐中这些字只出现在固定的刀名里，
+    /// 去掉后不会与其他刀名冲突，因此允许目标缺字后再做包含判断。
+    /// 当前仅「薙」：静形薙刀、巴形薙刀会被识别为「静形刀」「巴形刀」。
+    /// </summary>
+    private static readonly char[] FrequentlyDroppedGlyphs = ['薙'];
+
+    /// <summary>
+    /// 刀剑与刀装匹配：原文包含目标即命中；否则归一化字形后包含或全等才算命中。
+    /// 仅对 FrequentlyDroppedGlyphs 中的生僻字允许整字缺失，其余情况不做丢字容错，
+    /// 避免「太郎太刀/次郎太刀」这类近似名被误选。
+    /// </summary>
     public static bool IsExactMatch(string? ocrText, string? target)
     {
         if (string.IsNullOrEmpty(ocrText) || string.IsNullOrEmpty(target))
@@ -47,9 +58,23 @@ public static class FormationNameMatcher
             return false;
         var normalizedOcr = Normalize(ocrText);
         var normalizedTarget = Normalize(target);
-        return normalizedOcr.Length > 0
+        if (normalizedOcr.Length > 0
             && (normalizedOcr.Contains(normalizedTarget, StringComparison.Ordinal)
-                || normalizedOcr == normalizedTarget);
+                || normalizedOcr == normalizedTarget))
+            return true;
+
+        var strippedTarget = StripDroppableGlyphs(normalizedTarget);
+        return strippedTarget.Length >= 2
+            && strippedTarget != normalizedTarget
+            && normalizedOcr.Contains(strippedTarget, StringComparison.Ordinal);
+    }
+
+    /// <summary>去除目标中允许漏识的生僻字，用于漏字容错比较</summary>
+    private static string StripDroppableGlyphs(string text)
+    {
+        if (text.Length == 0 || !text.Any(c => FrequentlyDroppedGlyphs.Contains(c)))
+            return text;
+        return new string(text.Where(c => !FrequentlyDroppedGlyphs.Contains(c)).ToArray());
     }
 
     /// <summary>马匹匹配：保留原有容错——原文包含目标；或目标 ≥ 2 字时，去除 OCR 文本中的数字/字母后与目标编辑距离 ≤ 1。</summary>
