@@ -30,8 +30,11 @@ public static class FormationNameMatcher
         ['歩'] = '步', ['騎'] = '骑', ['鋭'] = '锐', ['鐵'] = '铁', ['鉄'] = '铁',
         ['曽'] = '曾', ['倶'] = '俱', ['鳴'] = '鸣', ['壓'] = '压', ['鐘'] = '钟',
         ['雲'] = '云', ['黒'] = '黑', ['豊'] = '丰',
+        ['銃'] = '铳', ['槍'] = '枪',
         // 常见 OCR 形近误识字（多一笔/少一笔，如「国広」被识别为「国厂」）
         ['厂'] = '广',
+        // 刀装「铳兵」的「铳」常被识别为形近的「统」；刀帐目录中不含「统」字，映射不会误伤刀名
+        ['统'] = '铳',
         // 「祢祢切丸」的「祢」为生僻字，模型常识别为「称」；刀帐中无含「称」的刀名，映射不会误伤
         ['称'] = '祢',
     };
@@ -54,14 +57,16 @@ public static class FormationNameMatcher
             return false;
         if (ocrText.Contains(target, StringComparison.Ordinal))
             return true;
-        if (target.Length < 2)
-            return false;
         var normalizedOcr = Normalize(ocrText);
         var normalizedTarget = Normalize(target);
         if (normalizedOcr.Length > 0
             && (normalizedOcr.Contains(normalizedTarget, StringComparison.Ordinal)
                 || normalizedOcr == normalizedTarget))
             return true;
+        // 单字目标（铳、弓、枪、盾等刀装）只做字形归一，不放行丢字容错，
+        // 长度判断必须放在归一化之后，否则单字目标永远拿不到形近字容错
+        if (target.Length < 2)
+            return false;
 
         var strippedTarget = StripDroppableGlyphs(normalizedTarget);
         return strippedTarget.Length >= 2

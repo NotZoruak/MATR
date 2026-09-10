@@ -33,6 +33,8 @@
 
 预设选择页支持新增、编辑、复制、粘贴、删除和切换当前预设。运行前由 `MaaProcessor` 将所选预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖；每日任务的“预设部队”也复用同一套预设及装备编辑页。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
 
+刀装与刀剑名称匹配由 `FormationNameMatcher` 统一处理。刀装中存在铳、弓、枪、盾这类单字目标，必须先在归一化后的文本上做包含判断，再做单字长度判断，否则单字目标拿不到形近字容错。归一字形需保留銃/铳、统/铳、槍/枪，避免 OCR 把“铳兵”识别成“统兵”后扫到列表底部仍判定未找到。
+
 ### `task-captain.skip-positions`
 
 任务运行前，`MaaProcessor.CreateNodeAndParam` 必须读取当前任务的换队长下级选项，通过 `CaptainSettingsHelper` 和 `CaptainSettingsDecision` 将 `skip_positions` 注入对应拖拽 action。合战场、地下城、联队战和江户城分别使用各自的配置；未勾选位置或关闭换队长时显式传入空数组，战术强化同样传入空数组。

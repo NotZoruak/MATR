@@ -387,6 +387,14 @@ AssertFalse(FormationNameMatcher.IsExactMatch("重歩兵", "轻步"),
     "刀装不得因一字之差命中异种刀装");
 AssertFalse(FormationNameMatcher.IsExactMatch("高黑", "高楯黑"),
     "刀装不启用丢字容错");
+AssertTrue(FormationNameMatcher.IsExactMatch("统兵·特上", "铳"),
+    "OCR 将铳识别为统时仍应命中铳兵刀装");
+AssertTrue(FormationNameMatcher.IsExactMatch("銃兵·特上", "铳"),
+    "日文字形銃应归一到铳并命中");
+AssertTrue(FormationNameMatcher.IsExactMatch("槍兵·特上", "枪"),
+    "日文字形槍应归一到枪并命中");
+AssertFalse(FormationNameMatcher.IsExactMatch("弓兵·特上", "铳"),
+    "单字刀装归一化后仍不得命中异种刀装");
 AssertTrue(FormationNameMatcher.IsLegacyFuzzyMatch("高黑", "高楯黑"),
     "马匹保留 OCR 丢字容错");
 AssertTrue(FormationNameMatcher.IsLegacyFuzzyMatch("次郎太刀", "太郎太刀"),
