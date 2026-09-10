@@ -411,6 +411,29 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
     private static bool IsDailyPresetOption(string? optionName)
         => optionName == "D_启用预设部队";
 
+    /// <summary>
+    /// 在子选项下方追加其选项级说明。仅在子选项自身声明 description 时渲染，
+    /// 与齿轮子页面的说明保持一致的多行灰色样式。
+    /// </summary>
+    private void AppendSubOptionDescription(Panel container, string subOptionName)
+    {
+        if (MaaProcessor.Interface?.Option?.TryGetValue(subOptionName, out var definition) != true)
+            return;
+
+        var description = GetTooltipText(definition.Description, definition.Document);
+        if (string.IsNullOrWhiteSpace(description))
+            return;
+
+        container.Children.Add(new TextBlock
+        {
+            Text = description,
+            FontSize = 12,
+            Foreground = Brushes.Gray,
+            Margin = new Thickness(0, 2, 0, 0),
+            TextWrapping = TextWrapping.Wrap,
+        });
+    }
+
     /// <summary>添加子选项设置入口。</summary>
     private void AppendGearIcon(
         StackPanel labelPanel,
@@ -1346,7 +1369,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                     existing = CreateDefaultSelectOption(subOptionName);
                     option.SubOptions.Add(existing);
                 }
-                AddSubOption(subOptionsContainer, existing, source);
+
+                var itemBox = new StackPanel { Margin = new Thickness(0, 0, 0, 4) };
+                AddSubOption(itemBox, existing, source);
+                AppendSubOptionDescription(itemBox, subOptionName);
+                subOptionsContainer.Children.Add(itemBox);
             }
         }
 
@@ -1429,7 +1456,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                     existing = CreateDefaultSelectOption(subOptionName);
                     option.SubOptions.Add(existing);
                 }
-                AddSubOption(subOptionsContainer, existing, source);
+
+                var itemBox = new StackPanel { Margin = new Thickness(0, 0, 0, 4) };
+                AddSubOption(itemBox, existing, source);
+                AppendSubOptionDescription(itemBox, subOptionName);
+                subOptionsContainer.Children.Add(itemBox);
             }
         }
 
