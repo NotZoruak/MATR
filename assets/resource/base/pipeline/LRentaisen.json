@@ -686,7 +686,7 @@
     "on_error": ["LR_DetectWhereAmI"]
   },
   "LR_ReplenishOrTerminate": {
-    "next": ["LR_ReplenishTicket", "LR_TerminateNoTicket"],
+    "next": ["LR_CloseTicketPopup", "LR_TerminateNoTicket"],
     "on_error": ["LR_DetectWhereAmI"]
   },
   "LR_ReplenishTicket": {
@@ -804,7 +804,7 @@
     "on_error": ["LR_DetectWhereAmI"]
   },
   "LR_HandleTicketPopup": {
-    "next": ["LR_ReplenishTicket", "LR_TerminateNoTicket"],
+    "next": ["LR_CloseTicketPopup", "LR_TerminateNoTicket"],
     "on_error": ["LR_DetectWhereAmI"]
   },
   "LR_CheckMoreSpecialDrops": {
@@ -818,8 +818,24 @@
     "on_error": ["LR_DetectWhereAmI"]
   },
   "LR_IsSwordDropAfter": {
-    "recognition": {"type": "ColorMatch"},
-    "action": {"type": "Click"},
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "upper": [96, 56, 10],
+        "lower": [88, 48, 2]
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "SwordDropLogAction",
+      "custom_action_param": {
+        "task": "联队战",
+        "roi": [52, 509, 282, 34],
+        "click": [947, 533, 67, 75]
+      }
+    },
+    "pre_delay": 100,
     "next": ["LR_WaitForEventPage"],
     "on_error": ["LR_DetectWhereAmI"]
   },

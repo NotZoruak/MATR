@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.13.1-beta.1",
+  "version": "v0.14.0-beta.1",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.13.1-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.0-beta.1 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -136,11 +136,28 @@
         "LR_选择难度",
         "LR_换队长",
         "LR_部队交替",
-        "LR_不购买门票",
+        "LR_购买门票",
         "LR_同步远征"
       ],
       "label": "海陆联队",
       "description": "联队战/海联/陆联 活动自动化出阵。\n\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **部队交替**：在行动选择界面自动切换部队，勾选后点击齿轮设置队伍序列。\n* **选择部队**：选择出阵部队（第1轮使用）。\n* **同步后勤**：回本丸后自动检查队伍状态并派遣远征。请确保使用的队伍在远征任务中设置为休息。\n\n> ⚠️ **注意**：游戏本身会在通行令牌不足时自动使用多倍道具。"
+    },
+    {
+      "name": "花牌",
+      "entry": "Hanapai",
+      "default_check": false,
+      "repeatable": true,
+      "repeat_count": 1,
+      "option": [
+        "HP_选择部队",
+        "HP_选择难度",
+        "HP_疲劳处理",
+        "HP_换队长",
+        "HP_购买门票",
+        "HP_同步远征"
+      ],
+      "label": "秘宝之里",
+      "description": "秘宝之里（花牌）活动自动化出阵。\n\n* **选择部队**：设定出阵部队。\n* **选择难度**：设定活动难度。\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」。\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **购买门票**：勾选后通行令牌不足时自动购买门票；不勾选时停止任务。\n* **同步后勤**：回本丸后自动检查队伍状态并派遣远征。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "江户潜入",
@@ -152,7 +169,7 @@
         "EC_行动策略",
         "EC_选择部队",
         "EC_换队长",
-        "EC_不购买门票",
+        "EC_购买门票",
         "EC_同步后勤"
       ],
       "label": "江户潜入",
@@ -164,7 +181,7 @@
       "default_check": false,
       "repeatable": true,
       "repeat_count": 1,
-      "option": ["TT_选择部队", "TT_选择难度", "TT_换队长", "TT_不购买门票", "TT_同步远征"],
+      "option": ["TT_选择部队", "TT_选择难度", "TT_换队长", "TT_购买门票", "TT_同步远征"],
       "label": "战术强化",
       "description": "战术强化训练/巧克力/南瓜 活动自动化出阵。\n\n* **选择部队**：当选择的部队不符合要求时，会自动依次尝试1-5队。\n* **更换队长**：仅支持队内拖拽方式。\n* **选择难度**：初级/中级/上级。\n* **同步后勤**：回本丸后自动检查队伍状态并派遣远征。请确保使用的队伍在远征任务中设置为休息。"
     },
@@ -2357,17 +2374,112 @@
       ],
       "default_case": []
     },
-    "LR_不购买门票": {
-      "name": "LR_不购买门票",
-      "label": "不买门票",
+    "LR_购买门票": {
+      "name": "LR_购买门票",
+      "label": "购买门票",
       "type": "checkbox",
       "cases": [
         {
           "name": "",
           "pipeline_override": {
             "LR_HandleTicketPopup": {
-              "next": ["LR_CloseTicketPopup"]
+              "next": ["LR_ReplenishTicket", "LR_TerminateNoTicket"]
             }
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HP_选择难度": {
+      "name": "HP_选择难度",
+      "label": "选择难度",
+      "default_case": "超难",
+      "cases": [
+        {"name": "易", "pipeline_override": {"HP_ClickDifficulty": {"target": [191, 308, 62, 3]}}},
+        {"name": "普", "pipeline_override": {"HP_ClickDifficulty": {"target": [495, 307, 42, 3]}}},
+        {"name": "难", "pipeline_override": {"HP_ClickDifficulty": {"target": [804, 307, 53, 3]}}},
+        {"name": "超难", "pipeline_override": {"HP_ClickDifficulty": {"target": [984, 307, 48, 3]}}}
+      ]
+    },
+    "HP_选择部队": {
+      "name": "HP_选择部队",
+      "label": "选择部队",
+      "default_case": "部队一",
+      "cases": [
+        {"name": "部队一", "pipeline_override": {"HP_ClickTeam": {"target": [154, 93, 1, 1], "post_wait_freezes": {"target": [108, 76, 106, 6]}}}},
+        {"name": "部队二", "pipeline_override": {"HP_ClickTeam": {"target": [282, 94, 1, 1], "post_wait_freezes": {"target": [229, 76, 105, 6]}}}},
+        {"name": "部队三", "pipeline_override": {"HP_ClickTeam": {"target": [398, 91, 1, 1], "post_wait_freezes": {"target": [351, 76, 106, 6]}}}},
+        {"name": "部队四", "pipeline_override": {"HP_ClickTeam": {"target": [519, 89, 1, 1], "post_wait_freezes": {"target": [471, 76, 106, 6]}}}},
+        {"name": "部队五", "pipeline_override": {"HP_ClickTeam": {"target": [635, 91, 1, 1], "post_wait_freezes": {"target": [594, 75, 106, 7]}}}}
+      ]
+    },
+    "HP_疲劳处理": {
+      "name": "HP_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {"name": "无", "DisplayName": "无"},
+        {"name": "刷花", "DisplayName": "刷花", "pipeline_override": {"HP_DragCaptain": {"next": ["HP_FatigueCheck"]}, "HP_FatigueCheck": {"enabled": true}, "SF_Hub": {"enabled": true}, "SF_UseRecord_Step1": {"enabled": true}, "SF_EqRefill_Step1": {"enabled": true}}},
+        {"name": "停止", "DisplayName": "停止", "pipeline_override": {"HP_DragCaptain": {"next": ["HP_FatigueCheck"]}, "HP_FatigueCheck": {"enabled": true, "on_error": []}, "SF_Hub": {"enabled": false}}}
+      ]
+    },
+    "HP_换队长": {
+      "name": "HP_换队长",
+      "label": "更换队长",
+      "type": "checkbox",
+      "cases": [
+        {"name": "", "option": ["HP_跳过位置"], "pipeline_override": {"HP_CaptainHub": {"next": ["HP_DragCaptain", "HP_IsPreSortieConfirm"]}, "HP_DragCaptain": {"enabled": true}}}
+      ],
+      "default_case": []
+    },
+    "HP_购买门票": {
+      "name": "HP_购买门票",
+      "label": "购买门票",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HP_IsNoTicketPopup": {
+              "action": {"type": "Click", "param": {"target": [452, 452, 88, 34]}},
+              "post_wait_freezes": {"time": 100, "target": [452, 452, 88, 34]},
+              "next": ["HP_IsNoTicket"]
+            },
+            "HP_CompleteCurrentTaskAfterNoTicket": {"enabled": false}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HP_同步远征": {
+      "name": "HP_同步远征",
+      "label": "同步后勤",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HP_IsHome": {"next": ["Expedition"]},
+            "E_SelectMap1": {"action": {"type": "Custom", "custom_action": "ExpeditionMapSelectAction", "custom_action_param": {"team": 1}}, "next": ["E_ConfirmDispatch1"]},
+            "E_ClickSmallMap1": {"enabled": false},
+            "E_SelectMap2": {"action": {"type": "Custom", "custom_action": "ExpeditionMapSelectAction", "custom_action_param": {"team": 2}}, "next": ["E_ConfirmDispatch2"]},
+            "E_ClickSmallMap2": {"enabled": false},
+            "E_SelectMap3": {"action": {"type": "Custom", "custom_action": "ExpeditionMapSelectAction", "custom_action_param": {"team": 3}}, "next": ["E_ConfirmDispatch3"]},
+            "E_ClickSmallMap3": {"enabled": false},
+            "E_SelectMap4": {"action": {"type": "Custom", "custom_action": "ExpeditionMapSelectAction", "custom_action_param": {"team": 4}}, "next": ["E_ConfirmDispatch4"]},
+            "E_ClickSmallMap4": {"enabled": false},
+            "E_SelectMap5": {"action": {"type": "Custom", "custom_action": "ExpeditionMapSelectAction", "custom_action_param": {"team": 5}}, "next": ["E_ConfirmDispatch5"]},
+            "E_ClickSmallMap5": {"enabled": false},
+            "E_VerifyScreen1": {"on_error": ["E_CheckTeamStatus"]},
+            "E_VerifyScreen2": {"on_error": ["E_CheckTeamStatus"]},
+            "E_VerifyScreen3": {"on_error": ["E_CheckTeamStatus"]},
+            "E_VerifyScreen4": {"on_error": ["E_CheckTeamStatus"]},
+            "E_VerifyScreen5": {"on_error": ["E_CheckTeamStatus"]},
+            "E_ClickBackToHome": {"action": {"type": "Click", "param": {"target": [1037, 169, 110, 44]}}, "next": ["HP_WaitRefresh"], "on_error": ["HP_DetectWhereAmI"]},
+            "E_AllTeamsBusy": {"next": ["E_TimerStart"]},
+            "E_TimerStart": {"action": {"type": "Custom", "custom_action": "ExpeditionTimerAction", "custom_action_param": {"mode": "start"}}, "next": ["HP_NavigateToActivity"]},
+            "E_CheckTimerExpired": {"next": ["HP_EnableAutoMarch"], "on_error": ["E_GoHome"]},
+            "HP_WaitRefresh": {"enabled": true}
           }
         }
       ],
@@ -2502,16 +2614,16 @@
       ],
       "default_case": []
     },
-    "EC_不购买门票": {
-      "name": "EC_不购买门票",
-      "label": "不买门票",
+    "EC_购买门票": {
+      "name": "EC_购买门票",
+      "label": "购买门票",
       "type": "checkbox",
       "cases": [
         {
           "name": "",
           "pipeline_override": {
             "EC_HandleTicketPopup": {
-              "next": ["EC_CloseTicketPopup"]
+              "next": ["EC_ReplenishTicket", "EC_TerminateNoTicket"]
             }
           }
         }
@@ -2719,21 +2831,21 @@
       ],
       "default_cases": []
     },
-    "TT_不购买门票": {
-      "name": "TT_不购买门票",
-      "label": "不买门票",
+    "TT_购买门票": {
+      "name": "TT_购买门票",
+      "label": "购买门票",
       "type": "checkbox",
       "cases": [
         {
           "name": "",
           "pipeline_override": {
             "TT_IsSilhouettePopup": {
-              "next": ["TT_ConfirmSilhouette", "TT_TerminateNoTicket"]
+              "next": ["TT_ConfirmSilhouette", "TT_TicketGate"]
             }
           }
         }
       ],
-      "default_cases": []
+      "default_case": []
     },
     "S_重伤处理": {
       "name": "S_重伤处理",
@@ -3018,7 +3130,7 @@
             "S_IsIsekaiTicketConfirm": {"enabled": true},
             "S_IsIsekaiNoTicket": {"enabled": true}
           },
-          "option": ["异去_重复次数", "异去_不购买门票"]
+          "option": ["异去_重复次数", "异去_购买门票"]
         }
       ]
     },
@@ -3093,23 +3205,26 @@
         }
       ]
     },
-    "异去_不购买门票": {
-      "name": "异去_不购买门票",
-      "label": "不买门票",
+    "异去_购买门票": {
+      "name": "异去_购买门票",
+      "label": "购买门票",
       "type": "checkbox",
       "cases": [
         {
           "name": "",
           "pipeline_override": {
             "S_IsIsekaiNoTicket": {
-              "enabled": true,
               "action": {
                 "type": "Click",
                 "param": {
-                  "target": [1028, 38, 25, 26]
+                  "target": [582, 593, 113, 40]
                 }
               },
-              "next": ["S_CompleteCurrentTaskAfterIsekaiNoTicket"]
+              "post_wait_freezes": {
+                "time": 100,
+                "target": [582, 593, 113, 40]
+              },
+              "next": ["S_IsIsekaiConfirmPurchase", "S_IsIsekaiNoTicket"]
             }
           }
         }
@@ -5756,6 +5871,7 @@
           "pipeline_override": {
             "S_FallbackWait": {"enabled": false},
             "LR_FallbackWait": {"enabled": false},
+            "HP_FallbackWait": {"enabled": false},
             "EC_FallbackWait": {"enabled": false},
             "FB_FallbackWait": {"enabled": false},
             "D_FallbackWait": {"enabled": false},
@@ -5858,6 +5974,9 @@
               "next": ["E_CheckTimerExpired"]
             },
             "U_CheckRoundComplete": {
+              "next": ["E_CheckTimerExpired"]
+            },
+            "HP_IsTeamSelect": {
               "next": ["E_CheckTimerExpired"]
             },
             "E_AllTeamsBusy": {
@@ -5999,6 +6118,21 @@
       "label": "跳过位置",
       "type": "checkbox",
       "description": "换队长时跳过指定位置。若在任务中启用了「疲劳撤退」，不建议在此处勾选。",
+      "cases": [
+        {"name": "位置一"},
+        {"name": "位置二"},
+        {"name": "位置三"},
+        {"name": "位置四"},
+        {"name": "位置五"},
+        {"name": "位置六"}
+      ],
+      "default_case": []
+    },
+    "HP_跳过位置": {
+      "name": "HP_跳过位置",
+      "label": "跳过位置",
+      "type": "checkbox",
+      "description": "换队长时跳过指定位置。",
       "cases": [
         {"name": "位置一"},
         {"name": "位置二"},

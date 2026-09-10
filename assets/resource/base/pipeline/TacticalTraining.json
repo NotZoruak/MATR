@@ -520,7 +520,7 @@
         "expected": "更新"
       }
     },
-    "next": ["TT_ConfirmSilhouette", "TT_TicketGate"],
+    "next": ["TT_ConfirmSilhouette", "TT_TerminateNoTicket"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmSilhouette": {

@@ -664,7 +664,7 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ReplenishOrTerminate": {
-    "next": ["EC_ReplenishTicket", "EC_TerminateNoTicket"],
+    "next": ["EC_CloseTicketPopup", "EC_TerminateNoTicket"],
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ReplenishTicket": {
@@ -867,7 +867,7 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_HandleTicketPopup": {
-    "next": ["EC_ReplenishTicket", "EC_TerminateNoTicket"],
+    "next": ["EC_CloseTicketPopup", "EC_TerminateNoTicket"],
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_CheckMoreSpecialDrops": {

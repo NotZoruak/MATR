@@ -335,14 +335,14 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [582, 593, 113, 40]
+        "target": [1028, 38, 25, 26]
       }
     },
     "post_wait_freezes": {
       "time": 100,
-      "target": [582, 593, 113, 40]
+      "target": [1028, 38, 25, 26]
     },
-    "next": ["S_IsIsekaiConfirmPurchase","S_IsIsekaiNoTicket"],
+    "next": ["S_CompleteCurrentTaskAfterIsekaiNoTicket"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_IsIsekaiConfirmPurchase": {
