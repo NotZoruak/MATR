@@ -580,7 +580,7 @@
         "target": [1021, 135, 32, 65]
       }
     },
-    "next": ["FC_IsSwordSelect1"],
+    "next": ["FC_IsSwordSelect1", "FC_IsTeamEmpty"],
     "on_error": ["FC_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
