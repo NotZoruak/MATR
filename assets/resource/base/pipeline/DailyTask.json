@@ -1530,7 +1530,7 @@
         "expected": "锻刀资源投入"
       }
     },
-    "next": ["DT_ForgeAll50Check1_1"],
+    "next": ["DT_ForgeAll50Check1_1", "DT_ForgeAll50Reset1_1"],
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check1_1": {
@@ -1541,8 +1541,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check1_2"],
-    "on_error": ["DT_ForgeAll50Reset1_1"]
+    "next": ["DT_ForgeAll50Check1_2", "DT_ForgeAll50Reset1_2"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check1_2": {
     "recognition": {
@@ -1552,8 +1552,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check1_3"],
-    "on_error": ["DT_ForgeAll50Reset1_2"]
+    "next": ["DT_ForgeAll50Check1_3", "DT_ForgeAll50Reset1_3"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check1_3": {
     "recognition": {
@@ -1563,8 +1563,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check1_4"],
-    "on_error": ["DT_ForgeAll50Reset1_3"]
+    "next": ["DT_ForgeAll50Check1_4", "DT_ForgeAll50Reset1_4"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check1_4": {
     "recognition": {
@@ -1575,7 +1575,7 @@
       }
     },
     "next": ["DT_ForgeClickStart1"],
-    "on_error": ["DT_ForgeAll50Reset1_4"]
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Reset1_1": {
     "action": {
@@ -1654,12 +1654,21 @@
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeClickStartClose1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1133, 601, 95, 59],
+        "expected": "锻刀"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
-        "target": [243, 409, 48, 5]
+        "target": [454,457,58,28]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 500,
     "next": ["DT_ForgeFindFreeSlot2Hub"],
     "on_error": ["DT_ForgeHub"]
   },
@@ -1723,7 +1732,7 @@
         "expected": "锻刀资源投入"
       }
     },
-    "next": ["DT_ForgeAll50Check2_1"],
+    "next": ["DT_ForgeAll50Check2_1", "DT_ForgeAll50Reset2_1"],
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check2_1": {
@@ -1734,8 +1743,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check2_2"],
-    "on_error": ["DT_ForgeAll50Reset2_1"]
+    "next": ["DT_ForgeAll50Check2_2", "DT_ForgeAll50Reset2_2"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check2_2": {
     "recognition": {
@@ -1745,8 +1754,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check2_3"],
-    "on_error": ["DT_ForgeAll50Reset2_2"]
+    "next": ["DT_ForgeAll50Check2_3", "DT_ForgeAll50Reset2_3"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check2_3": {
     "recognition": {
@@ -1756,8 +1765,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check2_4"],
-    "on_error": ["DT_ForgeAll50Reset2_3"]
+    "next": ["DT_ForgeAll50Check2_4", "DT_ForgeAll50Reset2_4"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check2_4": {
     "recognition": {
@@ -1768,7 +1777,7 @@
       }
     },
     "next": ["DT_ForgeClickStart2"],
-    "on_error": ["DT_ForgeAll50Reset2_4"]
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Reset2_1": {
     "action": {
@@ -1847,12 +1856,21 @@
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeClickStartClose2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1133, 601, 95, 59],
+        "expected": "锻刀"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
-        "target": [243, 409, 48, 5]
+        "target": [454,457,58,28]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 500,
     "next": ["DT_ForgeFindFreeSlot3Hub"],
     "on_error": ["DT_ForgeHub"]
   },
@@ -1916,7 +1934,7 @@
         "expected": "锻刀资源投入"
       }
     },
-    "next": ["DT_ForgeAll50Check3_1"],
+    "next": ["DT_ForgeAll50Check3_1", "DT_ForgeAll50Reset3_1"],
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check3_1": {
@@ -1927,8 +1945,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check3_2"],
-    "on_error": ["DT_ForgeAll50Reset3_1"]
+    "next": ["DT_ForgeAll50Check3_2", "DT_ForgeAll50Reset3_2"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check3_2": {
     "recognition": {
@@ -1938,8 +1956,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check3_3"],
-    "on_error": ["DT_ForgeAll50Reset3_2"]
+    "next": ["DT_ForgeAll50Check3_3", "DT_ForgeAll50Reset3_3"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check3_3": {
     "recognition": {
@@ -1949,8 +1967,8 @@
         "template": "Common/all50锻刀公式.png"
       }
     },
-    "next": ["DT_ForgeAll50Check3_4"],
-    "on_error": ["DT_ForgeAll50Reset3_3"]
+    "next": ["DT_ForgeAll50Check3_4", "DT_ForgeAll50Reset3_4"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Check3_4": {
     "recognition": {
@@ -1961,7 +1979,7 @@
       }
     },
     "next": ["DT_ForgeClickStart3"],
-    "on_error": ["DT_ForgeAll50Reset3_4"]
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeAll50Reset3_1": {
     "action": {
@@ -2040,12 +2058,21 @@
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeClickStartClose3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1133, 601, 95, 59],
+        "expected": "锻刀"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
-        "target": [243, 409, 48, 5]
+        "target": [454,457,58,28]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 500,
     "next": ["DT_ForgeCompletedThreeTimes"],
     "on_error": ["DT_ForgeHub"]
   },
