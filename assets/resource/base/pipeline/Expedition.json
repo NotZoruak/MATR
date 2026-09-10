@@ -95,7 +95,11 @@
       }
     },
     "action": {"type": "Click"},
-    "pre_delay": 100,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [374, 42, 39, 108]
+    },
+    "timeout": 5000,
     "next": ["E_VerifyScreen1"],
     "on_error": ["Expedition"]
   },
