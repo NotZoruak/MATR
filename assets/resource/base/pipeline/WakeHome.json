@@ -85,6 +85,8 @@
         "action": {
             "type": "Click"
         },
+        "repeat": 3,
+        "repeat_delay": 300,
         "next": [],
         "on_error": []
     },
