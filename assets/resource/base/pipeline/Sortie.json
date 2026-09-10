@@ -1504,7 +1504,12 @@
         "click": [490, 469, 1, 1]
       }
     },
-    "next": ["S_DetectWhereAmI"]
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [480, 459, 20, 20]
+    },
+    "next": ["S_CheckHomeBrightness", "S_ConfirmRetreat"],
+    "on_error": ["S_DetectWhereAmI"]
   },
   "S_IsPreDamage": {
     "enabled": false,
@@ -2039,6 +2044,7 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "[疲劳检测] 检测到刀剑疲劳，撤退"}
     },
+    "post_delay": 500,
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
   },
   "S_GuiEqDamageLog": {
@@ -2047,6 +2053,7 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "[刀装检测] 检测到刀装破坏，撤退"}
     },
+    "post_delay": 500,
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
   },
   "S_GuiEqNearDamageLog": {
@@ -2055,6 +2062,7 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "[刀装检测] 检测到刀装近破坏，撤退"}
     },
+    "post_delay": 500,
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
   },
   "S_NavigateToRepair": {
@@ -3255,14 +3263,6 @@
   },
   "SF_Hub": {
     "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[合战场] 刷花"
-      }
-    },
     "next": ["SF_ClickMenu"],
     "on_error": ["SF_DetectWhereAmI"]
   },
@@ -3562,8 +3562,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["SF_ClickSortieInMenu","SF_IsMenuDirectory"],
-    "on_error": ["SF_DetectWhereAmI"]
+    "next": ["SF_ClickSortieInMenu","SF_DetectWhereAmI"]
   },
   "SF_ClickSortieInMenu": {
     "recognition": {
@@ -3732,7 +3731,7 @@
         "reversed": true
       }
     },
-    "next": ["SF_ClickSortieNow"],
+    "next": ["SF_ClickSortieNow", "SF_DetectWhereAmI"],
     "on_error": ["SF_UseRecord_Step1"]
   },
   "SF_ClickSortieNow": {
@@ -3744,13 +3743,16 @@
       }
     },
     "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[合战场] 刷花",
+        "click": [1156, 584, 96, 47]
       }
     },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_Hub"]
+    "post_wait_freezes": {"time": 200, "target": [1156, 584, 96, 47]},
+    "next": ["SF_DetectWhereAmI"]
   },
   "SF_IsMarching": {
     "recognition": {
@@ -3969,7 +3971,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["SF_UseRecord_Step2_Rec1", "SF_UseRecord_Step2_Rec2", "SF_UseRecord_Step2_Rec3", "SF_UseRecord_Step2_Rec4", "SF_UseRecord_Step2_Rec5"],
+    "next": ["SF_UseRecord_Step2_Rec1", "SF_UseRecord_Step2_Rec2", "SF_UseRecord_Step2_Rec3", "SF_UseRecord_Step2_Rec4", "SF_UseRecord_Step2_Rec5", "SF_UseRecord_Step1"],
     "on_error": ["SF_DetectWhereAmI"],
     "post_wait_freezes": {"time": 100}
   },

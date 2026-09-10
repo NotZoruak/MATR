@@ -53,7 +53,8 @@ public class FatigueCheckAction : IMaaCustomAction
             {
                 var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
                 if (clean.Contains('/')) clean = clean.Split('/')[0];
-                if (int.TryParse(clean.Trim(), out var val) && val > 0)
+                // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
+                if (int.TryParse(clean.Trim(), out var val) && val >= 0)
                     values[i] = val;
             }
         }
@@ -109,7 +110,8 @@ public class FatigueCheckAction : IMaaCustomAction
                         {
                             var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
                             if (clean.Contains('/')) clean = clean.Split('/')[0];
-                            if (int.TryParse(clean.Trim(), out var val) && val > 0)
+                            // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
+                            if (int.TryParse(clean.Trim(), out var val) && val >= 0)
                                 firstValue = val;
                         }
                     }
@@ -125,7 +127,8 @@ public class FatigueCheckAction : IMaaCustomAction
                     {
                         var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
                         if (clean.Contains('/')) clean = clean.Split('/')[0];
-                        if (int.TryParse(clean.Trim(), out var val) && val > 0)
+                        // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
+                        if (int.TryParse(clean.Trim(), out var val) && val >= 0)
                             firstValue = val;
                     }
                 }
@@ -165,7 +168,8 @@ public class FatigueCheckAction : IMaaCustomAction
                     {
                         var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
                         if (clean.Contains('/')) clean = clean.Split('/')[0];
-                        if (int.TryParse(clean.Trim(), out var val) && val > 0)
+                        // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
+                        if (int.TryParse(clean.Trim(), out var val) && val >= 0)
                             values[0] = val;
                     }
                 }
@@ -182,7 +186,7 @@ public class FatigueCheckAction : IMaaCustomAction
             {
                 if (!values[0].HasValue) { LoggerHelper.Warning("[疲劳检测] 队长位 OCR 失败"); return false; }
                 var ok = values[0].Value >= threshold;
-                LoggerHelper.Info($"[疲劳检测] 首位={values[0]}, > {threshold}? {ok}");
+                LoggerHelper.Info($"[疲劳检测] 首位={values[0]}, >= {threshold}? {ok}");
                 FlowerStateTracker.CurrentFatigueLowest = values[0].Value;
                 if (ok)
                     try { MaaProcessorManager.Instance.Current?.AddLog($"[远征疲劳检测] 疲劳值恢复完成"); } catch { }
@@ -192,7 +196,7 @@ public class FatigueCheckAction : IMaaCustomAction
             {
                 if (bestPos < 0) { LoggerHelper.Info("[疲劳检测] 全空槽位，视为合格"); return true; }
                 var ok = bestVal >= threshold;
-                LoggerHelper.Info($"[疲劳检测] 最低位=位置{bestPos + 1}, 值={bestVal}, > {threshold}? {ok}");
+                LoggerHelper.Info($"[疲劳检测] 最低位=位置{bestPos + 1}, 值={bestVal}, >= {threshold}? {ok}");
                 FlowerStateTracker.CurrentFatigueLowest = bestVal;
                 if (!ok)
                 {
