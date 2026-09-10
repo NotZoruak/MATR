@@ -2478,7 +2478,7 @@
             "E_ClickBackToHome": {"action": {"type": "Click", "param": {"target": [1037, 169, 110, 44]}}, "next": ["HP_WaitRefresh"], "on_error": ["HP_DetectWhereAmI"]},
             "E_AllTeamsBusy": {"next": ["E_TimerStart"]},
             "E_TimerStart": {"action": {"type": "Custom", "custom_action": "ExpeditionTimerAction", "custom_action_param": {"mode": "start"}}, "next": ["HP_NavigateToActivity"]},
-            "E_CheckTimerExpired": {"next": ["HP_EnableAutoMarch"], "on_error": ["E_GoHome"]},
+            "E_CheckTimerExpired": {"next": ["HP_EnableAutoMarch", "HP_ClickTeam"], "on_error": ["E_GoHome"]},
             "HP_WaitRefresh": {"enabled": true}
           }
         }
