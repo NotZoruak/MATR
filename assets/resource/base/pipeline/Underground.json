@@ -22,6 +22,7 @@
       "U_IsEventPage",
       "U_CheckHomeBrightness",
       "U_IsMenuDirectory",
+      "U_IsTeamStatusPanel",
       "U_LeaveTroopRecord",
       "U_IsAnnouncementPopup",
       "U_IsTrainingLetter",
@@ -861,6 +862,19 @@
       }
     },
     "next": ["U_NavigateToActivity"],
+    "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_IsTeamStatusPanel": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [374, 42, 39, 108],
+        "template": "Common/本丸远征.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["E_ExpSubHub1"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_IsMarchingDamage": {

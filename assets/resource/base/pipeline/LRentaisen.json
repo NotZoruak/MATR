@@ -13,6 +13,7 @@
       "LR_IsEventPage",
       "LR_CheckHomeBrightness",
       "LR_IsMenuDirectory",
+      "LR_IsTeamStatusPanel",
       "LR_IsTicketPopup",
       "LR_IsReplenishDone",
       "LR_IsTeamSelect",
@@ -173,6 +174,19 @@
       }
     },
     "next": ["LR_NavigateToActivity"],
+    "on_error": ["LR_DetectWhereAmI"]
+  },
+  "LR_IsTeamStatusPanel": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [374, 42, 39, 108],
+        "template": "Common/本丸远征.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["E_ExpSubHub1"],
     "on_error": ["LR_DetectWhereAmI"]
   },
   "LR_IsMenuDirectory": {
