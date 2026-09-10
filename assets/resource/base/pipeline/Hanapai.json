@@ -1,240 +1,1168 @@
 {
-    "Hanapai": {
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
+  "HP_DetectWhereAmI": {
+    "pre_delay": 0,
+    "timeout": 120000,
+    "next": [
+      "HP_IsSupplyPopup",
+      "HP_HasExpeditionReturn_Exp",
+      "HP_HasExpeditionReturn_Title",
+      "HP_IsSortie",
+      "HP_IsEventPage",
+      "HP_CheckHomeBrightness",
+      "HP_IsMenuDirectory",
+      "HP_IsTeamSelect",
+      "HP_IsBattleResult_Exp",
+      "HP_IsBattleResult_Title",
+      "HP_IsMarching",
+      "HP_IsSwordDropColor",
+      "HP_IsSpecialDrop",
+      "HP_LeaveTroopRecord",
+      "HP_IsAnnouncementPopup",
+      "HP_IsTrainingLetter",
+      "HP_IsLoginReward",
+      "HP_IsAdvertisementPopup",
+      "HP_IsGameIcon",
+      "HP_IsLoginButton",
+      "HP_IsGameUpdatePopup",
+      "HP_IsInGameUpdatePopup",
+      "HP_IsInternalReport",
+      "HP_IsTrainingApplication",
+      "HP_IsNetworkRequestTimeout",
+      "HP_IsConnectionInterrupted",
+      "HP_FallbackWait"
+    ],
+    "on_error": ["HP_RestartGame"]
+  },
+  "HP_IsAnnouncementPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1056, 463, 63, 193],
+        "template": "Common/公告弹窗.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
     },
-    "HP_DetectWhereAmI": {
-        "timeout": 120000,
-        "next": [
-            "HP_IsHome",
-            "HP_IsEventPage",
-            "HP_IsTeamSelect",
-            "HP_IsTicketPopup",
-            "HP_IsMarching",
-            "HP_IsBattleResult",
-            "HP_IsSwordDrop",
-            "HP_IsSpecialDrop",
-            "HP_WaitLoop"
-        ],
-        "on_error": ["HP_RestartGame"]
+    "action": {"type": "Click"},
+    "next": ["HP_IsAnnouncementPopup", "HP_DetectWhereAmI"],
+    "post_wait_freezes": {"time": 200},
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsSupplyPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [24, 37, 57, 91],
+        "template": "Common/补给.png",
+        "threshold": [0.98]
+      }
     },
-    "HP_IsHome": {
-        "enabled": false,
-        "next": ["HP_NavigateToActivity"],
-        "on_error": ["HP_DetectWhereAmI"]
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1241, 37, 1, 1]
+      }
     },
-    "HP_NavigateToActivity": {
-        "enabled": false,
-        "next": ["HP_ClickActivityInMenu"],
-        "on_error": ["HP_DetectWhereAmI"]
+    "pre_delay": 100,
+    "post_delay": 500,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsLoginReward": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [816, 577, 182, 59],
+        "template": "Common/登录奖励.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
     },
-    "HP_ClickActivityInMenu": {
-        "enabled": false,
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsEventPage": {
-        "enabled": false,
-        "next": ["HP_SelectDifficulty"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_SelectDifficulty": {
-        "enabled": false,
-        "next": ["HP_ClickDifficulty"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ClickDifficulty": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_VerifyDifficulty"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_VerifyDifficulty": {
-        "enabled": false,
-        "next": ["HP_EnterEvent"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_EnterEvent": {
-        "enabled": false,
-        "next": ["HP_IsTeamSelect"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsTeamSelect": {
-        "enabled": false,
-        "next": ["HP_ClickTeam"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ClickTeam": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_CaptainHub"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_CaptainHub": {
-        "next": ["HP_IsPreSortieConfirm"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_DragCaptain": {
-        "enabled": false,
-        "action": {
-            "type": "Custom",
-            "custom_action": "DragCaptainAction"
-        },
-        "next": ["HP_IsPreSortieConfirm"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_FatigueCheck": {
-        "enabled": false,
-        "action": {
-            "type": "Custom",
-            "custom_action": "FatigueCheckAction",
-            "custom_action_param": {
-                "mode": "check_first",
-                "threshold": 30
-            }
-        },
-        "next": ["HP_IsPreSortieConfirm"],
-        "on_error": ["SF_Hub"]
-    },
-    "HP_IsPreSortieConfirm": {
-        "enabled": false,
-        "next": ["HP_DetectTicket"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_DetectTicket": {
-        "enabled": false,
-        "next": ["HP_HandleNoTicket", "HP_ConfirmEnterMap"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_HandleNoTicket": {
-        "enabled": false,
-        "next": ["HP_ReplenishTicket", "HP_TerminateNoTicket"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsTicketPopup": {
-        "enabled": false,
-        "next": ["HP_HandleTicketPopup"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_HandleTicketPopup": {
-        "next": ["HP_ReplenishTicket", "HP_TerminateNoTicket"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ReplenishTicket": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_ReplenishTicketConfirm"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ReplenishTicketConfirm": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_TerminateNoTicket": {
-        "action": {
-            "type": "Custom",
-            "custom_action": "LogAction",
-            "custom_action_param": {
-                "level": "Warning",
-                "message": "[秘宝之里] 无票终止"
-            }
-        },
-        "next": [],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ConfirmEnterMap": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsMarching": {
-        "enabled": false,
-        "next": ["HP_CheckCaptainDamage", "HP_ClickMarching"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_CheckCaptainDamage": {
-        "enabled": false,
-        "next": ["HP_RetreatOnCaptainDamage"],
-        "on_error": ["HP_ClickMarching"]
-    },
-    "HP_RetreatOnCaptainDamage": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_ConfirmCaptainRetreat"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ConfirmCaptainRetreat": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_ClickMarching": {
-        "action": {
-            "type": "Custom",
-            "custom_action": "LogAction",
-            "custom_action_param": {
-                "level": "Info",
-                "message": "[秘宝之里] 点击行军"
-            }
-        },
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsBattleResult": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsSwordDrop": {
-        "enabled": false,
-        "action": {
-            "type": "Custom",
-            "custom_action": "SwordDropLogAction",
-            "custom_action_param": {
-                "task": "秘宝之里"
-            }
-        },
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_IsSpecialDrop": {
-        "enabled": false,
-        "action": {"type": "DoNothing"},
-        "next": ["HP_RoundComplete"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_RoundComplete": {
-        "action": {
-            "type": "Custom",
-            "custom_action": "LogAction",
-            "custom_action_param": {
-                "level": "Info",
-                "message": "[秘宝之里] 完成一圈"
-            }
-        },
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_WaitRefresh": {
-        "enabled": false,
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_WaitLoop": {
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
-    },
-    "HP_RestartGame": {
-        "action": {
-            "type": "Custom",
-            "custom_action": "RestartGameAction"
-        },
-        "next": ["HP_DetectWhereAmI"],
-        "on_error": ["HP_DetectWhereAmI"]
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_LoginRewardClick2"],
+    "on_error": ["HP_DetectWhereAmI"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
     }
+  },
+  "HP_LoginRewardClick2": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "pre_delay": 1000,
+    "next": ["HP_LoginRewardClick3"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    }
+  },
+  "HP_LoginRewardClick3": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "pre_delay": 1000,
+    "timeout": 3000,
+    "next": ["HP_IsLoginReward"]
+  },
+  "HP_HasExpeditionReturn_Exp": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [388, 59, 54, 25],
+        "expected": "经验"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [388, 59, 54, 25]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_HasExpeditionReturn_Title": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [558, 1, 162, 52],
+        "expected": "远征结果"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [388, 59, 54, 25]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_CheckHomeBrightness": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [66, 58, 11, 13],
+        "upper": [40, 155, 30],
+        "lower": [23, 95, 15]
+      }
+    },
+    "next": ["HP_IsHome", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsHome": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_NavigateToActivity"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsMenuDirectory": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [581, 28, 112, 57],
+        "template": "Common/菜单目录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_ClickActivityInMenu"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsGameIcon": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [0, 0, 1600, 900],
+        "template": "Common/游戏图标.png",
+        "green_mask": true,
+        "threshold": [0.8]
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "post_delay": 3000,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsAdvertisementPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1017, 101, 62, 21],
+        "template": "Common/广告.png",
+        "threshold": [0.8]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1095, 103, 14, 15]
+      }
+    },
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsLoginButton": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [665, 529, 124, 78],
+        "template": "Common/登录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "post_delay": 3000,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsGameUpdatePopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [443, 431, 120, 46],
+        "template": "Common/游戏更新.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "post_delay": 2000,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsInGameUpdatePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [498, 291, 77, 50],
+        "expected": "更新"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [578, 440, 130, 55]
+      }
+    },
+    "pre_delay": 100,
+    "post_delay": 2000,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsInternalReport": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [569, 322, 138, 31],
+        "template": "Common/内番报告.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsConnectionInterrupted": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [588, 274, 96, 25],
+        "expected": "连接中断"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [738, 449, 100, 39]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsNetworkRequestTimeout": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [524, 304, 56, 35],
+        "expected": "网络"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [599, 442, 93, 55]
+      }
+    },
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsTrainingApplication": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [101, 590, 399, 42],
+        "expected": "一样"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [197, 600, 52, 26]
+      }
+    },
+    "next": ["HP_ClickTrainingApplication", "HP_IsTrainingApplication", "HP_CancelTrainingApplication"],
+    "on_error": ["HP_DetectWhereAmI"],
+    "repeat": 5,
+    "repeat_delay": 500
+  },
+  "HP_ClickTrainingApplication": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [96, 558, 54, 38],
+        "template": "Common/修行申请_狐之助.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [96, 558, 54, 38]
+      }
+    },
+    "next": ["HP_CancelTrainingApplication", "HP_ClickTrainingApplication"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_CancelTrainingApplication": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [460, 587, 69, 37],
+        "expected": "取消"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [460, 587, 69, 37]
+      }
+    },
+    "next": ["HP_CancelTrainingApplication", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsBattleResult_Exp": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [388, 59, 54, 25],
+        "expected": "经验"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [388, 59, 54, 25]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsBattleResult_Title": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [558, 1, 162, 52],
+        "expected": "战斗结果"
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsMarching": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1067, 558, 120, 79],
+        "template": "Common/合战场_行军.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_ClickMarching"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_ClickMarching": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[秘宝之里] 点击行军",
+        "click": [1072, 563, 110, 69]
+      }
+    },
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsSwordDropColor": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "upper": [96, 56, 10],
+        "lower": [88, 48, 2]
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "SwordDropLogAction",
+      "custom_action_param": {
+        "task": "秘宝之里",
+        "roi": [52, 509, 282, 34],
+        "click": [947, 533, 67, 75]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "next": ["HP_EnableAutoMarch", "HP_ClickTeam"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsSortie": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [3, 164, 43, 92],
+        "template": "Common/合战场选中.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_OnSortieScreen"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_OnSortieScreen": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [8, 299, 32, 89]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_VerifyEventPage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/地下城.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_SelectDifficulty", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_TryClickSortie": {
+    "next": ["HP_ClickSortieInMenu", "HP_DetectWhereAmI"]
+  },
+  "HP_ClickSortieInMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [160, 158, 97, 62],
+        "expected": "出阵"
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_VerifyMenuClosed", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_VerifyMenuClosed": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [581, 28, 112, 57],
+        "template": "Common/菜单目录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_TryClickSortie", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_PostClickMenuHub": {
+    "next": ["HP_VerifyMenuSortie", "HP_CheckNavDirForRetry", "HP_DetectWhereAmI"]
+  },
+  "HP_VerifyMenuSortie": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [581, 28, 112, 57],
+        "template": "Common/菜单目录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_ClickSortieInMenu"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_CheckNavDirForRetry": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_PostClickMenuHub"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_ClickTeam": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "next": ["HP_CaptainHub"],
+    "repeat": 2,
+    "repeat_delay": 300
+  },
+  "HP_EnableAutoMarch": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1176, 390, 1, 2],
+        "upper": [223, 109, 16],
+        "lower": [221, 107, 14]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1176, 390, 1, 2]
+      }
+    },
+    "next": ["HP_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["HP_DetectWhereAmI"],
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1176, 390, 1, 2]
+    }
+  },
+  "HP_ClickAutoMarchNoOrYesDelegate": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [713, 580, 150, 50],
+        "expected": ["委托", "不委托"]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["HP_ReturnFromAutoMarch"],
+    "on_error": ["HP_DetectWhereAmI"],
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [713, 580, 150, 50]
+    }
+  },
+  "HP_ReturnFromAutoMarch": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1024, 30, 35, 36]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_IsTeamSelect"],
+    "on_error": ["HP_DetectWhereAmI"],
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1024, 30, 35, 36]
+    }
+  },
+  "HP_TryClickHome": {
+    "next": ["HP_ClickHomeInMenu", "HP_DetectWhereAmI"]
+  },
+  "HP_ClickHomeInMenu": {
+    "enabled": false,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1037, 169, 110, 44]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_VerifyHomeMenuClosed"]
+  },
+  "HP_VerifyHomeMenuClosed": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [581, 28, 112, 57],
+        "template": "Common/菜单目录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_TryClickHome", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_LeaveTroopRecord": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [577, 8, 130, 35],
+        "template": "Common/部队记录页面.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [63, 28, 17, 17]
+      }
+    },
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsEventPage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_SelectDifficulty", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_SelectDifficulty": {
+    "next": ["HP_ClickDifficulty"]
+  },
+  "HP_ClickDifficulty": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_VerifyDifficulty", "HP_DetectWhereAmI"]
+  },
+  "HP_VerifyDifficulty": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_EnterEvent", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_EnterEvent": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1141, 614, 120, 49]
+      }
+    },
+    "pre_delay": 200,
+    "post_delay": 200,
+    "next": ["HP_IsTeamSelect", "HP_DetectWhereAmI"]
+  },
+  "HP_IsSpecialDrop": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [169, 154, 117, 120],
+        "template": "Activity/秘宝之里_达成报酬.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["HP_CheckMoreSpecialDrops"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_ClickMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_PostClickMenuHub"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsPreSortieConfirm": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1156, 584, 96, 47],
+        "expected": "即刻"
+      }
+    },
+    "next": ["HP_ClickSortieNow"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_ClickSortieNow": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1204, 629, 10, 10]
+      }
+    },
+    "pre_delay": 100,
+    "post_wait_freezes": {"time": 200, "target": [1204, 629, 10, 10]},
+    "next": ["HP_PostSortieHub"]
+  },
+  "HP_CaptainHub": {
+    "next": ["HP_IsPreSortieConfirm"]
+  },
+  "HP_TerminateRound": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[秘宝之里] 完成一圈"
+      }
+    },
+    "next": []
+  },
+  "HP_CheckMoreSpecialDrops": {
+    "timeout": 10000,
+    "next": ["HP_IsSpecialDrop", "HP_CheckSwordDropAfterSpecial"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_CheckSwordDropAfterSpecial": {
+    "pre_delay": 1000,
+    "timeout": 5000,
+    "next": ["HP_IsSwordDropAfter", "HP_WaitForEventPage"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsSwordDropAfter": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "upper": [96, 56, 10],
+        "lower": [88, 48, 2]
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "SwordDropLogAction",
+      "custom_action_param": {
+        "task": "秘宝之里",
+        "roi": [52, 509, 282, 34],
+        "click": [947, 533, 67, 75]
+      }
+    },
+    "pre_delay": 100,
+    "next": ["HP_WaitForEventPage"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_WaitForEventPage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "timeout": 10000,
+    "next": ["HP_TerminateRound"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsTicketConfirm": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [597, 54, 82, 38],
+        "expected": "出阵"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [565, 578, 151, 48]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [565, 578, 151, 48]
+    },
+    "next": ["HP_SortieSuccess", "HP_IsTicketConfirm"]
+  },
+  "HP_IsNoTicketPopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [526, 202, 231, 56],
+        "expected": "通行令牌不足"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [750, 448, 75, 40]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [750, 448, 75, 40]
+    },
+    "next": ["HP_CompleteCurrentTaskAfterNoTicket", "HP_IsNoTicket"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsNoTicket": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [578,61,127,34],
+        "expected": "通行令牌"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [604, 588, 66, 42]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [604, 588, 66, 42]
+    },
+    "next": ["HP_IsConfirmPurchase"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsConfirmPurchase": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 58, 78, 36],
+        "expected": "确认"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[秘宝之里] 购买门票",
+        "click": [729, 581, 101, 43]
+      }
+    },
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_CompleteCurrentTaskAfterNoTicket": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {
+        "reason": "通行令牌不足"
+      }
+    },
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_PostSortieHub": {
+    "timeout": 30000,
+    "next": ["HP_IsPreDamage", "HP_CheckEquipmentPopup", "HP_IsTicketConfirm", "HP_IsNoTicketPopup"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsPreDamage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["HP_NavigateToRepair"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_NavigateToRepair": {
+    "next": ["HP_ClickMenuForRepair", "HP_DetectWhereAmI"]
+  },
+  "HP_ClickMenuForRepair": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_CheckEquipmentPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 484, 145, 56],
+        "template": "Common/刀装不足.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [423, 484, 145, 56]
+    },
+    "next": ["HP_PreCheckTroopRecord"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_PreCheckTroopRecord": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["HP_PreCheckUseRecord"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_PreCheckUseRecord": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_PreCheckUseRecordBtn"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_PreCheckUseRecordBtn": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [707, 53, 72, 64]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [442, 253, 395, 125]
+    },
+    "next": ["HP_PreConfirmSupply"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_PreConfirmSupply": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 151, 126, 34],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[秘宝之里] 补充刀装",
+        "click": [789, 512, 1, 4]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HP_GuiSupplyLog", "HP_PreConfirmSupply"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_GuiSupplyLog": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [563, 4, 153, 45],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {
+        "message": "[刀装保护] 补充刀装"
+      }
+    },
+    "next": ["HP_IsPreSortieConfirm"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_SortieSuccess": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[秘宝之里] 出阵"
+      }
+    },
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_FallbackWait": {
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_RestartGame": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction"
+    },
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_DragCaptain": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "DragCaptainAction"
+    },
+    "next": ["HP_IsPreSortieConfirm"]
+  },
+  "HP_FatigueCheck": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "FatigueCheckAction",
+      "custom_action_param": {
+        "mode": "check_first",
+        "threshold": 30
+      }
+    },
+    "next": ["HP_IsPreSortieConfirm"],
+    "on_error": ["SF_Hub"]
+  },
+  "HP_WaitRefresh": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "pre_delay": 500,
+    "post_delay": 500,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_ClickActivityInMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [160, 158, 97, 62],
+        "expected": "出阵"
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_NavigateToActivity": {
+    "next": ["HP_ClickMenu"]
+  },
+  "HP_IsTrainingLetter": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1037, 438, 206, 76],
+        "template": "Common/修行书信.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"},
+    "pre_delay": 100,
+    "next": ["HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "Hanapai": {
+    "next": ["HP_DetectWhereAmI"]
+  }
 }

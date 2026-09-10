@@ -64,17 +64,152 @@ AssertTrue(
 var hanapaiDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Hanapai.json");
 AssertTrue(File.Exists(hanapaiDefinitionPath), "秘宝之里必须提供独立的流程定义");
 var hanapaiDefinition = JObject.Parse(File.ReadAllText(hanapaiDefinitionPath));
-AssertFalse(interfaceDefinition["task"]?.Any(item => item?["entry"]?.Value<string>() == "Hanapai") == true,
-    "活动未上线时不得在资源接口注册秘宝之里任务");
+var hanapaiTask = interfaceDefinition["task"]?.FirstOrDefault(item => item?["entry"]?.Value<string>() == "Hanapai");
+AssertTrue(hanapaiTask?["option"]?.Values<string>().SequenceEqual([
+        "HP_选择部队", "HP_选择难度", "HP_疲劳处理", "HP_换队长", "HP_购买门票", "HP_同步远征"
+    ]) == true,
+    "秘宝之里上线后必须注册完整的任务选项");
 AssertTrue(hanapaiDefinition["HP_DetectWhereAmI"]?["on_error"]?.Values<string>().SequenceEqual(["HP_RestartGame"]) == true,
     "秘宝之里的状态识别超时必须进入卡死重启链路");
 AssertTrue(hanapaiDefinition["HP_ClickMarching"]?["action"]?["custom_action_param"]?["message"]?.Value<string>() == "[秘宝之里] 点击行军",
     "秘宝之里的行军必须写入工作记录词表");
-AssertTrue(hanapaiDefinition["HP_RoundComplete"]?["action"]?["custom_action_param"]?["message"]?.Value<string>() == "[秘宝之里] 完成一圈",
-    "秘宝之里必须在特殊掉落结算后写入完成一圈记录");
+AssertTrue(hanapaiDefinition["HP_IsEventPage"]?["recognition"]?["param"]?["template"]?.Value<string>() == "Activity/秘宝之里.png",
+    "秘宝之里活动页必须使用专用活动标识图片");
+AssertFalse(hanapaiDefinition.Properties().Any(property => property.Name is "HP_IsActionSelect"
+    or "HP_ActionSelectHub" or "HP_IsTeamSwitchNeeded" or "HP_ClickSwitchTeam"
+    or "HP_RunTeamSwitch" or "HP_ClickContinueBattle"),
+    "秘宝之里不得保留联队战的行动选择或部队交替流程");
+AssertTrue(hanapaiDefinition["HP_IsSpecialDrop"]?["recognition"]?["type"]?.Value<string>() == "TemplateMatch"
+    && hanapaiDefinition["HP_IsSpecialDrop"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([169, 154, 117, 120]) == true
+    && hanapaiDefinition["HP_IsSpecialDrop"]?["recognition"]?["param"]?["template"]?.Value<string>()
+        == "Activity/秘宝之里_达成报酬.png",
+    "花牌特殊掉落必须按达成报酬模板在指定 ROI 识别");
+AssertTrue(hanapaiDefinition["HP_IsSpecialDrop"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_CheckMoreSpecialDrops"]) == true
+    && hanapaiDefinition["HP_CheckMoreSpecialDrops"]?["timeout"]?.Value<int>() == 10000
+    && hanapaiDefinition["HP_CheckMoreSpecialDrops"]?["on_error"]?.Values<string>()
+        .SequenceEqual(["HP_DetectWhereAmI"]) == true,
+    "花牌特殊掉落点掉后必须进入复核 hub，超时回到主枢纽");
+AssertTrue(hanapaiDefinition["HP_DetectWhereAmI"]?["next"]?.Values<string>().Contains("HP_IsSpecialDrop") == true,
+    "花牌特殊掉落识别必须挂在主枢纽的识别顺序中");
+AssertTrue(hanapaiDefinition["HP_TerminateRound"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
+        == "[秘宝之里] 完成一圈"
+    && hanapaiDefinition["HP_TerminateRound"]?["next"]?.Values<string>().Count == 0
+    && hanapaiDefinition["HP_RoundComplete"] == null,
+    "花牌一圈结束时必须由 HP_TerminateRound 写入完成一圈记录，且不保留重复的打点 node");
+AssertTrue(hanapaiDefinition["HP_PostSortieHub"]?["timeout"]?.Value<int>() == 30000
+    && hanapaiDefinition["HP_PostSortieHub"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsPreDamage", "HP_CheckEquipmentPopup", "HP_IsTicketConfirm", "HP_IsNoTicket"]) == true
+    && hanapaiDefinition["HP_PostSortieHub"]?["on_error"]?.Values<string>()
+        .SequenceEqual(["HP_DetectWhereAmI"]) == true,
+    "花牌即刻出阵后必须平级扫描重伤、刀装弹窗、门票确认页与门票不足弹窗");
+AssertTrue(hanapaiDefinition["HP_IsTicketConfirm"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_SortieSuccess", "HP_IsTicketConfirm"]) == true,
+    "花牌确认使用门票后必须复核是否回到活动页，未离开则再次确认");
+AssertTrue(hanapaiDefinition["HP_SortieSuccess"]?["recognition"]?["type"]?.Value<string>() == "TemplateMatch"
+    && hanapaiDefinition["HP_SortieSuccess"]?["recognition"]?["param"]?["template"]?.Value<string>()
+        == "Activity/秘宝之里.png"
+    && hanapaiDefinition["HP_SortieSuccess"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
+        == "[秘宝之里] 出阵",
+    "花牌出阵记录必须按活动页模板识别，并在回到活动页时写入出阵");
+AssertTrue(hanapaiTask?["option"]?.Values<string>()
+        .Any(name => name is "HP_补充刀装" or "HP_刀装保护" or "HP_疲劳撤退") == false,
+    "花牌重伤修刀与补充刀装默认开启，不得注册界面选项");
+AssertTrue(hanapaiDefinition["HP_IsPreDamage"]?["recognition"]?["param"]?["template"]?.Value<string>()
+        == "Common/重伤.png"
+    && hanapaiDefinition["HP_IsPreDamage"]?["enabled"] == null
+    && hanapaiDefinition["HP_IsPreDamage"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_NavigateToRepair"]) == true,
+    "花牌重伤检测必须默认开启并进入修刀导航，不提供界面选项");
+AssertTrue(hanapaiDefinition["HP_CheckEquipmentPopup"]?["recognition"]?["param"]?["template"]?.Value<string>()
+        == "Common/刀装不足.png"
+    && hanapaiDefinition["HP_CheckEquipmentPopup"]?["enabled"] == null
+    && hanapaiDefinition["HP_CheckEquipmentPopup"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_PreCheckTroopRecord"]) == true,
+    "花牌刀装不足弹窗必须默认开启并进入补充刀装链路，不提供界面选项");
+AssertTrue(hanapaiDefinition["HP_PreConfirmSupply"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
+        == "[秘宝之里] 补充刀装"
+    && hanapaiDefinition["HP_GuiSupplyLog"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsPreSortieConfirm"]) == true,
+    "花牌补充刀装必须写入工作记录并回到出阵确认");
+AssertTrue(hanapaiDefinition["HP_ClickEnterBattle"] == null,
+    "花牌不得保留联队战的进入战斗 node");
+AssertTrue(hanapaiDefinition["HP_IsTicketConfirm"]?["recognition"]?["param"]?["expected"]?.Value<string>()
+        == "出阵",
+    "花牌门票确认页必须按出阵文案识别，与异去保持一致");
+AssertTrue(hanapaiDefinition["HP_IsNoTicketPopup"]?["recognition"]?["param"]?["expected"]?.Value<string>()
+        == "通行令牌不足"
+    && hanapaiDefinition["HP_IsNoTicketPopup"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([526, 202, 231, 56]) == true
+    && hanapaiDefinition["HP_IsNoTicketPopup"]?["action"]?["param"]?["target"]?.Values<int>()
+        .SequenceEqual([750, 448, 75, 40]) == true
+    && hanapaiDefinition["HP_IsNoTicketPopup"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsNoTicket"]) == true,
+    "花牌门票不足的第一级弹窗必须关闭后进入第二级确认");
+AssertTrue(hanapaiDefinition["HP_IsNoTicket"]?["recognition"]?["param"]?["expected"]?.Value<string>()
+        == "提灯一补"
+    && hanapaiDefinition["HP_IsNoTicket"]?["action"]?["param"]?["target"]?.Values<int>()
+        .SequenceEqual([1028, 38, 25, 26]) == true
+    && hanapaiDefinition["HP_IsNoTicket"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_CompleteCurrentTaskAfterNoTicket"]) == true,
+    "花牌门票不足的第二级必须与异去一致，未购买时结束当前任务");
+var sortieNoTicketNode = sortieDefinition["S_IsIsekaiNoTicket"];
+AssertTrue(hanapaiDefinition["HP_IsNoTicket"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual(sortieNoTicketNode?["recognition"]?["param"]?["roi"]?.Values<int>() ?? []) == true,
+    "花牌第二级门票不足识别必须沿用异去的 ROI");
+AssertTrue(hanapaiDefinition["HP_IsConfirmPurchase"]?["recognition"]?["param"]?["expected"]?.Value<string>()
+        == "确认"
+    && hanapaiDefinition["HP_IsConfirmPurchase"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
+        == "[秘宝之里] 购买门票",
+    "花牌开启购买门票后必须写入购买记录");
+AssertTrue(hanapaiDefinition.Properties().All(property => property.Name is not (
+        "HP_DetectTicket" or "HP_HandleNoTicket" or "HP_ReplenishOrTerminate" or "HP_ReplenishTicket"
+        or "HP_ClickRestore3" or "HP_ClickReplenishConfirm" or "HP_AfterCaptain"
+        or "HP_TerminateNoTicket" or "HP_IsTicketPopup" or "HP_HandleTicketPopup"
+        or "HP_IsReplenishDone" or "HP_CloseTicketPopup" or "HP_ConfirmEnterMap")),
+    "花牌不得保留联队战式的门票购买链路");
+AssertTrue(hanapaiDefinition["HP_DetectWhereAmI"]?["next"]?.Values<string>()
+        .Any(nodeName => nodeName is "HP_IsTicketPopup" or "HP_IsReplenishDone") == false,
+    "花牌主枢纽不得挂载联队战式的门票弹窗识别");
+var hanapaiBuyTicketOverride =
+    interfaceDefinition["option"]?["HP_购买门票"]?["cases"]?.Children<JObject>().Single()["pipeline_override"];
+AssertTrue(hanapaiBuyTicketOverride?["HP_IsNoTicketPopup"]?["action"]?["param"]?["target"]?.Values<int>()
+        .SequenceEqual([452, 452, 88, 34]) == true
+    && hanapaiBuyTicketOverride?["HP_IsNoTicketPopup"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsNoTicket"]) == true
+    && hanapaiBuyTicketOverride?["HP_IsNoTicket"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsConfirmPurchase"]) == true
+    && interfaceDefinition["option"]?["HP_购买门票"]?["default_case"]?.Values<string>().Any() == false
+    && hanapaiDefinition["HP_CompleteCurrentTaskAfterNoTicket"]?["action"]?["custom_action"]?.Value<string>()
+        == "CompleteCurrentTaskAction",
+    "勾选花牌购买门票时必须覆盖两级弹窗并进入购买确认链路");
+var hanapaiTeamSelectNext = hanapaiDefinition["HP_IsTeamSelect"]?["next"]?.Values<string>().ToList();
+AssertTrue(hanapaiTeamSelectNext?.SequenceEqual([
+        "HP_DisableAutoMarch", "HP_EnableAutoMarch", "HP_ClickAutoMarchNoOrYesDelegate", "HP_ClickTeam"
+    ]) == true,
+    "秘宝之里进入部队选择后必须先完成自动行军状态切换，再点击部队");
+AssertTrue(hanapaiDefinition["HP_DisableAutoMarch"]?["recognition"]?["param"]?["template"]?.Value<string>()
+        == "Common/自动行军_委托中.png"
+    && hanapaiDefinition["HP_EnableAutoMarch"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([1176, 390, 1, 2]) == true,
+    "秘宝之里必须复用合战场的自动行军双向切换识别，固定启用不提供开关");
+AssertTrue(hanapaiDefinition["HP_DisableAutoMarch"]?["enabled"] == null
+    && hanapaiDefinition["HP_EnableAutoMarch"]?["enabled"] == null,
+    "秘宝之里的自动行军固定开启，不得依赖界面选项覆盖启用状态");
+AssertTrue(hanapaiDefinition["HP_ClickAutoMarchNoOrYesDelegate"]?["recognition"]?["param"]?["expected"]?
+        .Values<string>().SequenceEqual(["委托", "不委托"]) == true
+    && hanapaiDefinition["HP_ReturnFromAutoMarch"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsTeamSelect"]) == true,
+    "秘宝之里的自动行军确认必须同时识别委托与不委托，确认后回到部队选择复核");
+AssertTrue(hanapaiTask?["option"]?.Values<string>().Contains("HP_自动行军") == false,
+    "秘宝之里的自动行军固定开启，不得注册界面选项");
 AssertTrue(CaptainSettingsDecision.GetDragNodeName("Hanapai") == "HP_DragCaptain"
     && CaptainSettingsDecision.GetSkipOptionName("Hanapai") == "HP_跳过位置",
     "秘宝之里的换队长必须支持任务专属跳过位置");
+AssertTrue(hanapaiDefinition["HP_FatigueCheck"]?["action"]?["custom_action"]?.Value<string>() == "FatigueCheckAction"
+    && hanapaiDefinition["HP_FatigueCheck"]?["next"]?.Values<string>().SequenceEqual(["HP_IsPreSortieConfirm"]) == true,
+    "秘宝之里必须提供出阵前疲劳处理流程");
 var hanapaiRecords = WorkRecordBuilder.Build([
     new LogEntry(DateTime.Now, "INF", "开始任务：花牌"),
     new LogEntry(DateTime.Now.AddSeconds(1), "INF", "[秘宝之里] 出阵"),
