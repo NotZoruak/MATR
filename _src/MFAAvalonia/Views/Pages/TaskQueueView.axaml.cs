@@ -1483,8 +1483,59 @@ public partial class TaskQueueView : UserControl
 
             var pipelineType = input.PipelineType?.ToLower() ?? "string";
 
+            // 对于日期类型，使用日历弹窗选择
+            if (input.IsDate)
+            {
+                var datePicker = new CalendarDatePicker
+                {
+                    SelectedDate = DateOnly.TryParse(currentValue, out var parsedDate)
+                        ? parsedDate.ToDateTime(TimeOnly.MinValue)
+                        : null,
+                    MinWidth = 120,
+                    Margin = new Thickness(0, 2, 0, 2),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                };
+                datePicker.Bind(IsEnabledProperty, new Binding("Idle")
+                {
+                    Source = Instances.RootViewModel
+                });
+
+                var dateFieldName = input.Name;
+                datePicker.SelectedDateChanged += (_, _) =>
+                {
+                    option.Data[dateFieldName!] = datePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+                    if (interfaceOption.PipelineOverride != null)
+                    {
+                        option.PipelineOverride = interfaceOption.GenerateProcessedPipeline(
+                            option.Data.Where(kv => kv.Value != null)
+                                .ToDictionary(kv => kv.Key, kv => kv.Value!));
+                    }
+                    SaveConfiguration();
+                };
+
+                var dateLabel = new TextBlock
+                {
+                    Text = input.DisplayName,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(10, 0, 5, 0),
+                };
+                var dateGrid = new Grid
+                {
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = new GridLength(5, GridUnitType.Star) },
+                        new ColumnDefinition { Width = new GridLength(6, GridUnitType.Star) }
+                    },
+                    Margin = interfaceOption.Inputs.Count == 1 ? new Thickness(10, 6, 10, 6) : new Thickness(0, 3, 0, 3)
+                };
+                Grid.SetColumn(dateLabel, 0);
+                Grid.SetColumn(datePicker, 1);
+                dateGrid.Children.Add(dateLabel);
+                dateGrid.Children.Add(datePicker);
+                container.Children.Add(dateGrid);
+            }
             // 对于 bool 类型，使用 ToggleSwitch
-            if (pipelineType == "bool")
+            else if (pipelineType == "bool")
             {
                 var toggleGrid = CreateBoolInputControl(input, currentValue, option, interfaceOption);
                 container.Children.Add(toggleGrid);

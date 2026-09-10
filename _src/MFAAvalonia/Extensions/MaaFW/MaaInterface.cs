@@ -166,6 +166,10 @@ public partial class MaaInterface
         [JsonIgnore]
         public bool IsSlider => string.Equals(Control, "slider", StringComparison.OrdinalIgnoreCase);
 
+        /// <summary>是否使用日期选择控件，取值格式为 yyyy-MM-dd。</summary>
+        [JsonIgnore]
+        public bool IsDate => string.Equals(Control, "date", StringComparison.OrdinalIgnoreCase);
+
         /// <summary>获取显示名称（优先 Label，否则 Name）</summary>
         [JsonIgnore]
         public string DisplayName => Label ?? Name ?? string.Empty;

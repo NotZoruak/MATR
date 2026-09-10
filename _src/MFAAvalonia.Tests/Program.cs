@@ -26,14 +26,62 @@ var terminatingIteration = TaskIterationDecision.Resolve(terminatingRequest);
 AssertFalse(terminatingIteration.ShouldCountIteration || terminatingIteration.ShouldContinueRepeating,
     "提前结束请求不得计入当前轮且必须停止重复");
 AssertTrue(terminatingIteration.Reason == "门票不足", "提前结束决策必须保留结束原因");
+
+// 计划日以本地时间每日 05:00 为界
+AssertTrue(ActivityGoalPtPlanner.GetPlanDay(new DateTime(2026, 9, 11, 4, 59, 0)) == new DateOnly(2026, 9, 10),
+    "04:59 必须视为前一个计划日");
+AssertTrue(ActivityGoalPtPlanner.GetPlanDay(new DateTime(2026, 9, 11, 5, 0, 0)) == new DateOnly(2026, 9, 11),
+    "05:00 起必须视为新的计划日");
+
+// 计划 9 月 10 日至 9 月 19 日，总目标 30000，按日线性推进
+var goalStart = new DateOnly(2026, 9, 10);
+var goalEnd = new DateOnly(2026, 9, 19);
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, new DateOnly(2026, 9, 10)) == 3000,
+    "计划首日的绝对目标应为总目标的十分之一");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, new DateOnly(2026, 9, 11)) == 6000,
+    "计划次日的绝对目标应为总目标的十分之二");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, new DateOnly(2026, 9, 12)) == 9000,
+    "计划第三日的绝对目标应为总目标的十分之三");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, goalEnd) == 30000,
+    "到达截至日时绝对目标必须固定为总目标");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, new DateOnly(2026, 9, 25)) == 30000,
+    "超过截至日时绝对目标仍为总目标");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, new DateOnly(2026, 9, 9)) == null,
+    "计划尚未开始时不得计算绝对目标");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalStart, goalEnd, new DateOnly(2026, 9, 13)) == 12000,
+    "总天数不能整除时绝对目标应按向上取整推进");
+
+// 无法整除时验证向上取整，避免目标被低估
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(10000, goalStart, goalEnd, new DateOnly(2026, 9, 10)) == 1000,
+    "整除场景应精确按比例分配");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(7, goalStart, new DateOnly(2026, 9, 13), new DateOnly(2026, 9, 10)) == 2,
+    "无法整除时必须向上取整");
+
+// 无效配置不得参与计算
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(0, goalStart, goalEnd, new DateOnly(2026, 9, 11)) == null,
+    "目标总 PT 非正数时必须拒绝计算");
+AssertTrue(ActivityGoalPtPlanner.GetAbsoluteGoal(30000, goalEnd, goalStart, new DateOnly(2026, 9, 11)) == null,
+    "开始日期晚于截至日期时必须拒绝计算");
+
+// 达标判断：PT 识别失败或目标不可计算时绝不判定达标
+AssertTrue(ActivityGoalPtPlanner.IsGoalReached(6000, 6000), "PT 等于绝对目标时必须判定达标");
+AssertTrue(ActivityGoalPtPlanner.IsGoalReached(7000, 6000), "PT 超过绝对目标时必须判定达标");
+AssertFalse(ActivityGoalPtPlanner.IsGoalReached(5999, 6000), "PT 低于绝对目标时不得判定达标");
+AssertFalse(ActivityGoalPtPlanner.IsGoalReached(null, 6000), "PT 识别失败时不得判定达标");
+AssertFalse(ActivityGoalPtPlanner.IsGoalReached(6000, null), "绝对目标不可计算时不得判定达标");
+AssertFalse(ActivityGoalPtPlanner.IsGoalReached(null, null), "两者都不可用时不得判定达标");
+
 var interfaceDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "interface.json")));
 var sortieDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Sortie.json")));
-var isekaiNoTicketOption = interfaceDefinition["option"]?["异去_不购买门票"];
-var isekaiNoTicketOverride = isekaiNoTicketOption?["cases"]?.FirstOrDefault()?["pipeline_override"]?["S_IsIsekaiNoTicket"];
-AssertTrue(isekaiNoTicketOverride?["enabled"]?.Value<bool>() == true,
-    "勾选异去不买门票时必须显式启用无票处理，避免无票界面回退并循环");
+var isekaiBuyTicketOption = interfaceDefinition["option"]?["异去_购买门票"];
+var isekaiBuyTicketOverride = isekaiBuyTicketOption?["cases"]?.FirstOrDefault()?["pipeline_override"]?["S_IsIsekaiNoTicket"];
+AssertTrue(isekaiBuyTicketOverride?["next"]?.Values<string>()
+        .SequenceEqual(["S_IsIsekaiConfirmPurchase", "S_IsIsekaiNoTicket"]) == true
+    && sortieDefinition["S_IsIsekaiNoTicket"]?["next"]?.Values<string>()
+        .SequenceEqual(["S_CompleteCurrentTaskAfterIsekaiNoTicket"]) == true,
+    "勾选异去购买门票时必须进入补票链路，未勾选时因无票结束");
 var pastMode = interfaceDefinition["option"]?["过去/异去"]?["cases"]?
     .FirstOrDefault(item => item?["name"]?.Value<string>() == "过去");
 var avoidKebiOption = interfaceDefinition["option"]?["S_避战检非"];
@@ -95,12 +143,12 @@ AssertTrue(hanapaiDefinition["HP_DetectWhereAmI"]?["next"]?.Values<string>().Con
     "花牌特殊掉落识别必须挂在主枢纽的识别顺序中");
 AssertTrue(hanapaiDefinition["HP_TerminateRound"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
         == "[秘宝之里] 完成一圈"
-    && hanapaiDefinition["HP_TerminateRound"]?["next"]?.Values<string>().Count == 0
+    && hanapaiDefinition["HP_TerminateRound"]?["next"]?.Values<string>().Count() == 0
     && hanapaiDefinition["HP_RoundComplete"] == null,
     "花牌一圈结束时必须由 HP_TerminateRound 写入完成一圈记录，且不保留重复的打点 node");
 AssertTrue(hanapaiDefinition["HP_PostSortieHub"]?["timeout"]?.Value<int>() == 30000
     && hanapaiDefinition["HP_PostSortieHub"]?["next"]?.Values<string>()
-        .SequenceEqual(["HP_IsPreDamage", "HP_CheckEquipmentPopup", "HP_IsTicketConfirm", "HP_IsNoTicket"]) == true
+        .SequenceEqual(["HP_IsPreDamage", "HP_CheckEquipmentPopup", "HP_IsTicketConfirm", "HP_IsNoTicketPopup"]) == true
     && hanapaiDefinition["HP_PostSortieHub"]?["on_error"]?.Values<string>()
         .SequenceEqual(["HP_DetectWhereAmI"]) == true,
     "花牌即刻出阵后必须平级扫描重伤、刀装弹窗、门票确认页与门票不足弹窗");

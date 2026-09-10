@@ -149,6 +149,7 @@
       "repeatable": true,
       "repeat_count": 1,
       "option": [
+        "HP_目标PT",
         "HP_选择部队",
         "HP_选择难度",
         "HP_疲劳处理",
@@ -157,7 +158,7 @@
         "HP_同步远征"
       ],
       "label": "秘宝之里",
-      "description": "秘宝之里（花牌）活动自动化出阵。\n\n* **选择部队**：设定出阵部队。\n* **选择难度**：设定活动难度。\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」。\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **购买门票**：勾选后通行令牌不足时自动购买门票；不勾选时停止任务。\n* **同步后勤**：回本丸后自动检查队伍状态并派遣远征。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "秘宝之里/花牌 活动自动化出阵。\n\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」,并将队伍保存至对应的记录槽。\n* **更换队长**：点击右侧齿轮可配置跳过位置。\n* **购买门票**：勾选后通行令牌不足时自动购买门票，一次购买90+，任务结束后游戏会自动退票；不勾选时停止任务。\n* **同步后勤**：回本丸后自动检查队伍状态并派遣远征。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "江户潜入",
@@ -2389,6 +2390,57 @@
         }
       ],
       "default_case": []
+    },
+    "HP_目标PT": {
+      "name": "HP_目标PT",
+      "label": "达到目标Pt后跳过任务",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {"name": "No", "label": "关闭"},
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["HP_目标总PT", "HP_日期计划"],
+          "pipeline_override": {"HP_CheckGoalPt": {"enabled": true}}
+        }
+      ]
+    },
+    "HP_目标总PT": {
+      "name": "HP_目标总PT",
+      "label": "目标总 PT",
+      "type": "input",
+      "inputs": [
+        {"name": "total_goal", "label": "目标总 PT", "default": "30000", "pipeline_type": "int"}
+      ]
+    },
+    "HP_日期计划": {
+      "name": "HP_日期计划",
+      "label": "使用日期计划",
+      "type": "switch",
+      "inline_sub_options": true,
+      "default_case": "No",
+      "cases": [
+        {"name": "No", "label": "关闭"},
+        {"name": "Yes", "label": "开启", "option": ["HP_计划开始日期", "HP_计划截至日期"]}
+      ]
+    },
+    "HP_计划开始日期": {
+      "name": "HP_计划开始日期",
+      "label": "开始日期",
+      "type": "input",
+      "inputs": [
+        {"name": "start_date", "label": "开始日期", "default": "", "control": "date"}
+      ]
+    },
+    "HP_计划截至日期": {
+      "name": "HP_计划截至日期",
+      "label": "截至日期",
+      "description": "每天 5:00 切换计划日，5:00 前仍按前一天计算。当日早于开始日期时不作检查，晚于截至日期时固定按总目标比较。",
+      "type": "input",
+      "inputs": [
+        {"name": "end_date", "label": "截至日期", "default": "", "control": "date"}
+      ]
     },
     "HP_选择难度": {
       "name": "HP_选择难度",

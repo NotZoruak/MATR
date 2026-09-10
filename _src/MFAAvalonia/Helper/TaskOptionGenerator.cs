@@ -949,9 +949,12 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
     {
         var hasOptionDescription = !string.IsNullOrWhiteSpace(GetTooltipText(interfaceOption.Description, interfaceOption.Document));
         var isSingleInput = interfaceOption.Inputs?.Count == 1;
-        
+
+        // 日期控件自带标签说明，再叠加选项级 header 会出现重复标题
+        var isSingleDateInput = isSingleInput && interfaceOption.Inputs![0].IsDate;
+
         // 单输入且有 option description 时，需要显示 header，所以使用与多输入相同的 margin
-        var needsHeader = !isSingleInput || hasOptionDescription;
+        var needsHeader = !isSingleInput || (hasOptionDescription && !isSingleDateInput);
         
         var container = new StackPanel
         {
@@ -985,6 +988,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             if (input.IsSlider)
             {
                 container.Children.Add(CreateSliderInputControl(input, currentValue, option, interfaceOption));
+            }
+            else if (input.IsDate)
+            {
+                container.Children.Add(CreateDateInputControl(input, currentValue, option, interfaceOption));
             }
             else if (pipelineType == "bool")
             {
@@ -1087,6 +1094,47 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         AddResponsiveBehavior(grid, labelPanel, sliderPanel);
         grid.Children.Add(labelPanel);
         grid.Children.Add(sliderPanel);
+        return grid;
+    }
+
+    /// <summary>
+    /// 创建日期选择输入，取值格式为 yyyy-MM-dd。未设置时保持为空，表示不启用该日期。
+    /// </summary>
+    private Control CreateDateInputControl(
+        MaaInterface.MaaInterfaceOptionInput input,
+        string currentValue,
+        MaaInterface.MaaInterfaceSelectOption option,
+        MaaInterface.MaaInterfaceOption interfaceOption)
+    {
+        var grid = CreateBaseGrid();
+
+        var picker = new CalendarDatePicker
+        {
+            SelectedDate = DateOnly.TryParse(currentValue, out var parsedDate)
+                ? parsedDate.ToDateTime(TimeOnly.MinValue)
+                : null,
+            Margin = new Thickness(0, 2, 0, 2),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        BindIdleEnabled(picker);
+
+        picker.SelectedDateChanged += (_, _) =>
+        {
+            var text = picker.SelectedDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+            option.Data ??= new Dictionary<string, string?>();
+            option.Data[input.Name!] = text;
+            UpdatePipeline(option, interfaceOption);
+            saveConfigurationAction();
+        };
+
+        var labelPanel = CreateLabelPanel(input.DisplayName, input.Name, input.Description);
+        labelPanel.Margin = new Thickness(10, 0, 5, 0);
+        Grid.SetColumn(labelPanel, 0);
+        Grid.SetColumn(picker, 1);
+        AddResponsiveBehavior(grid, labelPanel, picker);
+        grid.Children.Add(labelPanel);
+        grid.Children.Add(picker);
         return grid;
     }
 

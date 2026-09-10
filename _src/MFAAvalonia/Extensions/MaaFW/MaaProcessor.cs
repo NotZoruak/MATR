@@ -3511,6 +3511,15 @@ public class MaaProcessor
         return activeTask?.RequestEarlyCompletion(reason) == true;
     }
 
+    /// <summary>
+    /// 读取当前正在执行的队列项的任务定义，供资源侧 action 解析任务级配置。
+    /// </summary>
+    public MaaInterface.MaaInterfaceTask? GetActiveTaskDefinition()
+    {
+        var activeTask = Volatile.Read(ref _activeQueueTask);
+        return activeTask?.SourceItem?.InterfaceItem;
+    }
+
     public async Task StartTask(List<DragItemViewModel>? tasks, bool onlyStart = false, bool checkUpdate = false)
     {
         using var logScope = BeginInstanceLogScope("ExecuteTaskQueue", "Worker");
@@ -5340,6 +5349,7 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.DragCaptainAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerCheckAction());
+            tasker.Resource.Register(new Custom.GoalPtCheckAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimeTracker());
             tasker.Resource.Register(new Custom.SmartWaitAction());
