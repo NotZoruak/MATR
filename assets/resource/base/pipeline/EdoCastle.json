@@ -1038,8 +1038,7 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_NavigateToActivity": {
-    "next": ["EC_ClickMenu"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_ClickMenu", "EC_DetectWhereAmI"]
   },
   "EC_CloseTicketPopup": {
     "action": {

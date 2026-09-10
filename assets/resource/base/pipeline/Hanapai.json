@@ -1165,7 +1165,7 @@
     "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_NavigateToActivity": {
-    "next": ["HP_ClickMenu"]
+    "next": ["HP_ClickMenu", "HP_DetectWhereAmI"]
   },
   "HP_IsTrainingLetter": {
     "recognition": {

@@ -1036,8 +1036,7 @@
     "next": ["LR_DetectWhereAmI"]
   },
   "LR_NavigateToActivity": {
-    "next": ["LR_ClickMenu"],
-    "on_error": ["LR_DetectWhereAmI"]
+    "next": ["LR_ClickMenu", "LR_DetectWhereAmI"]
   },
   "LR_CloseTicketPopup": {
     "action": {

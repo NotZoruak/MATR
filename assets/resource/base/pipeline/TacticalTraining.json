@@ -625,8 +625,7 @@
     "next": ["TT_DetectWhereAmI"]
   },
   "TT_NavigateToActivity": {
-    "next": ["TT_ClickMenu"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "next": ["TT_ClickMenu",  "TT_DetectWhereAmI"]
   },
   "TT_ClickMenu": {
     "recognition": {
