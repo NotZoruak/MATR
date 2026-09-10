@@ -114,7 +114,7 @@ AssertTrue(File.Exists(hanapaiDefinitionPath), "秘宝之里必须提供独立�
 var hanapaiDefinition = JObject.Parse(File.ReadAllText(hanapaiDefinitionPath));
 var hanapaiTask = interfaceDefinition["task"]?.FirstOrDefault(item => item?["entry"]?.Value<string>() == "Hanapai");
 AssertTrue(hanapaiTask?["option"]?.Values<string>().SequenceEqual([
-        "HP_选择部队", "HP_选择难度", "HP_疲劳处理", "HP_换队长", "HP_购买门票", "HP_同步远征"
+        "HP_目标PT", "HP_选择部队", "HP_选择难度", "HP_疲劳处理", "HP_换队长", "HP_购买门票", "HP_同步远征"
     ]) == true,
     "秘宝之里上线后必须注册完整的任务选项");
 AssertTrue(hanapaiDefinition["HP_DetectWhereAmI"]?["on_error"]?.Values<string>().SequenceEqual(["HP_RestartGame"]) == true,
@@ -193,19 +193,20 @@ AssertTrue(hanapaiDefinition["HP_IsNoTicketPopup"]?["recognition"]?["param"]?["e
     && hanapaiDefinition["HP_IsNoTicketPopup"]?["action"]?["param"]?["target"]?.Values<int>()
         .SequenceEqual([750, 448, 75, 40]) == true
     && hanapaiDefinition["HP_IsNoTicketPopup"]?["next"]?.Values<string>()
-        .SequenceEqual(["HP_IsNoTicket"]) == true,
-    "花牌门票不足的第一级弹窗必须关闭后进入第二级确认");
+        .SequenceEqual(["HP_CompleteCurrentTaskAfterNoTicket", "HP_IsNoTicket"]) == true,
+    "花牌门票不足的第一级弹窗必须先尝试结束任务，未命中时进入第二级确认");
 AssertTrue(hanapaiDefinition["HP_IsNoTicket"]?["recognition"]?["param"]?["expected"]?.Value<string>()
-        == "提灯一补"
+        == "通行令牌"
     && hanapaiDefinition["HP_IsNoTicket"]?["action"]?["param"]?["target"]?.Values<int>()
-        .SequenceEqual([1028, 38, 25, 26]) == true
+        .SequenceEqual([792, 509, 1, 3]) == true
     && hanapaiDefinition["HP_IsNoTicket"]?["next"]?.Values<string>()
-        .SequenceEqual(["HP_CompleteCurrentTaskAfterNoTicket"]) == true,
-    "花牌门票不足的第二级必须与异去一致，未购买时结束当前任务");
-var sortieNoTicketNode = sortieDefinition["S_IsIsekaiNoTicket"];
-AssertTrue(hanapaiDefinition["HP_IsNoTicket"]?["recognition"]?["param"]?["roi"]?.Values<int>()
-        .SequenceEqual(sortieNoTicketNode?["recognition"]?["param"]?["roi"]?.Values<int>() ?? []) == true,
-    "花牌第二级门票不足识别必须沿用异去的 ROI");
+        .SequenceEqual(["HP_ClickTicketConfirm"]) == true,
+    "花牌门票不足的第二级必须进入购买确认链路");
+AssertTrue(hanapaiDefinition["HP_ClickTicketConfirm"]?["action"]?["param"]?["target"]?.Values<int>()
+        .SequenceEqual([604, 588, 66, 42]) == true
+    && hanapaiDefinition["HP_ClickTicketConfirm"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_IsConfirmPurchase"]) == true,
+    "花牌门票不足后必须点击补票入口并进入购买页");
 AssertTrue(hanapaiDefinition["HP_IsConfirmPurchase"]?["recognition"]?["param"]?["expected"]?.Value<string>()
         == "确认"
     && hanapaiDefinition["HP_IsConfirmPurchase"]?["action"]?["custom_action_param"]?["message"]?.Value<string>()
