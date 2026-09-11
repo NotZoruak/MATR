@@ -4,8 +4,9 @@
     "on_error": ["DT_RestartGame"]
   },
   "DT_DetectWhereAmI": {
-    "timeout": 10000,
+    "timeout": 120000,
     "next": [
+      "DT_CheckHomeBrightness",
       "DT_IsExpeditionExperience",
       "DT_IsSwordDropColor",
       "DT_IsAnnouncementPopup",
@@ -19,11 +20,10 @@
       "DT_IsInternalReport",
       "DT_IsTrainingApplication",
       "DT_LeaveTroopRecord",
-      "DT_DetectClickMenu",
       "DT_DetectMenuDirectory",
-      "DT_CheckHomeBrightness",
       "DT_IsNetworkRequestTimeout",
-      "DT_IsConnectionInterrupted"
+      "DT_IsConnectionInterrupted",
+      "DT_DetectClickMenu"
     ],
     "on_error": ["DT_RestartGame"]
   },
@@ -576,10 +576,12 @@
     "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_PrepareHub": {
+    "timeout": 120000,
     "next": ["DT_LoginRewardGate"],
     "on_error": ["DT_RestartGame"]
   },
   "DT_LoginRewardGate": {
+    "timeout": 120000,
     "next": ["DT_LoginRewardHub", "DT_WarmGiftGate"],
     "on_error": ["DT_RestartGame"]
   },
@@ -602,6 +604,7 @@
     "on_error": ["DT_WarmGiftGate"]
   },
   "DT_LoginRewardHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -763,6 +766,7 @@
     }
   },
   "DT_LoginRewardClosePopupHub": {
+    "timeout": 120000,
     "next": ["DT_LoginRewardClosePopup", "DT_LoginRewardFinished", "DT_LoginRewardCatalogFinished"],
     "on_error": ["DT_LoginRewardHub"]
   },
@@ -829,6 +833,7 @@
     "on_error": ["DT_LoginRewardHub"]
   },
   "DT_WarmGiftGate": {
+    "timeout": 120000,
     "next": ["DT_WarmGiftHub", "DT_MixGate"],
     "on_error": ["DT_RestartGame"]
   },
@@ -851,6 +856,7 @@
     "on_error": ["DT_MixGate"]
   },
   "DT_WarmGiftHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -993,6 +999,7 @@
     }
   },
   "DT_WarmGiftFinishClaimHub": {
+    "timeout": 120000,
     "next": ["DT_WarmGiftPurchaseDetail", "DT_WarmGiftCloseClaimPopup"],
     "on_error": ["DT_WarmGiftHub"]
   },
@@ -1058,6 +1065,7 @@
     "on_error": ["DT_WarmGiftHub"]
   },
   "DT_MixGate": {
+    "timeout": 120000,
     "next": ["DT_MixHub", "DT_ForgeGate"],
     "on_error": ["DT_RestartGame"]
   },
@@ -1080,6 +1088,7 @@
     "on_error": ["DT_ForgeGate"]
   },
   "DT_MixHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -1240,6 +1249,7 @@
     "on_error": ["DT_MixHub"]
   },
   "DT_ForgeGate": {
+    "timeout": 120000,
     "next": ["DT_ForgeHub", "DT_DrillGate"],
     "on_error": ["DT_RestartGame"]
   },
@@ -1262,6 +1272,7 @@
     "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -1457,6 +1468,7 @@
     "on_error": ["DT_ForgeClaimCompletedHub"]
   },
   "DT_ForgeFindFreeSlot1Hub": {
+    "timeout": 120000,
     "next": ["DT_ForgeFindFreeSlot1_1", "DT_ForgeFindFreeSlot1_2", "DT_ForgeFindFreeSlot1_3", "DT_ForgeFindFreeSlot1_4", "DT_ForgeNoFreeSlot1"],
     "on_error": ["DT_ForgeNoFreeSlot1"]
   },
@@ -1711,6 +1723,7 @@
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeFindFreeSlot2Hub": {
+    "timeout": 120000,
     "next": ["DT_ForgeFindFreeSlot2_1", "DT_ForgeFindFreeSlot2_2", "DT_ForgeFindFreeSlot2_3", "DT_ForgeFindFreeSlot2_4", "DT_ForgeNoFreeSlot2"],
     "on_error": ["DT_ForgeNoFreeSlot2"]
   },
@@ -1965,6 +1978,7 @@
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeFindFreeSlot3Hub": {
+    "timeout": 120000,
     "next": ["DT_ForgeFindFreeSlot3_1", "DT_ForgeFindFreeSlot3_2", "DT_ForgeFindFreeSlot3_3", "DT_ForgeFindFreeSlot3_4", "DT_ForgeNoFreeSlot3"],
     "on_error": ["DT_ForgeNoFreeSlot3"]
   },
@@ -2282,6 +2296,7 @@
     "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeDisassembleHub": {
+    "timeout": 120000,
     "next": ["DT_ForgeDisassembleClickEntry", "DT_ForgeDisassembleDetectSelect"],
     "on_error": ["DT_ForgeHub"]
   },
@@ -2418,10 +2433,12 @@
     "on_error": ["DT_ForgeHub"]
   },
   "DT_DrillGate": {
+    "timeout": 120000,
     "next": ["DT_DrillHub", "DT_KebiGate"],
     "on_error": ["DT_RestartGame"]
   },
   "DT_DrillHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -2487,6 +2504,7 @@
     "on_error": ["DT_DrillHub"]
   },
   "DT_DrillOpponent1Hub": {
+    "timeout": 120000,
     "next": ["DT_DrillOpponentSelectComplete1"],
     "on_error": ["DT_DrillBattle1Hub"]
   },
@@ -2591,6 +2609,7 @@
     }
   },
   "DT_DrillBattle1Hub": {
+    "timeout": 120000,
     "next": [
       "DT_DrillIsTeamSelect1",
       "DT_DrillIsFormationSelect1",
@@ -2602,6 +2621,7 @@
     "on_error": ["DT_DrillBattle1Hub"]
   },
   "DT_DrillOpponent2Hub": {
+    "timeout": 120000,
     "next": ["DT_DrillOpponentSelectComplete2"],
     "on_error": ["DT_DrillBattle2Hub"]
   },
@@ -2706,6 +2726,7 @@
     }
   },
   "DT_DrillBattle2Hub": {
+    "timeout": 120000,
     "next": [
       "DT_DrillIsTeamSelect2",
       "DT_DrillIsFormationSelect2",
@@ -2717,6 +2738,7 @@
     "on_error": ["DT_DrillBattle2Hub"]
   },
   "DT_DrillOpponent3Hub": {
+    "timeout": 120000,
     "next": ["DT_DrillOpponentSelectComplete3"],
     "on_error": ["DT_DrillBattle3Hub"]
   },
@@ -2821,6 +2843,7 @@
     }
   },
   "DT_DrillBattle3Hub": {
+    "timeout": 120000,
     "next": [
       "DT_DrillIsTeamSelect3",
       "DT_DrillIsFormationSelect3",
@@ -2832,6 +2855,7 @@
     "on_error": ["DT_DrillBattle3Hub"]
   },
   "DT_DrillOpponent4Hub": {
+    "timeout": 120000,
     "next": ["DT_DrillOpponentSelectComplete4"],
     "on_error": ["DT_DrillBattle4Hub"]
   },
@@ -2936,6 +2960,7 @@
     }
   },
   "DT_DrillBattle4Hub": {
+    "timeout": 120000,
     "next": [
       "DT_DrillIsTeamSelect4",
       "DT_DrillIsFormationSelect4",
@@ -2947,6 +2972,7 @@
     "on_error": ["DT_DrillBattle4Hub"]
   },
   "DT_DrillOpponent5Hub": {
+    "timeout": 120000,
     "next": ["DT_DrillOpponentSelectComplete5"],
     "on_error": ["DT_DrillBattle5Hub"]
   },
@@ -3051,6 +3077,7 @@
     }
   },
   "DT_DrillBattle5Hub": {
+    "timeout": 120000,
     "next": [
       "DT_DrillIsTeamSelect5",
       "DT_DrillIsFormationSelect5",
@@ -3926,10 +3953,12 @@
     "on_error": ["DT_DrillHub"]
   },
   "DT_KebiGate": {
+    "timeout": 120000,
     "next": ["DT_RewardGate"],
     "on_error": ["DT_RestartGame"]
   },
   "DT_KebiHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "DT_KebiIsMarching",
@@ -4206,6 +4235,7 @@
     "on_error": ["DT_KebiHub"]
   },
   "DT_KebiPrepareFinishHub": {
+    "timeout": 120000,
     "next": ["DT_KebiGoHomeAfterBattle", "DT_KebiIsFormationSelect", "DT_KebiIsBattleResultExp", "DT_KebiIsBattleResultTitle"],
     "on_error": ["DT_KebiPrepareFinishHub"]
   },
@@ -4297,10 +4327,12 @@
     "on_error": ["DT_KebiHub"]
   },
   "DT_RewardGate": {
+    "timeout": 120000,
     "next": ["DT_RewardHub", "DT_MailResourceGate", "DT_Finish"],
     "on_error": ["DT_RestartGame"]
   },
   "DT_RewardHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -4385,6 +4417,7 @@
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardDailyClaimHub": {
+    "timeout": 120000,
     "next": ["DT_RewardClaimAvailable", "DT_RewardAfterDailyHub"],
     "on_error": ["DT_RewardHub"]
   },
@@ -4406,6 +4439,7 @@
     }
   },
   "DT_RewardAfterDailyHub": {
+    "timeout": 120000,
     "next": [
       "DT_RewardMonthlyGate",
       "DT_RewardMainlineGate",
@@ -4428,6 +4462,7 @@
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardMonthlyClaimHub": {
+    "timeout": 120000,
     "next": ["DT_RewardMonthlyClaimAvailable", "DT_RewardAfterMonthlyHub"],
     "on_error": ["DT_RewardHub"]
   },
@@ -4449,6 +4484,7 @@
     }
   },
   "DT_RewardAfterMonthlyHub": {
+    "timeout": 120000,
     "next": [
       "DT_RewardMainlineGate",
       "DT_RewardActivityGate",
@@ -4470,6 +4506,7 @@
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardMainlineClaimHub": {
+    "timeout": 120000,
     "next": ["DT_RewardMainlineClaimAvailable", "DT_RewardAfterMainlineHub"],
     "on_error": ["DT_RewardHub"]
   },
@@ -4491,6 +4528,7 @@
     }
   },
   "DT_RewardAfterMainlineHub": {
+    "timeout": 120000,
     "next": ["DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
     "on_error": ["DT_RewardHub"]
   },
@@ -4508,6 +4546,7 @@
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardActivityClaimHub": {
+    "timeout": 120000,
     "next": ["DT_RewardActivityClaimAvailable", "DT_RewardTaskFinishedLog"],
     "on_error": ["DT_RewardHub"]
   },
@@ -4538,6 +4577,7 @@
     "on_error": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardClosePopupHub": {
+    "timeout": 120000,
     "next": ["DT_RewardClosePopup", "DT_MailResourceGate", "DT_Finish"],
     "on_error": ["DT_MailResourceGate"]
   },
@@ -4563,11 +4603,13 @@
     "on_error": ["DT_RewardHub"]
   },
   "DT_MailResourceGate": {
+    "timeout": 120000,
     "enabled": false,
     "next": ["DT_MailResourceHub", "DT_Finish"],
     "on_error": ["DT_RestartGame"]
   },
   "DT_MailResourceHub": {
+    "timeout": 120000,
     "enabled": false,
     "next": [
       "[JumpBack]DT_HandleExperience",
@@ -4816,6 +4858,7 @@
     "on_error": ["DT_MailResourceHub"]
   },
   "DT_LoginRewardReturnHomeHub": {
+    "timeout": 120000,
     "next": ["DT_LoginRewardReturnHomeCheckBrightness", "DT_LoginRewardReturnHomeClickMenu", "DT_LoginRewardReturnHomeClickHome", "DT_LoginRewardReturnHomeFallbackWait"]
   },
   "DT_LoginRewardReturnHomeClickMenu": {
@@ -4890,6 +4933,7 @@
     }
   },
   "DT_WarmGiftReturnHomeHub": {
+    "timeout": 120000,
     "next": ["DT_WarmGiftReturnHomeCheckBrightness", "DT_WarmGiftReturnHomeClickMenu", "DT_WarmGiftReturnHomeClickHome", "DT_WarmGiftReturnHomeFallbackWait"]
   },
   "DT_WarmGiftReturnHomeClickMenu": {
@@ -4964,6 +5008,7 @@
     }
   },
   "DT_MixReturnHomeHub": {
+    "timeout": 120000,
     "next": ["DT_MixReturnHomeCheckBrightness", "DT_MixReturnHomeClickMenu", "DT_MixReturnHomeClickHome", "DT_MixReturnHomeFallbackWait"]
   },
   "DT_MixReturnHomeClickMenu": {
@@ -5038,6 +5083,7 @@
     }
   },
   "DT_ForgeReturnHomeHub": {
+    "timeout": 120000,
     "next": ["DT_ForgeReturnHomeCheckBrightness", "DT_ForgeReturnHomeClickMenu", "DT_ForgeReturnHomeClickHome", "DT_ForgeReturnHomeFallbackWait"]
   },
   "DT_ForgeReturnHomeClickMenu": {
@@ -5112,6 +5158,7 @@
     }
   },
   "DT_DrillReturnHomeHub": {
+    "timeout": 120000,
     "next": ["DT_DrillReturnHomeCheckBrightness", "DT_DrillReturnHomeClickMenu", "DT_DrillReturnHomeClickHome", "DT_DrillReturnHomeFallbackWait"]
   },
   "DT_DrillReturnHomeClickMenu": {
@@ -5186,6 +5233,7 @@
     }
   },
   "DT_KebiReturnHomeHub": {
+    "timeout": 120000,
     "next": ["DT_KebiReturnHomeCheckBrightness", "DT_KebiReturnHomeClickMenu", "DT_KebiReturnHomeClickHome", "DT_KebiReturnHomeFallbackWait"]
   },
   "DT_KebiReturnHomeClickMenu": {
@@ -5258,6 +5306,20 @@
       "time": 200,
       "target": [180, 11, 25, 28]
     }
+  },
+  "DT_WaitRefresh": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "post_delay": 1000,
+    "next": ["E_CheckTeamStatus"],
+    "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_Finish": {
     "on_error": ["DT_RestartGame"]

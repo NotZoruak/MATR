@@ -4023,7 +4023,7 @@ public class MaaProcessor
         UpdateTaskDictionary(ref taskModels, task.InterfaceItem?.Option, task.InterfaceItem?.Advanced);
 
         // 5. 同步后勤任务复用当前实例的远征队伍、修刀、内番和刷新间隔配置
-        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "Hanapai" or "TacticalTraining" or "EdoCastle")
+        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")
         {
             var syncExpEnabled = task.InterfaceItem.Option
                 ?.FirstOrDefault(o => (o.Name ?? string.Empty).EndsWith("同步远征")
@@ -4065,6 +4065,7 @@ public class MaaProcessor
                             "Hanapai" => "HP_NavigateToActivity",
                             "TacticalTraining" => "TT_NavigateToActivity",
                             "EdoCastle" => "EC_NavigateToActivity",
+                            "DailyTask" => "DT_PrepareHub",
                             _ => "LR_NavigateToActivity"
                         };
                         taskModels.Merge(new Dictionary<string, JToken>

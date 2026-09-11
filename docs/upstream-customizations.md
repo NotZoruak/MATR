@@ -31,7 +31,7 @@
 
 “自定编队”必须作为 `assets/interface.json` 中的普通任务注册，入口为 `FormationConfig`，通过任务专属的 `FC_选择预设` 设置选择编队预设；不得重新加入上游的特殊任务列表。
 
-预设选择页支持新增、编辑、复制、粘贴、删除和勾选预设，自定编队任务可勾选多个预设并按设置页从上到下的顺序依次编成。多选编号保存在任务选项数据的 `preset_ids` 中；`MaaProcessor` 在任务装配阶段按预设逐个展开为多次编队任务，再把单个预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖。一键日课不再内置“开始前启用预设部队”，需要先编队时由用户在日课之前单独添加自定编队任务。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
+预设选择页支持新增、编辑、复制、粘贴、删除和勾选预设，自定编队任务可勾选多个预设并按设置页从上到下的顺序依次编成。多选编号保存在任务选项数据的 `preset_ids` 中；`MaaProcessor` 在任务装配阶段按预设逐个展开为多次编队任务，再把单个预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖。一键日课不再内置“开始前启用预设部队”，需要先编队时由用户启用默认排在日课之前的自定编队任务。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
 
 刀装与刀剑名称匹配由 `FormationNameMatcher` 统一处理。刀装中存在铳、弓、枪、盾这类单字目标，必须先在归一化后的文本上做包含判断，再做单字长度判断，否则单字目标拿不到形近字容错。归一字形需保留銃/铳、统/铳、槍/枪，避免 OCR 把“铳兵”识别成“统兵”后扫到列表底部仍判定未找到。
 
@@ -87,7 +87,7 @@
 
 ### `task.sync-expedition-reuse`
 
-同步后勤是 MATR 对 MFAAvalonia 远征流程的定制扩展。合战场、地下城、陆联、战术强化和江户潜入启用“同步后勤”时，`MaaProcessor.CreateNodeAndParam` 必须从当前实例的“后勤”任务读取“部队一”至“部队五”的选项，并将这些选项的 `pipeline_override` 合并到当前任务。
+同步后勤是 MATR 对 MFAAvalonia 远征流程的定制扩展。合战场、地下城、陆联、战术强化、江户潜入与一键日课启用“同步后勤”时，`MaaProcessor.CreateNodeAndParam` 必须从当前实例的“后勤”任务读取“部队一”至“部队五”的选项，并将这些选项的 `pipeline_override` 合并到当前任务。
 
 远征队伍的检查开关必须沿用后勤任务的配置：选择“休息”时对应的 `E_CheckTeamN` 为 `false`，选择远征地图时对应的 `E_CheckTeamN` 为 `true`，同时合并对应的地图选择参数。同步选项本身不得固定把五个 `E_CheckTeamN` 全部设为 `true`，否则休息队伍会进入 `E_SelectMapN`，并可能因自定义选图动作返回失败而重复进入远征页面。
 
@@ -95,9 +95,13 @@
 
 该逻辑还负责同步修刀、内番和远征刷新间隔；升级时必须保留实例配置重新读取兜底，避免配置缓存为空或被惰性枚举污染时丢失队伍设置。2026-09-05 的 MFAAvalonia v2.16.1 升级曾移除整段同步配置复用逻辑，导致已配置的第二至第五队不再检查；后续修复不得只在 `interface.json` 的同步选项中补充固定启用开关。
 
+一键日课的接入点是 `DT_IsHome.next → Expedition`，与出阵任务的 `*_IsHome.next` 同形；后勤在 `E_AllTeamsBusy` 处结束，该 node 在任务层覆盖为「关闭队伍状态面板（`repeat: 2`、`repeat_delay: 500`）→ `DT_PrepareHub`」，新增的回落 node 是 `DT_WaitRefresh`。日课不做倒计时与队伍面板 OCR 扫描，因此不覆盖 `E_TimerStart`，`E_AllTeamsBusy` 的 action 必须写死为 Click——否则开启“远征智能调度”时全局覆盖会把该 node 改成 `DoNothing`，队伍状态面板不会关闭。
+
 ### `recovery.game-and-emulator-restart`
 
 MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调检测接入。必须保留 `TaskRecoveryMonitor`、任务回调记录和 `TryRunTasksAsync` 中独立于底层 `Wait` 的检查循环。检测只在 ADB 普通任务且开启「卡死重启」时启用，静默阈值沿用「卡死等待时间」（默认 120 秒），排除智能等待、人工弹窗及已经开始的游戏恢复。停止和完成任务时撤销检测。
+
+日课的画面检测枢纽、各业务枢纽与各阶段 Gate 在 `DailyTask.json` 中写死 `timeout: 120000`（共 49 个 node），不再依赖「卡死重启」选项覆盖等待时间；该开关对日课只切换 `on_error` 指向的恢复枢纽（`DT_RestartGame` 与 `DT_RestartGameReturn*`）。
 
 恢复时先异步请求底层停止，再执行外部游戏与模拟器恢复，不能先等待挂起的底层停止；底层退出确认有 30 秒上限。恢复后重连并重新执行当前中断任务，保留外层队列及已完成轮次；恢复失败必须停止队列，不能继续向未退出的执行器追加任务。恢复动作应显式接收所属处理器和取消令牌，避免切换实例后操作错误设备，手动停止后不得继续启动任务。MuMu 的 Windows 命令不得在其他平台执行。
 

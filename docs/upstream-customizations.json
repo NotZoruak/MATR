@@ -57,8 +57,8 @@
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "将入口保留为 interface.json 普通任务，在运行前按 FC_选择预设生成 FormationConfigAction 参数与 pipeline 覆盖；勾选多个预设时按列表顺序展开为多次编队任务，不恢复上游特殊任务列表注册。",
-      "verification": ["任务列表出现自定编队普通任务", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装"],
-      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户把自定编队任务排在日课之前。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。"
+      "verification": ["任务列表出现自定编队普通任务且默认排在日课之前", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装"],
+      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户启用默认排在日课之前的自定编队任务。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。"
     },
     {
       "id": "services.update-data-scheduling",
@@ -105,6 +105,17 @@
       "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知。合战场的轮数与其它任务一致，取自任务级 repeat_count，过去与异去共用；CreateNodeAndParam 直接使用 InterfaceItem.RepeatCount，不得恢复历史上读取过去/异去下级异去_重复次数或给过去写死三轮的定制逻辑。过去的单圈结束由资源侧自定义识别 SortieRoundDoneRecognition 判定：读取 S_SortieSuccess 命中计数，配合 TaskJob.Id 与本次运行基线判断本轮是否已出阵，命中时经 S_IsSortieRoundDone（打点完成一圈＋空 next）结束本轮任务运行。该判定必须走 next 正常分支，不得改用动作失败走 on_error，否则 MaaFW 的 SaveOnError 会按圈数往 debug/on_error 写截图；刷花链不参与轮次判定。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
     },
     {
+      "id": "task.sync-expedition-reuse",
+      "title": "同步后勤复用后勤任务配置",
+      "purpose": "让出阵任务与一键日课复用「后勤」任务保存的远征队伍、修刀、内番与刷新间隔配置。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "assets/interface.json", "assets/resource/base/pipeline/Expedition.json", "assets/resource/base/pipeline/DailyTask.json"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 CreateNodeAndParam 中的同步配置复用与实例配置重读兜底；升级后核对入口白名单仍包含 Sortie、Underground、LRentaisen、Hanapai、TacticalTraining、EdoCastle 与 DailyTask。",
+      "verification": ["休息队伍对应的 E_CheckTeamN 为 false 且不进入选图流程", "配置远征地图的队伍会进入选图与确认派遣", "修刀多选筛选条件递归合并到同一个 E_FindRepairableSword", "内番开关随后勤任务同步", "配置刷新间隔时注入 E_TimerStart 并指向各任务导航 node", "一键日课同步后勤接入 DT_IsHome 并在 E_AllTeamsBusy 后回到 DT_PrepareHub", "任务列表中没有后勤任务时回落默认配置"],
+      "notes": "同步后勤的入口至少包含合战场、地下城、陆联、战术强化、江户潜入与一键日课。日课不做倒计时，E_AllTeamsBusy 的 action 必须写死为关闭队伍状态面板的点击，否则开启远征智能调度时会被全局覆盖成 DoNothing。"
+    },
+    {
       "id": "recovery.game-and-emulator-restart",
       "title": "游戏与模拟器卡死恢复",
       "purpose": "保留 MATR 对 MFAAvalonia 恢复动作和日课卡死路径的二次开发，兼容不同模拟器的应用启动方式。",
@@ -112,8 +123,8 @@
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。",
-      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节"],
-      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径，并覆盖 DT_DetectWhereAmI 的卡死等待时间。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。"
+      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节"],
+      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。"
     },
     {
       "id": "adb.mumu-emulator-extras-input",
