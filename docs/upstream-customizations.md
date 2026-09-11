@@ -79,7 +79,11 @@
 
 任务失败时除保留界面内提示与外部通知外，还必须调用 `ToastNotification.Show` 发送系统通知，使失败、成功的任务结束反馈保持一致。升级时检查失败分支，避免只剩界面内日志而用户错过失败结果。
 
-合战场任务的 `repeatable` 固定为 `false`，但“异去”模式的轮次数由“过去/异去”选项下的 `异去_重复次数` 输入项决定。`MaaProcessor.CreateNodeAndParam` 必须从该下级选项读取 `repeat_count`，并将正整数与 `-1`（无限循环）直接作为队列轮次；不得因合战场未标记为可重复而压成单次执行。“过去”模式保持三轮的既有策略。
+合战场任务的轮数与其它任务完全一致：`repeatable` 为 `true`，次数取自任务级 `repeat_count`，「过去」与「异去」共用同一份设置。`MaaProcessor.CreateNodeAndParam` 直接使用 `InterfaceItem.RepeatCount`，不得恢复历史上「从 `过去/异去` 下级选项 `异去_重复次数` 读取轮数」或「给过去写死三轮」的定制逻辑（该逻辑曾两次被上游升级覆盖）。
+
+「异去」每圈流程自身停在 `S_IsIsekaiRegionEnd`（无 `next`）即一圈结束，无需额外定制。「过去」每一圈打完回到本丸后同样要把控制权交回队列，因此由资源侧自定义识别 `SortieRoundDoneRecognition` 判断「本次任务运行是否已经出阵过」（判定依据为 `S_SortieSuccess` 的命中计数配合 `TaskJob.Id` 与基线），命中时走 `S_IsSortieRoundDone`（打点「[合战场] 完成一圈」＋`"next": []`）结束本轮运行。判定必须走 `next` 正常分支，不得改用「动作返回 false 走 `on_error`」：MaaFW 的 `SaveOnError` 全局选项会在 on_error 触发时写入 `debug/on_error/` 截图，按圈数刷屏。
+
+引擎运行标识在每次 `post_task` 变化，命中计数的生命周期以基线比较兜底；刷花链（`SF_ClickSortieNow` / `SF_IsHome`）不参与轮次判定，回到主链后继续。
 
 ### `task.sync-expedition-reuse`
 

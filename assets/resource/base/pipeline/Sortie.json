@@ -748,6 +748,23 @@
     },
     "on_error": ["S_DetectWhereAmI"]
   },
+  "S_IsSortieRoundDone": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "SortieRoundDoneRecognition"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "LogAction",
+      "custom_action_param": {
+        "level": "Info",
+        "message": "[合战场] 完成一圈"
+      }
+    },
+    "next": []
+  },
   "S_VerifyEra": {
     "recognition": {
       "type": "OCR",

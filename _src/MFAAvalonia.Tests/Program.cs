@@ -432,11 +432,43 @@ var sortieRepeatSource = ExtractSourceSection(
     taskStartProcessorSource,
     "private NodeAndParam CreateNodeAndParam",
     "private void ApplyFormationPresetOverride");
-AssertTrue(sortieRepeatSource.Contains("var modeOption = task.InterfaceItem?.Option?.FirstOrDefault(o => o.Name == \"过去/异去\")", StringComparison.Ordinal)
-    && sortieRepeatSource.Contains("modeOption.Index == 1", StringComparison.Ordinal)
-    && sortieRepeatSource.Contains("modeOption.SubOptions?.FirstOrDefault(o => o.Name == \"异去_重复次数\")", StringComparison.Ordinal)
-    && sortieRepeatSource.Contains("repeatOption.Data.TryGetValue(\"repeat_count\", out var repeatStr)", StringComparison.Ordinal),
-    "异去模式必须从过去/异去的下级重复次数读取轮数，不能因合战场未标记 repeatable 而固定为单次");
+AssertTrue(sortieRepeatSource.Contains("var repeatCount = task.InterfaceItem?.RepeatCount;", StringComparison.Ordinal)
+    && !sortieRepeatSource.Contains("异去_重复次数", StringComparison.Ordinal),
+    "常驻作战的轮数必须与其它任务一致，直接取任务级重复次数，不得再读过去/异去的下级选项");
+var sortieTaskDefinition = interfaceDefinition["task"]?
+    .FirstOrDefault(item => item?["entry"]?.Value<string>() == "Sortie");
+var sortieModeOption = interfaceDefinition["option"]?["过去/异去"];
+var pastSortieCaseDefinition = sortieModeOption?["cases"]?
+    .FirstOrDefault(item => item?["name"]?.Value<string>() == "过去");
+var isekaiSortieCaseDefinition = sortieModeOption?["cases"]?
+    .FirstOrDefault(item => item?["name"]?.Value<string>() == "异去");
+AssertTrue(sortieTaskDefinition?["repeatable"]?.Value<bool>() == true
+    && sortieTaskDefinition?["repeat_count"]?.Value<int>() == 3
+    && interfaceDefinition["option"]?["异去_重复次数"] == null
+    && isekaiSortieCaseDefinition?["option"]?.Values<string>().Contains("异去_重复次数") == false,
+    "常驻作战必须改用任务级重复次数，并移除旧的异去下级次数选项");
+AssertTrue(pastSortieCaseDefinition?["pipeline_override"]?["S_CheckHomeBrightness"]?["next"]?.Values<string>()
+        .SequenceEqual(["S_IsSortieRoundDone", "S_IsHome", "S_DetectWhereAmI"]) == true,
+    "过去模式必须在回本丸路径上优先判断这一圈是否已经打完");
+AssertTrue(sortieDefinition["S_IsSortieRoundDone"]?["recognition"]?["type"]?.Value<string>() == "Custom"
+    && sortieDefinition["S_IsSortieRoundDone"]?["recognition"]?["param"]?["custom_recognition"]?.Value<string>() == "SortieRoundDoneRecognition"
+    && sortieDefinition["S_IsSortieRoundDone"]?["action"]?["custom_action"]?.Value<string>() == "LogAction"
+    && sortieDefinition["S_IsSortieRoundDone"]?["next"]?.Values<string>()?.Any() == false,
+    "过去模式的单圈结算 node 必须用自定义识别判定，并在打点后结束本轮任务运行");
+AssertTrue(SortieRepeatCountMigration.TryResolve("Sortie", "5", out var migratedSortieRepeat)
+    && migratedSortieRepeat == 5,
+    "合战场旧轮数必须迁移到任务级重复次数");
+AssertTrue(SortieRepeatCountMigration.TryResolve("Sortie", "-1", out var migratedInfiniteRepeat)
+    && migratedInfiniteRepeat == -1,
+    "合战场旧轮数为 -1 时必须迁移为无限重复");
+AssertFalse(SortieRepeatCountMigration.TryResolve("Sortie", "无法识别", out _),
+    "旧轮数非法时不得迁移");
+AssertFalse(SortieRepeatCountMigration.TryResolve("Underground", "5", out _),
+    "非合战场任务不得参与轮数迁移");
+var taskLoaderSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "TaskLoader.cs"));
+AssertTrue(taskLoaderSource.Contains("MigrateSortieRepeatCount(oldItem.InterfaceItem)", StringComparison.Ordinal),
+    "加载存量配置时必须执行合战场轮数迁移");
 AssertTrue(mfaTaskSource.Contains("!infinite && Count > 1 && Type == MFATaskType.MAAFW", StringComparison.Ordinal)
     && mfaTaskSource.Contains("LangKeys.TaskRoundComplete", StringComparison.Ordinal),
     "有限重复任务每完成一轮都必须输出任务完成和当前进度");
@@ -1341,14 +1373,16 @@ AssertTrue(
     && dailyPipeline["DT_ForgeSkipDisassemble"]?["action"]?["custom_action"]?.Value<string>() == "GuiLogAction",
     "未开启刀解时，收刀所需刀位不足必须跳过收刀和锻刀");
 AssertTrue(
-    dailyDisassembleEnabledOverride?["DT_ForgeDetectStatus"]?["next"]?.Values<string>()
+    dailyDisassembleEnabledOverride?["DT_ForgeCheckCapacity"]?["next"]?.Values<string>()
         .SequenceEqual(["DT_ForgeDailyDisassembleOnceCheck"]) == true
-    && dailyDisassembleEnabledOverride?["DT_ForgeDailyDisassembleOnceCheck"]?["enabled"]?.Value<bool>() == true
-    && dailyPipeline["DT_ForgeDailyDisassembleAlreadyCompleted"]?["next"]?.Values<string>()
-        .SequenceEqual(["DT_ForgeCheckCapacity"]) == true
     && dailyDisassembleEnabledOverride?["DT_ForgeCheckCapacity"]?["on_error"]?.Values<string>()
         .SequenceEqual(["DT_ForgeDisassembleHub"]) == true,
-    "开启刀解时，首次刀解后或当天已刀解后都必须检查收刀缺口并在必要时腾位");
+    "开启刀解时，刀位不足必须先按缺口刀解腾位，刀位充足才检查当天刀解状态");
+AssertTrue(
+    dailyDisassembleEnabledOverride?["DT_ForgeDailyDisassembleOnceCheck"]?["enabled"]?.Value<bool>() == true
+    && dailyDisassembleEnabledOverride?["DT_ForgeDailyDisassembleAlreadyCompleted"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_ForgeClaimCompletedHub"]) == true,
+    "开启刀解时，当天尚未刀解要先刀解一把，当天已刀解则直接进入收刀");
 AssertTrue(
     dailyPipeline["DT_ForgeDisassembleSelectAllowed"]?["action"]?["custom_action_param"]?["minimum_count"]?.Value<int>() == 1
     && dailyPipeline["DT_ForgeDisassembleCompleted"]?["action"]?["custom_action_param"]?["item"]?.Value<string>() == "disassemble",

@@ -57,6 +57,7 @@
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\MixGreedySelectionDecision.cs" Link="MixGreedySelectionDecision.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\TeamSwitchDecision.cs" Link="TeamSwitchDecision.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\CaptainSettingsDecision.cs" Link="CaptainSettingsDecision.cs" />
+    <Compile Include="..\MFAAvalonia\Extensions\MaaFW\SortieRepeatCountMigration.cs" Link="SortieRepeatCountMigration.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\EquipmentFallbackDecision.cs" Link="EquipmentFallbackDecision.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\DrillDangerDecision.cs" Link="DrillDangerDecision.cs" />
     <Compile Include="..\MFAAvalonia\Extensions\MaaFW\Custom\FormationNameMatcher.cs" Link="FormationNameMatcher.cs" />

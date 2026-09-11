@@ -494,6 +494,7 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
         oldItem.RefreshDisplayName();
 
         UpdateAdvancedOptions(oldItem, newItem);
+        MigrateSortieRepeatCount(oldItem.InterfaceItem);
         UpdateOptions(oldItem, newItem);
 
         // 更新 IsVisible 属性，确保设置图标的可见性正确
@@ -502,6 +503,33 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
             || oldItem.InterfaceItem.Repeatable == true
             || !string.IsNullOrWhiteSpace(oldItem.InterfaceItem.Description)
             || oldItem.InterfaceItem.Document is { Count: > 0 };
+    }
+
+    /// <summary>
+    /// 把合战场旧「异去_重复次数」下级选项里的轮数迁移到任务级重复次数。
+    /// 旧版合战场不可重复，任务级次数恒为接口默认值，因此迁移时可以直接覆盖；
+    /// 迁移后移除旧下级选项，避免下次启动再次覆盖用户在任务设置里填写的次数。
+    /// </summary>
+    private static void MigrateSortieRepeatCount(MaaInterface.MaaInterfaceTask? task)
+    {
+        if (task?.Option == null) return;
+        if (!string.Equals(task.Entry, SortieRepeatCountMigration.SortieEntry, StringComparison.Ordinal)) return;
+
+        var modeOption = task.Option.FirstOrDefault(option => option.Name == "过去/异去");
+        if (modeOption?.SubOptions == null) return;
+
+        var legacyOption = modeOption.SubOptions.FirstOrDefault(option => option.Name == "异去_重复次数");
+        if (legacyOption == null) return;
+
+        if (legacyOption.Data != null
+            && legacyOption.Data.TryGetValue("repeat_count", out var legacyValue)
+            && SortieRepeatCountMigration.TryResolve(task.Entry, legacyValue, out var repeatCount))
+        {
+            task.RepeatCount = repeatCount;
+            LoggerHelper.Info($"[合战场] 轮数迁移：旧下级选项 {legacyValue} → 任务级重复次数 {repeatCount}");
+        }
+
+        modeOption.SubOptions.Remove(legacyOption);
     }
 
 

@@ -4130,26 +4130,8 @@ public class MaaProcessor
         }
 
         var taskParams = SerializeTaskParams(taskModels);
-        // 异去重复次数位于“过去/异去”选项的下级选项中，不能受任务本身 repeatable=false 的限制。
+        // 常驻作战与其它任务一致，轮数直接取任务级重复次数（过去与异去共用同一份设置）。
         var repeatCount = task.InterfaceItem?.RepeatCount;
-        var modeOption = task.InterfaceItem?.Option?.FirstOrDefault(o => o.Name == "过去/异去");
-        if (modeOption != null)
-        {
-            if (modeOption.Index == 1)
-            {
-                var repeatOption = modeOption.SubOptions?.FirstOrDefault(o => o.Name == "异去_重复次数");
-                if (repeatOption?.Data != null
-                    && repeatOption.Data.TryGetValue("repeat_count", out var repeatStr)
-                    && int.TryParse(repeatStr, out var repeatValue))
-                {
-                    repeatCount = repeatValue;
-                }
-            }
-            else
-            {
-                repeatCount = 3;
-            }
-        }
         // var settings = new JsonSerializerSettings
         // {
         //     Formatting = Formatting.Indented,
