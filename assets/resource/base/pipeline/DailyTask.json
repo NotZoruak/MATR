@@ -576,22 +576,8 @@
     "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_PrepareHub": {
-    "next": ["DT_PresetHub", "DT_LoginRewardGate"],
+    "next": ["DT_LoginRewardGate"],
     "on_error": ["DT_RestartGame"]
-  },
-  "DT_PresetHub": {
-    "enabled": false,
-    "next": ["FormationConfig", "DT_PresetFallbackWait"]
-  },
-  "DT_PresetFallbackWait": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_PresetHub"],
-    "on_error": ["DT_PresetHub"]
   },
   "DT_LoginRewardGate": {
     "next": ["DT_LoginRewardHub", "DT_WarmGiftGate"],
@@ -762,7 +748,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [1181, 11, 38, 35]
+        "target": [1179,13,82,36]
       }
     },
     "next": [
@@ -1426,7 +1412,7 @@
       "type": "Custom",
       "custom_action": "SwordDropLogAction",
       "custom_action_param": {
-        "task": "日课 锻刀",
+        "task": "日课",
         "roi": [52, 509, 282, 34],
         "click": [947, 533, 67, 75]
       }
@@ -1530,8 +1516,20 @@
         "expected": "锻刀资源投入"
       }
     },
+    "next": ["DT_ForgeFormula1Limited", "DT_ForgeFormula1LimitedFirst", "DT_ForgeFormula1All50"],
+    "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeFormula1All50": {
     "next": ["DT_ForgeAll50Check1_1", "DT_ForgeAll50Reset1_1"],
     "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeFormula1Limited": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect1", "DT_ForgeLimitedMissing"]
+  },
+  "DT_ForgeFormula1LimitedFirst": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect1", "DT_ForgeFormula1All50"]
   },
   "DT_ForgeAll50Check1_1": {
     "recognition": {
@@ -1640,6 +1638,47 @@
     "next": ["DT_ForgeAll50Check1_1"],
     "on_error": ["DT_ForgeHub"]
   },
+  "DT_ForgeLimitedDetect1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [971, 144, 5, 2],
+        "upper": [3, 104, 116],
+        "lower": [1, 102, 114],
+        "count": 10
+      }
+    },
+    "timeout": 2000,
+    "next": ["DT_ForgeLimitedChecked1", "DT_ForgeLimitedClick1"]
+  },
+  "DT_ForgeLimitedChecked1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [939, 139, 30, 29],
+        "upper": [210, 80, 80],
+        "lower": [150, 0, 0],
+        "count": 20
+      }
+    },
+    "timeout": 2000,
+    "next": ["DT_ForgeClickStart1"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"]
+  },
+  "DT_ForgeLimitedClick1": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [939, 139, 30, 29]
+      }
+    },
+    "next": ["DT_ForgeLimitedDetect1"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [939, 139, 30, 29]
+    }
+  },
   "DT_ForgeClickStart1": {
     "recognition": {
       "type": "OCR",
@@ -1667,9 +1706,8 @@
         "target": [454,457,58,28]
       }
     },
-    "repeat": 2,
-    "repeat_delay": 500,
-    "next": ["DT_ForgeFindFreeSlot2Hub"],
+    "post_delay": 500,
+    "next": ["DT_ForgeClickStartClose1", "DT_ForgeFindFreeSlot2Hub"],
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeFindFreeSlot2Hub": {
@@ -1732,8 +1770,20 @@
         "expected": "锻刀资源投入"
       }
     },
+    "next": ["DT_ForgeFormula2Limited", "DT_ForgeFormula2LimitedFirst", "DT_ForgeFormula2All50"],
+    "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeFormula2All50": {
     "next": ["DT_ForgeAll50Check2_1", "DT_ForgeAll50Reset2_1"],
     "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeFormula2Limited": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect2", "DT_ForgeLimitedMissing"]
+  },
+  "DT_ForgeFormula2LimitedFirst": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect2", "DT_ForgeFormula2All50"]
   },
   "DT_ForgeAll50Check2_1": {
     "recognition": {
@@ -1842,6 +1892,47 @@
     "next": ["DT_ForgeAll50Check2_1"],
     "on_error": ["DT_ForgeHub"]
   },
+  "DT_ForgeLimitedDetect2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [971, 144, 5, 2],
+        "upper": [3, 104, 116],
+        "lower": [1, 102, 114],
+        "count": 10
+      }
+    },
+    "timeout": 2000,
+    "next": ["DT_ForgeLimitedChecked2", "DT_ForgeLimitedClick2"]
+  },
+  "DT_ForgeLimitedChecked2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [939, 139, 30, 29],
+        "upper": [210, 80, 80],
+        "lower": [150, 0, 0],
+        "count": 20
+      }
+    },
+    "timeout": 2000,
+    "next": ["DT_ForgeClickStart2"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"]
+  },
+  "DT_ForgeLimitedClick2": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [939, 139, 30, 29]
+      }
+    },
+    "next": ["DT_ForgeLimitedDetect2"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [939, 139, 30, 29]
+    }
+  },
   "DT_ForgeClickStart2": {
     "recognition": {
       "type": "OCR",
@@ -1869,9 +1960,8 @@
         "target": [454,457,58,28]
       }
     },
-    "repeat": 2,
-    "repeat_delay": 500,
-    "next": ["DT_ForgeFindFreeSlot3Hub"],
+    "post_delay": 500,
+    "next": ["DT_ForgeClickStartClose2", "DT_ForgeFindFreeSlot3Hub"],
     "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeFindFreeSlot3Hub": {
@@ -1934,8 +2024,20 @@
         "expected": "锻刀资源投入"
       }
     },
+    "next": ["DT_ForgeFormula3Limited", "DT_ForgeFormula3LimitedFirst", "DT_ForgeFormula3All50"],
+    "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeFormula3All50": {
     "next": ["DT_ForgeAll50Check3_1", "DT_ForgeAll50Reset3_1"],
     "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeFormula3Limited": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect3", "DT_ForgeLimitedMissing"]
+  },
+  "DT_ForgeFormula3LimitedFirst": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect3", "DT_ForgeFormula3All50"]
   },
   "DT_ForgeAll50Check3_1": {
     "recognition": {
@@ -2044,6 +2146,47 @@
     "next": ["DT_ForgeAll50Check3_1"],
     "on_error": ["DT_ForgeHub"]
   },
+  "DT_ForgeLimitedDetect3": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [971, 144, 5, 2],
+        "upper": [3, 104, 116],
+        "lower": [1, 102, 114],
+        "count": 10
+      }
+    },
+    "timeout": 2000,
+    "next": ["DT_ForgeLimitedChecked3", "DT_ForgeLimitedClick3"]
+  },
+  "DT_ForgeLimitedChecked3": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [939, 139, 30, 29],
+        "upper": [210, 80, 80],
+        "lower": [150, 0, 0],
+        "count": 20
+      }
+    },
+    "timeout": 2000,
+    "next": ["DT_ForgeClickStart3"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"]
+  },
+  "DT_ForgeLimitedClick3": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [939, 139, 30, 29]
+      }
+    },
+    "next": ["DT_ForgeLimitedDetect3"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [939, 139, 30, 29]
+    }
+  },
   "DT_ForgeClickStart3": {
     "recognition": {
       "type": "OCR",
@@ -2071,10 +2214,27 @@
         "target": [454,457,58,28]
       }
     },
-    "repeat": 2,
-    "repeat_delay": 500,
-    "next": ["DT_ForgeCompletedThreeTimes"],
+    "post_delay": 500,
+    "next": ["DT_ForgeClickStartClose3", "DT_ForgeCompletedThreeTimes"],
     "on_error": ["DT_ForgeHub"]
+  },
+  "DT_ForgeLimitedMissing": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "warn:日课 锻刀 未检测到限锻开启，跳过锻刀"}
+    },
+    "next": ["DT_ForgeReturnHomeHub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
+  },
+  "DT_ForgeLimitedSelectFailed": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "warn:日课 锻刀 限锻公式勾选未生效，跳过锻刀"}
+    },
+    "next": ["DT_ForgeReturnHomeHub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeCompletedThreeTimes": {
     "action": {
@@ -5176,14 +5336,6 @@
     },
     "next": ["DT_DetectWhereAmI"],
     "on_error": ["DT_RestartGameReturnPrepareHub"]
-  },
-  "DT_RestartGameReturnPresetHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnPresetHub"]
   },
   "DT_RestartGameReturnLoginRewardHub": {
     "action": {
