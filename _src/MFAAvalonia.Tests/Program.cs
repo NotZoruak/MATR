@@ -686,6 +686,55 @@ AssertTrue(formationPresetControlSource.Contains("RenderFormationPresets(", Stri
     && !formationPresetControlSource.Contains("selectButton", StringComparison.Ordinal)
     && !formationPresetControlSource.Contains("viewModel.IsSubPageOpen = true", StringComparison.Ordinal),
     "自定编队作为普通任务时，预设管理器必须直接显示在任务设置中，不能退化为打开选择子页的按钮");
+AssertTrue(taskOptionGeneratorSource.Contains(
+        "option.Data[\"preset_ids\"] = string.Join(\",\", normalized)",
+        StringComparison.Ordinal)
+    && taskOptionGeneratorSource.Contains("current.Remove(capturedPreset.Id)", StringComparison.Ordinal),
+    "自定编队的预设选择必须保存多个编号并支持取消勾选");
+AssertTrue(!taskOptionGeneratorSource.Contains("AppendDailyPresetGearIcon", StringComparison.Ordinal)
+    && !taskOptionGeneratorSource.Contains("IsDailyPresetOption", StringComparison.Ordinal)
+    && optionInterfaceJson["option"]?["D_启用预设部队"] == null
+    && optionInterfaceJson["task"]?.Children<JObject>()
+        .Single(task => task["entry"]?.Value<string>() == "DailyTask")["option"]?.Values<string>()
+        .Contains("D_启用预设部队") == false,
+    "一键日课不再提供开始前启用预设部队选项，需要编队时另行添加自定编队任务");
+var dailyTaskDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "DailyTask.json")));
+AssertTrue(dailyTaskDefinition["DT_PrepareHub"]?["next"]?.Values<string>()
+        .SequenceEqual(["DT_LoginRewardGate"]) == true
+    && dailyTaskDefinition["DT_PresetHub"] == null
+    && dailyTaskDefinition["DT_PresetFallbackWait"] == null
+    && dailyTaskDefinition["DT_RestartGameReturnPresetHub"] == null
+    && !taskStartProcessorSource.Contains("\"DailyTask\" => \"D_启用预设部队\"", StringComparison.Ordinal)
+    && !taskStartProcessorSource.Contains("DT_PresetHub", StringComparison.Ordinal),
+    "日课 pipeline 与任务装配不得残留预设部队 hub 及其重启恢复入口");
+AssertTrue(optionInterfaceJson["option"]?["FC_选择预设"]?["inputs"]?.Children<JObject>()
+        .Any(input => input["name"]?.Value<string>() == "preset_ids") == true,
+    "自定编队的预设选择必须声明多选编号数据项");
+var formationTaskExpansionSource = ExtractSourceSection(
+    taskStartProcessorSource,
+    "private List<NodeAndParam> BuildTaskAndParams",
+    "private NodeAndParam CreateNodeAndParam");
+AssertTrue(formationTaskExpansionSource.Contains("GetSelectedFormationPresetIds(task)", StringComparison.Ordinal)
+    && formationTaskExpansionSource.Contains("node.IsContinuation = i > 0", StringComparison.Ordinal),
+    "自定编队勾选多个预设时必须按顺序展开为多个队列项，并标记后续项为同一任务的延续");
+AssertTrue(taskStartProcessorSource.Contains("!taskAndParams[i + 1].IsContinuation", StringComparison.Ordinal),
+    "同一自定编队任务展开出的后续项之间不应插入回本丸");
+var formationEquipStateMachineSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "FormationEquipStateMachine.cs"));
+AssertTrue(formationEquipStateMachineSource.Contains("DetectCurrentSlotWithRetry", StringComparison.Ordinal)
+    && formationEquipStateMachineSource.Contains("按入口 {EntrySlot} 号位继续配置", StringComparison.Ordinal)
+    && formationEquipStateMachineSource.Contains("跳过剩余装备配置", StringComparison.Ordinal),
+    "装备状态机读不到前后位编号时，首位成员在 1 号位应按入口位继续配置，其余情况跳过剩余装备配置，不能失败退回主枢纽后反复识别同一画面");
+var formationPipelineDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "FormationConfig.json")));
+AssertTrue(formationPipelineDefinition["FC_DetectWhereAmI"]?["next"]?.Values<string>()
+        .Contains("FC_RecoverFromEquip") == true
+    && formationPipelineDefinition["FC_RecoverFromEquip"]?["recognition"]?["param"]?["expected"]?.Value<string>()
+        == "更换装备"
+    && formationPipelineDefinition["FC_RecoverFromEquip"]?["next"]?.Values<string>()
+        .SequenceEqual(["FC_BackFromEquip"]) == true,
+    "编队主枢纽必须能识别更换装备页面并返回编成页，作为装备流程异常时的兜底出口");
 AssertTrue(optionInterfaceJson["resource"]?.Children<JObject>().Single(resource =>
         resource["name"]?.Value<string>() == "刀剑乱舞")["path"]?.Values<string>()
         .SequenceEqual(["{PROJECT_DIR}/resource/base"]) == true,

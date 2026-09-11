@@ -6694,11 +6694,12 @@
           "pipeline_override": {
             "DT_ForgeHub": {"enabled": true},
             "DT_ForgeDailyDisassembleOnceCheck": {"enabled": true},
-            "DT_ForgeDetectStatus": {
-              "next": ["DT_ForgeDailyDisassembleOnceCheck"]
-            },
             "DT_ForgeCheckCapacity": {
+              "next": ["DT_ForgeDailyDisassembleOnceCheck"],
               "on_error": ["DT_ForgeDisassembleHub"]
+            },
+            "DT_ForgeDailyDisassembleAlreadyCompleted": {
+              "next": ["DT_ForgeClaimCompletedHub"]
             }
           }
         }
