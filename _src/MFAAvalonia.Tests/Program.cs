@@ -671,7 +671,7 @@ AssertTrue(currentMaaProcessorSource.Contains(
 var formationPresetControlSource = ExtractSourceSection(
     taskOptionGeneratorSource,
     "private Control CreateFormationPresetControl(",
-    "/// <summary>为一键日课的预设部队开关追加预设选择入口。</summary>");
+    "/// <summary>读取任务选项中保存的预设编号列表");
 AssertTrue(optionInterfaceJson["task"]?.Children<JObject>().Any(task =>
         task["name"]?.Value<string>() == "自定编队"
         && task["entry"]?.Value<string>() == "FormationConfig"

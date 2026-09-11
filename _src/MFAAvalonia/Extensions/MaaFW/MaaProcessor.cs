@@ -3539,7 +3539,7 @@ public class MaaProcessor
             _tempTasks = tasks;
             runId = ViewModel?.BeginTaskRun(tasks) ?? 0;
             LoggerHelper.Info($"准备执行任务队列：任务数量={tasks.Count}");
-            var taskAndParams = tasks.Select((task, index) => CreateNodeAndParam(task, index + 1, runId)).ToList();
+            var taskAndParams = BuildTaskAndParams(tasks, runId);
             InitializeConnectionTasksAsync(token);
             AddCoreTasksAsync(taskAndParams, token);
         }
@@ -3649,6 +3649,9 @@ public class MaaProcessor
         public string? Param { get; set; }
         public DragItemViewModel? SourceItem { get; set; }
         public long RunId { get; set; }
+
+        /// <summary>同一任务展开出的后续执行项，与其前一项之间不需要插入回本丸。</summary>
+        public bool IsContinuation { get; set; }
     }
 
     private void UpdateTaskDictionary(ref MaaToken taskModels,
@@ -3934,7 +3937,70 @@ public class MaaProcessor
         }
     }
 
-    private NodeAndParam CreateNodeAndParam(DragItemViewModel task, int index, long runId)
+    /// <summary>
+    /// 构建本次运行的核心任务列表。自定编队勾选多个预设时，会按预设顺序展开为多次编队任务。
+    /// </summary>
+    private List<NodeAndParam> BuildTaskAndParams(List<DragItemViewModel> tasks, long runId)
+    {
+        var result = new List<NodeAndParam>();
+        var index = 0;
+
+        foreach (var task in tasks)
+        {
+            var presetIds = task.InterfaceItem?.Entry == "FormationConfig"
+                ? GetSelectedFormationPresetIds(task)
+                : [];
+
+            if (presetIds.Count == 0)
+            {
+                result.Add(CreateNodeAndParam(task, ++index, runId, null));
+                continue;
+            }
+
+            for (var i = 0; i < presetIds.Count; i++)
+            {
+                var node = CreateNodeAndParam(task, ++index, runId, presetIds[i]);
+                if (presetIds.Count > 1)
+                {
+                    node.Name = $"{task.Name}（预设{presetIds[i]}）";
+                    node.IsContinuation = i > 0;
+                }
+
+                result.Add(node);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>读取自定编队任务所选的编队预设编号，顺序与设置页列表从上到下一致。</summary>
+    private static List<int> GetSelectedFormationPresetIds(DragItemViewModel task)
+    {
+        if (task.InterfaceItem?.Entry != "FormationConfig") return [];
+
+        var option = task.InterfaceItem?.Option?.FirstOrDefault(item => item.Name == "FC_选择预设");
+        if (option?.Data == null) return [];
+
+        // 多选预设以逗号分隔保存；旧配置只有单个 preset_id。
+        if (option.Data.TryGetValue("preset_ids", out var rawIds) && !string.IsNullOrWhiteSpace(rawIds))
+        {
+            return rawIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(value => int.TryParse(value, out var id) ? id : 0)
+                .Where(id => id > 0)
+                .Distinct()
+                .OrderBy(id => id)
+                .ToList();
+        }
+
+        return option.Data.TryGetValue("preset_id", out var rawId)
+               && int.TryParse(rawId, out var singleId)
+               && singleId > 0
+            ? [singleId]
+            : [];
+    }
+
+    private NodeAndParam CreateNodeAndParam(DragItemViewModel task, int index, long runId, int? formationPresetId)
     {
         var taskModels = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(JsonConvert.SerializeObject(task.InterfaceItem?.PipelineOverride ?? new Dictionary<string, JToken>(), new JsonSerializerSettings()
         {
@@ -4041,8 +4107,8 @@ public class MaaProcessor
             }
         }
 
-        if (task.InterfaceItem?.Entry == "FormationConfig" || task.InterfaceItem?.Entry == "DailyTask")
-            ApplyFormationPresetOverride(ref taskModels, task);
+        if (task.InterfaceItem?.Entry == "FormationConfig")
+            ApplyFormationPresetOverride(ref taskModels, task, formationPresetId);
 
         // 每次运行显式注入当前任务的跳过位置，空数组用于清除上次运行的选择。
         var dragNodeName = CaptainSettingsDecision.GetDragNodeName(task.InterfaceItem?.Entry);
@@ -4112,16 +4178,11 @@ public class MaaProcessor
         };
     }
 
-    /// <summary>将任务选择的编队预设转换为本次运行所需的 pipeline override。</summary>
-    private void ApplyFormationPresetOverride(ref MaaToken taskModels, DragItemViewModel task)
+    /// <summary>将自定编队任务选择的预设转换为本次运行所需的 pipeline override。</summary>
+    private void ApplyFormationPresetOverride(ref MaaToken taskModels, DragItemViewModel task, int? formationPresetId)
     {
-        var entry = task.InterfaceItem?.Entry;
-        var optionName = entry == "FormationConfig" ? "FC_选择预设" : "D_启用预设部队";
-        var presetOption = task.InterfaceItem?.Option?.FirstOrDefault(option => option.Name == optionName);
-        if (presetOption?.Data?.TryGetValue("preset_id", out var rawPresetId) != true
-            || !int.TryParse(rawPresetId, out var presetId)
-            || presetId <= 0)
-            return;
+        var presetId = formationPresetId ?? GetSelectedFormationPresetIds(task).FirstOrDefault();
+        if (presetId <= 0) return;
 
         var presets = InstanceConfiguration.GetValue<List<MFAAvalonia.Models.FormationPreset>>(
             ConfigurationKeys.FormationPresets, []);
@@ -4216,9 +4277,6 @@ public class MaaProcessor
             if (!memberSlots.Contains(slot))
                 overrides[$"FC_ConfigureSwordSlot{slot}"] = new JObject { ["enabled"] = false };
         }
-
-        if (entry == "DailyTask")
-            overrides["FC_BackToHome"] = new JObject { ["next"] = new JArray("DT_LoginRewardGate") };
 
         taskModels.Merge(overrides);
     }
@@ -4577,8 +4635,9 @@ public class MaaProcessor
                 }, task.Count ?? 1, task.SourceItem, task.RunId
             ));
 
-            // 最后一个任务后不插入；MFAA 特殊任务不需要先回本丸。
+            // 最后一个任务后不插入；MFAA 特殊任务不需要先回本丸；同一任务展开出的后续项之间同样不需要。
             if (i < taskAndParams.Count - 1
+                && !taskAndParams[i + 1].IsContinuation
                 && TaskQueueContinuationPolicy.ShouldInsertGoHome(taskAndParams[i + 1].Entry))
             {
                 TaskQueue.Enqueue(CreateMaaFWTask("回本丸", async () =>

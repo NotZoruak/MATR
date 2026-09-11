@@ -407,10 +407,6 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
     private static bool IsFormationPresetOption(string? optionName)
         => optionName == "FC_选择预设";
 
-    /// <summary>判断是否为一键日课的预设部队开关。</summary>
-    private static bool IsDailyPresetOption(string? optionName)
-        => optionName == "D_启用预设部队";
-
     /// <summary>
     /// 在子选项下方追加其选项级说明。仅在子选项自身声明 description 时渲染，
     /// 与齿轮子页面的说明保持一致的多行灰色样式。
@@ -521,20 +517,18 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         labelPanel.Children.Add(gearIcon);
     }
 
-    /// <summary>创建自定编队任务的普通任务设置行。</summary>
+    /// <summary>创建自定编队任务的普通任务设置行（可多选，按列表顺序依次编成）。</summary>
     private Control CreateFormationPresetControl(
         MaaInterface.MaaInterfaceSelectOption option,
         MaaInterface.MaaInterfaceOption interfaceOption,
         DragItemViewModel source)
     {
         option.Data ??= new Dictionary<string, string?>();
-        if (!option.Data.ContainsKey("preset_id"))
-            option.Data["preset_id"] = "0";
 
         var panel = new StackPanel { Spacing = 6 };
         panel.Children.Add(new TextBlock
         {
-            Text = "预设（勾选互斥，选择本次要编成的预设）",
+            Text = "预设（可多选，按从上到下的顺序依次编成）",
             FontSize = 15,
             Foreground = Brushes.Gray,
             Margin = new Thickness(0, 0, 0, 4),
@@ -542,10 +536,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         var presetList = new StackPanel { Spacing = 4 };
         RenderFormationPresets(
             presetList,
-            () => GetPresetId(option),
-            presetId =>
+            () => GetPresetIds(option),
+            presetIds =>
             {
-                option.Data!["preset_id"] = presetId.ToString();
+                SetPresetIds(option, presetIds);
                 saveConfigurationAction();
             },
             source);
@@ -553,65 +547,56 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         return panel;
     }
 
-    /// <summary>为一键日课的预设部队开关追加预设选择入口。</summary>
-    private void AppendDailyPresetGearIcon(
-        StackPanel labelPanel,
-        MaaInterface.MaaInterfaceSelectOption option,
-        DragItemViewModel source)
+    /// <summary>读取任务选项中保存的预设编号列表，顺序即列表从上到下的显示顺序。</summary>
+    private static List<int> GetPresetIds(MaaInterface.MaaInterfaceSelectOption? option)
     {
-        var gearIcon = new FluentIcons.Avalonia.Fluent.FluentIcon
+        if (option?.Data == null)
+            return [];
+
+        if (option.Data.TryGetValue("preset_ids", out var rawIds) && !string.IsNullOrWhiteSpace(rawIds))
         {
-            Icon = FluentIcons.Common.Icon.Settings,
-            IconSize = FluentIcons.Common.IconSize.Size16,
-            Width = 16,
-            Height = 16,
-            Margin = new Thickness(6, 0, 0, 0),
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        ToolTip.SetTip(gearIcon, "选择预设");
-        gearIcon.PointerPressed += (_, eventArgs) =>
-        {
-            eventArgs.Handled = true;
-            var presetPanel = new StackPanel { Spacing = 4 };
-            RenderFormationPresets(
-                presetPanel,
-                () => GetPresetId(option),
-                presetId =>
-                {
-                    option.Data ??= new Dictionary<string, string?>();
-                    option.Data["preset_id"] = presetId.ToString();
-                    saveConfigurationAction();
-                },
-                source);
-            viewModel.SubPageTitle = "选择预设部队";
-            viewModel.SubPageContent = presetPanel;
-            viewModel.IsSubPageOpen = true;
-        };
-        labelPanel.Children.Add(gearIcon);
+            return rawIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(value => int.TryParse(value, out var id) ? id : 0)
+                .Where(id => id > 0)
+                .Distinct()
+                .OrderBy(id => id)
+                .ToList();
+        }
+
+        // 兼容只保存单个编号的旧配置。
+        return option.Data.TryGetValue("preset_id", out var rawId)
+               && int.TryParse(rawId, out var legacyId)
+               && legacyId > 0
+            ? [legacyId]
+            : [];
     }
 
-    /// <summary>读取任务选项中保存的预设编号。</summary>
-    private static int GetPresetId(MaaInterface.MaaInterfaceSelectOption option)
+    /// <summary>写入预设编号列表，同时同步首个编号供只读取单个预设的流程使用。</summary>
+    private static void SetPresetIds(MaaInterface.MaaInterfaceSelectOption option, IEnumerable<int> presetIds)
     {
-        return option.Data != null
-               && option.Data.TryGetValue("preset_id", out var raw)
-               && int.TryParse(raw, out var presetId)
-            ? presetId
-            : 0;
+        option.Data ??= new Dictionary<string, string?>();
+        var normalized = presetIds
+            .Where(id => id > 0)
+            .Distinct()
+            .OrderBy(id => id)
+            .ToList();
+        option.Data["preset_ids"] = string.Join(",", normalized);
+        option.Data["preset_id"] = (normalized.Count > 0 ? normalized[0] : 0).ToString();
     }
 
     /// <summary>渲染编队预设列表及新增、编辑、复制与删除操作。</summary>
     private void RenderFormationPresets(
         StackPanel presetList,
-        Func<int> getSelectedId,
-        Action<int> selectPreset,
+        Func<List<int>> getSelectedIds,
+        Action<List<int>> setSelectedIds,
         DragItemViewModel dragItem)
     {
         presetList.Children.Clear();
         var presets = LoadFormationPresets();
-        var selectedId = getSelectedId();
+        var selectedIds = getSelectedIds();
 
-        void Refresh() => RenderFormationPresets(presetList, getSelectedId, selectPreset, dragItem);
+        void Refresh() => RenderFormationPresets(presetList, getSelectedIds, setSelectedIds, dragItem);
 
         foreach (var preset in presets)
         {
@@ -622,11 +607,20 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 Spacing = 8,
                 VerticalAlignment = VerticalAlignment.Center,
             };
-            var checkBox = new CheckBox { IsChecked = capturedPreset.Id == selectedId };
+            var checkBox = new CheckBox { IsChecked = selectedIds.Contains(capturedPreset.Id) };
             checkBox.IsCheckedChanged += (_, _) =>
             {
-                if (checkBox.IsChecked != true) return;
-                selectPreset(capturedPreset.Id);
+                var current = getSelectedIds();
+                if (checkBox.IsChecked == true)
+                    current.Add(capturedPreset.Id);
+                else
+                    current.Remove(capturedPreset.Id);
+
+                setSelectedIds(current
+                    .Where(id => presets.Any(item => item.Id == id))
+                    .Distinct()
+                    .OrderBy(id => id)
+                    .ToList());
                 Refresh();
             };
             row.Children.Add(checkBox);
@@ -680,7 +674,6 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             deleteItem.Click += (_, _) =>
             {
                 presets.Remove(capturedPreset);
-                if (getSelectedId() == capturedPreset.Id) selectPreset(0);
                 RemapPresetIdsAfterDelete(capturedPreset.Id, presets);
                 SaveFormationPresets(presets);
                 RemapPresetReferences(capturedPreset.Id);
@@ -765,11 +758,12 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             if (interfaceItem == null) continue;
             foreach (var option in interfaceItem.Option ?? [])
             {
-                if (option.Name is not ("FC_选择预设" or "D_启用预设部队")
-                    || option.Data == null
-                    || !option.Data.TryGetValue("preset_id", out var raw)
-                    || !int.TryParse(raw, out var presetId)) continue;
-                option.Data["preset_id"] = (presetId == removedId ? 0 : presetId > removedId ? presetId - 1 : presetId).ToString();
+                if (option.Name is not "FC_选择预设" || option.Data == null) continue;
+                if (!option.Data.ContainsKey("preset_ids") && !option.Data.ContainsKey("preset_id")) continue;
+
+                SetPresetIds(option, GetPresetIds(option)
+                    .Where(id => id != removedId)
+                    .Select(id => id > removedId ? id - 1 : id));
             }
         }
         saveConfigurationAction();
@@ -1394,8 +1388,6 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         labelPanel.Children.Insert(0, icon);
         if (HasSubOptions(interfaceOption) && !interfaceOption.InlineSubOptions)
             AppendGearIcon(labelPanel, option, interfaceOption, source);
-        if (IsDailyPresetOption(option.Name))
-            AppendDailyPresetGearIcon(labelPanel, option, source);
 
         Grid.SetColumn(labelPanel, 0);
         Grid.SetColumn(toggleSwitch, 2);

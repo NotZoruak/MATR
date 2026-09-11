@@ -56,9 +56,9 @@
       "files": ["assets/interface.json", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Models/FormationPreset.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationNameMatcher.cs", "assets/resource/base/pipeline/FormationConfig.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "将入口保留为 interface.json 普通任务，在运行前按 FC_选择预设生成 FormationConfigAction 参数与 pipeline 覆盖；不恢复上游特殊任务列表注册。",
-      "verification": ["任务列表出现自定编队普通任务", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "运行时按所选预设配置目标部队", "每日任务的预设部队可复用同一预设", "OCR 将铳识别为统时仍能命中铳兵刀装"],
-      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。"
+      "migration_strategy": "将入口保留为 interface.json 普通任务，在运行前按 FC_选择预设生成 FormationConfigAction 参数与 pipeline 覆盖；勾选多个预设时按列表顺序展开为多次编队任务，不恢复上游特殊任务列表注册。",
+      "verification": ["任务列表出现自定编队普通任务", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装"],
+      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户把自定编队任务排在日课之前。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。"
     },
     {
       "id": "services.update-data-scheduling",
