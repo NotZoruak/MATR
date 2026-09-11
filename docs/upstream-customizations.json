@@ -202,6 +202,17 @@
       "migration_strategy": "保留空实现兼容上游调用点，移除关于页面的帮助改进软件开关。",
       "verification": ["TelemetryService 所有入口均不采集、不保存且不发送数据", "关于页面不包含 HelpImproveSoftware 绑定或说明", "导出日志成功提示包含用户主动点击的问卷反馈入口"],
       "notes": "不得恢复上游 Sentry 或任务遥测配置，除非 MATR 明确引入经用户同意的数据收集方案。问卷入口仅由用户主动点击后在浏览器打开，不属于遥测。"
+    },
+    {
+      "id": "timer.windows-scheduled-wakeup",
+      "title": "Windows 计划任务定时唤醒",
+      "purpose": "在 MATR 与模拟器都未运行时，由 Windows 计划任务到点启动当前安装目录的 MATR.exe，并执行该定时器选定的实例任务。",
+      "files": ["_src/MFAAvalonia/Services/WindowsScheduledTaskDefinition.cs", "_src/MFAAvalonia/Services/WindowsScheduledTaskPlanner.cs", "_src/MFAAvalonia/Services/WindowsScheduledTaskClient.cs", "_src/MFAAvalonia/Services/WindowsScheduledTaskSyncService.cs", "_src/MFAAvalonia/Helper/PlatformTimerScheduler.cs", "_src/MFAAvalonia/ViewModels/Other/TimerModel.cs", "_src/MFAAvalonia/ViewModels/UsersControls/Settings/TimerSettingsUserControlModel.cs", "_src/MFAAvalonia/Views/UserControls/Settings/TimerSettingsUserControl.axaml", "_src/MFAAvalonia/App.axaml.cs", "_src/MFAAvalonia.Tests/Program.cs", "_src/MFAAvalonia.Tests/MFAAvalonia.Tests.csproj"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 PlatformTimerScheduler.RescheduleAll 的平台接管点，以及定时器时间、重复规则、动作、实例与强制定时启动开关变化后的重新排程调用；升级上游定时器模型时重新接入同步服务，不把系统计划任务逻辑并入 TimerModel。",
+      "verification": ["定时时间、重复规则、实例或强制定时启动开关变化后同步系统计划任务", "配置未变化时不重建计划任务", "禁用、停止任务动作、未选重复日期或实例失效的定时器不创建计划任务并清理旧任务", "关闭 MATR 不影响计划任务，只有禁用、删除定时器或改为停止任务时删除", "退出程序前补跑尚未执行的同步并记录保留的计划任务数量", "任务实例仍在运行时可再次触发（并行实例策略）", "计划任务以当前登录用户身份运行、不要求管理员权限、补执行错过的计划且不限制运行时长", "实例列表尚未加载时跳过同步，不误删计划任务", "非 Windows 平台不创建计划任务", "测试断言任务名称、命令行参数、任务 XML、配置指纹与同步决策"],
+      "notes": "系统计划任务通过 schtasks.exe 与任务 XML 创建，统一放在 MATR 任务文件夹下，名称包含安装目录归属令牌，避免开发目录与运行目录互相覆盖。任务说明写入配置指纹，指纹包含任务模板、命令行、程序路径、工作目录与重复规则，但不包含开始边界日期，因此不会每天重建。计划任务独立于 MATR 进程状态：关闭程序不取消定时，设置界面与日志都要明确这一点。并行实例策略必须为 Parallel：IgnoreNew 会让长期运行的 MATR 任务实例阻塞后续每天的触发，实测再次触发返回 -2147020576 且不启动新进程。"
     }
   ]
 }

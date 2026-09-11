@@ -2339,6 +2339,182 @@ AssertTrue(naibanOutfitState.ShouldLogMissingOutfit, "对话颜色结束前未�
 AssertTrue(naibanOutfitState.TryFinishMissingOutfit(), "未识别到内番服时结束结算应输出一次未显示记录");
 AssertFalse(naibanOutfitState.TryFinishMissingOutfit(), "同一轮内番服结束结算不应重复输出未显示记录");
 
+// Windows 计划任务：任务名称、命令行参数与任务 XML
+var matrScopeToken = WindowsScheduledTaskDefinitionBuilder.BuildScopeToken(@"D:\Claude_Workspace\MATR\MATR.exe");
+var otherScopeToken = WindowsScheduledTaskDefinitionBuilder.BuildScopeToken(@"D:\Apps\小只工具\MATR\MATR.exe");
+AssertTrue(matrScopeToken.Length == 8
+    && matrScopeToken == WindowsScheduledTaskDefinitionBuilder.BuildScopeToken(@"d:\claude_workspace\matr\MATR.exe"),
+    "计划任务归属令牌必须对同一安装目录稳定，并且不区分路径大小写");
+AssertTrue(matrScopeToken != otherScopeToken,
+    "不同安装目录必须生成不同的归属令牌，避免开发目录与运行目录互相覆盖计划任务");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.BuildTaskName(matrScopeToken, 0)
+        == $"MATR.Timer.{matrScopeToken}.1",
+    "计划任务名称必须由归属令牌与从 1 开始的定时器序号组成");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.BuildTaskPath($"MATR.Timer.{matrScopeToken}.1")
+        == $@"MATR\MATR.Timer.{matrScopeToken}.1",
+    "计划任务必须放在 MATR 任务文件夹中，便于只列出并清理本应用创建的任务");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.BuildArguments("1a2b3c4d", false)
+        == "--autostart --instance \"1a2b3c4d\"",
+    "默认计划任务必须按既有命令行参数启动指定实例");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.BuildArguments("1a2b3c4d", true)
+        == "--autostart --instance \"1a2b3c4d\" --forceStart",
+    "开启强制定时启动时必须追加 forceStart 参数");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.ToRepeatType(0) == WindowsScheduledTaskRepeatType.Daily
+    && WindowsScheduledTaskDefinitionBuilder.ToRepeatType(1) == WindowsScheduledTaskRepeatType.Weekly
+    && WindowsScheduledTaskDefinitionBuilder.ToRepeatType(2) == WindowsScheduledTaskRepeatType.Monthly,
+    "界面上的每日、按周、按月重复方式必须映射为对应的计划任务触发器");
+
+var scheduledNow = new DateTime(2026, 9, 11, 20, 30, 0);
+var scheduledContext = new WindowsScheduledTaskContext(
+    @"D:\Claude_Workspace\MATR\MATR.exe",
+    @"D:\Claude_Workspace\MATR",
+    false,
+    ["1a2b3c4d"],
+    scheduledNow);
+var dailyTimer = new WindowsScheduledTaskTimer(
+    0,
+    true,
+    new TimeSpan(21, 0, 0),
+    true,
+    "1a2b3c4d",
+    WindowsScheduledTaskRepeatType.Daily,
+    [],
+    []);
+var dailyXml = WindowsScheduledTaskDefinitionBuilder.BuildXml(dailyTimer, scheduledContext);
+System.Xml.Linq.XNamespace scheduledNamespace = "http://schemas.microsoft.com/windows/2004/02/mit/task";
+var dailyDocument = System.Xml.Linq.XDocument.Parse(dailyXml);
+AssertTrue(dailyDocument.Root?.Name == scheduledNamespace + "Task"
+    && dailyDocument.Descendants(scheduledNamespace + "Triggers").Count() == 1
+    && dailyDocument.Descendants(scheduledNamespace + "CalendarTrigger").Count() == 1,
+    "计划任务 XML 必须结构合法，并且只有一层触发器容器");
+AssertTrue(dailyDocument.Descendants(scheduledNamespace + "StartBoundary").Single().Value
+        == "2026-09-11T21:00:00"
+    && dailyDocument.Descendants(scheduledNamespace + "DaysInterval").Single().Value == "1",
+    "每日定时必须生成当天的开始边界与每日触发器");
+AssertTrue(dailyDocument.Descendants(scheduledNamespace + "LogonType").Single().Value == "InteractiveToken"
+    && dailyDocument.Descendants(scheduledNamespace + "RunLevel").Single().Value == "LeastPrivilege"
+    && dailyDocument.Descendants(scheduledNamespace + "StartWhenAvailable").Single().Value == "true",
+    "计划任务必须以当前登录用户身份运行、不要求管理员权限，并补执行错过的计划");
+AssertTrue(dailyDocument.Descendants(scheduledNamespace + "ExecutionTimeLimit").Single().Value == "PT0S",
+    "计划任务不得限制运行时长，避免长时间运行的任务被系统终止");
+AssertTrue(dailyDocument.Descendants(scheduledNamespace + "MultipleInstancesPolicy").Single().Value == "Parallel",
+    "计划任务必须允许多个实例并行：MATR 被拉起后会一直运行，IgnoreNew 会让后续每天的触发被系统忽略");
+AssertTrue(dailyDocument.Descendants(scheduledNamespace + "Settings").Single()
+        .Element(scheduledNamespace + "Enabled")?.Value == "true",
+    "计划任务必须处于启用状态，否则到点不会触发");
+AssertTrue(dailyDocument.Descendants(scheduledNamespace + "Command").Single().Value
+        == @"D:\Claude_Workspace\MATR\MATR.exe"
+    && dailyDocument.Descendants(scheduledNamespace + "WorkingDirectory").Single().Value
+        == @"D:\Claude_Workspace\MATR"
+    && dailyDocument.Descendants(scheduledNamespace + "Arguments").Single().Value
+        == "--autostart --instance \"1a2b3c4d\"",
+    "计划任务必须以当前程序路径、安装目录与既有命令行参数作为执行目标");
+
+var dailyFingerprint = WindowsScheduledTaskDefinitionBuilder.TryReadFingerprint(dailyXml);
+AssertTrue(dailyFingerprint != null
+    && dailyFingerprint == WindowsScheduledTaskDefinitionBuilder.ComputeFingerprint(dailyTimer, scheduledContext),
+    "任务说明中的指纹必须与按当前配置重新计算的指纹一致");
+var nextDayXml = WindowsScheduledTaskDefinitionBuilder.BuildXml(
+    dailyTimer,
+    scheduledContext with { Now = scheduledNow.AddDays(1) });
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.TryReadFingerprint(nextDayXml) == dailyFingerprint,
+    "开始边界日期推进不得改变指纹，否则计划任务会每天被重建");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.ComputeFingerprint(
+        dailyTimer,
+        scheduledContext with { ForceScheduledStart = true }) != dailyFingerprint,
+    "强制定时启动开关变化必须触发计划任务重建");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.ComputeFingerprint(
+        dailyTimer,
+        scheduledContext with
+        {
+            ExecutablePath = @"E:\MATR\MATR.exe",
+            WorkingDirectory = @"E:\MATR"
+        }) != dailyFingerprint,
+    "安装目录变化必须触发计划任务重建，避免继续启动旧路径的程序");
+AssertTrue(WindowsScheduledTaskDefinitionBuilder.ComputeFingerprint(
+        dailyTimer with { Time = new TimeSpan(22, 0, 0) },
+        scheduledContext) != dailyFingerprint,
+    "定时时间变化必须触发计划任务重建");
+
+var weeklyTimer = dailyTimer with
+{
+    RepeatType = WindowsScheduledTaskRepeatType.Weekly,
+    DaysOfWeek = [DayOfWeek.Friday, DayOfWeek.Monday]
+};
+var weeklyXml = WindowsScheduledTaskDefinitionBuilder.BuildXml(weeklyTimer, scheduledContext);
+AssertTrue(weeklyXml.Contains("<ScheduleByWeek>")
+    && weeklyXml.Contains("<Monday />")
+    && weeklyXml.Contains("<Friday />")
+    && weeklyXml.IndexOf("<Monday />", StringComparison.Ordinal)
+        < weeklyXml.IndexOf("<Friday />", StringComparison.Ordinal),
+    "按周定时必须生成选中的星期并保持稳定顺序");
+var monthlyTimer = dailyTimer with
+{
+    RepeatType = WindowsScheduledTaskRepeatType.Monthly,
+    DaysOfMonth = [15, 1]
+};
+var monthlyXml = WindowsScheduledTaskDefinitionBuilder.BuildXml(monthlyTimer, scheduledContext);
+AssertTrue(monthlyXml.Contains("<ScheduleByMonth>")
+    && monthlyXml.Contains("<Day>1</Day>")
+    && monthlyXml.Contains("<Day>15</Day>")
+    && monthlyXml.Contains("<September />"),
+    "按月定时必须生成选中的日期并覆盖全部月份");
+AssertFalse(
+    WindowsScheduledTaskDefinitionBuilder.IsRepeatConfigured(
+        dailyTimer with { RepeatType = WindowsScheduledTaskRepeatType.Weekly, DaysOfWeek = [] }),
+    "按周定时未选择星期时不得创建计划任务");
+
+// Windows 计划任务：同步决策
+var plannedTimers = new List<WindowsScheduledTaskTimer>
+{
+    dailyTimer,
+    dailyTimer with { TimerId = 1, IsEnabled = false },
+    dailyTimer with { TimerId = 2, IsStartTask = false },
+    dailyTimer with { TimerId = 3, RepeatType = WindowsScheduledTaskRepeatType.Weekly, DaysOfWeek = [] },
+    dailyTimer with { TimerId = 4, InstanceId = "ffffffff" },
+    dailyTimer with { TimerId = 5, InstanceId = null },
+    dailyTimer with { TimerId = 6, Time = new TimeSpan(7, 30, 0) },
+};
+var managedTaskNames = new List<string>
+{
+    $"MATR.Timer.{matrScopeToken}.1",
+    $"MATR.Timer.{matrScopeToken}.3",
+    $"MATR.Timer.{matrScopeToken}.7",
+    $"MATR.Timer.{otherScopeToken}.1",
+    "其他程序创建的任务",
+};
+var scheduledPlan = WindowsScheduledTaskPlanner.CreatePlan(plannedTimers, scheduledContext, managedTaskNames);
+AssertTrue(scheduledPlan.Tasks.Select(task => task.TaskName)
+        .SequenceEqual([$"MATR.Timer.{matrScopeToken}.1", $"MATR.Timer.{matrScopeToken}.7"]),
+    "只有启用、动作为启动任务、重复规则有效且实例存在的定时器才创建计划任务");
+AssertTrue(scheduledPlan.ObsoleteTaskNames.SequenceEqual([$"MATR.Timer.{matrScopeToken}.3"]),
+    "只清理本安装目录归属且不再需要的计划任务，不得删除其他安装目录或其他程序的任务");
+AssertTrue(scheduledPlan.Warnings.Count == 4,
+    "停止任务、未选重复日期、实例失效与未选实例的定时器都必须记录可诊断的原因");
+AssertTrue(WindowsScheduledTaskPlanner.CreatePlan(plannedTimers, scheduledContext, []).Tasks.Count == 2,
+    "系统任务文件夹为空时仍需生成全部有效定时器的计划任务");
+
+// Windows 计划任务：schtasks 参数与任务列表解析
+AssertTrue(SchTasksScheduledTaskClient.ParseManagedTaskNames(
+        "\"MATR\\MATR.Timer.abcd1234.1\",\"2026/9/12 21:00:00\",\"Ready\"\r\n"
+        + "\"\\MATR\\MATR.Timer.abcd1234.2\",\"2026/9/12 22:00:00\",\"Ready\"\r\n"
+        + "\"\\其他程序任务\",\"\",\"\"\r\n")
+    .SequenceEqual(["MATR.Timer.abcd1234.1", "MATR.Timer.abcd1234.2"]),
+    "任务列表解析必须兼容有无上级文件夹前缀两种输出，并忽略不属于 MATR 的任务");
+AssertTrue(SchTasksScheduledTaskClient.ParseManagedTaskNames(null).Count == 0,
+    "任务列表为空时不得解析出任何任务名称");
+AssertTrue(SchTasksScheduledTaskClient.BuildCreateArguments("MATR.Timer.abcd1234.1", @"C:\Temp\task.xml")
+        .SequenceEqual(["/Create", "/TN", @"MATR\MATR.Timer.abcd1234.1", "/XML", @"C:\Temp\task.xml", "/F"]),
+    "创建计划任务必须使用任务文件夹路径并覆盖同名任务");
+AssertTrue(SchTasksScheduledTaskClient.BuildQueryArguments("MATR.Timer.abcd1234.1")
+        .SequenceEqual(["/Query", "/TN", @"MATR\MATR.Timer.abcd1234.1", "/XML"]),
+    "查询计划任务必须读取任务 XML，以便比较配置指纹");
+AssertTrue(SchTasksScheduledTaskClient.BuildDeleteArguments("MATR.Timer.abcd1234.1")
+        .SequenceEqual(["/Delete", "/TN", @"MATR\MATR.Timer.abcd1234.1", "/F"]),
+    "删除计划任务必须显式指定任务路径并跳过确认");
+
+Console.WriteLine("Windows 计划任务 测试通过。");
+
 Console.WriteLine("FormationPreset 测试通过。");
 
 static string ExtractSourceSection(string source, string startMarker, string endMarker)

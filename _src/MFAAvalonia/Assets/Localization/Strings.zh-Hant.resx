@@ -2104,6 +2104,18 @@
     <data name="RemoveTimer" xml:space="preserve">
         <value>刪除定時</value>
     </data>
+    <data name="WindowsScheduledTaskTip" xml:space="preserve">
+        <value>程式未執行時，由 Windows 工作排程器依上述時間啟動對應實例。關閉程式不會取消定時，只有關閉上面的開關或刪除該定時才會取消。</value>
+    </data>
+    <data name="WindowsScheduledTaskSyncSuccess" xml:space="preserve">
+        <value>Windows 定時喚醒：已同步 {0} 個排程工作</value>
+    </data>
+    <data name="WindowsScheduledTaskSyncEmpty" xml:space="preserve">
+        <value>Windows 定時喚醒：目前沒有需要同步的排程工作</value>
+    </data>
+    <data name="WindowsScheduledTaskSyncFailed" xml:space="preserve">
+        <value>Windows 定時喚醒同步失敗：{0}</value>
+    </data>
   <data name="InstanceDropdownSearch" xml:space="preserve">
     <value>搜尋配置</value>
   </data>

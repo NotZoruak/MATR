@@ -126,6 +126,10 @@ public sealed class MaaProcessorManager
             SaveInstanceConfig();
         }
 
+        // 关闭「自定配置」时定时器跟随当前实例，切换实例后需要重新同步系统计划任务。
+        if (!MFAAvalonia.ViewModels.Other.TimerModel.Instance.CustomConfig)
+            MFAAvalonia.Services.WindowsScheduledTaskSyncService.RequestSync();
+
         return true;
     }
 

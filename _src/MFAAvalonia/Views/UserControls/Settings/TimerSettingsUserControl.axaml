@@ -98,6 +98,16 @@
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </DockPanel>
+                <TextBlock
+                    Foreground="{DynamicResource SukiLowText}"
+                    IsVisible="{Binding IsWindowsScheduledTaskSupported}"
+                    Text="{markup:I18n {x:Static helper:LangKeys.WindowsScheduledTaskTip}}"
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    Foreground="{DynamicResource SukiLowText}"
+                    IsVisible="{Binding HasWindowsScheduledTaskStatus}"
+                    Text="{Binding WindowsScheduledTaskStatusText}"
+                    TextWrapping="Wrap" />
             </StackPanel>
         </suki:GlassCard>
 

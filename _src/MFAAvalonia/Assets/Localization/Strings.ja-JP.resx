@@ -2132,6 +2132,18 @@
   <data name="RemoveTimer" xml:space="preserve">
         <value>Remove Timer</value>
     </data>
+  <data name="WindowsScheduledTaskTip" xml:space="preserve">
+        <value>MATR が起動していない場合でも、上記の時刻に対象インスタンスの起動を Windows のタスク スケジューラに登録します。MATR を閉じただけでは解除されません。解除するにはスイッチを切るか、タイマーを削除してください。</value>
+    </data>
+  <data name="WindowsScheduledTaskSyncSuccess" xml:space="preserve">
+        <value>Windows 定時起動：スケジュール タスク {0} 件を同期しました</value>
+    </data>
+  <data name="WindowsScheduledTaskSyncEmpty" xml:space="preserve">
+        <value>Windows 定時起動：同期が必要なスケジュール タスクはありません</value>
+    </data>
+  <data name="WindowsScheduledTaskSyncFailed" xml:space="preserve">
+        <value>Windows 定時起動の同期に失敗しました：{0}</value>
+    </data>
   <data name="GlobalBatchStartup" xml:space="preserve">
     <value>起動時に一括実行</value>
   </data>

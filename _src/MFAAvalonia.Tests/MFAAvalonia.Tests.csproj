@@ -39,6 +39,9 @@
     <Compile Include="..\MFAAvalonia\Services\WarehouseChartTooltipFormatter.cs" Link="WarehouseChartTooltipFormatter.cs" />
     <Compile Include="..\MFAAvalonia\Services\WarehouseChartRangeSelection.cs" Link="WarehouseChartRangeSelection.cs" />
     <Compile Include="..\MFAAvalonia\Services\UpdateDataScheduleService.cs" Link="UpdateDataScheduleService.cs" />
+    <Compile Include="..\MFAAvalonia\Services\WindowsScheduledTaskDefinition.cs" Link="WindowsScheduledTaskDefinition.cs" />
+    <Compile Include="..\MFAAvalonia\Services\WindowsScheduledTaskPlanner.cs" Link="WindowsScheduledTaskPlanner.cs" />
+    <Compile Include="..\MFAAvalonia\Services\WindowsScheduledTaskClient.cs" Link="WindowsScheduledTaskClient.cs" />
     <Compile Include="..\MFAAvalonia\Services\DailyTaskCompletionService.cs" Link="DailyTaskCompletionService.cs" />
     <Compile Include="..\MFAAvalonia\Services\UpdateDataPersistenceService.cs" Link="UpdateDataPersistenceService.cs" />
     <Compile Include="..\MFAAvalonia\Services\SwordBookNaibanOutfitService.cs" Link="SwordBookNaibanOutfitService.cs" />

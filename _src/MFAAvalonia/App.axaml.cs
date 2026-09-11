@@ -156,6 +156,7 @@ public partial class App : Application
             AvaloniaXamlLoader.Load(this);
             LanguageHelper.Initialize();
             ConfigurationManager.Initialize();
+            WindowsScheduledTaskSyncService.Initialize();
             SystemSleepHelper.ApplyPreventSleep();
             FontService.Initialize();
 
@@ -214,6 +215,7 @@ public partial class App : Application
                 Services = services.BuildServiceProvider();
 
                 MaaProcessorManager.Instance.LoadInstanceConfig();
+                WindowsScheduledTaskSyncService.RequestSync();
                 if (!OperatingSystem.IsAndroid())
                 {
                     TelemetryService.InitializeFromInterface();
@@ -310,6 +312,7 @@ public partial class App : Application
     {
         TelemetryService.Shutdown();
         MaaLogRotator.Stop();
+        WindowsScheduledTaskSyncService.Shutdown();
         TrayIconManager.DisposeTrayIcon(this);
 
         Instances.PersistRuntimeState();

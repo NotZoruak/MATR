@@ -39,11 +39,13 @@ public partial class TimerModel : ViewModelBase
     partial void OnCustomConfigChanged(bool value)
     {
         GlobalConfiguration.SetValue(ConfigurationKeys.CustomConfig, value.ToString());
+        PlatformTimerScheduler.RequestReschedule();
     }
 
     partial void OnForceScheduledStartChanged(bool value)
     {
         GlobalConfiguration.SetValue(ConfigurationKeys.ForceScheduledStart, value.ToString());
+        PlatformTimerScheduler.RequestReschedule();
     }
 
     private TimerModel()
@@ -391,6 +393,7 @@ public partial class TimerModel : ViewModelBase
             {
                 SetProperty(ref _timerConfig, value ?? string.Empty);
                 GlobalConfiguration.SetTimerConfig(TimerId, _timerConfig ?? string.Empty);
+                PlatformTimerScheduler.RequestReschedule();
             }
         }
 
@@ -415,6 +418,7 @@ public partial class TimerModel : ViewModelBase
             {
                 SetProperty(ref _timerAction, value);
                 GlobalConfiguration.SetTimerAction(TimerId, ((int)value).ToString());
+                PlatformTimerScheduler.RequestReschedule();
             }
         }
 

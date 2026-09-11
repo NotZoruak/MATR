@@ -2116,6 +2116,18 @@ Please do not copy only the main executable by itself.</value>
     <data name="RemoveTimer" xml:space="preserve">
         <value>Remove Timer</value>
     </data>
+    <data name="WindowsScheduledTaskTip" xml:space="preserve">
+        <value>When MATR is not running, Windows Task Scheduler starts the selected instance at the times above. Closing MATR does not cancel the timer; turn the switch off or remove the timer to cancel it.</value>
+    </data>
+    <data name="WindowsScheduledTaskSyncSuccess" xml:space="preserve">
+        <value>Windows scheduled wake-up: {0} scheduled task(s) synced</value>
+    </data>
+    <data name="WindowsScheduledTaskSyncEmpty" xml:space="preserve">
+        <value>Windows scheduled wake-up: no scheduled task needs syncing</value>
+    </data>
+    <data name="WindowsScheduledTaskSyncFailed" xml:space="preserve">
+        <value>Windows scheduled wake-up sync failed: {0}</value>
+    </data>
   <data name="InstanceDropdownSearch" xml:space="preserve">
     <value>Search configs</value>
   </data>

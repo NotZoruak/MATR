@@ -713,6 +713,10 @@ public static class LangKeys
 	public static readonly string RemoveTimer = "RemoveTimer";
 	public static readonly string TimerStopConnectedProcess = "TimerStopConnectedProcess";
 	public static readonly string TimerStopMFA = "TimerStopMFA";
+	public static readonly string WindowsScheduledTaskTip = "WindowsScheduledTaskTip";
+	public static readonly string WindowsScheduledTaskSyncSuccess = "WindowsScheduledTaskSyncSuccess";
+	public static readonly string WindowsScheduledTaskSyncEmpty = "WindowsScheduledTaskSyncEmpty";
+	public static readonly string WindowsScheduledTaskSyncFailed = "WindowsScheduledTaskSyncFailed";
 	public static readonly string ExportInstanceConfig = "ExportInstanceConfig";
 	public static readonly string ImportInstanceConfig = "ImportInstanceConfig";
 	public static readonly string ExportToClipboard = "ExportToClipboard";
