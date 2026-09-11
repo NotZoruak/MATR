@@ -227,22 +227,26 @@ AssertTrue(hanapaiBuyTicketOverride?["HP_IsNoTicketPopup"]?["action"]?["param"]?
         .SequenceEqual([452, 452, 88, 34]) == true
     && hanapaiBuyTicketOverride?["HP_IsNoTicketPopup"]?["next"]?.Values<string>()
         .SequenceEqual(["HP_IsNoTicket"]) == true
-    && hanapaiBuyTicketOverride?["HP_IsNoTicket"]?["next"]?.Values<string>()
-        .SequenceEqual(["HP_IsConfirmPurchase"]) == true
+    && hanapaiBuyTicketOverride?["HP_CompleteCurrentTaskAfterNoTicket"]?["enabled"]?.Value<bool>() == false
+    && hanapaiDefinition["HP_IsNoTicket"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_ClickTicketConfirm"]) == true
     && interfaceDefinition["option"]?["HP_购买门票"]?["default_case"]?.Values<string>().Any() == false
     && hanapaiDefinition["HP_CompleteCurrentTaskAfterNoTicket"]?["action"]?["custom_action"]?.Value<string>()
         == "CompleteCurrentTaskAction",
-    "勾选花牌购买门票时必须覆盖两级弹窗并进入购买确认链路");
+    "勾选花牌购买门票时必须覆盖两级弹窗、关闭无票结束分支并进入购买确认链路");
 var hanapaiTeamSelectNext = hanapaiDefinition["HP_IsTeamSelect"]?["next"]?.Values<string>().ToList();
 AssertTrue(hanapaiTeamSelectNext?.SequenceEqual([
-        "HP_DisableAutoMarch", "HP_EnableAutoMarch", "HP_ClickAutoMarchNoOrYesDelegate", "HP_ClickTeam"
-    ]) == true,
+        "HP_EnableAutoMarch", "HP_ClickTeam"
+    ]) == true
+    && hanapaiDefinition["HP_EnableAutoMarch"]?["next"]?.Values<string>()
+        .SequenceEqual(["HP_ClickAutoMarchNoOrYesDelegate"]) == true,
     "秘宝之里进入部队选择后必须先完成自动行军状态切换，再点击部队");
-AssertTrue(hanapaiDefinition["HP_DisableAutoMarch"]?["recognition"]?["param"]?["template"]?.Value<string>()
-        == "Common/自动行军_委托中.png"
+AssertTrue(hanapaiDefinition["HP_DisableAutoMarch"] == null
     && hanapaiDefinition["HP_EnableAutoMarch"]?["recognition"]?["param"]?["roi"]?.Values<int>()
+        .SequenceEqual([1176, 390, 1, 2]) == true
+    && hanapaiDefinition["HP_EnableAutoMarch"]?["action"]?["param"]?["target"]?.Values<int>()
         .SequenceEqual([1176, 390, 1, 2]) == true,
-    "秘宝之里必须复用合战场的自动行军双向切换识别，固定启用不提供开关");
+    "秘宝之里只前置开启自动行军并进入委托确认，不保留双向切换识别");
 AssertTrue(hanapaiDefinition["HP_DisableAutoMarch"]?["enabled"] == null
     && hanapaiDefinition["HP_EnableAutoMarch"]?["enabled"] == null,
     "秘宝之里的自动行军固定开启，不得依赖界面选项覆盖启用状态");
