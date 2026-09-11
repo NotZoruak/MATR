@@ -335,10 +335,12 @@
   },
   "HP_IsTrainingApplication": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
+        "roi": [1127, 579, 29, 22],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.98]
       }
     },
     "action": {
@@ -347,10 +349,8 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["HP_ClickTrainingApplication", "HP_IsTrainingApplication", "HP_CancelTrainingApplication"],
-    "on_error": ["HP_DetectWhereAmI"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["HP_ClickTrainingApplication", "HP_CancelTrainingApplication", "HP_DetectWhereAmI"],
+    "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_ClickTrainingApplication": {
     "recognition": {

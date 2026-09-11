@@ -11,7 +11,6 @@
       "S_IsBattleResult_Title",
       "S_HasExpeditionReturn_Title",
       "S_IsSwordDropColor",
-      "S_IsTrainingApplication",
       "S_IsResourcePoint",
       "S_IsFormationSelect",
       "S_IsTeamSelect",
@@ -53,7 +52,8 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_RecognizeResourcePoint"],
+    "post_delay": 500,
+    "next": ["S_RecognizeResourcePoint", "S_IsTrainingApplication"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_RecognizeResourcePoint": {
@@ -2520,23 +2520,14 @@
     "next": ["S_DetectWhereAmI"]
   },
   "S_IsTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
-      }
-    },
     "action": {
       "type": "Click",
       "param": {
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["S_ClickTrainingApplication", "S_IsTrainingApplication", "S_CancelTrainingApplication"],
-    "on_error": ["S_DetectWhereAmI"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["S_ClickTrainingApplication", "S_CancelTrainingApplication", "S_DetectWhereAmI"],
+    "on_error": ["S_DetectWhereAmI"]
   },
   "S_ClickTrainingApplication": {
     "recognition": {
@@ -4189,10 +4180,12 @@
   },
   "SF_IsTrainingApplication": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
+        "roi": [1127, 579, 29, 22],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.98]
       }
     },
     "action": {
@@ -4201,10 +4194,8 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["SF_ClickTrainingApplication", "SF_IsTrainingApplication", "SF_CancelTrainingApplication"],
-    "on_error": ["SF_DetectWhereAmI"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["SF_ClickTrainingApplication", "SF_CancelTrainingApplication", "SF_DetectWhereAmI"],
+    "on_error": ["SF_DetectWhereAmI"]
   },
   "SF_ClickTrainingApplication": {
     "recognition": {

@@ -754,10 +754,12 @@
   },
   "E_IsTrainingApplication": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
+        "roi": [1127, 579, 29, 22],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.98]
       }
     },
     "action": {
@@ -766,10 +768,8 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["E_ClickTrainingApplication", "E_IsTrainingApplication", "E_CancelTrainingApplication"],
-    "on_error": ["Expedition"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["E_ClickTrainingApplication", "E_CancelTrainingApplication", "Expedition"],
+    "on_error": ["Expedition"]
   },
   "E_ClickTrainingApplication": {
     "recognition": {
@@ -1867,10 +1867,12 @@
   },
   "E_FlowerIsTrainingApplication": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
+        "roi": [1127, 579, 29, 22],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.98]
       }
     },
     "action": {
@@ -1879,10 +1881,8 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["E_FlowerClickTrainingApplication", "E_FlowerIsTrainingApplication", "E_FlowerCancelTrainingApplication"],
-    "on_error": ["E_FlowerBattleHub"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["E_FlowerClickTrainingApplication", "E_FlowerCancelTrainingApplication", "E_FlowerBattleHub"],
+    "on_error": ["E_FlowerBattleHub"]
   },
   "E_FlowerClickTrainingApplication": {
     "recognition": {

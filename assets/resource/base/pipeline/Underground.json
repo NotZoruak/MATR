@@ -13,7 +13,6 @@
       "U_HasExpeditionReturn_Title",
       "U_IsSwordDropColor",
       "U_IsKobanChest",
-      "U_IsTrainingApplication",
       "U_IsResourcePoint",
       "U_IsSpecialDrop",
       "U_IsFormationSelect",
@@ -248,7 +247,8 @@
         "threshold": [0.98]
       }
     },
-    "next": ["U_RecognizeResourcePoint"],
+    "post_delay": 500,
+    "next": ["U_RecognizeResourcePoint", "U_IsTrainingApplication"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_RecognizeResourcePoint": {
@@ -618,23 +618,14 @@
     "next": ["U_DetectWhereAmI"]
   },
   "U_IsTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
-      }
-    },
     "action": {
       "type": "Click",
       "param": {
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["U_ClickTrainingApplication", "U_IsTrainingApplication", "U_CancelTrainingApplication"],
-    "on_error": ["U_DetectWhereAmI"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["U_ClickTrainingApplication", "U_CancelTrainingApplication", "U_DetectWhereAmI"],
+    "on_error": ["U_DetectWhereAmI"]
   },
   "U_ClickTrainingApplication": {
     "recognition": {
@@ -2430,10 +2421,12 @@
   },
   "UF_IsTrainingApplication": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [101, 590, 399, 42],
-        "expected": "一样"
+        "roi": [1127, 579, 29, 22],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.98]
       }
     },
     "action": {
@@ -2442,10 +2435,8 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["UF_ClickTrainingApplication", "UF_IsTrainingApplication", "UF_CancelTrainingApplication"],
-    "on_error": ["UF_DetectWhereAmI"],
-    "repeat": 5,
-    "repeat_delay": 500
+    "next": ["UF_ClickTrainingApplication", "UF_CancelTrainingApplication", "UF_DetectWhereAmI"],
+    "on_error": ["UF_DetectWhereAmI"]
   },
   "UF_ClickTrainingApplication": {
     "recognition": {
