@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using MFAAvalonia.Configuration;
 using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
@@ -34,7 +35,13 @@ public static class WindowsScheduledTaskSyncService
     private static readonly object DebounceLock = new();
     private static readonly TimeSpan DebounceDelay = TimeSpan.FromMilliseconds(1500);
 
-    private static IWindowsScheduledTaskClient _client = new SchTasksScheduledTaskClient();
+    /// <summary>
+    /// 系统计划任务客户端按需创建：非 Windows 平台不会构造任何 Windows 专用对象。
+    /// </summary>
+    private static readonly Lazy<IWindowsScheduledTaskClient> DefaultClient =
+        new(() => new SchTasksScheduledTaskClient());
+
+    private static IWindowsScheduledTaskClient? _clientOverride;
     private static Timer? _debounceTimer;
     private static int _pendingSync;
     private static int _isSyncing;
@@ -52,7 +59,7 @@ public static class WindowsScheduledTaskSyncService
     /// <summary>测试用入口：替换系统计划任务客户端。</summary>
     public static void UseClient(IWindowsScheduledTaskClient client)
     {
-        _client = client;
+        _clientOverride = client;
     }
 
     /// <summary>
@@ -213,9 +220,21 @@ public static class WindowsScheduledTaskSyncService
 
     private static void ExecuteSync(SyncSnapshot snapshot)
     {
-        var client = _client;
+        var client = _clientOverride ?? DefaultClient.Value;
         var managedTaskNames = client.ListManagedTaskNames();
-        var plan = WindowsScheduledTaskPlanner.CreatePlan(snapshot.Timers, snapshot.Context, managedTaskNames);
+        var scopeToken = WindowsScheduledTaskDefinitionBuilder.BuildScopeToken(snapshot.Context.ExecutablePath);
+        var staleScopeToken = ResolveStaleScopeToken(scopeToken);
+        var plan = WindowsScheduledTaskPlanner.CreatePlan(
+            snapshot.Timers,
+            snapshot.Context,
+            managedTaskNames,
+            staleScopeToken);
+
+        if (staleScopeToken != null)
+        {
+            LoggerHelper.Info(
+                $"[计划任务] 检测到安装目录已更换，将清理旧安装目录留下的计划任务：{WindowsScheduledTaskDefinitionBuilder.TaskNamePrefix}{staleScopeToken}.*");
+        }
 
         foreach (var warning in plan.Warnings)
             LoggerHelper.Warning(warning);
@@ -269,6 +288,9 @@ public static class WindowsScheduledTaskSyncService
             LoggerHelper.Info(
                 $"[计划任务] Windows 计划任务同步完成：需要同步 {plan.Tasks.Count} 个，本次写入 {writtenTaskCount} 个，清理 {plan.ObsoleteTaskNames.Count} 个。");
 
+            // 同步无失败时更新安装目录记录，供安装目录整体移动后清理旧任务使用。
+            PersistScopeRecord(scopeToken, snapshot.Context.ExecutablePath);
+
             Publish(new WindowsScheduledTaskSyncStatus(
                 true,
                 true,
@@ -285,6 +307,33 @@ public static class WindowsScheduledTaskSyncService
             plan.Tasks.Count,
             LangKeys.WindowsScheduledTaskSyncFailed.ToLocalizationFormatted(false, detail),
             DateTime.Now));
+    }
+
+    private static string? ResolveStaleScopeToken(string scopeToken)
+    {
+        return WindowsScheduledTaskPlanner.ResolveStaleScopeToken(
+            scopeToken,
+            GlobalConfiguration.GetValue(ConfigurationKeys.WindowsScheduledTaskScope, string.Empty),
+            GlobalConfiguration.GetValue(ConfigurationKeys.WindowsScheduledTaskExecutablePath, string.Empty),
+            File.Exists);
+    }
+
+    /// <summary>
+    /// 记录本次同步的安装目录身份。同步存在失败项时保留旧记录，
+    /// 让下一次同步继续尝试清理旧安装目录留下的计划任务。
+    /// </summary>
+    private static void PersistScopeRecord(string scopeToken, string executablePath)
+    {
+        var storedScope = GlobalConfiguration.GetValue(ConfigurationKeys.WindowsScheduledTaskScope, string.Empty);
+        var storedPath = GlobalConfiguration.GetValue(ConfigurationKeys.WindowsScheduledTaskExecutablePath, string.Empty);
+        if (string.Equals(storedScope, scopeToken, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(storedPath, executablePath, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        GlobalConfiguration.SetValue(ConfigurationKeys.WindowsScheduledTaskScope, scopeToken);
+        GlobalConfiguration.SetValue(ConfigurationKeys.WindowsScheduledTaskExecutablePath, executablePath);
     }
 
     private static string BuildSuccessMessage(int taskCount)

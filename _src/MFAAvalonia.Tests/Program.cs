@@ -2528,6 +2528,52 @@ AssertTrue(scheduledPlan.Warnings.Count == 4,
 AssertTrue(WindowsScheduledTaskPlanner.CreatePlan(plannedTimers, scheduledContext, []).Tasks.Count == 2,
     "系统任务文件夹为空时仍需生成全部有效定时器的计划任务");
 
+// Windows 计划任务：安装目录整体移动后的残留清理
+AssertTrue(WindowsScheduledTaskPlanner.ResolveStaleScopeToken(matrScopeToken, null, null, _ => true) == null,
+    "没有上一次同步记录时不得推断出需要清理的安装目录");
+AssertTrue(WindowsScheduledTaskPlanner.ResolveStaleScopeToken(
+        matrScopeToken,
+        matrScopeToken,
+        @"D:\Claude_Workspace\MATR\MATR.exe",
+        _ => true) == null,
+    "安装目录没有变化时不得清理计划任务");
+AssertTrue(WindowsScheduledTaskPlanner.ResolveStaleScopeToken(
+        matrScopeToken,
+        otherScopeToken,
+        @"D:\Apps\小只工具\MATR\MATR.exe",
+        _ => true) == null,
+    "旧安装目录仍然存在时不得清理它的计划任务，避免影响复制出来的另一份安装");
+AssertTrue(WindowsScheduledTaskPlanner.ResolveStaleScopeToken(
+        matrScopeToken,
+        otherScopeToken,
+        @"D:\Apps\小只工具\MATR\MATR.exe",
+        path => path != @"D:\Apps\小只工具\MATR\MATR.exe") == otherScopeToken,
+    "旧安装目录已经不存在时必须清理上一份安装留下的计划任务");
+AssertTrue(WindowsScheduledTaskPlanner.ResolveStaleScopeToken(
+        matrScopeToken,
+        otherScopeToken,
+        @"D:\Apps\小只工具\MATR\MATR.exe",
+        _ => throw new IOException("磁盘不可用")) == null,
+    "无法判断旧安装目录是否存在时不得清理，宁可留下残留也不误删");
+
+var movedPlan = WindowsScheduledTaskPlanner.CreatePlan(
+    plannedTimers,
+    scheduledContext,
+    [
+        $"MATR.Timer.{matrScopeToken}.1",
+        $"MATR.Timer.{otherScopeToken}.1",
+        $"MATR.Timer.{otherScopeToken}.2",
+        "其他程序创建的任务",
+    ],
+    otherScopeToken);
+AssertTrue(movedPlan.Tasks.Select(task => task.TaskName).SequenceEqual([$"MATR.Timer.{matrScopeToken}.1"]),
+    "安装目录更换后仍按当前安装目录生成计划任务");
+AssertTrue(movedPlan.ObsoleteTaskNames.SequenceEqual([
+        $"MATR.Timer.{otherScopeToken}.1",
+        $"MATR.Timer.{otherScopeToken}.2"
+    ]),
+    "安装目录整体移动后必须清理旧安装目录留下的全部计划任务");
+
 // Windows 计划任务：schtasks 参数与任务列表解析
 AssertTrue(SchTasksScheduledTaskClient.ParseManagedTaskNames(
         "\"MATR\\MATR.Timer.abcd1234.1\",\"2026/9/12 21:00:00\",\"Ready\"\r\n"
