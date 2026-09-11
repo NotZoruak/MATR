@@ -30,6 +30,7 @@
       "FC_HasExpeditionReturn_Exp",
       "FC_HasExpeditionReturn_Title",
       "FC_IsSwordDropColor",
+      "FC_RecoverFromEquip",
       "FC_FallbackWait"
     ],
     "on_error": ["FC_RestartGame"]
@@ -1460,6 +1461,17 @@
       }
     },
     "next": ["FC_DetectCurrentSlot"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_RecoverFromEquip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [568, 10, 143, 35],
+        "expected": "更换装备"
+      }
+    },
+    "next": ["FC_BackFromEquip"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_DetectCurrentSlot": {

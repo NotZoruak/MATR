@@ -46,6 +46,12 @@ public class FormationEquipStateMachine : IMaaCustomAction
     /// <summary>马匹列表确认 OCR 区域</summary>
     private static readonly int[] HorseListConfirmRoi = [855, 96, 36, 27];
 
+    /// <summary>当前位识别的最大尝试次数（进入装备页与翻页瞬间可能读不到前后位编号）</summary>
+    private const int SlotDetectAttempts = 3;
+
+    /// <summary>装备页入口固定打开的部队位置（FC_OpenEquip 点击 1 号位装备按钮）</summary>
+    private const int EntrySlot = 1;
+
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
     {
         try
@@ -57,22 +63,38 @@ public class FormationEquipStateMachine : IMaaCustomAction
             }
 
             int expectIndex = 0; // MemberSlots 下标
+            bool navigated = false; // 是否已点过翻页按钮（入口页面固定为 1 号位）
 
             while (true)
             {
                 ActionParamHelper.ThrowIfStopping(context);
 
-                int cur = DetectCurrentSlot(context);
+                int cur = DetectCurrentSlotWithRetry(context);
                 if (cur < 0)
                 {
-                    LoggerHelper.Error("[FormationEquipStateMachine] 无法判断当前刀剑槽位");
-                    return false;
+                    // 队伍只有一名成员时页面前后位栏为空，读不到编号；入口固定是 1 号位的装备按钮，
+                    // 因此首次进入且首位成员就在 1 号位时按该位继续配置。
+                    if (!navigated && expectIndex == 0 && FormationContext.MemberSlots[0] == EntrySlot)
+                    {
+                        LoggerHelper.Warning(
+                            $"[FormationEquipStateMachine] 连续 {SlotDetectAttempts} 次读不到前后位编号，按入口 {EntrySlot} 号位继续配置");
+                        cur = EntrySlot;
+                    }
+                    else
+                    {
+                        // 其余情况无法确认当前位：跳过剩余装备配置，由 FC_BackFromEquip 统一返回编成页，
+                        // 避免落到 on_error 后反复识别同一画面而卡死。
+                        LoggerHelper.Warning(
+                            $"[FormationEquipStateMachine] 连续 {SlotDetectAttempts} 次无法判断当前刀剑槽位，跳过剩余装备配置（已配置 {expectIndex} 个成员）");
+                        return true;
+                    }
                 }
 
                 if (cur != FormationContext.MemberSlots[expectIndex])
                 {
                     // 未到位：导航到下一个槽位继续，并等待画面切换完成
                     ClickRect(context, NextButton);
+                    navigated = true;
                     WaitNavAway(context, cur);
                     continue;
                 }
@@ -104,6 +126,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
 
                 // 导航到下一个刀剑槽位，并等待画面切换完成
                 ClickRect(context, NextButton);
+                navigated = true;
                 WaitNavAway(context, cur);
             }
         }
@@ -134,6 +157,21 @@ public class FormationEquipStateMachine : IMaaCustomAction
         if (idx < 0)
             return -1;
         return FormationContext.MemberSlots[(idx - 1 + FormationContext.MemberSlots.Count) % FormationContext.MemberSlots.Count];
+    }
+
+    /// <summary>带重试的当前位识别；连续读不到前后位编号时返回 -1，由调用方跳过装备配置</summary>
+    private int DetectCurrentSlotWithRetry<T>(T context) where T : IMaaContext
+    {
+        for (int attempt = 0; attempt < SlotDetectAttempts; attempt++)
+        {
+            if (attempt > 0)
+                ActionParamHelper.SleepWithStopCheck(context, 400);
+
+            int cur = DetectCurrentSlot(context);
+            if (cur >= 0)
+                return cur;
+        }
+        return -1;
     }
 
     /// <summary>等待导航后的画面切换：OCR 前后位推算的当前位与导航前不同即视为切换完成（最多 3 秒，超时继续）</summary>
