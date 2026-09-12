@@ -105,6 +105,17 @@
       "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知。合战场的轮数与其它任务一致，取自任务级 repeat_count，过去与异去共用；CreateNodeAndParam 直接使用 InterfaceItem.RepeatCount，不得恢复历史上读取过去/异去下级异去_重复次数或给过去写死三轮的定制逻辑。过去的单圈结束由资源侧自定义识别 SortieRoundDoneRecognition 判定：读取 S_SortieSuccess 命中计数，配合 TaskJob.Id 与本次运行基线判断本轮是否已出阵，命中时经 S_IsSortieRoundDone（打点完成一圈＋空 next）结束本轮任务运行。该判定必须走 next 正常分支，不得改用动作失败走 on_error，否则 MaaFW 的 SaveOnError 会按圈数往 debug/on_error 写截图；刷花链不参与轮次判定。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
     },
     {
+      "id": "gui-log.dispatch-order",
+      "title": "GUI 日志投递顺序",
+      "purpose": "让日志按调用顺序进入界面线程调度队列，避免轮次日志倒序显示。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/DispatcherHelper.cs", "_src/MFAAvalonia/Helper/ValueType/MFATask.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 AddLogByKey 与 AddMarkdown 的直接 PostOnMainThread 调用，删除上游升级带回来的外层 Task.Run。",
+      "verification": ["有限重复任务每轮收尾按「任务完成 → 开始任务」顺序显示", "日志面板不出现连续两条开始任务", "相邻轮次日志仅相差数毫秒时文件日志仍按调用顺序落盘", "AddMarkdown 与 AddLog、LogRestartEvent 的投递方式一致"],
+      "notes": "外层 Task.Run 会让每条日志独自经线程池投递，投递顺序不再受调用顺序保证，表现为「任务完成（上一轮）」与「开始任务（下一轮）」倒序显示。该定制在 2026-08-16 提交 7b30e339 修复（当时只改 AddLogByKey），2026-09-04 提交 b65c54ec 升级 MFAAvalonia v2.16.1 时被上游写法覆盖并复发，本次恢复并一并修复 AddMarkdown。日志创建、集合写入与裁剪仍全部在界面线程执行，不引入跨线程集合访问。"
+    },
+    {
       "id": "task.sync-expedition-reuse",
       "title": "同步后勤复用后勤任务配置",
       "purpose": "让出阵任务与一键日课复用「后勤」任务保存的远征队伍、修刀、内番与刷新间隔配置。",

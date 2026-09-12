@@ -85,6 +85,14 @@
 
 引擎运行标识在每次 `post_task` 变化，命中计数的生命周期以基线比较兜底；刷花链（`SF_ClickSortieNow` / `SF_IsHome`）不参与轮次判定，回到主链后继续。
 
+### `gui-log.dispatch-order`
+
+GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor.AddLogByKey` 与 `AddMarkdown` 直接调用 `DispatcherHelper.PostOnMainThread`，不得在外面再套一层 `Task.Run`：套壳后每条日志各自经线程池投递，相邻两条的到达顺序不再受调用顺序保证。普通 `AddLog` 与 `LogRestartEvent` 一直是直接投递，按 key 输出的这两条路径必须与它们保持一致。
+
+有限重复任务在每轮收尾时会连续输出两条日志：「任务完成：任务名 进度 X/Y」（刚结束的一轮）与「开始任务：任务名」（下一轮），两者仅相隔数毫秒。顺序颠倒时，日志面板上会出现连续两条「开始任务」，而上一轮的「任务完成」被挤到后面，视觉上无法按轮次一一对应；战斗过程日志由 `LogAction` 只写文件、不写 GUI，所以面板里这两条本来就是相邻显示的，任何一次乱序都会直接暴露。
+
+该修复在 2026-08-16 已做过一次（提交 `7b30e339`，当时只改了 `AddLogByKey`），2026-09-04 的 MFAAvalonia v2.16.1 升级（提交 `b65c54ec`）把上游的 `Task.Run(() => DispatcherHelper.PostOnMainThread(...))` 写法带了回来，问题随之复发。升级时以本条目为准，不要恢复双层投递；日志创建、集合写入与裁剪仍全部在界面线程执行，不引入跨线程集合访问。
+
 ### `task.sync-expedition-reuse`
 
 同步后勤是 MATR 对 MFAAvalonia 远征流程的定制扩展。合战场、地下城、陆联、战术强化、江户潜入与一键日课启用“同步后勤”时，`MaaProcessor.CreateNodeAndParam` 必须从当前实例的“后勤”任务读取“部队一”至“部队五”的选项，并将这些选项的 `pipeline_override` 合并到当前任务。

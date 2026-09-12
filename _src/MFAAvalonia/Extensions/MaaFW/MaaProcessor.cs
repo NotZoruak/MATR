@@ -436,17 +436,16 @@ public class MaaProcessor
     public void AddLogByKey(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true, params string[] formatArgsKeys)
     {
         brush ??= Brushes.Black;
-        Task.Run(() =>
+        // 直接投递到 GUI 线程：外层 Task.Run 会让相邻两条日志经线程池乱序到达，
+        // 出现「任务完成（上一轮）」与「开始任务（下一轮）」倒序显示。上游升级时不得恢复该写法。
+        DispatcherHelper.PostOnMainThread(() =>
         {
-            DispatcherHelper.PostOnMainThread(() =>
-            {
-                var log = new LogItemViewModel(key, brush, "Regular", true, "HH':'mm':'ss", changeColor: changeColor, showTime: true, transformKey: transformKey, formatArgsKeys);
-                LogItemViewModels.Add(log);
-                PublishPlatformLog(log);
-                using var logScope = BeginInstanceLogScope("MonitorLog", "Monitor");
-                LoggerHelper.Info(log.Content);
-                TrimExcessLogs();
-            });
+            var log = new LogItemViewModel(key, brush, "Regular", true, "HH':'mm':'ss", changeColor: changeColor, showTime: true, transformKey: transformKey, formatArgsKeys);
+            LogItemViewModels.Add(log);
+            PublishPlatformLog(log);
+            using var logScope = BeginInstanceLogScope("MonitorLog", "Monitor");
+            LoggerHelper.Info(log.Content);
+            TrimExcessLogs();
         });
     }
 
@@ -459,20 +458,18 @@ public class MaaProcessor
     public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true, params string[] formatArgsKeys)
     {
         brush ??= Brushes.Black;
-        Task.Run(() =>
+        // 与 AddLogByKey 一致：直接投递，避免线程池乱序导致 GUI 日志顺序错乱。
+        DispatcherHelper.PostOnMainThread(() =>
         {
-            DispatcherHelper.PostOnMainThread(() =>
+            var log = new LogItemViewModel(key, brush, "Regular", true, "HH':'mm':'ss", changeColor: changeColor, showTime: true, transformKey: transformKey, formatArgsKeys)
             {
-                var log = new LogItemViewModel(key, brush, "Regular", true, "HH':'mm':'ss", changeColor: changeColor, showTime: true, transformKey: transformKey, formatArgsKeys)
-                {
-                    UseMarkdown = true
-                };
-                LogItemViewModels.Add(log);
-                PublishPlatformLog(log);
-                using var logScope = BeginInstanceLogScope("MonitorMarkdown", "Monitor");
-                LoggerHelper.Info(log.Content);
-                TrimExcessLogs();
-            });
+                UseMarkdown = true
+            };
+            LogItemViewModels.Add(log);
+            PublishPlatformLog(log);
+            using var logScope = BeginInstanceLogScope("MonitorMarkdown", "Monitor");
+            LoggerHelper.Info(log.Content);
+            TrimExcessLogs();
         });
     }
 
