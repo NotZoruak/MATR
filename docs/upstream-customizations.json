@@ -130,12 +130,34 @@
       "id": "task.sync-expedition-reuse",
       "title": "同步后勤复用后勤任务配置",
       "purpose": "让出阵任务与一键日课复用「后勤」任务保存的远征队伍、修刀、内番与刷新间隔配置。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "assets/interface.json", "assets/resource/base/pipeline/Expedition.json", "assets/resource/base/pipeline/DailyTask.json"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "assets/interface.json", "assets/resource/base/pipeline/Expedition.json", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/custom/ExpeditionMapSelectAction.cs", "assets/resource/base/custom/ExpeditionTeamRestRecognition.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerCheckAction.cs", "_src/MFAAvalonia.Tests/Program.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留 CreateNodeAndParam 中的同步配置复用与实例配置重读兜底；升级后核对入口白名单仍包含 Sortie、Underground、LRentaisen、Hanapai、TacticalTraining、EdoCastle 与 DailyTask。",
-      "verification": ["休息队伍对应的 E_CheckTeamN 为 false 且不进入选图流程", "配置远征地图的队伍会进入选图与确认派遣", "修刀多选筛选条件递归合并到同一个 E_FindRepairableSword", "内番开关随后勤任务同步", "配置刷新间隔时注入 E_TimerStart 并指向各任务导航 node", "一键日课同步后勤接入 DT_IsHome 并在 E_AllTeamsBusy 后回到 DT_PrepareHub", "任务列表中没有后勤任务时回落默认配置"],
-      "notes": "同步后勤的入口至少包含合战场、地下城、陆联、战术强化、江户潜入与一键日课。日课不做倒计时，E_AllTeamsBusy 的 action 必须写死为关闭队伍状态面板的点击，否则开启远征智能调度时会被全局覆盖成 DoNothing。"
+      "verification": ["休息队伍对应的 E_CheckTeamN 为 false 且不进入选图流程", "配置远征地图的队伍会进入选图与确认派遣", "管线仍启用的部队若在后勤配置中为休息，E_CheckTeamN 之前由 E_SkipTeamN 跳过并继续检查下一支部队", "E_SelectMapN 判定休息失败时回 E_GoHome 重新检查，不回到 Expedition 形成死循环", "合并时输出 [同步后勤] 诊断日志（任务、实例与五支部队的 Index）", "修刀多选筛选条件递归合并到同一个 E_FindRepairableSword", "内番开关随后勤任务同步", "配置刷新间隔时注入 E_TimerStart 并指向各任务导航 node", "一键日课同步后勤接入 DT_IsHome 并在 E_AllTeamsBusy 后回到 DT_PrepareHub", "任务列表中没有后勤任务时回落默认配置"],
+      "notes": "同步后勤的入口至少包含合战场、地下城、陆联、战术强化、江户潜入与一键日课。日课不做倒计时，E_AllTeamsBusy 的 action 必须写死为关闭队伍状态面板的点击，否则开启远征智能调度时会被全局覆盖成 DoNothing。合并侧必须保留实例配置重读兜底与 [同步后勤] 诊断日志：休息判定失败会让流程反复回到本丸，2026-07-22、2026-08-15、2026-09-12 三次同类回归都因缺少该日志而难以定位。E_ExpSubHubN 的 next 首位固定为 E_SkipTeamN（休息识别），E_SelectMapN 的 on_error 固定为 E_GoHome，两处都不能被上游覆盖回原值。E_CheckTimerExpired 的到期分支必须走 next：ExpeditionTimerCheckAction 读取本 node 的 on_error 目标后用 OverrideNext 改写成成功路径，读不到才返回 false，不能恢复为直接 return false，否则每个调度周期都会写一张无意义的 on_error 截图。"
+    },
+    {
+      "id": "task.sync-logistics-instance-source",
+      "title": "同步后勤按执行实例读取配置",
+      "purpose": "多实例下后勤选图、派遣打点与日志都取执行任务那个实例的配置，避免读到其它实例的后勤设置造成休息部队被误派。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ActionParamHelper.cs", "assets/resource/base/custom/ExpeditionMapSelectAction.cs", "assets/resource/base/custom/DispatchLogAction.cs", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/custom/DamageLogAction.cs", "assets/resource/base/custom/CaptainDamageAction.cs", "assets/resource/base/custom/StopOnDamageAction.cs", "assets/resource/base/custom/RepairStartLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FatigueCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SmartWaitAction.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "自定义动作与识别器用 context.Tasker 经 MaaProcessor.ResolveByTasker 定位所属处理器，再用 GetLogisticsTeamMapIndex 读取该实例的后勤部队设置；AddLog 走 ActionParamHelper.ResolveOwnerProcessor，取不到时才回退当前激活实例。",
+      "verification": ["多实例下选图与其管线合并读取同一实例的后勤配置", "只在无法定位所属实例时才回退按当前激活实例读取文件", "派遣记录写入执行实例的日志与工作记录", "GUI 日志与疲劳、计时等打点写入执行实例"],
+      "notes": "「当前激活实例」是界面选中项，不保证等于执行任务的实例；按它读取会拿到别的实例的后勤设置，出现管线要求派遣、动作判定休息的冲突并反复回到本丸。只有 ExpeditionMapSelectAction 与 DispatchLogAction 直读实例配置文件，其余数据都走 MaaProcessor 的实例配置。"
+    },
+    {
+      "id": "task-items.materialized-cache-write",
+      "title": "TaskItems 写入实例配置前物化",
+      "purpose": "避免惰性 IEnumerable 进入实例配置缓存后 GetValue<List<T>> 返回空列表，使同步后勤丢失部队设置并把休息部队派出去。",
+      "files": ["_src/MFAAvalonia/Views/Pages/TaskQueueView.axaml.cs", "_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia/ViewModels/Other/InstanceTabBarViewModel.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "所有 SetValue(ConfigurationKeys.TaskItems, ...Select(...)) 调用点必须 .ToList() 物化；上游升级后逐处核对，不能只依赖 MaaProcessor 的磁盘重读兜底。",
+      "verification": ["任务列表保存、删除、改名与重置都写入 List", "切换实例前保存任务列表写入 List", "源码回归断言检查物化调用点"],
+      "notes": "2026-08-15 修复过的缓存污染问题在 2026-09-04 升级 v2.16.1 时被上游写法覆盖，只剩 MaaProcessor 的 ReloadFromDisk 兜底；本次按清单恢复四处物化。"
     },
     {
       "id": "recovery.game-and-emulator-restart",

@@ -113,6 +113,22 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 
 一键日课的接入点是 `DT_IsHome.next → Expedition`，与出阵任务的 `*_IsHome.next` 同形；后勤在 `E_AllTeamsBusy` 处结束，该 node 在任务层覆盖为「关闭队伍状态面板（`repeat: 2`、`repeat_delay: 500`）→ `DT_PrepareHub`」，新增的回落 node 是 `DT_WaitRefresh`。日课不做倒计时与队伍面板 OCR 扫描，因此不覆盖 `E_TimerStart`，`E_AllTeamsBusy` 的 action 必须写死为 Click——否则开启“远征智能调度”时全局覆盖会把该 node 改成 `DoNothing`，队伍状态面板不会关闭。
 
+休息部队的兜底与选图动作的失败出口必须成对存在：`E_ExpSubHubN` 的 `next` 首位固定为 `E_SkipTeamN`（休息识别 `ExpeditionTeamRestRecognition`），命中即跳过该部队并继续下一支部队；`E_SelectMapN` 的 `on_error` 固定为 `E_GoHome`，判定休息失败时回本丸重新检查，不得回到 `Expedition`。2026-07-22、2026-08-15、2026-09-12 三次同类回归的现象都是「休息部队仍进入选图 → 选图动作失败 → 回本丸 → 再进选图」的死循环，前两次的根因分别是 `MaaToken.Merge` 浅合并与 `TaskItems` 缓存污染，本次是多实例下取到了其它实例的后勤配置；三次都因为缺少合并侧诊断日志而拉长了定位时间，因此 `[同步后勤]` 日志与上述两个出口不得删除。
+
+远征智能调度里 `E_CheckTimerExpired` 的「倒计时到期」是预期分支，必须走 `next`：`ExpeditionTimerCheckAction` 到期时读取本 node 配置的 `on_error` 目标（各任务不同：`E_GoHome`、`Expedition`、`U_ReturnHomeAfterMarch`），用 `OverrideNext` 改写成成功路径后返回 true；读不到目标才返回 false 落回原路径。若改回 `return false` 走 `on_error`，MaaFW 的 SaveOnError 会每个调度周期往 `debug/on_error` 写一张 `E_CheckTimerExpired` 截图。
+
+### `task.sync-logistics-instance-source`
+
+同步后勤涉及的选图、派遣打点与日志都必须取「执行任务那个实例」的配置。`MaaProcessor.ResolveByTasker` 通过 `context.Tasker` 定位所属处理器，`MaaProcessor.GetLogisticsTeamMapIndex` 读取该实例「后勤」任务的部队设置，两者与管线合并使用同一份数据源；`ActionParamHelper.ResolveOwnerProcessor` 供各动作取日志归属，只有在无法定位所属实例时才退回 `MaaProcessorManager.Instance.Current`。
+
+只有 `ExpeditionMapSelectAction` 与 `DispatchLogAction` 会直读 `config/instances/{id}.json`，两者的直读只作为定位不到所属实例时的兜底；“当前激活实例”是界面选中项，不保证等于执行任务的实例，按它读取会拿到别的实例的后勤设置。
+
+### `task-items.materialized-cache-write`
+
+所有写入 `ConfigurationKeys.TaskItems` 的调用点必须 `.ToList()` 物化后再存入实例配置：任务列表保存、删除、改名、重置，以及切换实例前的保存。惰性 `IEnumerable` 存入后 `GetValue<List<MaaInterfaceTask>>` 会类型转换失败并返回空列表，同步后勤因此丢失部队设置并把休息部队派出去。
+
+2026-08-15 曾修复过该问题（提交 `d4cc21f7`），2026-09-04 升级 MFAAvalonia v2.16.1 时被上游写法覆盖，只剩 `MaaProcessor` 的 `ReloadFromDisk` 兜底；升级后必须逐处核对物化调用点，源码回归断言已覆盖该检查。
+
 ### `recovery.game-and-emulator-restart`
 
 MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调检测接入。必须保留 `TaskRecoveryMonitor`、任务回调记录和 `TryRunTasksAsync` 中独立于底层 `Wait` 的检查循环。检测只在 ADB 普通任务且开启「卡死重启」时启用，静默阈值沿用「卡死等待时间」（默认 120 秒），排除智能等待、人工弹窗及已经开始的游戏恢复。停止和完成任务时撤销检测。

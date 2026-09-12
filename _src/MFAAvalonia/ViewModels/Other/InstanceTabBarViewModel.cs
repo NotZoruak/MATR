@@ -387,7 +387,7 @@ public partial class InstanceTabBarViewModel : ViewModelBase
         {
             MFAAvalonia.Configuration.ConfigurationManager.CurrentInstance.SetValue(
                 MFAAvalonia.Configuration.ConfigurationKeys.TaskItems,
-                vm.TaskItemViewModels.ToList().Select(model => model.InterfaceItem));
+                vm.TaskItemViewModels.Select(model => model.InterfaceItem).ToList());
         }
 
         if (MaaProcessorManager.Instance.SwitchCurrent(processor.InstanceId))

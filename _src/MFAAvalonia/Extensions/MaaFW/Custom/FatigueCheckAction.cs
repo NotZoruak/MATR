@@ -146,7 +146,7 @@ public class FatigueCheckAction : IMaaCustomAction
                     var msg = reversed
                         ? $"[合战场疲劳处理] 疲劳值恢复完成"
                         : $"[合战场疲劳处理] 首位疲劳低于30，进入刷花";
-                    try { MaaProcessorManager.Instance.Current?.AddLog(msg); } catch { }
+                    try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(msg); } catch { }
                 }
                 return ok;
             }
@@ -189,7 +189,7 @@ public class FatigueCheckAction : IMaaCustomAction
                 LoggerHelper.Info($"[疲劳检测] 首位={values[0]}, >= {threshold}? {ok}");
                 FlowerStateTracker.CurrentFatigueLowest = values[0].Value;
                 if (ok)
-                    try { MaaProcessorManager.Instance.Current?.AddLog($"[远征疲劳检测] 疲劳值恢复完成"); } catch { }
+                    try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog($"[远征疲劳检测] 疲劳值恢复完成"); } catch { }
                 return ok;
             }
             else
@@ -201,7 +201,7 @@ public class FatigueCheckAction : IMaaCustomAction
                 if (!ok)
                 {
                     if (team > 0) FlowerStateTracker.BeginTeam(team);
-                    try { MaaProcessorManager.Instance.Current?.AddLog($"[远征疲劳检测] 有刀剑疲劳低于阈值，进入刷花"); } catch { }
+                    try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog($"[远征疲劳检测] 有刀剑疲劳低于阈值，进入刷花"); } catch { }
                 }
                 return ok;
             }

@@ -20,7 +20,7 @@ public class GuiLogAction : IMaaCustomAction
         {
             var isWarning = message.StartsWith("warn:", StringComparison.OrdinalIgnoreCase)
                 || message.StartsWith("warning:", StringComparison.OrdinalIgnoreCase);
-            MaaProcessorManager.Instance.Current?.AddLog(message, recordAsWarning: isWarning);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message, recordAsWarning: isWarning);
         }
         catch
         {

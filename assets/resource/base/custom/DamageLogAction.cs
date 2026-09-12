@@ -18,7 +18,7 @@ public class DamageLogAction : IMaaCustomAction
             LoggerHelper.Info(message);
             try
             {
-                MaaProcessorManager.Instance.Current?.AddLog(message);
+                ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message);
             }
             catch
             {

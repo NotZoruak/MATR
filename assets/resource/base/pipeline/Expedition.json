@@ -123,7 +123,7 @@
     },
     "pre_delay": 100,
     "next": ["E_ClickSmallMap1"],
-    "on_error": ["Expedition"]
+    "on_error": ["E_GoHome"]
   },
   "E_ClickSmallMap1": {
     "action": {
@@ -212,7 +212,7 @@
     },
     "pre_delay": 100,
     "next": ["E_ClickSmallMap2"],
-    "on_error": ["Expedition"]
+    "on_error": ["E_GoHome"]
   },
   "E_ClickSmallMap2": {
     "action": {
@@ -301,7 +301,7 @@
     },
     "pre_delay": 100,
     "next": ["E_ClickSmallMap3"],
-    "on_error": ["Expedition"]
+    "on_error": ["E_GoHome"]
   },
   "E_ClickSmallMap3": {
     "action": {
@@ -390,7 +390,7 @@
     },
     "pre_delay": 100,
     "next": ["E_ClickSmallMap4"],
-    "on_error": ["Expedition"]
+    "on_error": ["E_GoHome"]
   },
   "E_ClickSmallMap4": {
     "action": {
@@ -479,7 +479,7 @@
     },
     "pre_delay": 100,
     "next": ["E_ClickSmallMap5"],
-    "on_error": ["Expedition"]
+    "on_error": ["E_GoHome"]
   },
   "E_ClickSmallMap5": {
     "action": {
@@ -700,24 +700,89 @@
     "on_error": ["E_WaitRefresh"]
   },
   "E_ExpSubHub1": {
-    "next": ["E_CheckTeam1", "E_ExpSubHub2"],
+    "next": ["E_SkipTeam1", "E_CheckTeam1", "E_ExpSubHub2"],
     "on_error": ["Expedition"]
   },
   "E_ExpSubHub2": {
-    "next": ["E_CheckTeam2", "E_ExpSubHub3"],
+    "next": ["E_SkipTeam2", "E_CheckTeam2", "E_ExpSubHub3"],
     "on_error": ["Expedition"]
   },
   "E_ExpSubHub3": {
-    "next": ["E_CheckTeam3", "E_ExpSubHub4"],
+    "next": ["E_SkipTeam3", "E_CheckTeam3", "E_ExpSubHub4"],
     "on_error": ["Expedition"]
   },
   "E_ExpSubHub4": {
-    "next": ["E_CheckTeam4", "E_ExpSubHub5"],
+    "next": ["E_SkipTeam4", "E_CheckTeam4", "E_ExpSubHub5"],
     "on_error": ["Expedition"]
   },
   "E_ExpSubHub5": {
-    "next": ["E_CheckTeam5", "E_WorkshopHub", "E_NaibanHub", "E_AllTeamsBusy"],
+    "next": ["E_SkipTeam5", "E_CheckTeam5", "E_WorkshopHub", "E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["Expedition"]
+  },
+  "E_SkipTeam1": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionTeamRestRecognition",
+        "custom_recognition_param": {
+          "team_label": "部队一"
+        }
+      }
+    },
+    "next": ["E_ExpSubHub2"],
+    "on_error": ["E_ExpSubHub2"]
+  },
+  "E_SkipTeam2": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionTeamRestRecognition",
+        "custom_recognition_param": {
+          "team_label": "部队二"
+        }
+      }
+    },
+    "next": ["E_ExpSubHub3"],
+    "on_error": ["E_ExpSubHub3"]
+  },
+  "E_SkipTeam3": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionTeamRestRecognition",
+        "custom_recognition_param": {
+          "team_label": "部队三"
+        }
+      }
+    },
+    "next": ["E_ExpSubHub4"],
+    "on_error": ["E_ExpSubHub4"]
+  },
+  "E_SkipTeam4": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionTeamRestRecognition",
+        "custom_recognition_param": {
+          "team_label": "部队四"
+        }
+      }
+    },
+    "next": ["E_ExpSubHub5"],
+    "on_error": ["E_ExpSubHub5"]
+  },
+  "E_SkipTeam5": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionTeamRestRecognition",
+        "custom_recognition_param": {
+          "team_label": "部队五"
+        }
+      }
+    },
+    "next": ["E_WorkshopHub", "E_NaibanHub", "E_AllTeamsBusy"],
+    "on_error": ["E_AllTeamsBusy"]
   },
   "E_IsInternalReport": {
     "recognition": {

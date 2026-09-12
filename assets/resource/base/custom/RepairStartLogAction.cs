@@ -27,7 +27,7 @@ public class RepairStartLogAction : IMaaCustomAction
         if (mode == "gui")
         {
             if (!string.IsNullOrWhiteSpace(_lastMessage))
-                MaaProcessorManager.Instance.Current?.AddLog(_lastMessage);
+                ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(_lastMessage);
             return true;
         }
 

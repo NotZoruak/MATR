@@ -43,7 +43,7 @@ public class SmartWaitAction : IMaaCustomAction
                 startMsg = $"[远征计时] 无进行中的远征，间隔 {FormatSeconds(waitSeconds)}";
             }
 
-            Log(startMsg);
+            Log(context, startMsg);
 
             if (waitSeconds > 0)
             {
@@ -67,17 +67,17 @@ public class SmartWaitAction : IMaaCustomAction
                 }
             }
 
-            Log("[远征计时] 倒计时结束");
+            Log(context, "[远征计时] 倒计时结束");
             return true;
         }
         catch (MaaStopException)
         {
-            Log("[远征计时] 检测到手动停止");
+            Log(context, "[远征计时] 检测到手动停止");
             return false;
         }
         catch (Exception e)
         {
-            Log($"[远征计时] 错误: {e.Message}");
+            Log(context, $"[远征计时] 错误: {e.Message}");
             return false;
         }
     }
@@ -89,12 +89,12 @@ public class SmartWaitAction : IMaaCustomAction
         return $"{totalSeconds / 60}分{totalSeconds % 60}秒";
     }
 
-    private static void Log(string message)
+    private static void Log<T>(T context, string message) where T : IMaaContext
     {
         LoggerHelper.Info(message);
         try
         {
-            MaaProcessorManager.Instance.Current?.AddLog(message);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message);
         }
         catch { }
     }

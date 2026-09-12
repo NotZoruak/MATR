@@ -763,6 +763,69 @@ AssertTrue(currentMaaProcessorSource.Contains(
         StringComparison.Ordinal)
     && currentMaaProcessorSource.Contains("MergeArrayHandling = MergeArrayHandling.Replace", StringComparison.Ordinal),
     "多选筛选条件必须合并到同一个 node 覆盖对象，不能只保留最后一个刀种");
+
+// MFAAvalonia 整文件升级会覆盖 MATR 定制，以下四类保护必须逐条守住
+AssertTrue(currentMaaProcessorSource.Contains(
+        "MergeGlobalOptionParams(ref taskModels, task.InterfaceItem)", StringComparison.Ordinal)
+    && currentMaaProcessorSource.Contains(
+        "if (task.Entry != \"Expedition\" && !syncExpEnabled)", StringComparison.Ordinal)
+    && currentMaaProcessorSource.Contains("o.Name != \"远征智能调度\"", StringComparison.Ordinal)
+    && currentMaaProcessorSource.Contains("BuildGoHomeParam()", StringComparison.Ordinal),
+    "全局选项必须按任务过滤：未开启同步后勤的任务不得注入「远征智能调度」，插入的回本丸必须复用同一套兜底禁用");
+AssertTrue(currentMaaProcessorSource.Contains("[同步后勤] 任务=", StringComparison.Ordinal)
+    && currentMaaProcessorSource.Contains("public int? GetLogisticsTeamMapIndex(string teamOptionName)", StringComparison.Ordinal)
+    && currentMaaProcessorSource.Contains("public static MaaProcessor? ResolveByTasker(IMaaTasker? tasker)", StringComparison.Ordinal),
+    "同步后勤必须保留合并侧诊断日志，并提供按执行实例读取部队配置的统一入口");
+
+var instanceTabBarSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Other", "InstanceTabBarViewModel.cs"));
+AssertTrue(CountOccurrences(taskQueueViewSource, ".InterfaceItem).ToList()") >= 3
+    && taskQueueViewModelSource.Contains(
+        "TaskItemViewModels.Select(model => model.InterfaceItem).ToList()", StringComparison.Ordinal)
+    && instanceTabBarSource.Contains(
+        "vm.TaskItemViewModels.Select(model => model.InterfaceItem).ToList()", StringComparison.Ordinal),
+    "TaskItems 写入实例配置前必须 .ToList() 物化，惰性枚举会让 GetValue<List<T>> 返回空列表并导致休息部队被误派");
+
+var expeditionMapSelectActionSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ExpeditionMapSelectAction.cs"));
+var dispatchLogActionSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "DispatchLogAction.cs"));
+var teamRestRecognitionPath = Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ExpeditionTeamRestRecognition.cs");
+AssertTrue(expeditionMapSelectActionSource.Contains(
+        "MaaProcessor.ResolveByTasker(context.Tasker)", StringComparison.Ordinal)
+    && expeditionMapSelectActionSource.Contains(
+        "processor?.GetLogisticsTeamMapIndex(teamLabel)", StringComparison.Ordinal)
+    && !expeditionMapSelectActionSource.Contains(
+        "string instanceId = MaaProcessorManager.Instance?.Current?.InstanceId ?? string.Empty;\n            string configPath",
+        StringComparison.Ordinal)
+    && dispatchLogActionSource.Contains("MaaProcessor.ResolveByTasker(context.Tasker)", StringComparison.Ordinal)
+    && dispatchLogActionSource.Contains("processor?.GetLogisticsTeamMapIndex(", StringComparison.Ordinal),
+    "远征选图与派遣打点必须按执行任务的实例读取后勤配置，不能按当前激活实例读取");
+AssertTrue(File.Exists(teamRestRecognitionPath)
+    && File.ReadAllText(teamRestRecognitionPath).Contains(
+        "class ExpeditionTeamRestRecognition", StringComparison.Ordinal),
+    "同步后勤必须提供「该部队已设为休息」的识别，用于在进入选图前跳过部队");
+
+var expeditionTimerCheckSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ExpeditionTimerCheckAction.cs"));
+AssertTrue(expeditionTimerCheckSource.Contains("context.OverrideNext(nodeName, targets)", StringComparison.Ordinal)
+    && expeditionTimerCheckSource.Contains("GetNodeData(nodeName, out var nodeData)", StringComparison.Ordinal),
+    "远征计时到期必须改走 next，不能靠 on_error 触发，否则每个智能调度周期都会写一张无意义的 debug/on_error 截图");
+
+var syncLogisticsExpedition = JObject.Parse(File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Expedition.json")));
+for (var team = 1; team <= 5; team++)
+{
+    AssertTrue(syncLogisticsExpedition[$"E_SkipTeam{team}"]?["recognition"]?["param"]?["custom_recognition"]
+            ?.Value<string>() == "ExpeditionTeamRestRecognition"
+        && syncLogisticsExpedition[$"E_ExpSubHub{team}"]?["next"]?.Values<string>().FirstOrDefault()
+            == $"E_SkipTeam{team}",
+        $"E_ExpSubHub{team} 必须先用休息识别跳过该部队，避免休息部队进入选图后死循环");
+    AssertTrue(syncLogisticsExpedition[$"E_SelectMap{team}"]?["on_error"]?.Values<string>()
+            .SequenceEqual([$"E_GoHome"]) == true,
+        $"E_SelectMap{team} 判定休息失败时必须回本丸重新检查，不能重新进入远征中枢形成死循环");
+}
 var formationPresetControlSource = ExtractSourceSection(
     taskOptionGeneratorSource,
     "private Control CreateFormationPresetControl(",
@@ -2686,6 +2749,19 @@ static void AssertTrue(bool value, string message)
 {
     if (!value)
         throw new InvalidOperationException(message);
+}
+
+static int CountOccurrences(string source, string value)
+{
+    var count = 0;
+    var index = source.IndexOf(value, StringComparison.Ordinal);
+    while (index >= 0)
+    {
+        count++;
+        index = source.IndexOf(value, index + value.Length, StringComparison.Ordinal);
+    }
+
+    return count;
 }
 
 static bool InvokeUpdateDataShouldRun(InstanceConfiguration configuration, string interval, DateTime now) =>

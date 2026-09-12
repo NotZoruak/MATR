@@ -418,7 +418,7 @@ public partial class TaskQueueView : UserControl
 
                     vm.Processor.InstanceConfiguration.SetValue(ConfigurationKeys.TaskItems,
                         vm.TaskItemViewModels.Where(m => !m.IsResourceOptionItem)
-                            .Select(model => model.InterfaceItem));
+                            .Select(model => model.InterfaceItem).ToList());
                 }))
             .TryShow();
     }
@@ -450,7 +450,7 @@ public partial class TaskQueueView : UserControl
 
         // 保存 TaskItems 时过滤掉 resource option items（与 SaveConfiguration 保持一致）
         instanceConfig.SetValue(ConfigurationKeys.TaskItems,
-            vm.TaskItemViewModels.Where(m => !m.IsResourceOptionItem).Select(m => m.InterfaceItem));
+            vm.TaskItemViewModels.Where(m => !m.IsResourceOptionItem).Select(m => m.InterfaceItem).ToList());
 
         // 同步更新 CurrentTasks：确保被删除任务的 key 保留在 CurrentTasks 中，
         // 这样 SynchronizeTaskItems 的 deletedTaskKeys 计算（currentTaskSet - existingKeys）
@@ -2551,9 +2551,9 @@ public partial class TaskQueueView : UserControl
 
         var instanceConfig = vm.Processor.InstanceConfiguration;
 
-        // 保存普通任务项配置
+        // 保存普通任务项配置（必须 .ToList() 物化，惰性 IEnumerable 存入后 GetValue<List<T>> 类型转换失败会返回空列表）
         instanceConfig.SetValue(ConfigurationKeys.TaskItems,
-            vm.TaskItemViewModels.Where(m => !m.IsResourceOptionItem).Select(m => m.InterfaceItem));
+            vm.TaskItemViewModels.Where(m => !m.IsResourceOptionItem).Select(m => m.InterfaceItem).ToList());
 
         // 保存资源选项配置
         SaveResourceOptionConfiguration(vm);

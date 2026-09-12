@@ -15,6 +15,13 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 /// </summary>
 public static class ActionParamHelper
 {
+    /// <summary>
+    /// 取当前任务所属的处理器。多实例下「当前激活实例」可能不是执行任务的实例，
+    /// 日志与工作记录必须写到真正执行任务的实例，取不到时退回当前激活实例。
+    /// </summary>
+    public static MaaProcessor? ResolveOwnerProcessor(IMaaContext? context)
+        => MaaProcessor.ResolveByTasker(context?.Tasker) ?? MaaProcessorManager.Instance?.Current;
+
     public static JObject Parse(string actionParam)
     {
         if (string.IsNullOrWhiteSpace(actionParam))

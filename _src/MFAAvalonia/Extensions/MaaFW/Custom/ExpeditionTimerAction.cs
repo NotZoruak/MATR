@@ -60,7 +60,7 @@ public class ExpeditionTimerAction : IMaaCustomAction
                 var guiMessage = $"[远征计时] {display}";
                 // 文件日志保留词表格式，供工作记录解析器识别。
                 LoggerHelper.Info(fileMessage);
-                try { MaaProcessorManager.Instance.Current?.AddLog(guiMessage); } catch { }
+                try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(guiMessage); } catch { }
             }
             else
             {

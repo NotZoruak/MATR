@@ -3997,6 +3997,67 @@ public class MaaProcessor
             : [];
     }
 
+    /// <summary>
+    /// 按任务执行器定位所属处理器。多实例下「当前激活实例」可能不是正在执行任务的实例，
+    /// 自定义动作与识别器必须用它来取所属实例的配置。
+    /// </summary>
+    public static MaaProcessor? ResolveByTasker(IMaaTasker? tasker)
+    {
+        if (tasker == null) return null;
+        return Processors.FirstOrDefault(item => ReferenceEquals(item.MaaTasker, tasker));
+    }
+
+    /// <summary>
+    /// 读取本实例已保存的任务列表；缓存为空（被惰性枚举污染或尚未同步）时回退到磁盘重新加载。
+    /// </summary>
+    public List<MaaInterface.MaaInterfaceTask> GetSavedTaskItems()
+    {
+        var savedTasks = InstanceConfiguration.GetValue(
+            ConfigurationKeys.TaskItems,
+            new List<MaaInterface.MaaInterfaceTask>());
+
+        if (savedTasks == null || savedTasks.Count == 0)
+        {
+            InstanceConfiguration.ReloadFromDisk();
+            savedTasks = InstanceConfiguration.GetValue(
+                ConfigurationKeys.TaskItems,
+                new List<MaaInterface.MaaInterfaceTask>());
+        }
+
+        return savedTasks ?? [];
+    }
+
+    /// <summary>从任务列表中定位「后勤」任务（远征沿用 entry = Expedition）。</summary>
+    private static MaaInterface.MaaInterfaceTask? FindLogisticsTask(
+        IEnumerable<MaaInterface.MaaInterfaceTask>? tasks)
+        => tasks?.FirstOrDefault(t => t.Entry == "Expedition");
+
+    /// <summary>
+    /// 读取「后勤」任务中某支部队的远征地图序号：0 表示休息，1 起为地图；配置里找不到该选项时返回 null。
+    /// 同步后勤合并与选图动作共用该入口，避免两侧读取不同实例或不同来源的配置。
+    /// </summary>
+    public int? GetLogisticsTeamMapIndex(string teamOptionName)
+    {
+        var option = FindLogisticsTask(GetSavedTaskItems())?.Option
+            ?.FirstOrDefault(o => o.Name == teamOptionName);
+        return option?.Index;
+    }
+
+    /// <summary>把五支部队的地图序号整理成一行诊断文本，序号缺失时明确标注。</summary>
+    private static string DescribeTeamIndexes(MaaInterface.MaaInterfaceTask? logisticsTask)
+    {
+        var teamOptionNames = new[] { "部队一", "部队二", "部队三", "部队四", "部队五" };
+        if (logisticsTask?.Option == null)
+            return "无（未找到后勤任务选项）";
+
+        return string.Join(" ", teamOptionNames.Select(name =>
+        {
+            var option = logisticsTask.Option.FirstOrDefault(o => o.Name == name);
+            if (option == null) return $"{name}=选项缺失";
+            return $"{name}={option.Index?.ToString() ?? "未选择"}";
+        }));
+    }
+
     private NodeAndParam CreateNodeAndParam(DragItemViewModel task, int index, long runId, int? formationPresetId)
     {
         var taskModels = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(JsonConvert.SerializeObject(task.InterfaceItem?.PipelineOverride ?? new Dictionary<string, JToken>(), new JsonSerializerSettings()
@@ -4008,7 +4069,7 @@ public class MaaProcessor
 
         // PI v2.3.0 合并顺序：global_option < resource.option < controller.option < task.option
         // 1. 合并全局选项（global_option，最低优先级）
-        MergeGlobalOptionParams(ref taskModels);
+        MergeGlobalOptionParams(ref taskModels, task.InterfaceItem);
 
         // 2. 合并当前资源的全局选项参数（resource.option）
         MergeResourceOptionParams(ref taskModels);
@@ -4029,19 +4090,17 @@ public class MaaProcessor
 
             if (syncExpEnabled)
             {
-                var savedTasks = InstanceConfiguration.GetValue(
-                    ConfigurationKeys.TaskItems,
-                    new List<MaaInterface.MaaInterfaceTask>());
+                var expTask = FindLogisticsTask(GetSavedTaskItems());
 
-                if (savedTasks == null || savedTasks.Count == 0)
-                {
-                    InstanceConfiguration.ReloadFromDisk();
-                    savedTasks = InstanceConfiguration.GetValue(
-                        ConfigurationKeys.TaskItems,
-                        new List<MaaInterface.MaaInterfaceTask>());
-                }
+                // 诊断日志：同步后勤合并到的后勤任务与五支部队的地图序号。
+                // 选图动作（ExpeditionMapSelectAction）读取同一份数据，回归时可据此对齐两侧来源。
+                LoggerHelper.Info(
+                    // 日志工具会把中文消息里的半角括号与冒号转成全角并吃掉后续空格，
+                    // 这里统一用逗号分隔，保证拼接结果可读。
+                    $"[同步后勤] 任务={task.Name ?? task.InterfaceItem?.Name ?? "<未命名>"}，实例={InstanceId}，" +
+                    $"后勤任务={expTask?.Name ?? "null"}，entry={expTask?.Entry ?? "null"}，" +
+                    $"部队Index：{DescribeTeamIndexes(expTask)}");
 
-                var expTask = savedTasks?.FirstOrDefault(t => t.Entry == "Expedition");
                 if (expTask?.Option != null)
                 {
                     var teamOptionNames = new List<string> { "部队一", "部队二", "部队三", "部队四", "部队五" };
@@ -4264,11 +4323,32 @@ public class MaaProcessor
     /// <summary>
     /// 合并全局选项参数（global_option，最低优先级）
     /// </summary>
-    private void MergeGlobalOptionParams(ref MaaToken taskModels)
+    /// <param name="taskModels">任务参数</param>
+    /// <param name="task">当前任务；为 null 时不做过滤（保持原行为）</param>
+    private void MergeGlobalOptionParams(ref MaaToken taskModels, MaaInterface.MaaInterfaceTask? task = null)
     {
         var globalSelectOptions = Interface?.GlobalSelectOptions;
         if (globalSelectOptions == null || globalSelectOptions.Count == 0)
             return;
+
+        // 「远征智能调度」仅对远征任务自身与开启同步后勤的任务生效。
+        // 对未开启同步后勤的任务注入其 override 会劫持队伍选择流程
+        // （TT_IsTeamSelect 等跳转到 E_CheckTimerExpired，而计时器从未启动 → 视为过期 → 回本丸查看远征）。
+        if (task != null)
+        {
+            var syncExpEnabled = task.Option
+                ?.FirstOrDefault(o => (o.Name ?? string.Empty).EndsWith("同步远征")
+                    || (o.Name ?? string.Empty).EndsWith("同步后勤"))
+                ?.SelectedCases?.Contains(string.Empty) == true;
+            if (task.Entry != "Expedition" && !syncExpEnabled)
+            {
+                globalSelectOptions = globalSelectOptions
+                    .Where(o => o.Name != "远征智能调度")
+                    .ToList();
+                if (globalSelectOptions.Count == 0)
+                    return;
+            }
+        }
 
         ProcessOptions(ref taskModels, globalSelectOptions);
     }
@@ -4622,10 +4702,31 @@ public class MaaProcessor
             {
                 TaskQueue.Enqueue(CreateMaaFWTask("回本丸", async () =>
                 {
-                    return await TryRunTasksAsync(MaaTasker, "GoHome", "{}", token);
+                    // 合并全局选项 override（如卡死重启禁用的兜底节点），
+                    // 避免内部任务以 "{}" 启动导致兜底未被禁用、卡死时无限空转
+                    return await TryRunTasksAsync(MaaTasker, "GoHome", BuildGoHomeParam(), token);
                 }));
             }
         }
+    }
+
+    /// <summary>
+    /// 生成回本丸任务参数：合并全局选项 override（含卡死重启等），
+    /// 使任务队列插入的回本丸与正常任务应用一致的兜底禁用策略
+    /// </summary>
+    private string BuildGoHomeParam()
+    {
+        var taskModels = JsonConvert.DeserializeObject<Dictionary<string, JToken>>("{}", new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        })!.ToMaaToken();
+
+        // 传入 Entry 为 GoHome 的空任务，使「远征智能调度」等仅对特定任务生效的选项被排除
+        var goHomeTask = new MaaInterface.MaaInterfaceTask { Entry = "GoHome" };
+        MergeGlobalOptionParams(ref taskModels, goHomeTask);
+        return SerializeTaskParams(taskModels);
     }
 
     async private Task<MaaJobStatus> TryRunTasksAsync(MaaTasker? maa, string? task, string? param, CancellationToken token)

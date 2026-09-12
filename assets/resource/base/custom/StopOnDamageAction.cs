@@ -12,10 +12,10 @@ public class StopOnDamageAction : IMaaCustomAction
 
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
     {
-        var processor = MaaProcessorManager.Instance.Current;
+        var processor = ActionParamHelper.ResolveOwnerProcessor(context);
         if (processor == null)
         {
-            Log("无法获取当前任务处理器");
+            Log(context, "无法获取当前任务处理器");
             return true;
         }
 
@@ -29,7 +29,7 @@ public class StopOnDamageAction : IMaaCustomAction
             ? $"[重伤检测] 检测到刀剑男士重伤，{currentTaskName} 任务终止，开始下一任务"
             : $"[重伤检测] 检测到刀剑男士重伤，{currentTaskName} 任务终止，所有任务运行完毕";
 
-        Log(message);
+        Log(context, message);
 
         // 系统托盘通知（使用应用内 Toast 弹窗）
         DispatcherHelper.PostOnMainThread(() =>
@@ -40,12 +40,12 @@ public class StopOnDamageAction : IMaaCustomAction
         return true; // 流水线节点成功 → MaaTasker 任务结束 → 队列自动移至下一任务
     }
 
-    private static void Log(string message)
+    private static void Log<T>(T context, string message) where T : IMaaContext
     {
         LoggerHelper.Info(message);
         try
         {
-            MaaProcessorManager.Instance.Current?.AddLog(message);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message);
         }
         catch
         {
