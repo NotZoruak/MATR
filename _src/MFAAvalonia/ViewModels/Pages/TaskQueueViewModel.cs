@@ -3297,6 +3297,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                         {
                             LoggerHelper.Warning("实时画面截图链路失效，但主控制器仍在线，准备重建截图任务执行器。");
                             Processor.ResetLiveViewTasker();
+                            return;
                         }
                         else
                         {

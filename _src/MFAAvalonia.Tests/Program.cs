@@ -407,6 +407,16 @@ var rootViewSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml.cs"));
 var rootViewMarkup = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml"));
+var settingsViewMarkup = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Pages", "SettingsView.axaml"));
+var guiSettingsMarkup = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "GuiSettingsUserControl.axaml"));
+var externalNotificationSettingsMarkup = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "ExternalNotificationSettingsUserControl.axaml"));
+var settingsLayoutMarkup = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "SukiUI", "Controls", "Settings", "SettingsLayout.axaml"));
+var settingsLayoutSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "SukiUI", "Controls", "Settings", "SettingsLayout.axaml.cs"));
 var taskQueueViewSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Pages", "TaskQueueView.axaml.cs"));
 var taskQueueViewMarkup = File.ReadAllText(Path.Combine(
@@ -534,9 +544,46 @@ var packAllScript = File.ReadAllText(Path.Combine(
 AssertTrue(rootViewSource.IndexOf("InitializeComponent();", StringComparison.Ordinal)
     < rootViewSource.IndexOf("LoadWindowSizeAndPosition();", StringComparison.Ordinal),
     "窗口应在加载已保存尺寸前完成XAML初始化，避免默认尺寸覆盖配置");
-AssertTrue(rootViewMarkup.Contains("Width=\"1024\"", StringComparison.Ordinal)
-    && rootViewMarkup.Contains("Height=\"768\"", StringComparison.Ordinal),
-    "窗口默认尺寸应为1024×768");
+AssertTrue(rootViewMarkup.Contains("Width=\"900\"", StringComparison.Ordinal)
+    && rootViewMarkup.Contains("Height=\"675\"", StringComparison.Ordinal),
+    "窗口默认尺寸应为900×675");
+AssertTrue(settingsViewMarkup.Contains("MinWidthWhetherStackSummaryShow=\"900\"", StringComparison.Ordinal),
+    "默认窗口宽度下设置分类必须改为顶部导航，不能挤占设置内容");
+AssertTrue(guiSettingsMarkup.Contains("Classes=\"ResponsiveSettingsField\"", StringComparison.Ordinal)
+    && guiSettingsMarkup.Contains("MinWidth=\"160\"", StringComparison.Ordinal)
+    && guiSettingsMarkup.Contains("MaxWidth=\"215\"", StringComparison.Ordinal),
+    "界面设置的选择控件必须在160至215像素间自适应，优先保留说明文字宽度");
+AssertTrue(externalNotificationSettingsMarkup.Contains("AcceptsReturn=\"True\"", StringComparison.Ordinal)
+    && externalNotificationSettingsMarkup.Contains("TextWrapping=\"Wrap\"", StringComparison.Ordinal)
+    && !externalNotificationSettingsMarkup.Contains("CustomFailureText, UpdateSourceTrigger=PropertyChanged}\"\n                        Watermark", StringComparison.Ordinal),
+    "外部通知成功与失败内容必须使用可换行的独立输入框");
+AssertTrue(settingsLayoutMarkup.Contains("RadioButton.MenuChipTop  TextBlock", StringComparison.Ordinal)
+    && settingsLayoutMarkup.Contains("FontSize\" Value=\"18\"", StringComparison.Ordinal)
+    && settingsLayoutMarkup.Contains("HorizontalScrollBarVisibility=\"Hidden\"", StringComparison.Ordinal)
+    && !settingsLayoutMarkup.Contains("HorizontalScrollBarVisibility=\"Auto\"", StringComparison.Ordinal),
+    "顶部设置导航必须使用18号字号并隐藏横向滚动条");
+var topSummaryTextSource = ExtractSourceSection(
+    settingsLayoutSource,
+    "var contentTop = new TextBlock",
+    "header.Bind(");
+AssertTrue(topSummaryTextSource.Contains("FontSize = 18", StringComparison.Ordinal)
+    && !topSummaryTextSource.Contains("FontSize = 14", StringComparison.Ordinal),
+    "顶部设置导航文字必须以18号字号创建，不能再被14号本地值覆盖");
+AssertTrue(settingsLayoutSource.Contains("private const double TopSummaryDragThreshold = 4.0;", StringComparison.Ordinal)
+    && settingsLayoutSource.Contains("InputElement.PointerPressedEvent, OnTopSummaryPointerPressed", StringComparison.Ordinal)
+    && settingsLayoutSource.Contains("InputElement.PointerMovedEvent, OnTopSummaryPointerMoved", StringComparison.Ordinal)
+    && settingsLayoutSource.Contains("InputElement.PointerReleasedEvent, OnTopSummaryPointerReleased", StringComparison.Ordinal),
+    "顶部设置导航必须独立订阅指针拖拽事件，并把启动阈值设为4个逻辑像素");
+var topSummaryDragSource = ExtractSourceSection(
+    settingsLayoutSource,
+    "private void OnTopSummaryPointerMoved(",
+    "private void OnTopSummaryPointerReleased(");
+AssertTrue(topSummaryDragSource.Contains("e.Pointer.Capture(scrollTop);", StringComparison.Ordinal)
+    && topSummaryDragSource.Contains("Math.Clamp(_topSummaryDragStartOffsetX - horizontalDelta, 0, maxX)", StringComparison.Ordinal)
+    && settingsLayoutSource.Contains("if (_suppressTopSummaryClick)", StringComparison.Ordinal),
+    "顶部设置导航拖拽必须捕获指针、限制横向偏移，并抑制拖拽后误触发的分类跳转");
+AssertTrue(settingsLayoutSource.Contains("topRadio.BringIntoView();", StringComparison.Ordinal),
+    "页面滚动切换设置分类时，顶部导航必须自动将当前项带入可视区域");
 AssertTrue(taskQueueViewSource.Contains("new WrapPanel", StringComparison.Ordinal)
     && !taskQueueViewSource.Contains("new UniformGrid { Columns = 2", StringComparison.Ordinal),
     "复选框应根据可用宽度自适应换行，不能固定为两列");
@@ -629,6 +676,22 @@ AssertTrue(liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabi
 AssertTrue(liveViewFrameAvailability.RecordFrame(true) == LiveViewFrameAvailabilityChange.Recovered
     && liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabilityChange.None,
     "实时画面恢复后应重置故障状态，下一次短暂缺帧不应立即再次提示");
+var displayTaskCompletionMessageSource = ExtractSourceSection(
+    taskStartProcessorSource,
+    "private void DisplayTaskCompletionMessage(",
+    "public void HandleAfterTaskOperation()");
+AssertTrue(displayTaskCompletionMessageSource.Contains(
+        "if (!onlyStart)\n                HandleAfterTaskOperation();",
+        StringComparison.Ordinal),
+    "任务队列失败时也必须执行任务结束后操作");
+var liveViewTimerElapsedSource = ExtractSourceSection(
+    taskQueueViewModelSource,
+    "private void OnLiveViewTimerElapsed",
+    "[ObservableProperty] private bool _enableLiveView = true;");
+AssertTrue(liveViewTimerElapsedSource.Contains(
+        "Processor.ResetLiveViewTasker();\n                            return;",
+        StringComparison.Ordinal),
+    "实时画面触发恢复后必须结束当前刷新轮次，避免继续读取已替换的截图执行器");
 AssertTrue(packWinScript.Contains("$AgentTarget = \"$TempDir\\runtimes\\libs\\MaaAgentBinary\"", StringComparison.Ordinal)
     && packWinScript.Contains("Remove-Item -Recurse -Force $AgentTarget", StringComparison.Ordinal),
     "Windows 打包脚本在复制运行时库后必须清理已移除的 MaaAgentBinary 目录");

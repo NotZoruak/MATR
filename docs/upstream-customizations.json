@@ -18,14 +18,14 @@
       "notes": "不能仅保留界面选项和 DragCaptainAction 而漏接运行参数。"
     },
     {
-      "id": "settings.background-image-description-spacing",
-      "title": "背景图片说明留白修正",
-      "purpose": "避免固定宽度按钮与过大的说明右边距将中文挤成逐字换行。",
-      "files": ["_src/MFAAvalonia/Views/UserControls/Settings/GuiSettingsUserControl.axaml"],
+      "id": "settings.responsive-form-layout",
+      "title": "设置页响应式表单布局",
+      "purpose": "使默认 900×675 窗口中的设置说明、选择控件和通知文本输入保持可读且不互相挤压。",
+      "files": ["_src/MFAAvalonia/Views/Pages/SettingsView.axaml", "_src/MFAAvalonia/Views/UserControls/Settings/GuiSettingsUserControl.axaml", "_src/MFAAvalonia/Views/UserControls/Settings/PerformanceUserControl.axaml", "_src/MFAAvalonia/Views/UserControls/Settings/ExternalNotificationSettingsUserControl.axaml", "_src/SukiUI/Controls/Settings/SettingsLayout.axaml", "_src/SukiUI/Controls/Settings/SettingsLayout.axaml.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留背景图片说明的 12 像素右边距，不恢复上游的 70 像素留白。",
-      "verification": ["窄窗口中背景图片说明充分利用文字区域换行", "选择与清除按钮正常显示"]
+      "migration_strategy": "设置区域宽度不足 900 像素时使用顶部分类导航；顶部项为18号文字并隐藏横向滚动条，可在导航文字或同一高度的留白处按住横向拖动，页面滚动时将当前项滚入可视区域；界面与性能页的选择控件采用 160 至 215 像素的弹性双列，不恢复固定 215 像素 DockPanel 布局或说明文字 70 像素右边距。",
+      "verification": ["默认 900×675 窗口使用顶部分类导航", "顶部导航使用18号文字且不显示横向滚动条", "在导航文字或同一高度的留白处按住拖动可横向浏览分类项", "轻点分类仍可跳转，拖拽后松开不会误跳转", "页面滚动时对应顶部导航自动滚入可视区域", "背景样式、语言和字体缩放说明正常段落换行", "GPU 选择框宽度随可用空间在160至215像素间变化", "自定义成功与失败通知内容分别使用多行输入框"]
     },
     {
       "id": "task-loader.global-options-hidden",
@@ -46,8 +46,8 @@
       "baseline_upstream": "2.13.0",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "以 2.16.1 桌面根窗口与实例标签页为基础，在根级 RootViewContent 中逐入口重新注册。",
-      "verification": ["所有 MATR 工具入口可打开", "工具页切换实例后不会被替换或重置", "任务列表和设置页布局可用", "运行态耗时与状态图标显示在任务名称下方，不截断名称", "状态图标与设置齿轮视觉中轴重合，齿轮右侧无遗留固定空白"],
-      "notes": "Views/Mobile/RootViewContent 是桌面与移动端共用的根级导航壳，不能按移动端排除；仅独立移动端宿主与页面不迁入。Assets/logo.ico 必须使用 MATR 图标。任务运行态采用两行布局：第一行只显示名称和设置齿轮，第二行显示耗时与状态图标，避免窄窗口优先截断中文任务名称。状态图标与齿轮共用 24×24 布局边界；为补偿 Suki 图标几何的视觉偏移，状态图标组向右平移 3 个逻辑像素。"
+      "verification": ["所有 MATR 工具入口可打开", "工具页切换实例后不会被替换或重置", "任务列表和设置页布局可用", "运行态耗时与状态图标显示在任务名称下方，不截断名称", "状态图标与设置齿轮视觉中轴重合，齿轮右侧无遗留固定空白", "没有保存过窗口大小时主窗口默认尺寸为 900×675"],
+      "notes": "Views/Mobile/RootViewContent 是桌面与移动端共用的根级导航壳，不能按移动端排除；仅独立移动端宿主与页面不迁入。Assets/logo.ico 必须使用 MATR 图标。任务运行态采用两行布局：第一行只显示名称和设置齿轮，第二行显示耗时与状态图标，避免窄窗口优先截断中文任务名称。状态图标与齿轮共用 24×24 布局边界；为补偿 Suki 图标几何的视觉偏移，状态图标组向右平移 3 个逻辑像素。主窗口默认尺寸为 900×675（宽×高），由 RootView.axaml 的 Width 与 Height 指定，MinWidth 700 与 MinHeight 360 保持不变；该默认值只在没有保存过窗口大小时生效，升级时不得恢复上游默认尺寸。"
     },
     {
       "id": "task-formation-config.normal-task",
@@ -101,8 +101,19 @@
       "baseline_upstream": "2.13.0",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "以 2.16.1 RunResult 和取消模型为基础重放，不复制旧队列主循环。",
-      "verification": ["失败且关闭继续时停止", "失败且开启继续时继续", "用户停止不触发后续操作", "恢复索引仅在成功后推进", "异步任务队列完整结束后才进入停止流程", "正常完成的任务不被记录为手动停止", "普通任务之间自动插入回本丸", "最后一个任务后不插入回本丸", "MFAA 特殊任务前不插入回本丸", "任务添加界面与队列插入逻辑共用特殊任务 Entry 集合", "任务失败时发送系统通知", "合战场轮数取自任务级 repeat_count（repeatable 为 true），过去与异去共用，不再读取旧的下级选项", "过去模式在回本丸路径上用自定义识别判定单圈结束，达标后停在本丸，异去保持自身单圈结束方式", "有限重复任务每轮成功后在 GUI 日志输出任务完成与 X/Y 进度", "提前结束请求只消费一次，且不计入当前轮", "提前结束当前队列项后继续后续队列项", "提前结束原因以 Warning 词表写入工作记录特殊情况"],
-      "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知。合战场的轮数与其它任务一致，取自任务级 repeat_count，过去与异去共用；CreateNodeAndParam 直接使用 InterfaceItem.RepeatCount，不得恢复历史上读取过去/异去下级异去_重复次数或给过去写死三轮的定制逻辑。过去的单圈结束由资源侧自定义识别 SortieRoundDoneRecognition 判定：读取 S_SortieSuccess 命中计数，配合 TaskJob.Id 与本次运行基线判断本轮是否已出阵，命中时经 S_IsSortieRoundDone（打点完成一圈＋空 next）结束本轮任务运行。该判定必须走 next 正常分支，不得改用动作失败走 on_error，否则 MaaFW 的 SaveOnError 会按圈数往 debug/on_error 写截图；刷花链不参与轮次判定。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
+      "verification": ["失败且关闭继续时停止", "失败且开启继续时继续", "用户停止不触发后续操作", "失败队列也执行用户配置的任务结束后操作", "恢复索引仅在成功后推进", "异步任务队列完整结束后才进入停止流程", "正常完成的任务不被记录为手动停止", "普通任务之间自动插入回本丸", "最后一个任务后不插入回本丸", "MFAA 特殊任务前不插入回本丸", "任务添加界面与队列插入逻辑共用特殊任务 Entry 集合", "任务失败时发送系统通知", "合战场轮数取自任务级 repeat_count（repeatable 为 true），过去与异去共用，不再读取旧的下级选项", "过去模式在回本丸路径上用自定义识别判定单圈结束，达标后停在本丸，异去保持自身单圈结束方式", "有限重复任务每轮成功后在 GUI 日志输出任务完成与 X/Y 进度", "提前结束请求只消费一次，且不计入当前轮", "提前结束当前队列项后继续后续队列项", "提前结束原因以 Warning 词表写入工作记录特殊情况"],
+      "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知；同步 MFAAvalonia 19a8416 后，失败队列同样执行任务结束后操作，用户手动停止除外。合战场的轮数与其它任务一致，取自任务级 repeat_count，过去与异去共用；CreateNodeAndParam 直接使用 InterfaceItem.RepeatCount，不得恢复历史上读取过去/异去下级异去_重复次数或给过去写死三轮的定制逻辑。过去的单圈结束由资源侧自定义识别 SortieRoundDoneRecognition 判定：读取 S_SortieSuccess 命中计数，配合 TaskJob.Id 与本次运行基线判断本轮是否已出阵，命中时经 S_IsSortieRoundDone（打点完成一圈＋空 next）结束本轮任务运行。该判定必须走 next 正常分支，不得改用动作失败走 on_error，否则 MaaFW 的 SaveOnError 会按圈数往 debug/on_error 写截图；刷花链不参与轮次判定。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
+    },
+    {
+      "id": "live-view.pipelined-screencap-recovery",
+      "title": "实时画面截图恢复轮次边界",
+      "purpose": "在截图执行器重建期间避免继续读取已替换的旧执行器。",
+      "files": ["_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.2-beta.1",
+      "migration_strategy": "保留截图失败达到恢复阈值、且主控制器仍在线时重建截图执行器后立即 return 的控制流。",
+      "verification": ["截图恢复后当前定时刷新轮次不再读取旧执行器", "下一轮刷新可使用重建后的截图执行器", "主控制器断连时仍按原有路径更新连接状态"],
+      "notes": "同步 MFAAvalonia 8367707。该 return 只位于主控制器仍在线、刚调用 ResetLiveViewTasker 的恢复分支，不改变断连处理。"
     },
     {
       "id": "gui-log.dispatch-order",

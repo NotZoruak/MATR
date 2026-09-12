@@ -56,26 +56,30 @@
                             VerticalAlignment="Center" />
                     </StackPanel>
                 </DockPanel>
-                <DockPanel IsVisible="{Binding EnabledCustom}">
+                <StackPanel IsVisible="{Binding EnabledCustom}" Spacing="8">
+                    <TextBlock
+                        FontSize="16"
+                        Text="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentSuccess}}" />
                     <TextBox
-                        DockPanel.Dock="Right" MaxHeight="40"
-                        Text="{Binding CustomFailureText, UpdateSourceTrigger=PropertyChanged}"
-                        Watermark="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentFailure}}"
-                        Width="215">
-                    </TextBox>
-                    <TextBox
-                        DockPanel.Dock="Right" MaxHeight="40"
+                        AcceptsReturn="True"
+                        MinHeight="72"
                         Text="{Binding CustomSuccessText, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap"
                         Watermark="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentSuccess}}"
-                        Width="215">
+                        >
                     </TextBox>
-                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <TextBlock
-                            FontSize="16"
-                            Text="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationSendTest}}"
-                            VerticalAlignment="Center" />
-                    </StackPanel>
-                </DockPanel>
+                    <TextBlock
+                        FontSize="16"
+                        Text="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentFailure}}" />
+                    <TextBox
+                        AcceptsReturn="True"
+                        MinHeight="72"
+                        Text="{Binding CustomFailureText, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap"
+                        Watermark="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentFailure}}"
+                        >
+                    </TextBox>
+                </StackPanel>
             </StackPanel>
         </suki:GlassCard>
         <suki:GlassCard Padding="25,5,25,5">
