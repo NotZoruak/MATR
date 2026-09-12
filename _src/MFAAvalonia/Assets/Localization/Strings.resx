@@ -1863,7 +1863,7 @@
         <value>全选与全不选</value>
     </data>
     <data name="TutorialStepSelectAllDesc" xml:space="preserve">
-        <value>这两个按钮可以快速勾选或取消勾选所有任务。左侧为「全选」，右侧为「全不选」。</value>
+    <value>这个按钮可以在「全选」与「全不选」之间切换，用于快速勾选或取消勾选所有任务。</value>
     </data>
     <data name="TutorialStepAddTaskBtnTitle" xml:space="preserve">
         <value>添加与重置任务</value>

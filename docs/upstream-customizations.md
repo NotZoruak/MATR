@@ -115,7 +115,7 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 
 休息部队的兜底与选图动作的失败出口必须成对存在：`E_ExpSubHubN` 的 `next` 首位固定为 `E_SkipTeamN`（休息识别 `ExpeditionTeamRestRecognition`），命中即跳过该部队并继续下一支部队；`E_SelectMapN` 的 `on_error` 固定为 `E_GoHome`，判定休息失败时回本丸重新检查，不得回到 `Expedition`。2026-07-22、2026-08-15、2026-09-12 三次同类回归的现象都是「休息部队仍进入选图 → 选图动作失败 → 回本丸 → 再进选图」的死循环，前两次的根因分别是 `MaaToken.Merge` 浅合并与 `TaskItems` 缓存污染，本次是多实例下取到了其它实例的后勤配置；三次都因为缺少合并侧诊断日志而拉长了定位时间，因此 `[同步后勤]` 日志与上述两个出口不得删除。
 
-远征智能调度里 `E_CheckTimerExpired` 的「倒计时到期」是预期分支，必须走 `next`：`ExpeditionTimerCheckAction` 到期时读取本 node 配置的 `on_error` 目标（各任务不同：`E_GoHome`、`Expedition`、`U_ReturnHomeAfterMarch`），用 `OverrideNext` 改写成成功路径后返回 true；读不到目标才返回 false 落回原路径。若改回 `return false` 走 `on_error`，MaaFW 的 SaveOnError 会每个调度周期往 `debug/on_error` 写一张 `E_CheckTimerExpired` 截图。
+远征智能调度里 `E_CheckTimerExpired` 的「倒计时到期」当前走 `on_error` 回本丸：`ExpeditionTimerCheckAction` 到期返回 false，目的地由各任务的覆盖决定（`E_GoHome`、`Expedition`、`U_ReturnHomeAfterMarch`）。2026-09-12 曾改为读取本 node 的 `on_error` 目标再用 `OverrideNext` 改写成成功路径，但实机每次都会落到改写失败的兜底：MaaFW 返回的 node 数据里 `on_error` 是 `{"anchor":…,"jump_back":…,"name":…}` 对象数组，按字符串解析必然抛 `Cannot cast JObject to JToken`，该改动已于 2026-09-13 整体撤回。代价是每个调度周期仍会往 `debug/on_error` 写一张 `E_CheckTimerExpired` 截图；重新启用前必须按对象数组解析，并在实机上确认截图不再增长，不得直接恢复被撤回的字符串解析版本。
 
 ### `task.sync-logistics-instance-source`
 
@@ -218,3 +218,17 @@ MATR 在 Windows 上把应用内定时器同步为系统计划任务，补足「
 计划任务的并行实例策略必须是 `Parallel`，不得改回 `IgnoreNew`。MATR 被系统计划任务拉起后会一直运行，`IgnoreNew` 会让任务实例长期停留在「正在运行」，系统随即忽略后续每天的触发：2026-09-11 实测任务处于运行状态时再次触发返回 `-2147020576`（任务已在运行），且没有拉起任何新进程。`Parallel` 下每次触发都会启动一个 MATR.exe，已有实例在运行时该进程转发命令后立即退出，未运行时则成为程序本体，因此既不会重复开窗，也不会漏掉触发。
 
 安装目录整体移动后，旧位置留下的计划任务必须自动清理：`appsettings.json` 记录上一次同步的归属令牌与可执行文件路径，同步时若归属令牌变化且记录的旧路径已不存在，就删除旧令牌下的任务并更新记录。旧路径仍存在（复制出第二份安装）时不清理；同步有失败项时不更新记录，留待下次重试。目录被整体删除的情况无法自动清理（记录随目录消失，本机也不再有 MATR 进程），改为在更新公告中提示用户删除前先关闭定时开关，遗漏时在任务计划程序的 `MATR` 文件夹手动删除。
+
+### `ui.about-tutorial-replay`
+
+桌面端「关于我们 → 使用教程」必须真正重播现成的多步引导，不能只弹一句「桌面版暂不提供移动端教程。」。`AboutUserControl.StartTutorial_Click` 通过视觉树定位到共用根壳 `RootViewContent`（`Views/Windows/RootView.axaml` 承载）并调用其 `TryStartTutorial()`；取不到根壳时记录警告并提示回到任务页重试。
+
+教程本身由共享根壳里的 `TeachingTipOverlay` 实现，桌面与移动同样可用；首次自动播放的条件保持不变（正常启动且配置 `UI.HasCompletedFirstUseTutorial` 为 `false`，完成后该键写为 `true`）。上游 v2.16.1 的桌面 `AboutUserControl` 只在点击时弹提示，属于未接入口的占位，升级时不得按上游原样覆盖。
+
+### `ui.tutorial-highlight-targets`
+
+教学引导的高亮框必须对准 MATR 当前的控件。任务列表顶部按钮的步骤要按 MATR 合并后的顺序取目标：`0` = 全选/全不选（`ToggleSelectAllCommand` 已合并为一个按钮）、`1` = 添加任务、`2` = 重置、`3` = 开始/停止；需要同时高亮多个控件时用 `TutorialStep.FindTargets` 返回多个控件并取矩形并集，不得再用 `CutoutPadding` 的写死像素去补相邻按钮（上游是「index 0 右扩 50 覆盖全不选、index 2 右扩 50 覆盖重置」，在 MATR 会圈到相邻按钮）。「全选」步骤的说明文案要写成「一个按钮在全选与全不选之间切换」，四个语言资源同步。
+
+`TeachingTipOverlay` 的定位约定：目标解析失败或尺寸为 0 时清掉高亮洞口（`ClearCutout`），不能保留上一次的框；只在目标与遮罩「完全不相交」才滚动是错误做法，目标未完整可见就要 `BringIntoView`；切换步骤时复位缓存的矩形与日志标记，跟踪定时器间隔取 100ms。诊断日志 `[教学提示] 步骤#N` 记录目标控件、目标矩形、高亮矩形与遮罩尺寸，用于核对高亮位置：2026-09-12 实机核对稳定后已降为 **Debug** 级别，排查时把日志级别调到 Debug 即可，不得删除。
+
+设置页相关步骤的目标要按观感对齐：「设置页概览」高亮整个设置页（`SettingsLayout`）；「启动前与结束后操作」「软件路径」两步分别用包含对应下拉框与输入框的那张 `GlassCard`。上游原有一步「启动设置」分类总览已删除：它与设置页概览高亮同一块区域，而且在窄布局下设置页是整页滚动容器，容易停在别的分类上（用户从「关于我们」进入教程时，内容会停在关于页），保留反而更差；删除后不要恢复该步骤。设置页在窄布局下是带动画的整页滚动容器，滚动位置会停在用户上次看的那一项，因此进入这些步骤时必须依靠 `BringIntoView` 反复请求滚动直到目标完整可见（`WaitForTarget` 读不到位置时继续等待，不能直接放行）。

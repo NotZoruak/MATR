@@ -135,7 +135,7 @@
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留 CreateNodeAndParam 中的同步配置复用与实例配置重读兜底；升级后核对入口白名单仍包含 Sortie、Underground、LRentaisen、Hanapai、TacticalTraining、EdoCastle 与 DailyTask。",
       "verification": ["休息队伍对应的 E_CheckTeamN 为 false 且不进入选图流程", "配置远征地图的队伍会进入选图与确认派遣", "管线仍启用的部队若在后勤配置中为休息，E_CheckTeamN 之前由 E_SkipTeamN 跳过并继续检查下一支部队", "E_SelectMapN 判定休息失败时回 E_GoHome 重新检查，不回到 Expedition 形成死循环", "合并时输出 [同步后勤] 诊断日志（任务、实例与五支部队的 Index）", "修刀多选筛选条件递归合并到同一个 E_FindRepairableSword", "内番开关随后勤任务同步", "配置刷新间隔时注入 E_TimerStart 并指向各任务导航 node", "一键日课同步后勤接入 DT_IsHome 并在 E_AllTeamsBusy 后回到 DT_PrepareHub", "任务列表中没有后勤任务时回落默认配置"],
-      "notes": "同步后勤的入口至少包含合战场、地下城、陆联、战术强化、江户潜入与一键日课。日课不做倒计时，E_AllTeamsBusy 的 action 必须写死为关闭队伍状态面板的点击，否则开启远征智能调度时会被全局覆盖成 DoNothing。合并侧必须保留实例配置重读兜底与 [同步后勤] 诊断日志：休息判定失败会让流程反复回到本丸，2026-07-22、2026-08-15、2026-09-12 三次同类回归都因缺少该日志而难以定位。E_ExpSubHubN 的 next 首位固定为 E_SkipTeamN（休息识别），E_SelectMapN 的 on_error 固定为 E_GoHome，两处都不能被上游覆盖回原值。E_CheckTimerExpired 的到期分支必须走 next：ExpeditionTimerCheckAction 读取本 node 的 on_error 目标后用 OverrideNext 改写成成功路径，读不到才返回 false，不能恢复为直接 return false，否则每个调度周期都会写一张无意义的 on_error 截图。"
+      "notes": "同步后勤的入口至少包含合战场、地下城、陆联、战术强化、江户潜入与一键日课。日课不做倒计时，E_AllTeamsBusy 的 action 必须写死为关闭队伍状态面板的点击，否则开启远征智能调度时会被全局覆盖成 DoNothing。合并侧必须保留实例配置重读兜底与 [同步后勤] 诊断日志：休息判定失败会让流程反复回到本丸，2026-07-22、2026-08-15、2026-09-12 三次同类回归都因缺少该日志而难以定位。E_ExpSubHubN 的 next 首位固定为 E_SkipTeamN（休息识别），E_SelectMapN 的 on_error 固定为 E_GoHome，两处都不能被上游覆盖回原值。E_CheckTimerExpired 的到期分支当前走 on_error 回本丸：ExpeditionTimerCheckAction 到期返回 false，目的地由各任务覆盖决定。2026-09-12 曾改为读取本 node 的 on_error 目标并用 OverrideNext 改写成成功路径，实机每次都会落到改写失败的兜底：MaaFW 返回的 node 数据里 on_error 是 anchor/jump_back/name 对象数组，按字符串解析必然抛 Cannot cast JObject to JToken，该改动已于 2026-09-13 整体撤回。代价是每个调度周期仍会写一张无意义的 on_error 截图；重新启用前必须按对象数组解析，并在实机上确认截图不再增长，不得直接恢复被撤回的字符串解析版本。"
     },
     {
       "id": "task.sync-logistics-instance-source",
@@ -268,6 +268,28 @@
       "migration_strategy": "保留 PlatformTimerScheduler.RescheduleAll 的平台接管点，以及定时器时间、重复规则、动作、实例与强制定时启动开关变化后的重新排程调用；升级上游定时器模型时重新接入同步服务，不把系统计划任务逻辑并入 TimerModel。",
       "verification": ["定时时间、重复规则、实例或强制定时启动开关变化后同步系统计划任务", "配置未变化时不重建计划任务", "禁用、停止任务动作、未选重复日期或实例失效的定时器不创建计划任务并清理旧任务", "关闭 MATR 不影响计划任务，只有禁用、删除定时器或改为停止任务时删除", "退出程序前补跑尚未执行的同步并记录保留的计划任务数量", "任务实例仍在运行时可再次触发（并行实例策略）", "安装目录整体移动后清理旧位置留下的计划任务，旧路径仍存在时不清理", "计划任务以当前登录用户身份运行、不要求管理员权限、补执行错过的计划且不限制运行时长", "实例列表尚未加载时跳过同步，不误删计划任务", "非 Windows 平台不创建计划任务", "测试断言任务名称、命令行参数、任务 XML、配置指纹、同步决策与残留清理决策"],
       "notes": "系统计划任务通过 schtasks.exe 与任务 XML 创建，统一放在 MATR 任务文件夹下，名称包含安装目录归属令牌，避免开发目录与运行目录互相覆盖。任务说明写入配置指纹，指纹包含任务模板、命令行、程序路径、工作目录与重复规则，但不包含开始边界日期，因此不会每天重建。计划任务独立于 MATR 进程状态：关闭程序不取消定时，设置界面与日志都要明确这一点。并行实例策略必须为 Parallel：IgnoreNew 会让长期运行的 MATR 任务实例阻塞后续每天的触发，实测再次触发返回 -2147020576 且不启动新进程。appsettings.json 记录上次同步的归属令牌与可执行文件路径，用于安装目录移动后的残留清理；目录被整体删除的情况无法自动清理，必须在更新公告中提示用户删除前先关闭定时开关。"
+    },
+    {
+      "id": "ui.about-tutorial-replay",
+      "title": "关于页使用教程重播",
+      "purpose": "让桌面端「关于我们 → 使用教程」真正重播现成的多步引导，而不是只弹一句桌面端不提供的提示。",
+      "files": ["_src/MFAAvalonia/Views/UserControls/Settings/AboutUserControl.axaml.cs", "_src/MFAAvalonia/Views/Mobile/RootViewContent.axaml.cs", "_src/MFAAvalonia/Views/UserControls/TeachingTipOverlay.axaml.cs", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "关于页按钮通过视觉树定位到共用根壳 RootViewContent 并调用其 TryStartTutorial()；首次自动播放条件（正常启动且 UI.HasCompletedFirstUseTutorial 为 false）保持不变，不得恢复成上游的纯提示占位。",
+      "verification": ["关于页点击使用教程会从首页开始重播多步引导", "首次启动仍按未完成标记自动播放一次", "取不到根壳时记录警告并提示回到任务页重试"],
+      "notes": "上游 v2.16.1 的桌面 AboutUserControl 中 StartTutorial_Click 只弹「桌面版暂不提供移动端教程。」；教程本身在共享根壳（RootViewContent 的 TutorialOverlay，桌面由 RootView.axaml 承载）里实现，桌面同样可用。"
+    },
+    {
+      "id": "ui.tutorial-highlight-targets",
+      "title": "教学引导高亮目标解析",
+      "purpose": "让教学引导的高亮框对准 MATR 当前的控件，而不是沿用上游的控件索引与写死像素补偿。",
+      "files": ["_src/MFAAvalonia/Views/Mobile/RootViewContent.axaml.cs", "_src/MFAAvalonia/Views/UserControls/TeachingTipOverlay.axaml.cs", "_src/MFAAvalonia/Assets/Localization/Strings.resx", "_src/MFAAvalonia/Assets/Localization/Strings.zh-Hant.resx", "_src/MFAAvalonia/Assets/Localization/Strings.en-US.resx", "_src/MFAAvalonia/Assets/Localization/Strings.ja-JP.resx", "_src/MFAAvalonia.Tests/Program.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "任务列表顶部按钮的教程步骤必须按 MATR 合并后的顺序取目标（0=全选/全不选、1=添加任务、2=重置、3=开始/停止）；需要同时高亮多个控件时用 TutorialStep.FindTargets 并取矩形并集，不得用 CutoutPadding 的写死像素补相邻按钮。",
+      "verification": ["全选步骤只高亮合并后的全选/全不选按钮", "添加/重置步骤高亮添加任务与重置两个按钮的并集", "文案与合并后的单按钮一致（四个语言资源同步）", "目标解析失败时清掉高亮而不是保留上一次的框", "只露出一部分的目标会被 BringIntoView 滚入可视区", "教学提示按步骤输出一次目标与坐标诊断日志"],
+      "notes": "上游教程按 5 个按钮布局写死：index 0 往右补 50 像素覆盖「全不选」、index 2 往右补 50 像素覆盖「重置」。MATR 把「全选/全不选」合并为一个按钮后索引整体左移，原来的补偿会圈到相邻按钮。诊断日志 [教学提示] 步骤#N 记录目标控件、目标矩形、高亮矩形与遮罩尺寸，用于核对高亮位置，确认稳定后可降级为 Debug。"
     }
   ]
 }

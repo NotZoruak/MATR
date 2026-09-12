@@ -119,11 +119,6 @@ public partial class RootViewContent : UserControl
         return null;
     }
 
-    private Control? FindStartupSettingsControl()
-    {
-        return FindDescendantOfType<StartSettingsUserControl>(this);
-    }
-
     private Control? FindBeforeAfterTaskControl()
     {
         var startSettings = FindDescendantOfType<StartSettingsUserControl>(this);
@@ -248,7 +243,7 @@ public partial class RootViewContent : UserControl
                 DescriptionKey = LangKeys.TutorialStepSelectAllDesc,
                 FindTarget = () => FindTaskListHeaderButton(0),
                 PreferredPlacement = TipPlacement.Bottom,
-                CutoutPadding = new Thickness(4, 4, 50, 4) // extend right to cover DeselectAll
+                CutoutPadding = new Thickness(4)
             });
 
             // Step 8: AddTask / Reset buttons
@@ -256,9 +251,11 @@ public partial class RootViewContent : UserControl
             {
                 TitleKey = LangKeys.TutorialStepAddTaskBtnTitle,
                 DescriptionKey = LangKeys.TutorialStepAddTaskBtnDesc,
-                FindTarget = () => FindTaskListHeaderButton(2),
+                // MATR 把「全选/全不选」合并成一个按钮后索引整体左移：
+                // 0=全选/全不选，1=添加任务，2=重置，3=开始/停止。
+                FindTargets = () => [FindTaskListHeaderButton(1), FindTaskListHeaderButton(2)],
                 PreferredPlacement = TipPlacement.Bottom,
-                CutoutPadding = new Thickness(4, 4, 50, 4) // extend right to cover Reset
+                CutoutPadding = new Thickness(4)
             });
 
             // Step 9: Start task button
@@ -354,18 +351,9 @@ public partial class RootViewContent : UserControl
                 OnLeave = () => NavigateToHome()
             });
 
-            // Step 18: Startup settings section
-            steps.Add(new TutorialStep
-            {
-                TitleKey = LangKeys.TutorialStepStartupSettingsTitle,
-                DescriptionKey = LangKeys.TutorialStepStartupSettingsDesc,
-                FindTarget = () => FindStartupSettingsControl(),
-                PreferredPlacement = TipPlacement.Left,
-                OnEnter = () => NavigateToSettings(),
-                OnLeave = () => NavigateToHome()
-            });
-
-            // Step 19: Before/After task actions (first GlassCard)
+            // Step 18: Before/After task actions (first GlassCard)。
+            // 原「启动设置」分类总览步骤已删除：它与上一步「设置页概览」高亮同一块区域，
+            // 而且窄布局下设置页是整页滚动容器，容易停在别的分类上，观感反而差。
             steps.Add(new TutorialStep
             {
                 TitleKey = LangKeys.TutorialStepBeforeAfterTaskTitle,
@@ -376,7 +364,7 @@ public partial class RootViewContent : UserControl
                 OnLeave = () => NavigateToHome()
             });
 
-            // Step 20: Software path suggestion
+            // Step 19: Software path suggestion
             steps.Add(new TutorialStep
             {
                 TitleKey = LangKeys.TutorialStepSoftwarePathTitle,
@@ -387,7 +375,7 @@ public partial class RootViewContent : UserControl
                 OnLeave = () => NavigateToHome()
             });
 
-            // Step 21: Re-watch tutorial hint (navigate to settings → about)
+            // Step 20: Re-watch tutorial hint (navigate to settings → about)
             steps.Add(new TutorialStep
             {
                 TitleKey = LangKeys.TutorialStepRewatchTitle,

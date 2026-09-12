@@ -1853,7 +1853,7 @@ Please do not copy only the main executable by itself.</value>
         <value>Select All / Deselect All</value>
     </data>
     <data name="TutorialStepSelectAllDesc" xml:space="preserve">
-        <value>These two buttons quickly check or uncheck all tasks. The left one is "Select All" and the right one is "Deselect All".</value>
+    <value>This button toggles between "Select All" and "Deselect All" for the task list.</value>
     </data>
     <data name="TutorialStepAddTaskBtnTitle" xml:space="preserve">
         <value>Add &amp; Reset Tasks</value>

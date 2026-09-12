@@ -8,6 +8,7 @@ using MFAAvalonia.Extensions;
 using MFAAvalonia.Helper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MFAAvalonia.Views.UserControls;
 
@@ -28,6 +29,15 @@ public partial class TeachingTipOverlay : UserControl
     private DispatcherTimer? _trackingTimer;
     private Rect _lastTargetBounds;
     private Size _lastTipSize;
+    /// <summary>最近一次写入诊断日志的步骤序号，避免跟踪定时器刷屏。</summary>
+    private int _loggedStep = -1;
+    /// <summary>最近一次写日志的高亮矩形，用于只在位置变化明显时再记一条。</summary>
+    private Rect _lastLoggedBounds;
+    /// <summary>当前步骤已经写了几条诊断日志（首帧 + 若干次纠正）。</summary>
+    private int _loggedCountForStep;
+    /// <summary>当前步骤发起过的 BringIntoView 次数与时间，避免每帧都请求滚动。</summary>
+    private int _scrollRequestsForStep;
+    private DateTime _lastScrollRequestAt = DateTime.MinValue;
 
     /// <summary>
     /// Indicates whether a tutorial is currently running.
@@ -85,7 +95,7 @@ public partial class TeachingTipOverlay : UserControl
         if (_trackingTimer != null) return;
         _trackingTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(300)
+            Interval = TimeSpan.FromMilliseconds(100)
         };
         _trackingTimer.Tick += OnTrackingTick;
         _trackingTimer.Start();
@@ -104,15 +114,36 @@ public partial class TeachingTipOverlay : UserControl
             return;
 
         var step = _steps[_currentStep];
-        var target = step.FindTarget?.Invoke();
-        if (target == null || _overlayRoot == null || _tipBorder == null) return;
+        var targets = ResolveTargets(step);
+        if (targets == null || _overlayRoot == null || _tipBorder == null)
+        {
+            // 目标解析不到时清掉高亮，避免把上一次的框留在屏幕上
+            ClearCutout();
+            return;
+        }
 
         try
         {
-            var tb = GetTargetBoundsInOverlay(target);
-            if (tb == null) return;
+            var tb = GetTargetsBoundsInOverlay(targets);
+            if (tb == null)
+            {
+                ClearCutout();
+                return;
+            }
 
             var inflated = tb.Value.Inflate(step.CutoutPadding);
+
+            // 目标还不在可视区（设置页是带动画的滚动，需要多次请求才会到位）：
+            // 先清掉高亮、继续请求滚入，避免把高亮框画到屏幕外的错误位置
+            var overlayBounds = new Rect(0, 0, _overlayRoot.Bounds.Width, _overlayRoot.Bounds.Height);
+            if (!overlayBounds.Intersects(inflated))
+            {
+                ClearCutout();
+                RequestScrollIfNeeded(targets, tb.Value);
+                return;
+            }
+
+            RequestScrollIfNeeded(targets, tb.Value);
 
             // Check if tip size changed (content may have been laid out since last tick)
             _tipBorder.InvalidateMeasure();
@@ -164,6 +195,10 @@ public partial class TeachingTipOverlay : UserControl
 
         // Reset last tip size so tracking timer will re-position after layout settles
         _lastTipSize = default;
+        // 同一步骤内不重复写诊断日志；同时复位缓存矩形，保证切步后一定重新定位
+        _loggedStep = -1;
+        _scrollRequestsForStep = 0;
+        _lastTargetBounds = default;
 
         // Defer positioning to after layout pass so tip has correct DesiredSize
         Dispatcher.UIThread.Post(() => PositionTipAtTarget(step), DispatcherPriority.Render);
@@ -201,18 +236,146 @@ public partial class TeachingTipOverlay : UserControl
             tbInWindow.Height);
     }
 
+    /// <summary>
+    /// 取一个步骤的目标控件：优先多目标（高亮区域取并集），否则回退到单目标。
+    /// 解析不到时返回 null。
+    /// </summary>
+    private static List<Control>? ResolveTargets(TutorialStep step)
+    {
+        var controls = new List<Control>();
+
+        if (step.FindTargets != null)
+        {
+            foreach (var control in step.FindTargets())
+            {
+                if (control != null)
+                    controls.Add(control);
+            }
+        }
+        else if (step.FindTarget?.Invoke() is { } single)
+        {
+            controls.Add(single);
+        }
+
+        return controls.Count > 0 ? controls : null;
+    }
+
+    /// <summary>多目标时取各控件在遮罩坐标系里的外接矩形并集。</summary>
+    private Rect? GetTargetsBoundsInOverlay(IReadOnlyList<Control> targets)
+    {
+        Rect? merged = null;
+        foreach (var target in targets)
+        {
+            var bounds = GetTargetBoundsInOverlay(target);
+            if (bounds == null) continue;
+            merged = merged == null ? bounds : merged.Value.Union(bounds.Value);
+        }
+
+        return merged;
+    }
+
+    /// <summary>清掉高亮洞口并复位缓存矩形，让跟踪定时器重新定位。</summary>
+    private void RequestScrollIfNeeded(IReadOnlyList<Control> targets, Rect targetBounds)
+    {
+        if (_overlayRoot == null)
+            return;
+
+        var overlayBounds = new Rect(0, 0, _overlayRoot.Bounds.Width, _overlayRoot.Bounds.Height);
+        if (overlayBounds.Contains(targetBounds))
+        {
+            _scrollRequestsForStep = 0;
+            return;
+        }
+
+        // 每个步骤最多请求 20 次、间隔 300ms，防止滚动动画期间每帧都发请求
+        if (_scrollRequestsForStep >= 20)
+            return;
+        if ((DateTime.UtcNow - _lastScrollRequestAt).TotalMilliseconds < 300)
+            return;
+
+        _lastScrollRequestAt = DateTime.UtcNow;
+        _scrollRequestsForStep++;
+
+        foreach (var target in targets)
+        {
+            try
+            {
+                target.BringIntoView();
+            }
+            catch
+            {
+                // 忽略滚动失败
+            }
+        }
+    }
+
+    /// <summary>清掉高亮洞口并复位缓存矩形，让跟踪定时器重新定位。</summary>
+    private void ClearCutout()
+    {
+        _lastTargetBounds = default;
+        if (_arrow != null)
+            _arrow.IsVisible = false;
+        if (_overlayMask == null || _overlayRoot == null)
+            return;
+
+        var width = _overlayRoot.Bounds.Width;
+        var height = _overlayRoot.Bounds.Height;
+        if (width < 1 || height < 1)
+            return;
+
+        _overlayMask.Clip = new RectangleGeometry(new Rect(0, 0, width, height));
+    }
+
+    /// <summary>每个步骤只记录一次目标解析与坐标，便于按日志核对高亮位置。</summary>
+    private void LogStepTarget(TutorialStep step, IReadOnlyList<Control> targets, Rect targetBounds, Rect cutout)
+    {
+        if (_loggedStep != _currentStep)
+        {
+            _loggedStep = _currentStep;
+            _loggedCountForStep = 0;
+        }
+
+        // 首帧必记；之后只在位置明显变化时补记，最多 4 条（首帧 + 3 次纠正）
+        if (_loggedCountForStep > 0)
+        {
+            var moved = Math.Abs(cutout.X - _lastLoggedBounds.X) > 8
+                || Math.Abs(cutout.Y - _lastLoggedBounds.Y) > 8
+                || Math.Abs(cutout.Width - _lastLoggedBounds.Width) > 8
+                || Math.Abs(cutout.Height - _lastLoggedBounds.Height) > 8;
+            if (!moved || _loggedCountForStep >= 4)
+                return;
+        }
+
+        _loggedCountForStep++;
+        _lastLoggedBounds = cutout;
+
+        var targetNames = string.Join("，", targets.Select(DescribeControl));
+        var maskSize = _overlayRoot == null ? "null" : $"{_overlayRoot.Bounds.Width}x{_overlayRoot.Bounds.Height}";
+        // 高亮位置已经实机核对稳定，降为 Debug，排查时把日志级别调到 Debug 即可看到
+        LoggerHelper.Debug(
+            $"[教学提示] 步骤#{_currentStep + 1} 标题={step.TitleKey}，目标={targetNames}，" +
+            $"目标矩形={targetBounds}，高亮矩形={cutout}，遮罩={maskSize}");
+    }
+
+    private static string DescribeControl(Control control)
+    {
+        var name = string.IsNullOrWhiteSpace(control.Name) ? "<未命名>" : control.Name;
+        return $"{control.GetType().Name}[{name}]";
+    }
+
     private void PositionTipAtTarget(TutorialStep step)
     {
-        var target = step.FindTarget?.Invoke();
-        if (target == null || _tipBorder == null || _overlayRoot == null || _arrow == null || _overlayMask == null)
+        var targets = ResolveTargets(step);
+        if (targets == null || _tipBorder == null || _overlayRoot == null || _arrow == null || _overlayMask == null)
             return;
 
         try
         {
-            var tb = GetTargetBoundsInOverlay(target);
+            var tb = GetTargetsBoundsInOverlay(targets);
             if (tb == null) return;
 
             var cutout = tb.Value.Inflate(step.CutoutPadding);
+            LogStepTarget(step, targets, tb.Value, cutout);
 
             var maskW = _overlayRoot.Bounds.Width;
             var maskH = _overlayRoot.Bounds.Height;
@@ -482,21 +645,24 @@ public partial class TeachingTipOverlay : UserControl
         for (int i = 0; i < maxRetries; i++)
         {
             await System.Threading.Tasks.Task.Delay(delayMs);
-            var target = step.FindTarget?.Invoke();
-            if (target == null || target.Bounds.Width <= 1 || target.Bounds.Height <= 1)
+            var targets = ResolveTargets(step);
+            if (targets == null)
+                continue;
+            if (targets.Any(target => target.Bounds.Width <= 1 || target.Bounds.Height <= 1))
                 continue;
 
             // Check if target is within the visible overlay area
-            var tb = GetTargetBoundsInOverlay(target);
+            var tb = GetTargetsBoundsInOverlay(targets);
             if (tb == null || _overlayRoot == null)
-                return; // Can't determine visibility, proceed anyway
+                continue; // 暂时读不到目标位置（例如滚动动画中），继续等待而不是直接放行
 
             var overlayBounds = new Rect(0, 0, _overlayRoot.Bounds.Width, _overlayRoot.Bounds.Height);
-            if (overlayBounds.Intersects(tb.Value))
-                return; // Target is visible within overlay
+            if (overlayBounds.Contains(tb.Value))
+                return; // 目标完整可见才算就绪（只露出一部分时继续滚动）
 
-            // Target exists but is off-screen (e.g. inside a ScrollViewer), scroll it into view
-            target.BringIntoView();
+            // Target exists but is not fully visible (e.g. inside a ScrollViewer), scroll it into view
+            foreach (var target in targets)
+                target.BringIntoView();
         }
     }
 
@@ -523,6 +689,11 @@ public class TutorialStep
     /// This avoids stale references when SukiSideMenu recreates page content.
     /// </summary>
     public Func<Control?>? FindTarget { get; set; }
+    /// <summary>
+    /// Optional set of targets for steps that highlight several controls at once;
+    /// the highlight is the union of their bounds. Takes precedence over FindTarget.
+    /// </summary>
+    public Func<IEnumerable<Control?>>? FindTargets { get; set; }
     public TipPlacement PreferredPlacement { get; set; } = TipPlacement.Bottom;
     /// <summary>
     /// Extra padding around the target control for the cutout highlight area.

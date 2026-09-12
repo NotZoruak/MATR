@@ -717,6 +717,37 @@ AssertTrue(desktopProjectSource.Contains("<AssemblyName>MATR</AssemblyName>", St
     "Windows 发布产物必须使用 MATR 名称，才能与打包脚本和品牌入口保持一致");
 AssertFalse(aboutViewMarkup.Contains("HelpImproveSoftware", StringComparison.Ordinal),
     "MATR 已禁用遥测，关于页面不得显示没有实际作用的帮助改进软件开关");
+var aboutUserControlSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "AboutUserControl.axaml.cs"));
+AssertTrue(aboutUserControlSource.Contains("rootContent.TryStartTutorial()", StringComparison.Ordinal)
+    && !aboutUserControlSource.Contains("桌面版暂不提供移动端教程", StringComparison.Ordinal),
+    "关于页的使用教程必须触发根壳里的现成教程，不能只提示桌面版不提供");
+
+var rootViewContentSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Mobile", "RootViewContent.axaml.cs"));
+var teachingTipOverlaySource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "TeachingTipOverlay.axaml.cs"));
+var defaultStringsSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Assets", "Localization", "Strings.resx"));
+AssertTrue(rootViewContentSource.Contains(
+        "FindTargets = () => [FindTaskListHeaderButton(1), FindTaskListHeaderButton(2)]", StringComparison.Ordinal)
+    && !rootViewContentSource.Contains("new Thickness(4, 4, 50, 4)", StringComparison.Ordinal),
+    "教程的添加/重置步骤必须按 MATR 合并后的按钮索引取目标，不能用写死的 +50 像素补偿相邻按钮");
+AssertTrue(rootViewContentSource.Contains(
+        "FindTarget = () => FindTaskListHeaderButton(0),",
+        StringComparison.Ordinal),
+    "教程的全选步骤必须指向合并后的全选/全不选按钮");
+AssertTrue(!rootViewContentSource.Contains("FindStartupSettingsControl", StringComparison.Ordinal)
+    && CountOccurrences(rootViewContentSource, "FindDescendantByName<Control>(root, \"SettingsLayout\")") == 1
+    && !rootViewContentSource.Contains("TutorialStepStartupSettingsTitle", StringComparison.Ordinal),
+    "教程不得保留与「设置页概览」重复的「启动设置」分类总览步骤");
+AssertTrue(!defaultStringsSource.Contains("这两个按钮可以快速勾选", StringComparison.Ordinal),
+    "全选步骤文案必须与合并后的单个按钮一致");
+AssertTrue(teachingTipOverlaySource.Contains("public Func<IEnumerable<Control?>>? FindTargets", StringComparison.Ordinal)
+    && teachingTipOverlaySource.Contains("merged.Value.Union(bounds.Value)", StringComparison.Ordinal)
+    && teachingTipOverlaySource.Contains("ClearCutout()", StringComparison.Ordinal)
+    && teachingTipOverlaySource.Contains("[教学提示] 步骤#", StringComparison.Ordinal),
+    "教学提示必须支持多控件并集高亮、目标解析失败时清掉旧高亮，并保留按步骤输出目标坐标的诊断日志");
 var defaultInterfaceSource = ExtractSourceSection(
     taskStartProcessorSource,
     "public static bool CheckInterface(",
@@ -809,9 +840,10 @@ AssertTrue(File.Exists(teamRestRecognitionPath)
 
 var expeditionTimerCheckSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ExpeditionTimerCheckAction.cs"));
-AssertTrue(expeditionTimerCheckSource.Contains("context.OverrideNext(nodeName, targets)", StringComparison.Ordinal)
-    && expeditionTimerCheckSource.Contains("GetNodeData(nodeName, out var nodeData)", StringComparison.Ordinal),
-    "远征计时到期必须改走 next，不能靠 on_error 触发，否则每个智能调度周期都会写一张无意义的 debug/on_error 截图");
+AssertTrue(!expeditionTimerCheckSource.Contains("context.OverrideNext(", StringComparison.Ordinal)
+    && !expeditionTimerCheckSource.Contains("GetNodeData", StringComparison.Ordinal)
+    && expeditionTimerCheckSource.Contains("return false;", StringComparison.Ordinal),
+    "远征计时到期已撤回改走 next：MaaFW 返回的 node 数据里 on_error 是对象数组，按字符串解析必然失败并落回 on_error，只多写一条特殊情况；重新启用前必须按对象数组解析并实机确认 debug/on_error 截图不再增长");
 
 var syncLogisticsExpedition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Expedition.json")));

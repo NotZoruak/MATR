@@ -2,11 +2,13 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using AvaloniaEdit.Highlighting;
 using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.ViewModels.Windows;
+using MFAAvalonia.Views.Mobile;
 using MFAAvalonia.Views.Windows;
 using System;
 using System.IO;
@@ -132,7 +134,18 @@ public partial class AboutUserControl : UserControl
 
     private void StartTutorial_Click(object? sender, RoutedEventArgs e)
     {
-        ToastHelper.Info("桌面版暂不提供移动端教程。");
+        // 教程实现在桌面与移动共用的根壳里（RootViewContent 的 TutorialOverlay），
+        // 关于页只负责触发重播：上游桌面端把这里留成了纯提示占位，没有接入口。
+        var rootContent = this.FindAncestorOfType<RootViewContent>()
+            ?? (this.GetVisualRoot() as Visual)?.FindDescendantOfType<RootViewContent>();
+        if (rootContent == null)
+        {
+            LoggerHelper.Warning("未找到根视图，无法启动使用教程");
+            ToastHelper.Warn("暂时无法启动教程，请回到任务页后重试。");
+            return;
+        }
+
+        rootContent.TryStartTutorial();
     }
 }
 

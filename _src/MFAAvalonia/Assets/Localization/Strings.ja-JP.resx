@@ -2037,7 +2037,7 @@
         <value>すべて選択/すべて選択解除</value>
     </data>
   <data name="TutorialStepSelectAllDesc" xml:space="preserve">
-        <value>これら 2 つのボタンは、すべてのタスクをすばやくオンまたはオフにします。左が「すべて選択」、右が「すべて選択解除」です。</value>
+    <value>このボタンは「すべて選択」と「すべて選択解除」を切り替え、タスクをまとめてオンまたはオフにします。</value>
     </data>
   <data name="TutorialStepAddTaskBtnTitle" xml:space="preserve">
         <value>タスクの追加とリセット</value>
