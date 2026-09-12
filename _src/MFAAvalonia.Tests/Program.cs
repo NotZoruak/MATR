@@ -1001,8 +1001,9 @@ var undergroundTask = optionInterfaceJson["task"]!.Children<JObject>()
 var defaultTasks = optionInterfaceJson["task"]!.Children<JObject>().ToList();
 AssertTrue(defaultTasks[0]["name"]?.Value<string>() == "唤醒本丸"
     && defaultTasks[1]["name"]?.Value<string>() == "更新数据"
-    && defaultTasks[2]["name"]?.Value<string>() == "日课",
-    "默认任务排序应将唤醒本丸置于首位，并保持一键日课紧跟在更新数据后面");
+    && defaultTasks[2]["name"]?.Value<string>() == "自定编队"
+    && defaultTasks[3]["name"]?.Value<string>() == "日课",
+    "默认任务排序应为唤醒本丸 → 更新数据 → 自定编队 → 一键日课");
 foreach (var task in optionInterfaceJson["task"]!.Children<JObject>())
 {
     var taskOptions = task["option"]?.Values<string>().ToList() ?? [];
@@ -1011,8 +1012,10 @@ foreach (var task in optionInterfaceJson["task"]!.Children<JObject>())
         || optionName.EndsWith("同步后勤", StringComparison.Ordinal));
     if (syncOption != null)
     {
-        AssertTrue(taskOptions[^1] == syncOption,
-            $"{task["name"]}的同步后勤选项应始终排在最后");
+        // 一键日课按设计把同步后勤放在选项首位，其余任务保持在末尾
+        var expectedIndex = task["name"]?.Value<string>() == "日课" ? 0 : taskOptions.Count - 1;
+        AssertTrue(taskOptions[expectedIndex] == syncOption,
+            $"{task["name"]}的同步后勤选项位置不符合约定（日课位于首位，其余任务位于末尾）");
     }
 }
 
@@ -2566,8 +2569,11 @@ var movedPlan = WindowsScheduledTaskPlanner.CreatePlan(
         "其他程序创建的任务",
     ],
     otherScopeToken);
-AssertTrue(movedPlan.Tasks.Select(task => task.TaskName).SequenceEqual([$"MATR.Timer.{matrScopeToken}.1"]),
-    "安装目录更换后仍按当前安装目录生成计划任务");
+AssertTrue(movedPlan.Tasks.Select(task => task.TaskName).SequenceEqual([
+        $"MATR.Timer.{matrScopeToken}.1",
+        $"MATR.Timer.{matrScopeToken}.7"
+    ]),
+    "安装目录更换后仍按当前安装目录生成全部有效定时器的计划任务");
 AssertTrue(movedPlan.ObsoleteTaskNames.SequenceEqual([
         $"MATR.Timer.{otherScopeToken}.1",
         $"MATR.Timer.{otherScopeToken}.2"
