@@ -1152,18 +1152,22 @@
         "expected": "刀剑"
       }
     },
-    "action": {
-      "type": "Click",
+    "next": ["DT_MixFindSelectSword"],
+    "on_error": ["DT_MixHub"]
+  },
+  "DT_MixFindSelectSword": {
+    "recognition": {
+      "type": "TemplateMatch",
       "param": {
-        "target": [1203, 141, 34, 56]
+        "roi": [1186, 129, 65, 486],
+        "template": "Common/选择合成对象.png",
+        "threshold": [0.98]
       }
     },
+    "action": {"type": "Click"},
+    "post_delay": 500,
     "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"],
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1203, 141, 34, 56]
-    }
+    "on_error": ["DT_MixHub"]
   },
   "DT_MixMaterialPage": {
     "recognition": {
