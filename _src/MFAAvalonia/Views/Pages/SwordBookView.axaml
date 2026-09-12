@@ -3,10 +3,43 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:MFAAvalonia.ViewModels.Pages"
+             xmlns:suki="https://github.com/kikipoulet/SukiUI"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
              x:DataType="pages:SwordBookViewModel"
              x:Class="MFAAvalonia.Views.Pages.SwordBookView">
     <Design.DataContext><pages:SwordBookViewModel /></Design.DataContext>
+    <UserControl.Resources>
+        <DataTemplate x:Key="FilterColumnTemplate" x:DataType="pages:SwordBookFilterOption">
+            <TextBlock Text="{Binding ColumnName}" Classes="filter-caption" Classes.active="{Binding IsColumnFiltered}" />
+        </DataTemplate>
+        <DataTemplate x:Key="FilterOptionTemplate" x:DataType="pages:SwordBookFilterOption">
+            <StackPanel Orientation="Horizontal" Spacing="3">
+                <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding CountText}" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource SukiLowText}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="TextBlock.filter-caption">
+            <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+        </Style>
+        <Style Selector="TextBlock.filter-caption.active">
+            <Setter Property="Foreground" Value="{DynamicResource SukiPrimaryColor}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="ComboBox.book-filter.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor}" />
+        </Style>
+        <Style Selector="ToggleButton.book-filter.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor}" />
+        </Style>
+        <Style Selector="Path.filter-arrow">
+            <Setter Property="Fill" Value="{DynamicResource SukiText}" />
+        </Style>
+        <Style Selector="Path.filter-arrow.active">
+            <Setter Property="Fill" Value="{DynamicResource SukiPrimaryColor}" />
+        </Style>
+    </UserControl.Styles>
     <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14">
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="16">
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
@@ -25,21 +58,93 @@
             <TextBlock Grid.Column="1" Text="{Binding Instruction}" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource SukiLowText}" />
         </Grid>
         <Border Grid.Row="1" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="18,12" Margin="0,0,18,0">
-            <Grid ColumnDefinitions="70,100,200,80,*,*,*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="4" RowSpacing="4">
-                <TextBlock Grid.RowSpan="3" Text="序号" VerticalAlignment="Center" FontWeight="SemiBold" />
-                <TextBlock Grid.Column="1" Grid.RowSpan="3" Text="刀种" VerticalAlignment="Center" FontWeight="SemiBold" />
-                <TextBlock Grid.Column="2" Grid.RowSpan="3" Text="刀名" VerticalAlignment="Center" FontWeight="SemiBold" />
-                <TextBlock Grid.Column="3" Grid.Row="0" Text="已拥有" HorizontalAlignment="Center" FontWeight="SemiBold" />
-                <TextBlock Grid.Column="4" Grid.ColumnSpan="4" Text="立绘" HorizontalAlignment="Center" FontWeight="SemiBold" />
-                <TextBlock Grid.Column="4" Grid.Row="1" Text="中伤" HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="5" Grid.Row="1" Text="真剑" HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="6" Grid.Row="1" Text="内番" HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="7" Grid.Row="1" Text="轻装" HorizontalAlignment="Center" />
-                <ComboBox Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding OwnedFilter}" HorizontalContentAlignment="Center" />
-                <ComboBox Grid.Column="4" Grid.Row="2" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding WoundedFilter}" HorizontalContentAlignment="Center" />
-                <ComboBox Grid.Column="5" Grid.Row="2" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding TrueSwordFilter}" HorizontalContentAlignment="Center" />
-                <ComboBox Grid.Column="6" Grid.Row="2" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding InnerCareFilter}" HorizontalContentAlignment="Center" />
-                <ComboBox Grid.Column="7" Grid.Row="2" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding CasualFilter}" HorizontalContentAlignment="Center" />
+            <Grid ColumnDefinitions="52,84,170,*,*,*,*,*" ColumnSpacing="2">
+                <TextBlock Text="序号" VerticalAlignment="Center" FontWeight="SemiBold" />
+                <ToggleButton x:Name="TypeFilterToggle" Grid.Column="1" Classes="book-filter" Classes.active="{Binding HasTypeFilter}"
+                              MinHeight="35" Margin="-10,0,0,0" Padding="10,4" FontSize="12" BorderThickness="1"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                              HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                              IsChecked="{Binding IsTypeFilterOpen, Mode=TwoWay}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="刀种" Classes="filter-caption" Classes.active="{Binding HasTypeFilter}"
+                                   VerticalAlignment="Center" />
+                        <Path Classes="filter-arrow" Classes.active="{Binding HasTypeFilter}"
+                              Width="8" Height="4" VerticalAlignment="Center" Stretch="Uniform"
+                              Data="F1 M 301.14,-189.041L 311.57,-189.041L 306.355,-182.942L 301.14,-189.041 Z" />
+                    </StackPanel>
+                </ToggleButton>
+                <Popup Grid.Column="1"
+                       InheritsTransform="True"
+                       IsLightDismissEnabled="True"
+                       IsOpen="{Binding IsTypeFilterOpen, Mode=TwoWay}"
+                       Placement="Bottom"
+                       PlacementTarget="{Binding #TypeFilterToggle}">
+                    <Border Padding="5,10,5,5">
+                        <Border Background="{DynamicResource SukiPopupBackground}"
+                                BorderBrush="{DynamicResource SukiMenuBorderBrush}"
+                                BorderThickness="1"
+                                BoxShadow="{DynamicResource SukiSmallPopupShadow}"
+                                CornerRadius="{DynamicResource SmallCornerRadius}">
+                            <Grid Background="{DynamicResource PopupGradientBrush}" RowDefinitions="Auto,Auto">
+                                <suki:GlassCard Grid.RowSpan="2" Margin="-1"
+                                                CornerRadius="{DynamicResource SmallCornerRadius}"
+                                                IsAnimated="False" />
+                                <ItemsControl Grid.Row="0" Margin="10,10,10,6" ItemsSource="{Binding TypeFilterOptions}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="pages:SwordBookTypeFilterOption">
+                                            <CheckBox IsChecked="{Binding IsSelected}" Margin="0,0,10,4">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="{Binding Type}" />
+                                                    <TextBlock Text="{Binding CountText}" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource SukiLowText}" />
+                                                </StackPanel>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="10,0,10,10">
+                                    <Button Content="全选" Command="{Binding SelectAllTypesCommand}" />
+                                    <Button Content="清空" Command="{Binding ClearTypesCommand}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Border>
+                </Popup>
+                <TextBlock Grid.Column="2" Text="刀名" VerticalAlignment="Center" FontWeight="SemiBold" />
+                <ComboBox Grid.Column="3" Classes="book-filter" Classes.active="{Binding OwnedFilter.IsColumnFiltered}" FontSize="12"
+                          HorizontalContentAlignment="Center"
+                          ItemsSource="{Binding OwnedFilterOptions}"
+                          SelectedItem="{Binding OwnedFilter}"
+                          ItemTemplate="{StaticResource FilterOptionTemplate}"
+                          SelectionBoxItemTemplate="{StaticResource FilterColumnTemplate}" />
+                <ComboBox Grid.Column="4" Classes="book-filter" Classes.active="{Binding WoundedFilter.IsColumnFiltered}" FontSize="12"
+                          HorizontalContentAlignment="Center"
+                          ItemsSource="{Binding WoundedFilterOptions}"
+                          SelectedItem="{Binding WoundedFilter}"
+                          ItemTemplate="{StaticResource FilterOptionTemplate}"
+                          SelectionBoxItemTemplate="{StaticResource FilterColumnTemplate}" />
+                <ComboBox Grid.Column="5" Classes="book-filter" Classes.active="{Binding TrueSwordFilter.IsColumnFiltered}" FontSize="12"
+                          HorizontalContentAlignment="Center"
+                          ItemsSource="{Binding TrueSwordFilterOptions}"
+                          SelectedItem="{Binding TrueSwordFilter}"
+                          ItemTemplate="{StaticResource FilterOptionTemplate}"
+                          SelectionBoxItemTemplate="{StaticResource FilterColumnTemplate}" />
+                <ComboBox Grid.Column="6" Classes="book-filter" Classes.active="{Binding InnerCareFilter.IsColumnFiltered}" FontSize="12"
+                          HorizontalContentAlignment="Center"
+                          ItemsSource="{Binding InnerCareFilterOptions}"
+                          SelectedItem="{Binding InnerCareFilter}"
+                          ItemTemplate="{StaticResource FilterOptionTemplate}"
+                          SelectionBoxItemTemplate="{StaticResource FilterColumnTemplate}" />
+                <ComboBox Grid.Column="7" Classes="book-filter" Classes.active="{Binding CasualFilter.IsColumnFiltered}" FontSize="12"
+                          HorizontalContentAlignment="Center"
+                          ItemsSource="{Binding CasualFilterOptions}"
+                          SelectedItem="{Binding CasualFilter}"
+                          ItemTemplate="{StaticResource FilterOptionTemplate}"
+                          SelectionBoxItemTemplate="{StaticResource FilterColumnTemplate}" />
             </Grid>
         </Border>
         <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -47,7 +152,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="pages:SwordBookRowViewModel">
                         <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="8" Padding="18,10" Margin="0,0,0,6" HorizontalAlignment="Stretch">
-                            <Grid ColumnDefinitions="70,100,200,80,*,*,*,*" ColumnSpacing="4">
+                            <Grid ColumnDefinitions="52,84,170,*,*,*,*,*" ColumnSpacing="2">
                                 <TextBlock Text="{Binding Number}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="1" Text="{Binding Type}" VerticalAlignment="Center" FontWeight="Bold" />
                                 <TextBlock Grid.Column="2" Text="{Binding Name}" VerticalAlignment="Center" />
