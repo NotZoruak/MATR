@@ -12,6 +12,7 @@ using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.ValueType;
+using MFAAvalonia.ViewModels.Other;
 using MFAAvalonia.ViewModels.Pages;
 using MFAAvalonia.ViewModels.Windows;
 using SukiUI.Controls;
@@ -406,6 +407,9 @@ public partial class RootView : SukiWindow
 
             if (AppRuntime.IsAutoStart)
             {
+                // 命令行自动启动同样算本分钟的定时触发：程序刚启动时应用内计时器的首次 tick
+                // 仍可能落在同一分钟（例如 15:29:51 启动、15:30:51 首次 tick），必须回写标记。
+                TimerModel.Instance.MarkScheduledStartHandled(vm.Processor.InstanceId);
                 StartCommandLineAutoRun(vm, AppRuntime.QuitAfterRun, AppRuntime.ForceStart);
                 return;
             }
@@ -909,6 +913,10 @@ public partial class RootView : SukiWindow
         Instances.InstanceTabBarViewModel.SwitchToInstanceById(targetId);
 
         if (!command.AutoStart) return;
+
+        // 转发来的自动启动已经执行了本分钟的定时任务，必须先回写触发标记，
+        // 否则应用内计时器会在同一分钟内再触发一次，把刚启动的任务停掉重启。
+        TimerModel.Instance.MarkScheduledStartHandled(targetId);
 
         var viewModel = manager.GetViewModel(targetId);
         if (viewModel != null)

@@ -209,6 +209,51 @@ public partial class TimerModel : ViewModelBase
         });
     }
 
+    /// <summary>
+    /// 记录一次由外部发起的定时启动（Windows 计划任务或命令行 --autostart）。
+    /// 外部启动不经过 TriggerTimer，若不回写标记，应用内计时器会在同一分钟内把同一个定时器再触发一次：
+    /// 2026-09-13 15:30 实测出现「计划任务先启动、应用内 tick 在 15:30:51 又触发」，
+    /// 配合强制定时启动把正在运行的任务停掉重启，表现为同一分钟内启动两次任务。
+    /// </summary>
+    /// <param name="instanceId">本次外部启动的实例 ID。</param>
+    /// <param name="triggeredAt">本次外部启动的时间，默认取当前时间。</param>
+    public void MarkScheduledStartHandled(string? instanceId, DateTime? triggeredAt = null)
+    {
+        if (string.IsNullOrWhiteSpace(instanceId))
+            return;
+
+        var now = triggeredAt ?? DateTime.Now;
+        foreach (var timer in Timers)
+        {
+            var covers = TimerExternalStartMatch.Covers(
+                timer.IsOn,
+                timer.TimerAction == TimerActionType.StartTask,
+                timer.Time,
+                timer.ScheduleConfig.ShouldTrigger(now),
+                ResolveTimerTargetInstanceId(timer),
+                instanceId,
+                now);
+            if (!covers)
+                continue;
+
+            timer.LastTriggered = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+            LoggerHelper.Info(
+                $"[定时任务] 外部启动已完成定时器 {timer.TimerId + 1} 的 {now:HH:mm} 触发，跳过应用内重复触发");
+        }
+    }
+
+    /// <summary>
+    /// 取得定时器的目标实例：与 ExecuteTimerTask 保持一致，关闭「自定配置」时跟随当前实例。
+    /// </summary>
+    private string? ResolveTimerTargetInstanceId(TimerProperties timer)
+    {
+        var manager = MaaProcessorManager.Instance;
+        if (!CustomConfig || string.IsNullOrWhiteSpace(timer.TimerConfig))
+            return manager.Current?.InstanceId;
+
+        return manager.ResolveInstanceId(timer.TimerConfig) ?? timer.TimerConfig;
+    }
+
     private void TriggerTimer(TimerProperties timer, DateTime scheduledTime)
     {
         if (timer.LastTriggered.HasValue

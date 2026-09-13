@@ -4,6 +4,7 @@ using MFAAvalonia.Extensions.MaaFW.Custom;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Configuration;
 using MFAAvalonia.Helper;
+using MFAAvalonia.Helper.ValueType;
 using MFAAvalonia.ViewModels.Pages;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -2658,6 +2659,51 @@ AssertFalse(
     WindowsScheduledTaskDefinitionBuilder.IsRepeatConfigured(
         dailyTimer with { RepeatType = WindowsScheduledTaskRepeatType.Weekly, DaysOfWeek = [] }),
     "按周定时未选择星期时不得创建计划任务");
+
+// 外部定时启动（Windows 计划任务或命令行）必须回写应用内定时器触发标记，避免同一分钟重复触发
+var externalStartTime = new DateTime(2026, 9, 13, 15, 30, 41);
+AssertTrue(TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 30, 0), true, "4c13648d", "4c13648d", externalStartTime),
+    "同一分钟且实例一致的外部启动必须覆盖应用内定时器触发");
+AssertTrue(TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 30, 0), true, "4C13648D", "4c13648d", externalStartTime),
+    "实例 ID 比较必须忽略大小写");
+AssertFalse(TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 30, 0), true, "4c13648d", "ffffffff", externalStartTime),
+    "外部启动的实例与定时器目标不一致时不得覆盖，否则会漏掉其它实例的定时任务");
+AssertFalse(TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 31, 0), true, "4c13648d", "4c13648d", externalStartTime),
+    "跨分钟的定时器不得被本次外部启动覆盖");
+AssertTrue(TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 30, 0), true, null, "4c13648d", externalStartTime),
+    "跟随当前实例的定时器没有固定目标，外部启动切换过去后应视作覆盖");
+AssertFalse(TimerExternalStartMatch.Covers(
+        false, true, new TimeSpan(15, 30, 0), true, "4c13648d", "4c13648d", externalStartTime)
+    || TimerExternalStartMatch.Covers(
+        true, false, new TimeSpan(15, 30, 0), true, "4c13648d", "4c13648d", externalStartTime)
+    || TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 30, 0), false, "4c13648d", "4c13648d", externalStartTime)
+    || TimerExternalStartMatch.Covers(
+        true, true, new TimeSpan(15, 30, 0), true, "4c13648d", "  ", externalStartTime),
+    "被禁用、停止任务动作、重复规则未命中或缺少目标实例时都不得回写触发标记");
+var timerModelSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Other", "TimerModel.cs"));
+var markScheduledStartSource = ExtractSourceSection(
+    timerModelSource,
+    "public void MarkScheduledStartHandled(",
+    "private void TriggerTimer(");
+AssertTrue(markScheduledStartSource.Contains("timer.LastTriggered = new DateTime(", StringComparison.Ordinal),
+    "外部启动必须回写 LastTriggered，否则应用内计时器会在同一分钟重复触发同一个定时器");
+var forwardedLaunchSource = ExtractSourceSection(
+    rootViewSource,
+    "private void HandleForwardedLaunchCommand(",
+    "private async Task BringToForegroundAsync(");
+AssertTrue(forwardedLaunchSource.Contains("MarkScheduledStartHandled(targetId)", StringComparison.Ordinal),
+    "命名管道转发的计划任务启动必须回写定时器触发标记");
+AssertTrue(rootViewSource.Contains(
+        "TimerModel.Instance.MarkScheduledStartHandled(vm.Processor.InstanceId)",
+        StringComparison.Ordinal),
+    "命令行冷启动的自动执行同样必须回写定时器触发标记");
 
 // Windows 计划任务：同步决策
 var plannedTimers = new List<WindowsScheduledTaskTimer>
