@@ -81,6 +81,34 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(HasSelectionSummary))]
     private string _selectionSummary = "";
 
+    /// <summary>任务概况卡片内容是否展开。</summary>
+    [ObservableProperty] private bool _isTaskSummaryExpanded = true;
+
+    /// <summary>任务收获卡片内容是否展开。</summary>
+    [ObservableProperty] private bool _isTaskOutcomeExpanded = true;
+
+    /// <summary>后勤记录卡片内容是否展开。</summary>
+    [ObservableProperty] private bool _isLogisticsExpanded = true;
+
+    /// <summary>特殊情况卡片内容是否展开。</summary>
+    [ObservableProperty] private bool _isSpecialEventsExpanded = true;
+
+    /// <summary>收起或展开任务概况卡片内容。</summary>
+    [RelayCommand]
+    private void ToggleTaskSummary() => IsTaskSummaryExpanded = !IsTaskSummaryExpanded;
+
+    /// <summary>收起或展开任务收获卡片内容。</summary>
+    [RelayCommand]
+    private void ToggleTaskOutcome() => IsTaskOutcomeExpanded = !IsTaskOutcomeExpanded;
+
+    /// <summary>收起或展开后勤记录卡片内容。</summary>
+    [RelayCommand]
+    private void ToggleLogistics() => IsLogisticsExpanded = !IsLogisticsExpanded;
+
+    /// <summary>收起或展开特殊情况卡片内容。</summary>
+    [RelayCommand]
+    private void ToggleSpecialEvents() => IsSpecialEventsExpanded = !IsSpecialEventsExpanded;
+
     public bool HasSavedRecords => SavedRecords.Count > 0;
     public bool CanSaveSelectedRecords => SelectedLogRecords.Count > 0
         && SelectedLogRecords.Select(record => record.TaskName).Distinct(StringComparer.Ordinal).Count() == 1
@@ -482,7 +510,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>派遣远征明细文本，由界面按可用宽度自动换行。</summary>
     public IReadOnlyList<string> SelectedLogisticsDispatchTexts =>
         SelectedRecord?.LogisticsDispatches
-            .Select(d => $"{d.Time:HH:mm}  {d.Unit} → {d.Map}")
+            .Select(d => $"{d.Time:MM-dd HH:mm}  {d.Unit} → {d.Map}")
             .ToList() ?? [];
 
     /// <summary>是否有后勤摘要</summary>
@@ -496,7 +524,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>修刀明细，位于派遣远征组与内番服组之间。</summary>
     public IReadOnlyList<string> SelectedLogisticsRepairTexts =>
         SelectedRecord?.LogisticsRepairs
-            .Select(item => $"{item.Time:HH:mm}  开始修复 {item.SwordName} {FormatRepairCost(item.Wood)}/{FormatRepairCost(item.Steel)}/{FormatRepairCost(item.Coolant)}/{FormatRepairCost(item.Whetstone)}")
+            .Select(item => $"{item.Time:MM-dd HH:mm}  开始修复 {item.SwordName} {FormatRepairCost(item.Wood)}/{FormatRepairCost(item.Steel)}/{FormatRepairCost(item.Coolant)}/{FormatRepairCost(item.Whetstone)}")
             .ToList() ?? [];
 
     private static string FormatRepairCost(int cost) => cost < 0 ? "未识别" : cost.ToString();
@@ -507,7 +535,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>内番派遣与内番服结果合并显示，紧跟派遣远征组之后显示。</summary>
     public IReadOnlyList<string> SelectedLogisticsNaibanOutfitTexts =>
         SelectedRecord?.LogisticsNaibanOutfits
-            .Select(item => $"{item.Time:HH:mm}  安排内番（内番服 {item.SwordName}）")
+            .Select(item => $"{item.Time:MM-dd HH:mm}  安排内番（内番服 {item.SwordName}）")
             .ToList() ?? [];
 
     /// <summary>是否有内番服识别记录。</summary>

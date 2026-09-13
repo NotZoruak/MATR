@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:avaConverters="clr-namespace:Avalonia.Data.Converters;assembly=Avalonia.Base"
+             xmlns:avalonia1="clr-namespace:FluentIcons.Avalonia.Fluent;assembly=FluentIcons.Avalonia.Fluent"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="clr-namespace:MFAAvalonia.Models"
@@ -12,14 +13,14 @@
              x:Class="MFAAvalonia.Views.Pages.WorkRecordsView">
     <Grid Margin="0,0,0,8"
           RowDefinitions="*"
-          ColumnDefinitions="360,*"
+          ColumnDefinitions="320,*"
           ColumnSpacing="18"
           RowSpacing="4">
         <Grid.Styles>
             <Style Selector="TextBlock.RecordCardTitle">
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="FontWeight" Value="Bold" />
-                <Setter Property="Foreground" Value="#26354A" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
             </Style>
             <Style Selector="TextBlock.RecordSectionTitle">
                 <Setter Property="FontSize" Value="14" />
@@ -38,6 +39,15 @@
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="Foreground" Value="#586B85" />
             </Style>
+            <Style Selector="Border.RecordCardHeaderDivider">
+                <Setter Property="Height" Value="1" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="{DynamicResource SukiControlBorderBrush}" />
+            </Style>
+            <!-- 两个记录列表都只靠高亮表示选中，隐藏 ListBoxItem 模板自带的圆形对勾 -->
+            <Style Selector="ListBoxItem /template/ PathIcon#CheckSelected">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
         </Grid.Styles>
         <!-- 左侧记录卡片 -->
         <Grid RowDefinitions="*,Auto"
@@ -47,12 +57,10 @@
                     BorderThickness="1"
                     CornerRadius="12"
                     Padding="10,12">
-                <Grid RowDefinitions="Auto,*" RowSpacing="8">
+                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
                     <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
-                        <TextBlock Text="记录列表"
-                                   FontSize="15"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource SukiText}"
+                        <TextBlock Classes="RecordCardTitle"
+                                   Text="记录列表"
                                    VerticalAlignment="Center" />
                         <Button Grid.Column="1"
                                 Classes="Basic"
@@ -67,7 +75,11 @@
                                 Padding="10,4" />
                     </Grid>
 
-                    <ScrollViewer Grid.Row="1"
+                    <Border Grid.Row="1"
+                            Classes="RecordCardHeaderDivider"
+                            Margin="0,-2,0,0" />
+
+                    <ScrollViewer Grid.Row="2"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto">
                         <ListBox x:Name="LogRecordsList"
@@ -78,6 +90,14 @@
                                  BorderThickness="0"
                                  Padding="0">
                         <ListBox.Styles>
+                            <!-- 选中与悬停底色由条目模板自绘，关闭 ListBoxItem 模板自带的底色以避免内外两层；
+                                 下方已保存记录列表仍沿用模板底色，两个列表选中表现不同是有意设计 -->
+                            <Style Selector="ListBoxItem:selected /template/ Border#BorderBasicStyle">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
+                            <Style Selector="ListBoxItem:pointerover /template/ Border#BorderBasicStyle">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
                             <Style Selector="ListBoxItem Border.SelectionBackground">
                                 <Setter Property="Opacity" Value="0" />
                             </Style>
@@ -185,12 +205,10 @@
                     BorderThickness="1"
                     CornerRadius="12"
                     Padding="10,12">
-                <Grid RowDefinitions="Auto,*" RowSpacing="8">
+                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
                     <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="4">
-                        <TextBlock Text="已保存记录"
-                                   FontSize="15"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource SukiText}"
+                        <TextBlock Classes="RecordCardTitle"
+                                   Text="已保存记录"
                                    VerticalAlignment="Center" />
                         <Button Grid.Column="1"
                                 Classes="Basic"
@@ -216,7 +234,12 @@
                                 Content="清空"
                                 Padding="8,4" />
                     </Grid>
-                    <ScrollViewer Grid.Row="1"
+
+                    <Border Grid.Row="1"
+                            Classes="RecordCardHeaderDivider"
+                            Margin="0,-2,0,0" />
+
+                    <ScrollViewer Grid.Row="2"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto">
                         <ListBox x:Name="SavedRecordsList"
@@ -277,67 +300,98 @@
                         IsVisible="{Binding SelectedRecord, Converter={x:Static avaConverters:ObjectConverters.IsNotNull}}"
                         Padding="18,16">
                     <StackPanel Spacing="16">
-                        <TextBlock Classes="RecordCardTitle" Text="任务概况" />
-                        <Grid ColumnDefinitions="*,Auto,Auto"
-                              ColumnSpacing="12">
-                            <TextBlock Text="{Binding SelectedRecord.TaskName}"
-                                       FontSize="15"
-                                       FontWeight="SemiBold"
-                                       Foreground="#344054"
-                                       TextTrimming="CharacterEllipsis" />
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding SelectedConfigSourceText}"
-                                       FontSize="12"
-                                       Foreground="#7B8798"
-                                       VerticalAlignment="Center"
-                                       TextTrimming="CharacterEllipsis"
-                                       IsVisible="{Binding SelectedConfigSourceText, Converter={x:Static avaConverters:StringConverters.IsNotNullOrEmpty}}" />
-                            <Border Grid.Column="2"
-                                    Background="{Binding SelectedRecord.StatusBackground}"
-                                    CornerRadius="5"
-                                    Padding="8,3">
-                                <Border.IsVisible>
-                                    <Binding Path="ShowSelectedStatus" />
-                                </Border.IsVisible>
-                                <TextBlock Text="{Binding SelectedRecord.DisplayStatus}"
-                                           FontSize="12"
-                                           Foreground="{Binding SelectedRecord.StatusForeground}" />
-                            </Border>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Classes="RecordCardTitle"
+                                       Text="任务概况"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="BasicTight"
+                                    Command="{Binding ToggleTaskSummaryCommand}"
+                                    Foreground="{DynamicResource SukiPrimaryColor}"
+                                    CornerRadius="4"
+                                    ClipToBounds="False"
+                                    Padding="0"
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                                <Grid>
+                                    <avalonia1:FluentIcon Icon="ChevronUp"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding IsTaskSummaryExpanded}" />
+                                    <avalonia1:FluentIcon Icon="ChevronDown"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding !IsTaskSummaryExpanded}" />
+                                </Grid>
+                            </Button>
                         </Grid>
-                        <TextBlock Text="{Binding SelectedTimeText}"
-                                   FontSize="14"
-                                   Foreground="#7B8798" />
-                        <WrapPanel Margin="0,3,0,0"
-                                   HorizontalAlignment="Stretch">
-                            <TextBlock Text="{Binding SelectedRecord.SortieCount, StringFormat=出阵次数：{0}}"
+                        <StackPanel Spacing="16"
+                                    IsVisible="{Binding IsTaskSummaryExpanded}">
+                            <Border Classes="RecordCardHeaderDivider"
+                                    Margin="0,-8,0,0" />
+                            <Grid ColumnDefinitions="*,Auto,Auto"
+                                  ColumnSpacing="12">
+                                <TextBlock Text="{Binding SelectedRecord.TaskName}"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="#344054"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding SelectedConfigSourceText}"
+                                           FontSize="12"
+                                           Foreground="#7B8798"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"
+                                           IsVisible="{Binding SelectedConfigSourceText, Converter={x:Static avaConverters:StringConverters.IsNotNullOrEmpty}}" />
+                                <Border Grid.Column="2"
+                                        Background="{Binding SelectedRecord.StatusBackground}"
+                                        CornerRadius="5"
+                                        Padding="8,3">
+                                    <Border.IsVisible>
+                                        <Binding Path="ShowSelectedStatus" />
+                                    </Border.IsVisible>
+                                    <TextBlock Text="{Binding SelectedRecord.DisplayStatus}"
+                                               FontSize="12"
+                                               Foreground="{Binding SelectedRecord.StatusForeground}" />
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="{Binding SelectedTimeText}"
                                        FontSize="14"
-                                       Foreground="#344054"
-                                       IsVisible="{Binding SelectedHasSortie}"
-                                       Margin="0,0,24,6" />
-                            <TextBlock
-                                       Text="{Binding SelectedRecord.MarchCount, StringFormat=行军次数：{0}}"
-                                       FontSize="14"
-                                       Foreground="#344054"
-                                       Margin="0,0,24,6" />
-                            <TextBlock
-                                       Text="{Binding SelectedRecord.RoundCount, StringFormat=完成圈数：{0}}"
-                                       FontSize="14"
-                                       Foreground="#344054"
-                                       IsVisible="{Binding SelectedHasRound}"
-                                       Margin="0,0,24,6" />
-                            <TextBlock
-                                       Text="{Binding SelectedRecord.FlowerBrushCount, StringFormat=刷花次数：{0}}"
-                                       FontSize="14"
-                                       Foreground="#344054"
-                                       Margin="0,0,24,6"
-                                       IsVisible="{Binding SelectedHasFlowerBrush}" />
-                            <TextBlock
-                                       Text="{Binding SelectedRecord.ReturnHomeCount, StringFormat=返回本丸：{0}}"
-                                       FontSize="14"
-                                       Foreground="#344054"
-                                       Margin="0,0,24,6"
-                                       IsVisible="{Binding SelectedHasReturnHome}" />
-                        </WrapPanel>
+                                       Foreground="#7B8798" />
+                            <WrapPanel Margin="0,3,0,0"
+                                       HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding SelectedRecord.SortieCount, StringFormat=出阵次数：{0}}"
+                                           FontSize="14"
+                                           Foreground="#344054"
+                                           IsVisible="{Binding SelectedHasSortie}"
+                                           Margin="0,0,24,6" />
+                                <TextBlock
+                                           Text="{Binding SelectedRecord.MarchCount, StringFormat=行军次数：{0}}"
+                                           FontSize="14"
+                                           Foreground="#344054"
+                                           Margin="0,0,24,6" />
+                                <TextBlock
+                                           Text="{Binding SelectedRecord.RoundCount, StringFormat=完成圈数：{0}}"
+                                           FontSize="14"
+                                           Foreground="#344054"
+                                           IsVisible="{Binding SelectedHasRound}"
+                                           Margin="0,0,24,6" />
+                                <TextBlock
+                                           Text="{Binding SelectedRecord.FlowerBrushCount, StringFormat=刷花次数：{0}}"
+                                           FontSize="14"
+                                           Foreground="#344054"
+                                           Margin="0,0,24,6"
+                                           IsVisible="{Binding SelectedHasFlowerBrush}" />
+                                <TextBlock
+                                           Text="{Binding SelectedRecord.ReturnHomeCount, StringFormat=返回本丸：{0}}"
+                                           FontSize="14"
+                                           Foreground="#344054"
+                                           Margin="0,0,24,6"
+                                           IsVisible="{Binding SelectedHasReturnHome}" />
+                            </WrapPanel>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
@@ -349,43 +403,75 @@
                         Padding="18,16"
                         IsVisible="{Binding SelectedHasOutcomes}">
                     <StackPanel Spacing="9">
-                        <TextBlock Classes="RecordCardTitle" Text="任务收获" />
-                        <StackPanel Spacing="6"
-                                    IsVisible="{Binding SelectedHasResources}">
-                            <TextBlock Classes="RecordSectionTitle" Text="资源收获" />
-                            <ItemsControl ItemsSource="{Binding SelectedResourceItems}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Classes="RecordResourceBody"
-                                                   Text="{Binding}"
-                                                   Margin="0,0,14,6" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                        <StackPanel Spacing="6"
-                                    IsVisible="{Binding SelectedHasSwordDrops}"
-                                    Margin="0,8,0,0">
-                            <TextBlock Classes="RecordSectionTitle" Text="刀剑掉落" />
-                            <ItemsControl ItemsSource="{Binding SelectedSwordDropGroups}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="pages:SwordDropGroupDisplay">
-                                        <TextBlock Classes="RecordSwordBody"
-                                                   LineHeight="24"
-                                                   TextWrapping="Wrap">
-                                            <Run Text="{Binding SwordType}"
-                                                 FontWeight="Bold" />
-                                            <Run Text="：" />
-                                            <Run Text="{Binding DropsText}" />
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Classes="RecordCardTitle"
+                                       Text="任务收获"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="BasicTight"
+                                    Command="{Binding ToggleTaskOutcomeCommand}"
+                                    Foreground="{DynamicResource SukiPrimaryColor}"
+                                    CornerRadius="4"
+                                    ClipToBounds="False"
+                                    Padding="0"
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                                <Grid>
+                                    <avalonia1:FluentIcon Icon="ChevronUp"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding IsTaskOutcomeExpanded}" />
+                                    <avalonia1:FluentIcon Icon="ChevronDown"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding !IsTaskOutcomeExpanded}" />
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <StackPanel Spacing="9"
+                                    IsVisible="{Binding IsTaskOutcomeExpanded}">
+                            <Border Classes="RecordCardHeaderDivider"
+                                    Margin="0,-4,0,0" />
+                            <StackPanel Spacing="6"
+                                        IsVisible="{Binding SelectedHasResources}">
+                                <TextBlock Classes="RecordSectionTitle" Text="资源收获" />
+                                <ItemsControl ItemsSource="{Binding SelectedResourceItems}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"
+                                                       ItemSpacing="14"
+                                                       LineSpacing="6" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Classes="RecordResourceBody"
+                                                       Text="{Binding}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <StackPanel Spacing="6"
+                                        IsVisible="{Binding SelectedHasSwordDrops}"
+                                        Margin="0,8,0,0">
+                                <TextBlock Classes="RecordSectionTitle" Text="刀剑掉落" />
+                                <ItemsControl ItemsSource="{Binding SelectedSwordDropGroups}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="pages:SwordDropGroupDisplay">
+                                            <TextBlock Classes="RecordSwordBody"
+                                                       LineHeight="24"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{Binding SwordType}"
+                                                     FontWeight="Bold" />
+                                                <Run Text="：" />
+                                                <Run Text="{Binding DropsText}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -398,18 +484,83 @@
                         Padding="18,16"
                         IsVisible="{Binding SelectedHasLogistics}">
                     <StackPanel Spacing="9">
-                        <TextBlock Classes="RecordCardTitle" Text="后勤记录" />
-                        <TextBlock Classes="RecordBody"
-                                   Text="{Binding SelectedLogisticsSummaryText}"
-                                   IsVisible="{Binding SelectedHasLogisticsSummary}"
-                                   TextWrapping="Wrap" />
-                        <StackPanel Spacing="4"
-                                    IsVisible="{Binding SelectedHasLogisticsDispatch}"
-                                    Margin="0,8,0,0">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Classes="RecordCardTitle"
+                                       Text="后勤记录"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="BasicTight"
+                                    Command="{Binding ToggleLogisticsCommand}"
+                                    Foreground="{DynamicResource SukiPrimaryColor}"
+                                    CornerRadius="4"
+                                    ClipToBounds="False"
+                                    Padding="0"
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                                <Grid>
+                                    <avalonia1:FluentIcon Icon="ChevronUp"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding IsLogisticsExpanded}" />
+                                    <avalonia1:FluentIcon Icon="ChevronDown"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding !IsLogisticsExpanded}" />
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <StackPanel Spacing="9"
+                                    IsVisible="{Binding IsLogisticsExpanded}">
+                            <Border Classes="RecordCardHeaderDivider"
+                                    Margin="0,-4,0,0" />
                             <TextBlock Classes="RecordBody"
-                                       Text="{Binding SelectedLogisticsDispatchCountText}"
-                                       IsVisible="{Binding SelectedHasLogisticsDispatch}" />
-                            <ItemsControl ItemsSource="{Binding SelectedLogisticsDispatchTexts}">
+                                       Text="{Binding SelectedLogisticsSummaryText}"
+                                       IsVisible="{Binding SelectedHasLogisticsSummary}"
+                                       TextWrapping="Wrap" />
+                            <StackPanel Spacing="4"
+                                        IsVisible="{Binding SelectedHasLogisticsDispatch}"
+                                        Margin="0,8,0,0">
+                                <TextBlock Classes="RecordBody"
+                                           Text="{Binding SelectedLogisticsDispatchCountText}"
+                                           IsVisible="{Binding SelectedHasLogisticsDispatch}" />
+                                <ItemsControl ItemsSource="{Binding SelectedLogisticsDispatchTexts}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"
+                                                       ItemSpacing="18"
+                                                       LineSpacing="8" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Classes="RecordBody"
+                                                       Text="{Binding}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <ItemsControl ItemsSource="{Binding SelectedLogisticsRepairTexts}"
+                                          IsVisible="{Binding SelectedHasLogisticsRepairs}"
+                                          Margin="0,8,0,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"
+                                                   ItemSpacing="18"
+                                                   LineSpacing="8" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Classes="RecordBody"
+                                                   Text="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ItemsControl ItemsSource="{Binding SelectedLogisticsNaibanOutfitTexts}"
+                                          IsVisible="{Binding SelectedHasLogisticsNaibanOutfits}"
+                                          Margin="0,8,0,0">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel Orientation="Horizontal"
@@ -425,40 +576,6 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                        <ItemsControl ItemsSource="{Binding SelectedLogisticsRepairTexts}"
-                                      IsVisible="{Binding SelectedHasLogisticsRepairs}"
-                                      Margin="0,8,0,0">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal"
-                                               ItemSpacing="18"
-                                               LineSpacing="8" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Classes="RecordBody"
-                                               Text="{Binding}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <ItemsControl ItemsSource="{Binding SelectedLogisticsNaibanOutfitTexts}"
-                                      IsVisible="{Binding SelectedHasLogisticsNaibanOutfits}"
-                                      Margin="0,8,0,0">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal"
-                                               ItemSpacing="18"
-                                               LineSpacing="8" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Classes="RecordBody"
-                                               Text="{Binding}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
                     </StackPanel>
                 </Border>
 
@@ -470,11 +587,42 @@
                         Padding="18,16"
                         IsVisible="{Binding SelectedHasSpecialEvents}">
                     <StackPanel Spacing="8">
-                        <TextBlock Classes="RecordCardTitle" Text="特殊情况" />
-                        <TextBlock Classes="RecordBody"
-                                   Text="{Binding SelectedSpecialEventsText}"
-                                   LineHeight="23"
-                                   TextWrapping="Wrap" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBlock Classes="RecordCardTitle"
+                                       Text="特殊情况"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Classes="BasicTight"
+                                    Command="{Binding ToggleSpecialEventsCommand}"
+                                    Foreground="{DynamicResource SukiPrimaryColor}"
+                                    CornerRadius="4"
+                                    ClipToBounds="False"
+                                    Padding="0"
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                                <Grid>
+                                    <avalonia1:FluentIcon Icon="ChevronUp"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding IsSpecialEventsExpanded}" />
+                                    <avalonia1:FluentIcon Icon="ChevronDown"
+                                                          IconSize="Size16"
+                                                          IsVisible="{Binding !IsSpecialEventsExpanded}" />
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <StackPanel Spacing="8"
+                                    IsVisible="{Binding IsSpecialEventsExpanded}">
+                            <Border Classes="RecordCardHeaderDivider"
+                                    Margin="0,-3,0,0" />
+                            <TextBlock Classes="RecordBody"
+                                       Text="{Binding SelectedSpecialEventsText}"
+                                       LineHeight="23"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </StackPanel>

@@ -85,11 +85,17 @@ public sealed class WorkRecord
 
     /// <summary>列表行文本：08-18 12:00—13:27 地下城 (中断)</summary>
     public string ListLine =>
-        $"{StartTime:MM-dd HH:mm}—{EndTime:HH:mm}  {TaskName}" +
+        $"{StartTime:MM-dd HH:mm}—{EndTimeText}  {TaskName}" +
         (DisplayStatus == "结束" ? "" : $" ({DisplayStatus})");
 
+    /// <summary>结束时间文本：与开始时间同日时只显示时分，跨天时补上月日。</summary>
+    public string EndTimeText =>
+        EndTime != default && EndTime.Date != StartTime.Date
+            ? EndTime.ToString("MM-dd HH:mm")
+            : EndTime.ToString("HH:mm");
+
     /// <summary>记录列表中的时间文本</summary>
-    public string ListTimeText => $"{StartTime:MM-dd HH:mm}–{EndTime:HH:mm} · {DurationText}";
+    public string ListTimeText => $"{StartTime:MM-dd HH:mm}–{EndTimeText} · {DurationText}";
 
     /// <summary>耗时文本：1 小时 27 分 / 35 分钟</summary>
     public string DurationText =>
