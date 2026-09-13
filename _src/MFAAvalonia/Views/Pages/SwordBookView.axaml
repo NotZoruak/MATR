@@ -27,11 +27,20 @@
             <Setter Property="Foreground" Value="{DynamicResource SukiPrimaryColor}" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
-        <Style Selector="ComboBox.book-filter.active">
+        <!-- ComboBox 的可见边框画在模板内部的 GlassCard 上，只设置控件自身的 BorderBrush 不会反映到界面 -->
+        <Style Selector="ComboBox.book-filter.active /template/ suki|GlassCard#border">
             <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor}" />
         </Style>
         <Style Selector="ToggleButton.book-filter.active">
             <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor}" />
+        </Style>
+        <!-- 刀种筛选的展开状态与是否已选条件无关，展开时保持按钮本身的外观，避免整块变成主题色填充 -->
+        <Style Selector="ToggleButton.book-filter:checked">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+        </Style>
+        <Style Selector="ToggleButton.book-filter:pointerover:checked">
+            <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="Path.filter-arrow">
             <Setter Property="Fill" Value="{DynamicResource SukiText}" />
