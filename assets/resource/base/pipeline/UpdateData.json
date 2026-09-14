@@ -64,8 +64,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["UD_IsHome1", "UD_DetectWhereAmI"],
@@ -94,8 +94,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["UD_IsHome2", "UD_DetectWhereAmI"],
@@ -124,8 +124,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["UD_IsHome3", "UD_DetectWhereAmI"],
@@ -183,12 +183,12 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["UD_ReturnHome"],
-    "on_error": ["UD_ReturnHomeLowerX"],
     "post_wait_freezes": {
       "time": 300,
       "target": [1234, 9, 37, 38]
-    }
+    },
+    "next": ["UD_ReturnHome"],
+    "on_error": ["UD_ReturnHomeLowerX"]
   },
   "UD_ReturnHomeLowerX": {
     "recognition": {
@@ -202,12 +202,12 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["UD_ReturnHome"],
-    "on_error": ["UD_ReturnHomeUpperX"],
     "post_wait_freezes": {
       "time": 300,
       "target": [1234, 9, 37, 38]
-    }
+    },
+    "next": ["UD_ReturnHome"],
+    "on_error": ["UD_ReturnHomeUpperX"]
   },
   "UD_ReturnHomeUpperX": {
     "recognition": {
@@ -221,12 +221,12 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["UD_ReturnHome"],
-    "on_error": ["UD_ReturnHomeDone"],
     "post_wait_freezes": {
       "time": 300,
       "target": [1234, 9, 37, 38]
-    }
+    },
+    "next": ["UD_ReturnHome"],
+    "on_error": ["UD_ReturnHomeDone"]
   },
   "UD_ReturnHomeDone": {
     "next": ["UD_IsHomeAfterDirectory", "UD_ClickDirectoryTop", "UD_VerifyMenuDirectory"],
@@ -244,11 +244,11 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["UD_VerifyMenuDirectory", "UD_ReturnHomeDone"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1183, 18, 87, 40]
-    }
+    },
+    "next": ["UD_VerifyMenuDirectory", "UD_ReturnHomeDone"]
   },
   "UD_VerifyMenuDirectory": {
     "recognition": {
@@ -266,11 +266,11 @@
         "target": [1037, 169, 110, 44]
       }
     },
-    "next": ["UD_IsHomeAfterDirectory", "UD_ReturnHomeDone"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1037, 169, 110, 44]
-    }
+    },
+    "next": ["UD_IsHomeAfterDirectory", "UD_ReturnHomeDone"]
   },
   "UD_IsHomeAfterDirectory": {
     "recognition": {
@@ -323,8 +323,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["UD_SB_IsHome", "UD_SwordBookDetectWhereAmI"],
@@ -391,8 +391,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [140, 98, 4, 5],
-        "upper": [178, 33, 32],
-        "lower": [178, 33, 32]
+        "lower": [178, 33, 32],
+        "upper": [178, 33, 32]
       }
     },
     "next": ["UD_SB_ClickSwordBook"],
@@ -415,12 +415,12 @@
         "target": [140, 98, 4, 5]
       }
     },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"],
     "post_wait_freezes": {
       "time": 300,
       "target": [140, 98, 4, 5]
-    }
+    },
+    "next": ["UD_SwordBookDetectWhereAmI"],
+    "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_IsSerial": {
     "recognition": {
@@ -453,11 +453,11 @@
         "target": [134, 5, 36, 38]
       }
     },
-    "next": ["UD_CloseSwordBook2"],
     "post_wait_freezes": {
       "time": 300,
       "target": [134, 5, 36, 38]
-    }
+    },
+    "next": ["UD_CloseSwordBook2"]
   },
   "UD_CloseSwordBook2": {
     "action": {
@@ -507,9 +507,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200},
     "next": ["UD_SB_IsAnnouncementPopup", "UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"],
-    "post_wait_freezes": {"time": 200}
+    "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_IsAdvertisementPopup": {
     "recognition": {
@@ -554,12 +554,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["UD_SB_LoginRewardClick2"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["UD_SB_LoginRewardClick2"],
+    "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_LoginRewardClick2": {
     "action": {
@@ -568,12 +568,12 @@
         "target": [1092, 318, 1, 1]
       }
     },
-    "next": ["UD_SB_LoginRewardClick3"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["UD_SB_LoginRewardClick3"],
+    "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_LoginRewardClick3": {
     "action": {
@@ -768,9 +768,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200},
     "next": ["UD_IsAnnouncementPopup", "UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 200}
+    "on_error": ["UD_DetectWhereAmI"]
   },
   "UD_IsAdvertisementPopup": {
     "recognition": {
@@ -845,7 +845,9 @@
     },
     "action": {
       "type": "Click",
-      "param": {"target": [63, 28, 17, 17]}
+      "param": {
+        "target": [63, 28, 17, 17]
+      }
     },
     "next": ["UD_DetectWhereAmI"],
     "on_error": ["UD_DetectWhereAmI"]
@@ -875,23 +877,33 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    },
     "next": ["UD_LoginRewardClick2"],
-    "on_error": ["UD_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 200, "target": [240, 104, 803, 561]}
+    "on_error": ["UD_DetectWhereAmI"]
   },
   "UD_LoginRewardClick2": {
     "action": {
       "type": "Click",
-      "param": {"target": [1092, 318, 1, 1]}
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
     },
     "next": ["UD_LoginRewardClick3"],
-    "on_error": ["UD_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 200, "target": [240, 104, 803, 561]}
+    "on_error": ["UD_DetectWhereAmI"]
   },
   "UD_LoginRewardClick3": {
     "action": {
       "type": "Click",
-      "param": {"target": [1092, 318, 1, 1]}
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
     },
     "timeout": 3000,
     "next": ["UD_IsLoginReward"],
@@ -942,11 +954,16 @@
   "UD_IsInGameUpdatePopup": {
     "recognition": {
       "type": "OCR",
-      "param": {"roi": [498, 291, 77, 50], "expected": "更新"}
+      "param": {
+        "roi": [498, 291, 77, 50],
+        "expected": "更新"
+      }
     },
     "action": {
       "type": "Click",
-      "param": {"target": [578, 440, 130, 55]}
+      "param": {
+        "target": [578, 440, 130, 55]
+      }
     },
     "next": ["UD_DetectWhereAmI"],
     "on_error": ["UD_DetectWhereAmI"]

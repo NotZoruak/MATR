@@ -20,8 +20,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["NM_DetectHome", "NM_DetectWhereAmI"]
@@ -67,8 +67,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [5, 295, 28, 15],
-        "upper": [26, 87, 183],
-        "lower": [20, 81, 177]
+        "lower": [20, 81, 177],
+        "upper": [26, 87, 183]
       }
     },
     "action": {"type": "Click"},
@@ -90,8 +90,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [132, 93, 20, 20],
-        "upper": [255, 255, 255],
         "lower": [255, 255, 255],
+        "upper": [255, 255, 255],
         "count": 400
       }
     },
@@ -103,8 +103,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [137, 106, 2, 4],
-        "upper": [181, 36, 35],
-        "lower": [175, 30, 29]
+        "lower": [175, 30, 29],
+        "upper": [181, 36, 35]
       }
     },
     "next": ["NM_OpenFilterForMix"],
@@ -327,12 +327,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_OpenMailbox", "NM_OpenMenuForMailbox"],
-    "on_error": ["NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1179, 8, 95, 56]
-    }
+    },
+    "next": ["NM_OpenMailbox", "NM_OpenMenuForMailbox"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_OpenMailbox": {
     "recognition": {
@@ -369,11 +369,11 @@
         "target": [961, 112, 58, 26]
       }
     },
-    "next": ["NM_IsFilterForMail", "NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [961, 112, 58, 26]
-    }
+    },
+    "next": ["NM_IsFilterForMail", "NM_DetectWhereAmI"]
   },
   "NM_IsFilterForMail": {
     "recognition": {
@@ -515,23 +515,23 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_ClaimMailboxForMail", "NM_IsMailboxEmpty"],
     "post_wait_freezes": {
       "time": 200,
       "target": [603, 603, 75, 43]
-    }
+    },
+    "next": ["NM_ClaimMailboxForMail", "NM_IsMailboxEmpty"]
   },
   "NM_ClaimMailboxForMail": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [1147, 612, 19, 14],
-        "upper": [133, 173, 24],
-        "lower": [127, 167, 18]
+        "lower": [127, 167, 18],
+        "upper": [133, 173, 24]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 500,
+    "action": {"type": "Click"},
     "post_delay": 500,
     "next": ["NM_ClaimMailboxHub"]
   },
@@ -557,19 +557,19 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_ClaimMailboxHub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1234, 11, 34, 36]
-    }
+    },
+    "next": ["NM_ClaimMailboxHub"]
   },
   "NM_IsMailboxEmpty": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [1147, 612, 19, 14],
-        "upper": [154, 154, 154],
-        "lower": [148, 148, 148]
+        "lower": [148, 148, 148],
+        "upper": [154, 154, 154]
       }
     },
     "next": ["NM_EmptyMailboxHub"]
@@ -599,12 +599,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_EmptyMailboxHub"],
-    "on_error": ["NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1040, 165, 94, 48]
-    }
+    },
+    "next": ["NM_EmptyMailboxHub"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_OpenMenuAfterEmptyMailbox": {
     "recognition": {
@@ -615,29 +615,29 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_EmptyMailboxHub"],
-    "on_error": ["NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1179, 8, 95, 56]
-    }
+    },
+    "next": ["NM_EmptyMailboxHub"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_CloseEmptyMailbox": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [1248, 11, 5, 6],
-        "upper": [46, 46, 46],
-        "lower": [40, 40, 40]
+        "lower": [40, 40, 40],
+        "upper": [46, 46, 46]
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_EmptyMailboxHub"],
-    "on_error": ["NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1248, 11, 5, 6]
-    }
+    },
+    "next": ["NM_EmptyMailboxHub"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_IsMixMaterialSelection": {
     "recognition": {
@@ -654,24 +654,24 @@
       "type": "ColorMatch",
       "param": {
         "roi": [137, 106, 3, 5],
-        "upper": [181, 36, 35],
-        "lower": [175, 30, 29]
+        "lower": [175, 30, 29],
+        "upper": [181, 36, 35]
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_IsMixMaterialSelection", "NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [137, 106, 3, 5]
-    }
+    },
+    "next": ["NM_IsMixMaterialSelection", "NM_DetectWhereAmI"]
   },
   "NM_SortMixMaterialAscending": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [1001, 88, 1, 1],
-        "upper": [243, 243, 244],
-        "lower": [241, 241, 242]
+        "lower": [241, 241, 242],
+        "upper": [243, 243, 244]
       }
     },
     "action": {"type": "Click"},
@@ -693,8 +693,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1084, 137, 6, 541],
-        "upper": [46, 46, 46],
-        "lower": [40, 40, 40]
+        "lower": [40, 40, 40],
+        "upper": [46, 46, 46]
       }
     },
     "next": ["NM_HandleMixMaterialSelection"]
@@ -711,8 +711,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1173, 589, 52, 16],
-        "upper": [26, 87, 183],
-        "lower": [20, 81, 177]
+        "lower": [20, 81, 177],
+        "upper": [26, 87, 183]
       }
     },
     "action": {"type": "Click"},
@@ -725,8 +725,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [718, 626, 27, 4],
-        "upper": [133, 173, 24],
-        "lower": [127, 167, 18]
+        "lower": [127, 167, 18],
+        "upper": [133, 173, 24]
       }
     },
     "action": {"type": "Click"},
@@ -744,18 +744,18 @@
     "next": ["NM_IsMixMaterialSelection", "NM_ConfirmMixAgain"]
   },
   "NM_LeaveMixWithoutMaterial": {
+    "pre_delay": 500,
     "action": {
       "type": "Click",
       "param": {
         "target": [137, 5, 31, 35]
       }
     },
-    "pre_delay": 500,
     "post_wait_freezes": {
       "time": 100,
       "target": [137, 5, 31, 35]
     },
-    "next": ["NM_SelectMixTarget","NM_DetectWhereAmI"]
+    "next": ["NM_SelectMixTarget", "NM_DetectWhereAmI"]
   },
   "NM_IsLockedMixMaterialSelection": {
     "recognition": {
@@ -765,13 +765,13 @@
         "expected": "成果"
       }
     },
+    "pre_delay": 500,
     "action": {
       "type": "Click",
       "param": {
         "target": [1159, 461, 82, 39]
       }
     },
-    "pre_delay": 500,
     "post_delay": 300,
     "next": ["NM_ClickLockedMix", "NM_LeaveLockedMixNoMaterial"]
   },
@@ -780,38 +780,38 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1173, 589, 52, 16],
-        "upper": [26, 87, 183],
-        "lower": [20, 81, 177]
+        "lower": [20, 81, 177],
+        "upper": [26, 87, 183]
       }
     },
     "action": {"type": "Click"},
-    "next": ["NM_ConfirmLockedMix", "NM_ClickLockedMix"],
-    "on_error": ["NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1173, 589, 52, 16]
-    }
+    },
+    "next": ["NM_ConfirmLockedMix", "NM_ClickLockedMix"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_ConfirmLockedMix": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [718, 626, 27, 4],
-        "upper": [133, 173, 24],
-        "lower": [127, 167, 18]
+        "lower": [127, 167, 18],
+        "upper": [133, 173, 24]
       }
     },
     "action": {"type": "Click"},
     "next": ["NM_ConfirmLockedMixAgain"]
   },
   "NM_ConfirmLockedMixAgain": {
+    "pre_delay": 500,
     "action": {
       "type": "Click",
       "param": {
         "target": [718, 626, 27, 4]
       }
     },
-    "pre_delay": 500,
     "next": ["NM_IsLockedMixMaterialSelection", "NM_ConfirmLockedMixAgain"]
   },
   "NM_LeaveLockedMixNoMaterial": {
@@ -821,11 +821,11 @@
         "target": [139, 8, 28, 32]
       }
     },
-    "next": ["NM_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [139, 8, 28, 32]
-    }
+    },
+    "next": ["NM_DetectWhereAmI"]
   },
   "NM_LeaveFilter": {
     "recognition": {

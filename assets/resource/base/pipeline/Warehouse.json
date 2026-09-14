@@ -67,7 +67,9 @@
     },
     "action": {
       "type": "Click",
-      "param": {"target": [63, 28, 17, 17]}
+      "param": {
+        "target": [63, 28, 17, 17]
+      }
     },
     "next": ["Warehouse_Start"],
     "on_error": ["Warehouse_Start"]
@@ -83,9 +85,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200},
     "next": ["Warehouse_IsAnnouncementPopup", "Warehouse_Start"],
-    "on_error": ["Warehouse_Start"],
-    "post_wait_freezes": {"time": 200}
+    "on_error": ["Warehouse_Start"]
   },
   "Warehouse_IsTrainingLetter": {
     "recognition": {
@@ -112,18 +114,34 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    },
     "next": ["Warehouse_LoginRewardClick2"],
-    "on_error": ["Warehouse_Start"],
-    "post_wait_freezes": {"time": 200, "target": [240, 104, 803, 561]}
+    "on_error": ["Warehouse_Start"]
   },
   "Warehouse_LoginRewardClick2": {
-    "action": {"type": "Click", "param": {"target": [1092, 318, 1, 1]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    },
     "next": ["Warehouse_LoginRewardClick3"],
-    "on_error": ["Warehouse_Start"],
-    "post_wait_freezes": {"time": 200, "target": [240, 104, 803, 561]}
+    "on_error": ["Warehouse_Start"]
   },
   "Warehouse_LoginRewardClick3": {
-    "action": {"type": "Click", "param": {"target": [1092, 318, 1, 1]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
     "timeout": 3000,
     "next": ["Warehouse_IsLoginReward"],
     "on_error": ["Warehouse_Start"]
@@ -137,7 +155,12 @@
         "threshold": [0.8]
       }
     },
-    "action": {"type": "Click", "param": {"target": [1095, 103, 14, 15]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1095, 103, 14, 15]
+      }
+    },
     "next": ["Warehouse_Start"],
     "on_error": ["Warehouse_Start"]
   },
@@ -184,8 +207,19 @@
     "on_error": ["Warehouse_Start"]
   },
   "Warehouse_IsInGameUpdatePopup": {
-    "recognition": {"type": "OCR", "param": {"roi": [498, 291, 77, 50], "expected": "更新"}},
-    "action": {"type": "Click", "param": {"target": [578, 440, 130, 55]}},
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [498, 291, 77, 50],
+        "expected": "更新"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [578, 440, 130, 55]
+      }
+    },
     "next": ["Warehouse_Start"],
     "on_error": ["Warehouse_Start"]
   },
@@ -204,14 +238,36 @@
     "on_error": ["Warehouse_Start"]
   },
   "Warehouse_IsNetworkRequestTimeout": {
-    "recognition": {"type": "OCR", "param": {"roi": [524, 304, 56, 35], "expected": "网络"}},
-    "action": {"type": "Click", "param": {"target": [599, 442, 93, 55]}},
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [524, 304, 56, 35],
+        "expected": "网络"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [599, 442, 93, 55]
+      }
+    },
     "next": ["Warehouse_Start"],
     "on_error": ["Warehouse_Start"]
   },
   "Warehouse_IsConnectionInterrupted": {
-    "recognition": {"type": "OCR", "param": {"roi": [588, 274, 96, 25], "expected": "连接中断"}},
-    "action": {"type": "Click", "param": {"target": [738, 449, 100, 39]}},
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [588, 274, 96, 25],
+        "expected": "连接中断"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [738, 449, 100, 39]
+      }
+    },
     "next": ["Warehouse_Start"],
     "on_error": ["Warehouse_Start"]
   },
@@ -220,7 +276,10 @@
     "on_error": ["Warehouse_Start"]
   },
   "Warehouse_RestartGame": {
-    "action": {"type": "Custom", "custom_action": "RestartGameAction"},
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction"
+    },
     "next": ["Warehouse_Start"],
     "on_error": []
   },
@@ -236,11 +295,11 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["Warehouse_ClickForge", "Warehouse_Start"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1190, 11, 73, 53]
-    }
+    },
+    "next": ["Warehouse_ClickForge", "Warehouse_Start"]
   },
   "Warehouse_ReadCharcoal": {
     "recognition": {
@@ -362,12 +421,12 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["Warehouse_ClickPossessions"],
-    "on_error": ["Warehouse_Start"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1190, 11, 73, 53]
-    }
+    },
+    "next": ["Warehouse_ClickPossessions"],
+    "on_error": ["Warehouse_Start"]
   },
   "Warehouse_ClickPossessions": {
     "recognition": {
@@ -381,12 +440,12 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["Warehouse_IsItemList", "Warehouse_ClickPossessions"],
-    "on_error": ["Warehouse_Start"],
     "post_wait_freezes": {
       "time": 200,
       "target": [976, 632, 90, 28]
-    }
+    },
+    "next": ["Warehouse_IsItemList", "Warehouse_ClickPossessions"],
+    "on_error": ["Warehouse_Start"]
   },
   "Warehouse_IsItemList": {
     "recognition": {
@@ -418,12 +477,12 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["Warehouse_IsForgeStatus"],
-    "on_error": ["Warehouse_Start"],
     "post_wait_freezes": {
       "time": 200,
       "target": [743, 274, 83, 36]
-    }
+    },
+    "next": ["Warehouse_IsForgeStatus"],
+    "on_error": ["Warehouse_Start"]
   },
   "Warehouse_IsForgeStatus": {
     "recognition": {

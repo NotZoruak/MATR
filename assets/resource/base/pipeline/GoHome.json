@@ -35,8 +35,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [598, 543, 66, 1],
-        "upper": [96, 56, 10],
-        "lower": [88, 48, 2]
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
       }
     },
     "action": {
@@ -88,8 +88,8 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["G_IsAnnouncementPopup", "G_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 200}
+    "post_wait_freezes": {"time": 200},
+    "next": ["G_IsAnnouncementPopup", "G_DetectWhereAmI"]
   },
   "G_IsLoginReward": {
     "recognition": {
@@ -101,38 +101,38 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
-    "next": ["G_LoginRewardClick2"],
-    "on_error": ["G_DetectWhereAmI"],
+    "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["G_LoginRewardClick2"],
+    "on_error": ["G_DetectWhereAmI"]
   },
   "G_LoginRewardClick2": {
+    "pre_delay": 1000,
     "action": {
       "type": "Click",
       "param": {
         "target": [1092, 318, 1, 1]
       }
     },
-    "pre_delay": 1000,
-    "next": ["G_LoginRewardClick3"],
-    "on_error": ["G_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["G_LoginRewardClick3"],
+    "on_error": ["G_DetectWhereAmI"]
   },
   "G_LoginRewardClick3": {
+    "pre_delay": 1000,
     "action": {
       "type": "Click",
       "param": {
         "target": [1092, 318, 1, 1]
       }
     },
-    "pre_delay": 1000,
     "timeout": 3000,
     "next": ["G_IsLoginReward"],
     "on_error": ["G_DetectWhereAmI"]
@@ -157,8 +157,8 @@
         "expected": "目"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 3000,
+    "action": {"type": "Click"},
     "next": ["G_VerifyMenuDir"],
     "on_error": ["G_DetectWhereAmI"]
   },
@@ -197,12 +197,12 @@
         "target": [1173, 416, 70, 68]
       }
     },
-    "next": ["G_ConfirmReturnHome", "G_DetectWhereAmI"],
-    "on_error": ["G_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [369, 287, 546, 238]
-    }
+    },
+    "next": ["G_ConfirmReturnHome", "G_DetectWhereAmI"],
+    "on_error": ["G_DetectWhereAmI"]
   },
   "G_ConfirmReturnHome": {
     "recognition": {
@@ -218,12 +218,12 @@
         "target": [490, 469, 10, 10]
       }
     },
-    "next": ["G_DetectWhereAmI"],
-    "on_error": ["G_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 500,
       "target": [490, 469, 10, 10]
-    }
+    },
+    "next": ["G_DetectWhereAmI"],
+    "on_error": ["G_DetectWhereAmI"]
   },
   "G_IsHome": {
     "recognition": {
@@ -305,13 +305,13 @@
         "expected": "更新"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [578, 440, 130, 55]
       }
     },
-    "pre_delay": 100,
     "post_delay": 2000,
     "next": ["G_DetectWhereAmI"]
   },
@@ -325,8 +325,8 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["G_DetectWhereAmI"]
   },
   "G_LeaveTroopRecord": {
@@ -422,8 +422,8 @@
         "threshold": [0.95]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["G_DetectWhereAmI"]
   },
   "G_IsConnectionInterrupted": {

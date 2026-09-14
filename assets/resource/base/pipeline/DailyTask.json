@@ -63,8 +63,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_IsHome", "DT_DetectWhereAmI"],
@@ -88,8 +88,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_IsHome2", "DT_DetectWhereAmI"],
@@ -130,8 +130,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [598, 543, 66, 1],
-        "upper": [96, 56, 10],
-        "lower": [88, 48, 2]
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
       }
     },
     "action": {
@@ -165,8 +165,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [598, 543, 66, 1],
-        "upper": [96, 56, 10],
-        "lower": [88, 48, 2]
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
       }
     },
     "action": {
@@ -363,12 +363,12 @@
     "action": {"type": "Click"},
     "repeat": 3,
     "repeat_delay": 500,
-    "next": ["DT_IsAnnouncementPopup", "DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1056, 463, 63, 193]
-    }
+    },
+    "next": ["DT_IsAnnouncementPopup", "DT_DetectWhereAmI"],
+    "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_IsTrainingLetter": {
     "recognition": {
@@ -395,12 +395,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardClick2"],
-    "on_error": ["DT_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["DT_LoginRewardClick2"],
+    "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_LoginRewardClick2": {
     "action": {
@@ -409,12 +409,12 @@
         "target": [1092, 318, 1, 1]
       }
     },
-    "next": ["DT_LoginRewardClick3"],
-    "on_error": ["DT_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["DT_LoginRewardClick3"],
+    "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_LoginRewardClick3": {
     "action": {
@@ -534,12 +534,12 @@
         "target": [63, 28, 17, 17]
       }
     },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 500,
       "target": [577, 8, 130, 35]
-    }
+    },
+    "next": ["DT_DetectWhereAmI"],
+    "on_error": ["DT_DetectWhereAmI"]
   },
   "DT_IsConnectionInterrupted": {
     "recognition": {
@@ -604,8 +604,8 @@
     "on_error": ["DT_WarmGiftGate"]
   },
   "DT_LoginRewardHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -635,12 +635,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardHub"],
-    "on_error": ["DT_LoginRewardHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1111, 406, 65, 31]
-    }
+    },
+    "next": ["DT_LoginRewardHub"],
+    "on_error": ["DT_LoginRewardHub"]
   },
   "DT_LoginRewardAnnouncement2": {
     "recognition": {
@@ -651,12 +651,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardSignIn", "DT_LoginRewardHub"],
-    "on_error": ["DT_LoginRewardHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1195, 282, 61, 27]
-    }
+    },
+    "next": ["DT_LoginRewardSignIn", "DT_LoginRewardHub"],
+    "on_error": ["DT_LoginRewardHub"]
   },
   "DT_LoginRewardSignIn": {
     "recognition": {
@@ -667,20 +667,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardDailyAvailable", "DT_LoginRewardAlreadyClaimed"],
-    "on_error": ["DT_LoginRewardHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [498, 33, 75, 33]
-    }
+    },
+    "next": ["DT_LoginRewardDailyAvailable", "DT_LoginRewardAlreadyClaimed"],
+    "on_error": ["DT_LoginRewardHub"]
   },
   "DT_LoginRewardDailyAvailable": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [895, 576, 33, 8],
-        "upper": [234, 81, 109],
-        "lower": [228, 75, 103]
+        "lower": [228, 75, 103],
+        "upper": [234, 81, 109]
       }
     },
     "action": {"type": "Click"},
@@ -694,16 +694,12 @@
         "target": [1181, 11, 38, 35]
       }
     },
-    "next": [
-      "DT_LoginRewardAlreadyClaimedFinished",
-      "DT_LoginRewardAlreadyClaimedMenuDirectory",
-      "DT_LoginRewardAlreadyClaimedRetry"
-    ],
-    "on_error": ["DT_LoginRewardHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1181, 11, 38, 35]
-    }
+    },
+    "next": ["DT_LoginRewardAlreadyClaimedFinished", "DT_LoginRewardAlreadyClaimedMenuDirectory", "DT_LoginRewardAlreadyClaimedRetry"],
+    "on_error": ["DT_LoginRewardHub"]
   },
   "DT_LoginRewardAlreadyClaimedFinished": {
     "recognition": {
@@ -743,15 +739,11 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [1179,13,82,36]
+        "target": [1179, 13, 82, 36]
       }
     },
     "post_delay": 500,
-    "next": [
-      "DT_LoginRewardAlreadyClaimedFinished",
-      "DT_LoginRewardAlreadyClaimedMenuDirectory",
-      "DT_LoginRewardAlreadyClaimedRetry"
-    ],
+    "next": ["DT_LoginRewardAlreadyClaimedFinished", "DT_LoginRewardAlreadyClaimedMenuDirectory", "DT_LoginRewardAlreadyClaimedRetry"],
     "on_error": ["DT_LoginRewardAlreadyClaimedRetry"]
   },
   "DT_LoginRewardClosePopupHub": {
@@ -768,12 +760,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardClosePopupHub"],
-    "on_error": ["DT_LoginRewardClosePopupHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1180, 10, 42, 39]
-    }
+    },
+    "next": ["DT_LoginRewardClosePopupHub"],
+    "on_error": ["DT_LoginRewardClosePopupHub"]
   },
   "DT_LoginRewardFinished": {
     "recognition": {
@@ -845,8 +837,8 @@
     "on_error": ["DT_MixGate"]
   },
   "DT_WarmGiftHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -876,12 +868,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_WarmGiftHub"],
+    "on_error": ["DT_WarmGiftHub"]
   },
   "DT_WarmGiftClickStore": {
     "recognition": {
@@ -897,12 +889,12 @@
         "target": [1028, 267, 104, 41]
       }
     },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1028, 267, 104, 41]
-    }
+    },
+    "next": ["DT_WarmGiftHub"],
+    "on_error": ["DT_WarmGiftHub"]
   },
   "DT_WarmGiftDetectPrice": {
     "recognition": {
@@ -932,12 +924,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [510, 308, 82, 26]
-    }
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"],
+    "on_error": ["DT_WarmGiftHub"]
   },
   "DT_WarmGiftClaim2": {
     "recognition": {
@@ -948,12 +940,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1100, 307, 83, 27]
-    }
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"],
+    "on_error": ["DT_WarmGiftHub"]
   },
   "DT_WarmGiftClaim3": {
     "recognition": {
@@ -964,12 +956,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [515, 543, 84, 28]
-    }
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"],
+    "on_error": ["DT_WarmGiftHub"]
   },
   "DT_WarmGiftClaim4": {
     "recognition": {
@@ -980,12 +972,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1100, 545, 85, 29]
-    }
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"],
+    "on_error": ["DT_WarmGiftHub"]
   },
   "DT_WarmGiftFinishClaimHub": {
     "timeout": 120000,
@@ -1006,12 +998,12 @@
         "target": [593, 479, 97, 48]
       }
     },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftFinishClaimHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [593, 479, 97, 48]
-    }
+    },
+    "next": ["DT_WarmGiftHub"],
+    "on_error": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftCloseClaimPopup": {
     "action": {
@@ -1077,8 +1069,8 @@
     "on_error": ["DT_ForgeGate"]
   },
   "DT_MixHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -1110,12 +1102,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_MixHub"],
+    "on_error": ["DT_MixHub"]
   },
   "DT_MixClickEnhance": {
     "recognition": {
@@ -1126,12 +1118,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [448, 274, 94, 37]
-    }
+    },
+    "next": ["DT_MixHub"],
+    "on_error": ["DT_MixHub"]
   },
   "DT_MixSelectSword": {
     "recognition": {
@@ -1174,12 +1166,12 @@
       "type": "Custom",
       "custom_action": "MixFindAllowedMaterialAction"
     },
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixNoAllowedMaterial"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1156, 600, 91, 58]
-    }
+    },
+    "next": ["DT_MixHub"],
+    "on_error": ["DT_MixNoAllowedMaterial"]
   },
   "DT_MixNoAllowedMaterial": {
     "action": {
@@ -1265,8 +1257,8 @@
     "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -1297,12 +1289,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [741, 273, 88, 38]
-    }
+    },
+    "next": ["DT_ForgeHub"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeDetectStatus": {
     "recognition": {
@@ -1344,9 +1336,7 @@
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {
-        "message": "warn:日课 锻刀 待收取刀剑超过空余刀位，未开启刀解，跳过收刀与锻刀"
-      }
+      "custom_action_param": {"message": "warn:日课 锻刀 待收取刀剑超过空余刀位，未开启刀解，跳过收刀与锻刀"}
     },
     "next": ["DT_ForgeReturnHomeHub"],
     "on_error": ["DT_ForgeReturnHomeHub"]
@@ -1391,25 +1381,25 @@
       "type": "ColorMatch",
       "param": {
         "roi": [328, 315, 9, 12],
-        "upper": [29, 255, 255],
-        "lower": [27, 255, 255]
+        "lower": [27, 255, 255],
+        "upper": [29, 255, 255]
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeClaimCompletedHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [328, 315, 9, 12]
-    }
+    },
+    "next": ["DT_ForgeClaimCompletedHub"],
+    "on_error": ["DT_ForgeClaimCompletedHub"]
   },
   "DT_ForgeClaimIsSwordDropColor": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [598, 543, 66, 1],
-        "upper": [96, 56, 10],
-        "lower": [88, 48, 2]
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
       }
     },
     "action": {
@@ -1648,8 +1638,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [971, 144, 5, 2],
-        "upper": [3, 104, 116],
         "lower": [1, 102, 114],
+        "upper": [3, 104, 116],
         "count": 10
       }
     },
@@ -1661,8 +1651,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [939, 139, 30, 29],
-        "upper": [210, 80, 80],
         "lower": [150, 0, 0],
+        "upper": [210, 80, 80],
         "count": 20
       }
     },
@@ -1677,12 +1667,12 @@
         "target": [939, 139, 30, 29]
       }
     },
-    "next": ["DT_ForgeLimitedDetect1"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"],
     "post_wait_freezes": {
       "time": 200,
       "target": [939, 139, 30, 29]
-    }
+    },
+    "next": ["DT_ForgeLimitedDetect1"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"]
   },
   "DT_ForgeClickStart1": {
     "recognition": {
@@ -1708,7 +1698,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [454,457,58,28]
+        "target": [454, 457, 58, 28]
       }
     },
     "post_delay": 500,
@@ -1903,8 +1893,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [971, 144, 5, 2],
-        "upper": [3, 104, 116],
         "lower": [1, 102, 114],
+        "upper": [3, 104, 116],
         "count": 10
       }
     },
@@ -1916,8 +1906,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [939, 139, 30, 29],
-        "upper": [210, 80, 80],
         "lower": [150, 0, 0],
+        "upper": [210, 80, 80],
         "count": 20
       }
     },
@@ -1932,12 +1922,12 @@
         "target": [939, 139, 30, 29]
       }
     },
-    "next": ["DT_ForgeLimitedDetect2"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"],
     "post_wait_freezes": {
       "time": 200,
       "target": [939, 139, 30, 29]
-    }
+    },
+    "next": ["DT_ForgeLimitedDetect2"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"]
   },
   "DT_ForgeClickStart2": {
     "recognition": {
@@ -1963,7 +1953,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [454,457,58,28]
+        "target": [454, 457, 58, 28]
       }
     },
     "post_delay": 500,
@@ -2158,8 +2148,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [971, 144, 5, 2],
-        "upper": [3, 104, 116],
         "lower": [1, 102, 114],
+        "upper": [3, 104, 116],
         "count": 10
       }
     },
@@ -2171,8 +2161,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [939, 139, 30, 29],
-        "upper": [210, 80, 80],
         "lower": [150, 0, 0],
+        "upper": [210, 80, 80],
         "count": 20
       }
     },
@@ -2187,12 +2177,12 @@
         "target": [939, 139, 30, 29]
       }
     },
-    "next": ["DT_ForgeLimitedDetect3"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"],
     "post_wait_freezes": {
       "time": 200,
       "target": [939, 139, 30, 29]
-    }
+    },
+    "next": ["DT_ForgeLimitedDetect3"],
+    "on_error": ["DT_ForgeLimitedSelectFailed"]
   },
   "DT_ForgeClickStart3": {
     "recognition": {
@@ -2218,7 +2208,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [454,457,58,28]
+        "target": [454, 457, 58, 28]
       }
     },
     "post_delay": 500,
@@ -2326,17 +2316,17 @@
       "type": "ColorMatch",
       "param": {
         "roi": [137, 141, 4, 4],
-        "upper": [178, 27, 27],
-        "lower": [172, 21, 21]
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeDisassembleDetectSelect"],
-    "on_error": ["DT_ForgeDisassembleSelectAllowed"],
     "post_wait_freezes": {
       "time": 500,
       "target": [137, 141, 4, 4]
-    }
+    },
+    "next": ["DT_ForgeDisassembleDetectSelect"],
+    "on_error": ["DT_ForgeDisassembleSelectAllowed"]
   },
   "DT_ForgeDisassembleSelectAllowed": {
     "action": {
@@ -2352,8 +2342,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1178, 586, 53, 16],
-        "upper": [26, 87, 183],
-        "lower": [20, 81, 177]
+        "lower": [20, 81, 177],
+        "upper": [26, 87, 183]
       }
     },
     "action": {"type": "Click"},
@@ -2369,12 +2359,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeDisassembleCompleted"],
-    "on_error": ["DT_ForgeHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [735, 605, 103, 45]
-    }
+    },
+    "next": ["DT_ForgeDisassembleCompleted"],
+    "on_error": ["DT_ForgeHub"]
   },
   "DT_ForgeDisassembleCompleted": {
     "action": {
@@ -2431,8 +2421,8 @@
     "on_error": ["DT_RestartGame"]
   },
   "DT_DrillHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -2541,7 +2531,10 @@
     "on_error": ["DT_DrillOpponent2Hub"]
   },
   "DT_DrillVictoryLimitCheck1": {
-    "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
+    "recognition": {
+      "type": "Custom",
+      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
+    },
     "next": ["DT_DrillFinishThreeVictories"],
     "on_error": ["DT_DrillOpponent2Hub"]
   },
@@ -2594,12 +2587,12 @@
         "click": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle1Hub"],
+    "on_error": ["DT_DrillHub"]
   },
   "DT_DrillBattle1Hub": {
     "timeout": 120000,
@@ -2658,7 +2651,10 @@
     "on_error": ["DT_DrillOpponent3Hub"]
   },
   "DT_DrillVictoryLimitCheck2": {
-    "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
+    "recognition": {
+      "type": "Custom",
+      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
+    },
     "next": ["DT_DrillFinishThreeVictories"],
     "on_error": ["DT_DrillOpponent3Hub"]
   },
@@ -2711,12 +2707,12 @@
         "click": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle2Hub"],
+    "on_error": ["DT_DrillHub"]
   },
   "DT_DrillBattle2Hub": {
     "timeout": 120000,
@@ -2775,7 +2771,10 @@
     "on_error": ["DT_DrillOpponent4Hub"]
   },
   "DT_DrillVictoryLimitCheck3": {
-    "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
+    "recognition": {
+      "type": "Custom",
+      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
+    },
     "next": ["DT_DrillFinishThreeVictories"],
     "on_error": ["DT_DrillOpponent4Hub"]
   },
@@ -2828,12 +2827,12 @@
         "click": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle3Hub"],
+    "on_error": ["DT_DrillHub"]
   },
   "DT_DrillBattle3Hub": {
     "timeout": 120000,
@@ -2892,7 +2891,10 @@
     "on_error": ["DT_DrillOpponent5Hub"]
   },
   "DT_DrillVictoryLimitCheck4": {
-    "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
+    "recognition": {
+      "type": "Custom",
+      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
+    },
     "next": ["DT_DrillFinishThreeVictories"],
     "on_error": ["DT_DrillOpponent5Hub"]
   },
@@ -2945,12 +2947,12 @@
         "click": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle4Hub"],
+    "on_error": ["DT_DrillHub"]
   },
   "DT_DrillBattle4Hub": {
     "timeout": 120000,
@@ -3009,7 +3011,10 @@
     "on_error": ["DT_DrillFinishFive"]
   },
   "DT_DrillVictoryLimitCheck5": {
-    "recognition": {"type": "Custom", "param": {"custom_recognition": "DrillVictoryLimitRecognition"}},
+    "recognition": {
+      "type": "Custom",
+      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
+    },
     "next": ["DT_DrillFinishThreeVictories"],
     "on_error": ["DT_DrillFinishFive"]
   },
@@ -3062,12 +3067,12 @@
         "click": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle5Hub"],
+    "on_error": ["DT_DrillHub"]
   },
   "DT_DrillBattle5Hub": {
     "timeout": 120000,
@@ -3113,11 +3118,11 @@
         "target": [154, 93, 1, 1]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 300,
     "post_delay": 500,
     "next": ["DT_DrillClickTeamAgain1"],
-    "on_error": ["DT_DrillBattle1Hub"],
-    "repeat": 2,
-    "repeat_delay": 300
+    "on_error": ["DT_DrillBattle1Hub"]
   },
   "DT_DrillClickTeamAgain1": {
     "action": {
@@ -3126,10 +3131,10 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["DT_DrillIsImmediateSortie1"],
-    "on_error": ["DT_DrillBattle1Hub"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["DT_DrillIsImmediateSortie1"],
+    "on_error": ["DT_DrillBattle1Hub"]
   },
   "DT_DrillIsImmediateSortie1": {
     "recognition": {
@@ -3145,12 +3150,12 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 584, 96, 47]
-    }
+    },
+    "next": ["DT_DrillBattle1Hub"],
+    "on_error": ["DT_DrillBattle1Hub"]
   },
   "DT_DrillIsFormationSelect1": {
     "recognition": {
@@ -3233,12 +3238,12 @@
         "target": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle1Hub"],
+    "on_error": ["DT_DrillBattle1Hub"]
   },
   "DT_DrillOpponentSelectComplete1": {
     "recognition": {
@@ -3282,11 +3287,11 @@
         "target": [154, 93, 1, 1]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 300,
     "post_delay": 500,
     "next": ["DT_DrillClickTeamAgain2"],
-    "on_error": ["DT_DrillBattle2Hub"],
-    "repeat": 2,
-    "repeat_delay": 300
+    "on_error": ["DT_DrillBattle2Hub"]
   },
   "DT_DrillClickTeamAgain2": {
     "action": {
@@ -3295,10 +3300,10 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["DT_DrillIsImmediateSortie2"],
-    "on_error": ["DT_DrillBattle2Hub"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["DT_DrillIsImmediateSortie2"],
+    "on_error": ["DT_DrillBattle2Hub"]
   },
   "DT_DrillIsImmediateSortie2": {
     "recognition": {
@@ -3314,12 +3319,12 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 584, 96, 47]
-    }
+    },
+    "next": ["DT_DrillBattle2Hub"],
+    "on_error": ["DT_DrillBattle2Hub"]
   },
   "DT_DrillIsFormationSelect2": {
     "recognition": {
@@ -3402,12 +3407,12 @@
         "target": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle2Hub"],
+    "on_error": ["DT_DrillBattle2Hub"]
   },
   "DT_DrillOpponentSelectComplete2": {
     "recognition": {
@@ -3451,11 +3456,11 @@
         "target": [154, 93, 1, 1]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 300,
     "post_delay": 500,
     "next": ["DT_DrillClickTeamAgain3"],
-    "on_error": ["DT_DrillBattle3Hub"],
-    "repeat": 2,
-    "repeat_delay": 300
+    "on_error": ["DT_DrillBattle3Hub"]
   },
   "DT_DrillClickTeamAgain3": {
     "action": {
@@ -3464,10 +3469,10 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["DT_DrillIsImmediateSortie3"],
-    "on_error": ["DT_DrillBattle3Hub"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["DT_DrillIsImmediateSortie3"],
+    "on_error": ["DT_DrillBattle3Hub"]
   },
   "DT_DrillIsImmediateSortie3": {
     "recognition": {
@@ -3483,12 +3488,12 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 584, 96, 47]
-    }
+    },
+    "next": ["DT_DrillBattle3Hub"],
+    "on_error": ["DT_DrillBattle3Hub"]
   },
   "DT_DrillIsFormationSelect3": {
     "recognition": {
@@ -3571,12 +3576,12 @@
         "target": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle3Hub"],
+    "on_error": ["DT_DrillBattle3Hub"]
   },
   "DT_DrillOpponentSelectComplete3": {
     "recognition": {
@@ -3620,11 +3625,11 @@
         "target": [154, 93, 1, 1]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 300,
     "post_delay": 500,
     "next": ["DT_DrillClickTeamAgain4"],
-    "on_error": ["DT_DrillBattle4Hub"],
-    "repeat": 2,
-    "repeat_delay": 300
+    "on_error": ["DT_DrillBattle4Hub"]
   },
   "DT_DrillClickTeamAgain4": {
     "action": {
@@ -3633,10 +3638,10 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["DT_DrillIsImmediateSortie4"],
-    "on_error": ["DT_DrillBattle4Hub"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["DT_DrillIsImmediateSortie4"],
+    "on_error": ["DT_DrillBattle4Hub"]
   },
   "DT_DrillIsImmediateSortie4": {
     "recognition": {
@@ -3652,12 +3657,12 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 584, 96, 47]
-    }
+    },
+    "next": ["DT_DrillBattle4Hub"],
+    "on_error": ["DT_DrillBattle4Hub"]
   },
   "DT_DrillIsFormationSelect4": {
     "recognition": {
@@ -3740,12 +3745,12 @@
         "target": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle4Hub"],
+    "on_error": ["DT_DrillBattle4Hub"]
   },
   "DT_DrillOpponentSelectComplete4": {
     "recognition": {
@@ -3789,11 +3794,11 @@
         "target": [154, 93, 1, 1]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 300,
     "post_delay": 500,
     "next": ["DT_DrillClickTeamAgain5"],
-    "on_error": ["DT_DrillBattle5Hub"],
-    "repeat": 2,
-    "repeat_delay": 300
+    "on_error": ["DT_DrillBattle5Hub"]
   },
   "DT_DrillClickTeamAgain5": {
     "action": {
@@ -3802,10 +3807,10 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["DT_DrillIsImmediateSortie5"],
-    "on_error": ["DT_DrillBattle5Hub"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["DT_DrillIsImmediateSortie5"],
+    "on_error": ["DT_DrillBattle5Hub"]
   },
   "DT_DrillIsImmediateSortie5": {
     "recognition": {
@@ -3821,12 +3826,12 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 584, 96, 47]
-    }
+    },
+    "next": ["DT_DrillBattle5Hub"],
+    "on_error": ["DT_DrillBattle5Hub"]
   },
   "DT_DrillIsFormationSelect5": {
     "recognition": {
@@ -3909,12 +3914,12 @@
         "target": [1146, 581, 109, 92]
       }
     },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [1146, 581, 109, 92]
-    }
+    },
+    "next": ["DT_DrillBattle5Hub"],
+    "on_error": ["DT_DrillBattle5Hub"]
   },
   "DT_DrillOpponentSelectComplete5": {
     "recognition": {
@@ -3951,8 +3956,8 @@
     "on_error": ["DT_RestartGame"]
   },
   "DT_KebiHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "DT_KebiIsMarching",
       "DT_KebiIsBattleResultExp",
@@ -4012,9 +4017,9 @@
         "target": [1206, 642, 1, 1]
       }
     },
+    "post_wait_freezes": {"time": 100},
     "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["DT_KebiHub"]
   },
   "DT_KebiIsPastRegionSelect": {
     "recognition": {
@@ -4057,9 +4062,9 @@
         "target": [173, 365, 97, 96]
       }
     },
+    "post_wait_freezes": {"time": 100},
     "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["DT_KebiHub"]
   },
   "DT_KebiIsTeamSelect": {
     "recognition": {
@@ -4079,10 +4084,10 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["DT_KebiIsImmediateSortie"],
-    "on_error": ["DT_KebiHub"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["DT_KebiIsImmediateSortie"],
+    "on_error": ["DT_KebiHub"]
   },
   "DT_KebiIsImmediateSortie": {
     "recognition": {
@@ -4098,12 +4103,12 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 584, 96, 47]
-    }
+    },
+    "next": ["DT_KebiHub"],
+    "on_error": ["DT_KebiHub"]
   },
   "DT_KebiIsFormationSelect": {
     "enabled": false,
@@ -4246,12 +4251,12 @@
         "target": [1173, 416, 70, 68]
       }
     },
-    "next": ["DT_KebiConfirmReturnHome", "DT_KebiPrepareFinishHub"],
-    "on_error": ["DT_KebiPrepareFinishHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [369, 287, 546, 238]
-    }
+    },
+    "next": ["DT_KebiConfirmReturnHome", "DT_KebiPrepareFinishHub"],
+    "on_error": ["DT_KebiPrepareFinishHub"]
   },
   "DT_KebiConfirmReturnHome": {
     "recognition": {
@@ -4267,12 +4272,12 @@
         "target": [490, 469, 10, 10]
       }
     },
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiPrepareFinishHub"],
     "post_wait_freezes": {
       "time": 500,
       "target": [490, 469, 10, 10]
-    }
+    },
+    "next": ["DT_KebiReturnHomeHub"],
+    "on_error": ["DT_KebiPrepareFinishHub"]
   },
   "DT_KebiClickMenu": {
     "recognition": {
@@ -4283,9 +4288,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["DT_KebiHub"]
   },
   "DT_KebiIsMenuDirectory": {
     "recognition": {
@@ -4309,9 +4314,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["DT_KebiHub"]
   },
   "DT_KebiFallbackWait": {
     "action": {"type": "DoNothing"},
@@ -4325,8 +4330,8 @@
     "on_error": ["DT_RestartGame"]
   },
   "DT_RewardHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -4356,12 +4361,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardHub"],
-    "on_error": ["DT_RewardHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1197, 390, 50, 30]
-    }
+    },
+    "next": ["DT_RewardHub"],
+    "on_error": ["DT_RewardHub"]
   },
   "DT_RewardClickTask": {
     "recognition": {
@@ -4372,12 +4377,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardHub"],
-    "on_error": ["DT_RewardHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [989, 518, 66, 31]
-    }
+    },
+    "next": ["DT_RewardHub"],
+    "on_error": ["DT_RewardHub"]
   },
   "DT_RewardDetectTaskList": {
     "recognition": {
@@ -4387,13 +4392,7 @@
         "expected": "任务列表"
       }
     },
-    "next": [
-      "DT_RewardDailyGate",
-      "DT_RewardMonthlyGate",
-      "DT_RewardMainlineGate",
-      "DT_RewardActivityGate",
-      "DT_RewardTaskFinishedLog"
-    ],
+    "next": ["DT_RewardDailyGate", "DT_RewardMonthlyGate", "DT_RewardMainlineGate", "DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardDailyGate": {
@@ -4419,26 +4418,21 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1136, 570, 26, 21],
-        "upper": [214, 119, 11],
-        "lower": [208, 113, 5]
+        "lower": [208, 113, 5],
+        "upper": [214, 119, 11]
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardAfterDailyHub"],
-    "on_error": ["DT_RewardAfterDailyHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1136, 570, 26, 21]
-    }
+    },
+    "next": ["DT_RewardAfterDailyHub"],
+    "on_error": ["DT_RewardAfterDailyHub"]
   },
   "DT_RewardAfterDailyHub": {
     "timeout": 120000,
-    "next": [
-      "DT_RewardMonthlyGate",
-      "DT_RewardMainlineGate",
-      "DT_RewardActivityGate",
-      "DT_RewardTaskFinishedLog"
-    ],
+    "next": ["DT_RewardMonthlyGate", "DT_RewardMainlineGate", "DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardMonthlyGate": {
@@ -4464,25 +4458,21 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1136, 570, 26, 21],
-        "upper": [214, 119, 11],
-        "lower": [208, 113, 5]
+        "lower": [208, 113, 5],
+        "upper": [214, 119, 11]
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardAfterMonthlyHub"],
-    "on_error": ["DT_RewardAfterMonthlyHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1136, 570, 26, 21]
-    }
+    },
+    "next": ["DT_RewardAfterMonthlyHub"],
+    "on_error": ["DT_RewardAfterMonthlyHub"]
   },
   "DT_RewardAfterMonthlyHub": {
     "timeout": 120000,
-    "next": [
-      "DT_RewardMainlineGate",
-      "DT_RewardActivityGate",
-      "DT_RewardTaskFinishedLog"
-    ],
+    "next": ["DT_RewardMainlineGate", "DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
     "on_error": ["DT_RewardHub"]
   },
   "DT_RewardMainlineGate": {
@@ -4508,17 +4498,17 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1136, 570, 26, 21],
-        "upper": [214, 119, 11],
-        "lower": [208, 113, 5]
+        "lower": [208, 113, 5],
+        "upper": [214, 119, 11]
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardAfterMainlineHub"],
-    "on_error": ["DT_RewardAfterMainlineHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1136, 570, 26, 21]
-    }
+    },
+    "next": ["DT_RewardAfterMainlineHub"],
+    "on_error": ["DT_RewardAfterMainlineHub"]
   },
   "DT_RewardAfterMainlineHub": {
     "timeout": 120000,
@@ -4548,17 +4538,17 @@
       "type": "ColorMatch",
       "param": {
         "roi": [1136, 570, 26, 21],
-        "upper": [214, 119, 11],
-        "lower": [208, 113, 5]
+        "lower": [208, 113, 5],
+        "upper": [214, 119, 11]
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardTaskFinishedLog"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1136, 570, 26, 21]
-    }
+    },
+    "next": ["DT_RewardTaskFinishedLog"],
+    "on_error": ["DT_RewardTaskFinishedLog"]
   },
   "DT_RewardTaskFinishedLog": {
     "action": {
@@ -4583,12 +4573,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_RewardClosePopupHub"],
-    "on_error": ["DT_RewardClosePopupHub"],
     "post_wait_freezes": {
       "time": 300,
       "target": [1234, 11, 34, 36]
-    }
+    },
+    "next": ["DT_RewardClosePopupHub"],
+    "on_error": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardFallbackWait": {
     "action": {"type": "DoNothing"},
@@ -4596,14 +4586,14 @@
     "on_error": ["DT_RewardHub"]
   },
   "DT_MailResourceGate": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": ["DT_MailResourceHub", "DT_Finish"],
     "on_error": ["DT_RestartGame"]
   },
   "DT_MailResourceHub": {
-    "timeout": 120000,
     "enabled": false,
+    "timeout": 120000,
     "next": [
       "[JumpBack]DT_HandleExperience",
       "[JumpBack]DT_HandleSwordDrop",
@@ -4719,13 +4709,7 @@
       }
     },
     "post_delay": 200,
-    "next": [
-      "DT_MailResourceSelectFilter3",
-      "DT_MailResourceSelectFilter4",
-      "DT_MailResourceSelectFilter5",
-      "DT_MailResourceSelectFilter6",
-      "DT_MailResourceConfirmFilter"
-    ],
+    "next": ["DT_MailResourceSelectFilter3", "DT_MailResourceSelectFilter4", "DT_MailResourceSelectFilter5", "DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
     "on_error": ["DT_MailResourceHub"]
   },
   "DT_MailResourceSelectFilter3": {
@@ -4737,12 +4721,7 @@
       }
     },
     "post_delay": 200,
-    "next": [
-      "DT_MailResourceSelectFilter4",
-      "DT_MailResourceSelectFilter5",
-      "DT_MailResourceSelectFilter6",
-      "DT_MailResourceConfirmFilter"
-    ],
+    "next": ["DT_MailResourceSelectFilter4", "DT_MailResourceSelectFilter5", "DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
     "on_error": ["DT_MailResourceHub"]
   },
   "DT_MailResourceSelectFilter4": {
@@ -4754,11 +4733,7 @@
       }
     },
     "post_delay": 200,
-    "next": [
-      "DT_MailResourceSelectFilter5",
-      "DT_MailResourceSelectFilter6",
-      "DT_MailResourceConfirmFilter"
-    ],
+    "next": ["DT_MailResourceSelectFilter5", "DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
     "on_error": ["DT_MailResourceHub"]
   },
   "DT_MailResourceSelectFilter5": {
@@ -4794,24 +4769,24 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MailResourceClaim","DT_MailResourceCloseMailboxHub"],
-    "on_error": ["DT_MailResourceHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [603, 603, 73, 46]
-    }
+    },
+    "next": ["DT_MailResourceClaim", "DT_MailResourceCloseMailboxHub"],
+    "on_error": ["DT_MailResourceHub"]
   },
   "DT_MailResourceClaim": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [1147, 612, 19, 14],
-        "upper": [133, 173, 24],
-        "lower": [127, 167, 18]
+        "lower": [127, 167, 18],
+        "upper": [133, 173, 24]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 500,
+    "action": {"type": "Click"},
     "post_delay": 500,
     "next": ["DT_MailResourceCloseMailboxHub"],
     "on_error": ["DT_MailResourceCloseMailboxHub"]
@@ -4829,12 +4804,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MailResourceCloseMailboxHub"],
-    "on_error": ["DT_MailResourceCloseMailboxHub"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1234, 11, 34, 36]
-    }
+    },
+    "next": ["DT_MailResourceCloseMailboxHub"],
+    "on_error": ["DT_MailResourceCloseMailboxHub"]
   },
   "DT_MailResourceFinishedLog": {
     "action": {
@@ -4863,12 +4838,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_LoginRewardReturnHomeHub"],
+    "on_error": ["DT_LoginRewardReturnHomeHub"]
   },
   "DT_LoginRewardReturnHomeClickHome": {
     "recognition": {
@@ -4879,20 +4854,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1037, 166, 101, 47]
-    }
+    },
+    "next": ["DT_LoginRewardReturnHomeHub"],
+    "on_error": ["DT_LoginRewardReturnHomeHub"]
   },
   "DT_LoginRewardReturnHomeCheckBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_LoginRewardReturnHomeIsHome"],
@@ -4918,12 +4893,12 @@
         "target": [180, 11, 25, 28]
       }
     },
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [180, 11, 25, 28]
-    }
+    },
+    "next": ["DT_LoginRewardReturnHomeHub"],
+    "on_error": ["DT_LoginRewardReturnHomeHub"]
   },
   "DT_WarmGiftReturnHomeHub": {
     "timeout": 120000,
@@ -4938,12 +4913,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_WarmGiftReturnHomeHub"],
+    "on_error": ["DT_WarmGiftReturnHomeHub"]
   },
   "DT_WarmGiftReturnHomeClickHome": {
     "recognition": {
@@ -4954,20 +4929,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1037, 166, 101, 47]
-    }
+    },
+    "next": ["DT_WarmGiftReturnHomeHub"],
+    "on_error": ["DT_WarmGiftReturnHomeHub"]
   },
   "DT_WarmGiftReturnHomeCheckBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_WarmGiftReturnHomeIsHome"],
@@ -4993,12 +4968,12 @@
         "target": [180, 11, 25, 28]
       }
     },
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [180, 11, 25, 28]
-    }
+    },
+    "next": ["DT_WarmGiftReturnHomeHub"],
+    "on_error": ["DT_WarmGiftReturnHomeHub"]
   },
   "DT_MixReturnHomeHub": {
     "timeout": 120000,
@@ -5013,12 +4988,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_MixReturnHomeHub"],
+    "on_error": ["DT_MixReturnHomeHub"]
   },
   "DT_MixReturnHomeClickHome": {
     "recognition": {
@@ -5029,20 +5004,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1037, 166, 101, 47]
-    }
+    },
+    "next": ["DT_MixReturnHomeHub"],
+    "on_error": ["DT_MixReturnHomeHub"]
   },
   "DT_MixReturnHomeCheckBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_MixReturnHomeIsHome"],
@@ -5068,12 +5043,12 @@
         "target": [180, 11, 25, 28]
       }
     },
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [180, 11, 25, 28]
-    }
+    },
+    "next": ["DT_MixReturnHomeHub"],
+    "on_error": ["DT_MixReturnHomeHub"]
   },
   "DT_ForgeReturnHomeHub": {
     "timeout": 120000,
@@ -5088,12 +5063,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_ForgeReturnHomeHub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeReturnHomeClickHome": {
     "recognition": {
@@ -5104,20 +5079,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1037, 166, 101, 47]
-    }
+    },
+    "next": ["DT_ForgeReturnHomeHub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_ForgeReturnHomeCheckBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_ForgeReturnHomeIsHome"],
@@ -5143,12 +5118,12 @@
         "target": [180, 11, 25, 28]
       }
     },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [180, 11, 25, 28]
-    }
+    },
+    "next": ["DT_ForgeReturnHomeHub"],
+    "on_error": ["DT_ForgeReturnHomeHub"]
   },
   "DT_DrillReturnHomeHub": {
     "timeout": 120000,
@@ -5163,12 +5138,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_DrillReturnHomeHub"],
+    "on_error": ["DT_DrillReturnHomeHub"]
   },
   "DT_DrillReturnHomeClickHome": {
     "recognition": {
@@ -5179,20 +5154,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1037, 166, 101, 47]
-    }
+    },
+    "next": ["DT_DrillReturnHomeHub"],
+    "on_error": ["DT_DrillReturnHomeHub"]
   },
   "DT_DrillReturnHomeCheckBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_DrillReturnHomeIsHome"],
@@ -5218,12 +5193,12 @@
         "target": [180, 11, 25, 28]
       }
     },
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [180, 11, 25, 28]
-    }
+    },
+    "next": ["DT_DrillReturnHomeHub"],
+    "on_error": ["DT_DrillReturnHomeHub"]
   },
   "DT_KebiReturnHomeHub": {
     "timeout": 120000,
@@ -5238,12 +5213,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1186, 19, 38, 36]
-    }
+    },
+    "next": ["DT_KebiReturnHomeHub"],
+    "on_error": ["DT_KebiReturnHomeHub"]
   },
   "DT_KebiReturnHomeClickHome": {
     "recognition": {
@@ -5254,20 +5229,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [1037, 166, 101, 47]
-    }
+    },
+    "next": ["DT_KebiReturnHomeHub"],
+    "on_error": ["DT_KebiReturnHomeHub"]
   },
   "DT_KebiReturnHomeCheckBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["DT_KebiReturnHomeIsHome"],
@@ -5293,12 +5268,12 @@
         "target": [180, 11, 25, 28]
       }
     },
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiReturnHomeHub"],
     "post_wait_freezes": {
       "time": 200,
       "target": [180, 11, 25, 28]
-    }
+    },
+    "next": ["DT_KebiReturnHomeHub"],
+    "on_error": ["DT_KebiReturnHomeHub"]
   },
   "DT_WaitRefresh": {
     "recognition": {
