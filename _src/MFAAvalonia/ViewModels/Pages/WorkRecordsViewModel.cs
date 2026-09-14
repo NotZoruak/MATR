@@ -532,10 +532,12 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>是否有修刀记录。</summary>
     public bool SelectedHasLogisticsRepairs => SelectedLogisticsRepairTexts.Count > 0;
 
-    /// <summary>内番派遣与内番服结果合并显示，紧跟派遣远征组之后显示。</summary>
+    /// <summary>内番派遣与内番服结果合并显示，紧跟派遣远征组之后显示；未识别到立绘时同样留一条。</summary>
     public IReadOnlyList<string> SelectedLogisticsNaibanOutfitTexts =>
         SelectedRecord?.LogisticsNaibanOutfits
-            .Select(item => $"{item.Time:MM-dd HH:mm}  安排内番（内番服 {item.SwordName}）")
+            .Select(item => string.IsNullOrWhiteSpace(item.SwordName)
+                ? $"{item.Time:MM-dd HH:mm}  安排内番（未显示内番服立绘）"
+                : $"{item.Time:MM-dd HH:mm}  安排内番（内番服 {item.SwordName}）")
             .ToList() ?? [];
 
     /// <summary>是否有内番服识别记录。</summary>

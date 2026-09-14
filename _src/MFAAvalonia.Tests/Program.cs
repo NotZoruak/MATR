@@ -485,6 +485,20 @@ AssertTrue(naibanFailureState.TryFinishMissingOutfit(),
 naibanFailureState.Begin();
 AssertTrue(naibanFailureState.FailedReadings.Count == 0,
     "新一轮内番服识别应清空上一轮的失败名条");
+
+// 内番服立绘没识别到时，工作记录里也必须留下内番痕迹
+var naibanMissingOutfitRecords = WorkRecordBuilder.Build([
+    new LogEntry(DateTime.Now, "INF", "名称=[后勤] 入口=[Expedition]"),
+    new LogEntry(DateTime.Now.AddSeconds(1), "INF", "开始任务：后勤"),
+    new LogEntry(DateTime.Now.AddSeconds(5), "INF", "[后勤] 安排内番"),
+    new LogEntry(DateTime.Now.AddSeconds(12), "INF", "[后勤] 未显示内番服立绘"),
+    new LogEntry(DateTime.Now.AddSeconds(20), "INF", "停止前状态：SUCCEEDED"),
+]);
+AssertTrue(naibanMissingOutfitRecords.Count == 1,
+    "安排过内番的后勤任务必须生成工作记录");
+AssertTrue(naibanMissingOutfitRecords[0].LogisticsNaibanOutfits.Count == 1
+    && naibanMissingOutfitRecords[0].LogisticsNaibanOutfits[0].SwordName.Length == 0,
+    "未识别到内番服立绘时后勤记录必须保留一条内番痕迹");
 var rootViewSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml.cs"));
 var rootViewMarkup = File.ReadAllText(Path.Combine(

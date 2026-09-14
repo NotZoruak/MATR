@@ -381,6 +381,14 @@ public static class WorkRecordBuilder
                     record.LogisticsNaibanOutfits.Add(new LogisticsNaibanOutfit(time, detail.Trim()));
                 }
                 break;
+            case "未显示内番服立绘":
+                // 立绘没识别到也要留痕：否则安排过内番，后勤记录里却看不到任何内番相关内容
+                if (prefix == "后勤")
+                {
+                    record.LogisticsCounts[action] = record.LogisticsCounts.GetValueOrDefault(action) + 1;
+                    record.LogisticsNaibanOutfits.Add(new LogisticsNaibanOutfit(time, string.Empty));
+                }
+                break;
             case "开始修复":
                 if (prefix == "后勤" && TryParseRepair(detail, out var repair))
                 {

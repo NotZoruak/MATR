@@ -149,7 +149,7 @@ public sealed record LogisticsDispatch(DateTime Time, string Unit, string Map);
 /// <summary>开始修复明细</summary>
 public sealed record LogisticsRepair(DateTime Time, string SwordName, int Wood, int Steel, int Coolant, int Whetstone);
 
-/// <summary>内番服识别明细</summary>
+/// <summary>内番服识别明细：SwordName 为空表示本次安排内番时没有识别到内番服立绘</summary>
 public sealed record LogisticsNaibanOutfit(DateTime Time, string SwordName);
 
 /// <summary>特殊事件（Warning 词条或中断事件）</summary>
