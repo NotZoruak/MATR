@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 常见问题 / FAQ
-    url: https://github.com/NotZoruak/MATR/blob/main/README.md#常见问题
-    about: 提交 Issue 前请先查阅 README 中的常见问题章节
+  - name: 反馈与建议 / 日志导出说明
+    url: https://github.com/NotZoruak/MATR/blob/develop/README.md#反馈与建议
+    about: 提交 Issue 前请先阅读 README 的反馈与建议章节，了解日志导出的方法
+  - name: 贡献指南
+    url: https://github.com/NotZoruak/MATR/blob/develop/CONTRIBUTING.md
+    about: 想提交代码或资源改动时，请先阅读贡献指南
