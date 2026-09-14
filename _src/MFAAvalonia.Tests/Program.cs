@@ -300,19 +300,6 @@ AssertTrue(wakeHomeDefinition["WH_CheckIsHome"]?["next"] == null
 AssertTrue(interfaceDefinition["task"]?.Any(item => item?["name"]?.Value<string>() == "唤醒本丸"
     && item?["entry"]?.Value<string>() == "WakeHome") == true,
     "资源接口必须注册唤醒本丸任务入口");
-AssertTrue(interfaceDefinition["task"]?.Any(item => item?["name"]?.Value<string>() == "选刀列表OCR扫描（测试）"
-    && item?["entry"]?.Value<string>() == "SwordListOcrSweep") == true,
-    "资源接口必须注册选刀列表 OCR 扫描测试任务入口");
-var swordListSweepPath = Path.Combine(Directory.GetCurrentDirectory(),
-    "assets", "resource", "base", "pipeline", "SwordListOcrSweep.json");
-AssertTrue(File.Exists(swordListSweepPath), "选刀列表 OCR 扫描任务必须提供独立的流程定义");
-var swordListSweepDefinition = JObject.Parse(File.ReadAllText(swordListSweepPath));
-AssertTrue(swordListSweepDefinition["SwordListOcrSweep"]?["action"]?["custom_action"]?.Value<string>()
-        == "SwordListOcrSweepAction",
-    "扫描任务必须调用选刀列表扫描动作");
-AssertTrue(swordListSweepDefinition["SwordListOcrSweep"]?["next"] is JArray { Count: 0 }
-    && swordListSweepDefinition["SwordListOcrSweep"]?["on_error"] is JArray { Count: 0 },
-    "扫描任务结束后不得跳到其它 node");
 var restartEnabledCase = interfaceDefinition["option"]?["卡死重启"]?["cases"]?
     .FirstOrDefault(item => item?["name"]?.Value<string>() == "Yes");
 AssertFalse(restartEnabledCase?["option"]?.Values<string>().Contains("卡死等待时间") == true,

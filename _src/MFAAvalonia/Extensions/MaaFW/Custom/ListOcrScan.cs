@@ -162,9 +162,6 @@ public static class ListOcrScan
         var startY = scroll[1];
         var endY = scroll[3];
 
-        LoggerHelper.Info($"[ListOcrScan] 上滑手势：竖直 ({x},{startY})→({x},{endY}) {VerticalScrollSteps} 步 × {VerticalStepDelayMilliseconds}ms；"
-            + $"L 形收尾 →({x + InertiaBreakerOffset},{endY}) {HorizontalScrollSteps} 步 × {HorizontalStepDelayMilliseconds}ms");
-
         context.TouchDown(0, x, startY, 1);
         // 短暂停顿：确保按下被识别为拖拽起点而不是点击
         Thread.Sleep(TouchDownDelayMilliseconds);
