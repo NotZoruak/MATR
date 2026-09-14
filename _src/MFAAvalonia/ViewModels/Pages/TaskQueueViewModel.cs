@@ -1657,6 +1657,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         // 切换控制器类型时，先取消正在进行的搜索并清空设备列表，
         // 防止旧控制器类型的设备在搜索期间仍然显示
         _refreshCancellationTokenSource?.Cancel();
+        _retryDeviceCts?.Cancel();
         _suppressAutoConnect = true;
         try
         {
@@ -1733,12 +1734,17 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
 
     private CancellationTokenSource? _refreshCancellationTokenSource;
 
+    /// <summary>后台等待设备重试的取消令牌：兜底恢复上次设备后启动，找到设备或用户接管时停止</summary>
+    private CancellationTokenSource? _retryDeviceCts;
+
     [RelayCommand]
     private async Task Reconnect()
     {
         using var _ = BeginUiLogScope("Reconnect");
         LoggerHelper.UserAction("重新连接", DescribeCurrentSelection(),
             operation: "Reconnect", instanceId: Processor.InstanceId, instanceName: InstanceName);
+        // 用户主动重连时结束后台等待重试，避免与手动操作冲突
+        _retryDeviceCts?.Cancel();
         if (CurrentResources.Count == 0 || string.IsNullOrWhiteSpace(CurrentResource)
             || CurrentResources.All(r => !string.Equals(r.Name?.Trim(), CurrentResource.Trim(), StringComparison.OrdinalIgnoreCase)))
         {
@@ -1852,6 +1858,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
 
         _refreshCancellationTokenSource?.Cancel();
         _refreshCancellationTokenSource = new CancellationTokenSource();
+        _retryDeviceCts?.Cancel();
         var controllerType = CurrentController;
         TaskManager.RunTask(() =>
             {
@@ -2234,7 +2241,10 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
             {
                 if (devices.Count == 0)
                 {
-                    SetEmptyDeviceState();
+                    // 设备检测为空时优先兜底恢复上次使用的设备（等待外部方式启动模拟器），
+                    // 无法恢复（未开启记住连接或无已保存设备）时保持原有空状态
+                    if (!TryRestoreLastDeviceOnEmpty())
+                        SetEmptyDeviceState();
                 }
                 else
                 {
@@ -2254,6 +2264,116 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                 _suppressAutoConnect = false;
             }
         });
+    }
+
+    /// <summary>
+    /// 设备检测为空时，兜底恢复上次使用的 ADB 设备（标记未连接，不触发连接），并启动后台等待重试：
+    /// 模拟器由 taptap 等外部方式稍后启动时，自动检测到设备并连接，无需手动刷新或输入。
+    /// 受「记住连接」开关控制，关闭时保持原有行为；恢复时不得清除已保存的 ADB 路径与序列号。
+    /// </summary>
+    private bool TryRestoreLastDeviceOnEmpty()
+    {
+        if (CurrentController != MaaControllerTypes.Adb)
+            return false;
+        if (!Processor.InstanceConfiguration.GetValue(ConfigurationKeys.RememberAdb, true))
+            return false;
+        if (!Processor.InstanceConfiguration.TryGetValue(ConfigurationKeys.AdbDevice, out AdbDeviceInfo savedDevice,
+                new UniversalEnumConverter<AdbInputMethods>(), new UniversalEnumConverter<AdbScreencapMethods>()))
+            return false;
+        if (string.IsNullOrWhiteSpace(savedDevice.AdbSerial))
+            return false;
+
+        LoggerHelper.Info($"未检测到 ADB 设备，兜底恢复上次使用的设备：名称={savedDevice.Name}，ADB 序列号={savedDevice.AdbSerial}，启动后台等待重试。");
+        DispatcherHelper.RunOnMainThread(() =>
+        {
+            _suppressAutoConnect = true;
+            try
+            {
+                Devices = [savedDevice];
+                // 恢复流程锁定选中目标时只刷新列表，避免覆盖正在恢复的设备
+                if (!_lockCurrentAdbSelectionDuringRecovery)
+                    CurrentDevice = savedDevice;
+            }
+            finally
+            {
+                _suppressAutoConnect = false;
+            }
+            SetConnected(false);
+        });
+        StartDeviceWaitRetry(savedDevice);
+        return true;
+    }
+
+    /// <summary>
+    /// 后台等待重试：每 10 秒检测一次 ADB 设备，模拟器就绪后自动选中并连接，找到设备后停止。
+    /// 任务运行、已连接或用户改选了其他目标时退出；用户手动刷新会取消本次重试。
+    /// </summary>
+    private void StartDeviceWaitRetry(AdbDeviceInfo restoredDevice)
+    {
+        _retryDeviceCts?.Cancel();
+        _retryDeviceCts?.Dispose();
+        _retryDeviceCts = new CancellationTokenSource();
+        var token = _retryDeviceCts.Token;
+
+        _ = TaskManager.RunTaskAsync(() =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    Task.Delay(TimeSpan.FromSeconds(10), token).GetAwaiter().GetResult();
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+
+                // 任务已运行或已连接时停止等待
+                if (IsRunning || IsConnected)
+                    return;
+
+                // 用户改选了其他目标时停止等待（按序列号+路径比较，容忍连接流程重建设备实例）
+                if (CurrentDevice is not AdbDeviceInfo current
+                    || !string.Equals(current.AdbSerial, restoredDevice.AdbSerial, StringComparison.OrdinalIgnoreCase)
+                    || !string.Equals(current.AdbPath, restoredDevice.AdbPath, StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                var devices = MaaProcessor.Toolkit.AdbDevice.Find();
+                if (devices.Count == 0)
+                    continue;
+
+                LoggerHelper.Info($"后台等待重试检测到 ADB 设备：数量={devices.Count}，自动选中上次设备。");
+                var saved = Processor.InstanceConfiguration.TryGetValue(ConfigurationKeys.AdbDevice,
+                    out AdbDeviceInfo savedDevice,
+                    new UniversalEnumConverter<AdbInputMethods>(), new UniversalEnumConverter<AdbScreencapMethods>())
+                    ? savedDevice
+                    : null;
+                var matched = saved != null ? FindBestFingerprintMatchedAdbDevice(devices, saved) : null;
+                var index = matched != null ? devices.IndexOf(matched) : 0;
+                UpdateDeviceList(new ObservableCollection<object>(devices), index);
+
+                // 与手动刷新行为一致：按「刷新后尝试连接」设置自动连接；
+                // 连接失败（模拟器未就绪等）时继续下一轮重试，直到连接成功或用户接管
+                if (CurrentDevice != null && Instances.ConnectSettingsUserControlModel.AutoConnectAfterRefresh)
+                {
+                    try
+                    {
+                        token.ThrowIfCancellationRequested();
+                        Processor.TestConnecting().GetAwaiter().GetResult();
+                        if (IsConnected)
+                            return;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggerHelper.Warning($"后台等待自动连接失败：{ex.Message}，继续等待重试。");
+                    }
+                }
+            }
+        }, token, name: "等待设备重试");
     }
 
     private void HandleControllerSettings(MaaControllerTypes controllerType)
@@ -2602,6 +2722,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         {
             _refreshCancellationTokenSource?.Cancel();
             _refreshCancellationTokenSource = new CancellationTokenSource();
+            _retryDeviceCts?.Cancel();
             if (inTask)
                 TaskManager.RunTask(() => AutoDetectDevice(_refreshCancellationTokenSource.Token, showToast, strictLaunchTarget), name: "刷新设备");
             else
@@ -2709,6 +2830,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                 LoggerHelper.Info("未通过指纹匹配到设备，开始自动检测。");
                 _refreshCancellationTokenSource?.Cancel();
                 _refreshCancellationTokenSource = new CancellationTokenSource();
+                _retryDeviceCts?.Cancel();
                 if (inTask)
                     TaskManager.RunTask(() => AutoDetectDevice(_refreshCancellationTokenSource.Token, true, strictLaunchTarget), name: "刷新设备");
                 else
@@ -3685,6 +3807,10 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         _refreshCancellationTokenSource?.Cancel();
         _refreshCancellationTokenSource?.Dispose();
         _refreshCancellationTokenSource = null;
+
+        _retryDeviceCts?.Cancel();
+        _retryDeviceCts?.Dispose();
+        _retryDeviceCts = null;
 
         LiveViewImage = null;
         DisposeLiveViewBitmaps();

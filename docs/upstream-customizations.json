@@ -182,6 +182,17 @@
       "notes": "MaaFramework 可返回仅缺少 EmulatorExtras 位的 MuMu 输入掩码；不能仅在返回 Default 时补偿。"
     },
     {
+      "id": "adb.remember-last-device-on-empty",
+      "title": "记住上次 ADB 设备并在检测为空时兜底",
+      "purpose": "模拟器由 taptap 等外部方式稍后启动时，界面仍保留上次使用的 ADB 设备并自动重试连接，不清空已记住的 ADB 路径与序列号。",
+      "files": ["_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "在 UpdateDeviceList 空结果分支保留 TryRestoreLastDeviceOnEmpty 兜底与 StartDeviceWaitRetry 后台重试，并在刷新、重连、控制器切换和释放路径取消重试。",
+      "verification": ["模拟器未启动时打开 MATR 仍显示上次使用的设备", "已保存的 ADB 路径与序列号不被清空", "模拟器启动后自动选中并按设置连接", "关闭「记住连接」后恢复上游空状态行为", "手动刷新或重连后不再有后台重试"],
+      "notes": "空结果不能直接走 SetEmptyDeviceState，那会连带执行 ClearActiveAdbDeviceConfig 清掉已保存的 ADB 目标。"
+    },
+    {
       "id": "runtime.resource-path-and-packaging",
       "title": "资源路径兼容、桌面发布与 agent 移除",
       "purpose": "保留大小写容错资源解析、MATR 图标、GUI 子系统、libloader 启动钩子和跨平台发布布局，同时不使用 Python agent。",

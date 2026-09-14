@@ -519,6 +519,16 @@ AssertTrue(taskStartProcessorSource.Contains("_recoveryMonitor.RecordCallback", 
     && taskStartProcessorSource.Contains("_recoveryMonitor.FeedAction", StringComparison.Ordinal)
     && taskStartProcessorSource.Contains("_recoveryMonitor.GetReason", StringComparison.Ordinal),
     "升级上游后必须保留无回调与动作循环检测的接入及独立检查，避免挂起后只能等待 pipeline");
+AssertTrue(taskQueueViewModelSource.Contains("private bool TryRestoreLastDeviceOnEmpty()", StringComparison.Ordinal)
+    && taskQueueViewModelSource.Contains("private void StartDeviceWaitRetry(AdbDeviceInfo restoredDevice)", StringComparison.Ordinal)
+    && taskQueueViewModelSource.Contains("_retryDeviceCts?.Cancel();", StringComparison.Ordinal),
+    "设备检测为空时必须保留兜底恢复上次 ADB 设备并后台等待重试的实现");
+var updateDeviceListSource = ExtractSourceSection(
+    taskQueueViewModelSource,
+    "private void UpdateDeviceList(ObservableCollection<object> devices, int index)",
+    "private bool TryRestoreLastDeviceOnEmpty()");
+AssertTrue(updateDeviceListSource.Contains("if (!TryRestoreLastDeviceOnEmpty())", StringComparison.Ordinal),
+    "设备检测为空的分支必须先尝试恢复上次设备，不得直接清空设备状态并丢掉已记住的 ADB 路径");
 var mfaTaskSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ValueType", "MFATask.cs"));
 var sortieRepeatSource = ExtractSourceSection(

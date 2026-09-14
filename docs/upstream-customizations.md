@@ -153,6 +153,14 @@ ADB 输入方式设为“自动”时，`MaaProcessor` 必须为名称包含 `Mu
 
 用户显式选择的输入方式不得被覆盖。验证自动模式下 MuMu 的输入掩码包含 `EmulatorExtras`，并通过多页习合素材列表确认连续上滑可用。
 
+### `adb.remember-last-device-on-empty`
+
+ADB 自动检测结果为空时，`TaskQueueViewModel.UpdateDeviceList` 必须先调用 `TryRestoreLastDeviceOnEmpty` 兜底显示上次使用的设备（标记未连接、不触发连接），再由 `StartDeviceWaitRetry` 每 10 秒后台重试；模拟器就绪后按指纹选中设备，并按「刷新后尝试连接」设置连接。空结果分支不得直接调用 `SetEmptyDeviceState`，否则会连带执行 `ClearActiveAdbDeviceConfig`，把已记住的 ADB 路径与序列号清空。
+
+行为受「记住连接」开关控制，关闭时保持上游原状。用户手动刷新、重连、切换控制器、其余进入自动检测的刷新路径，以及释放页面时，都必须取消后台重试。
+
+2026-08-14 首次实现（提交 `a844982b`），2026-09-04 升级 MFAAvalonia v2.16.1 时随 `TaskQueueViewModel.cs` 被上游整体覆盖删除，2026-09-14 按原设计恢复。
+
 ### `runtime.resource-path-and-packaging`
 
 保留资源大小写兼容、桌面发布结构、图标与 `libloader` 启动钩子；不恢复 Python agent。验证完整包资源加载、Windows/macOS 发布及 agent 排除。
