@@ -17,16 +17,10 @@ public sealed class WarehouseScanItemsAction : IMaaCustomAction
 {
     private const int MaxPages = 100;
     private const int SamePageLimit = 3;
-    private const int Contact = 0;
-    private const int StartX = 656;
-    private const int StartY = 567;
-    private const int EndX = 656;
-    private const int EndY = 177;
-    private const int PressBeforeMoveMilliseconds = 500;
-    private const int MoveMilliseconds = 500;
-    private const int PressAfterMoveMilliseconds = 500;
-    private const int PostReleaseWaitMilliseconds = 1000;
-    private const int MoveSteps = 10;
+    /// <summary>到列表底部后复读最后一页前的等待：只在整轮扫描结束时执行一次，保留较大余量确保最后一页完整</summary>
+    private const int BottomRefillWaitMilliseconds = 1000;
+    /// <summary>所持道具列表上滑坐标：x, 起点 y, x, 终点 y</summary>
+    private static readonly int[] ScrollCoordinates = [656, 567, 656, 177];
     private static readonly int[] ScrollbarEndRoi = [1239, 672, 3, 2];
 
     private static readonly int[][] DefaultNameRois =
@@ -92,7 +86,7 @@ public sealed class WarehouseScanItemsAction : IMaaCustomAction
                 if (reachedBottom)
                 {
                     // 到底后的首帧可能仍处于滚动动画的最后阶段，再等待一次并复读，确保最后一页完整进入识别区域。
-                    ActionParamHelper.SleepWithStopCheck(context, PostReleaseWaitMilliseconds);
+                    ActionParamHelper.SleepWithStopCheck(context, BottomRefillWaitMilliseconds);
                     var finalItems = ReadVisibleItems(context, FinalPageNameRois, FinalPageCountRois, savedItemNames);
                     foreach (var item in finalItems)
                     {
@@ -121,8 +115,8 @@ public sealed class WarehouseScanItemsAction : IMaaCustomAction
                 }
 
                 previousSignature = signature;
-                ScrollUp(context);
-                ActionParamHelper.SleepWithStopCheck(context, PostReleaseWaitMilliseconds);
+                ListOcrScan.ScrollUp(context, ScrollCoordinates);
+                ActionParamHelper.SleepWithStopCheck(context, ListOcrScan.ScrollSettleMilliseconds);
                 if (IsAtBottom(context))
                     reachedBottom = true;
             }
@@ -188,25 +182,6 @@ public sealed class WarehouseScanItemsAction : IMaaCustomAction
 
         WarehouseScanDraftService.UpdateCoreResource(draftPath, "小判", value);
         LoggerHelper.Info($"[仓库识别] 小判识别到：{value}");
-    }
-
-    private static void ScrollUp<T>(T context) where T : IMaaContext
-    {
-        var tasker = context.Tasker;
-        tasker.TouchDown(Contact, StartX, StartY, 1);
-        ActionParamHelper.SleepWithStopCheck(context, PressBeforeMoveMilliseconds);
-
-        for (var step = 1; step <= MoveSteps; step++)
-        {
-            ActionParamHelper.ThrowIfStopping(context);
-            var x = StartX + (EndX - StartX) * step / MoveSteps;
-            var y = StartY + (EndY - StartY) * step / MoveSteps;
-            tasker.TouchMove(Contact, x, y, 1);
-            ActionParamHelper.SleepWithStopCheck(context, MoveMilliseconds / MoveSteps);
-        }
-
-        ActionParamHelper.SleepWithStopCheck(context, PressAfterMoveMilliseconds);
-        tasker.TouchUp(Contact);
     }
 
     private static bool IsAtBottom<T>(T context) where T : IMaaContext

@@ -9,20 +9,29 @@ using System.Threading;
 
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
-/// <summary>自定编队滚动扫描公共逻辑：OCR 找目标 → 点击 / 滑动循环 / 与上屏相同判定到底</summary>
+/// <summary>
+/// 列表 OCR 滚动扫描公共逻辑，供自定编队选刀、内番选刀、扫描诊断任务等共用：
+/// OCR 找目标 → 点击 / 上滑翻页 / 与上屏相同判定到底。
+/// </summary>
 public static class ListOcrScan
 {
     /// <summary>大范围 OCR 得分阈值</summary>
     public const double MinScore = 0.85;
 
-    /// <summary>刀剑列表 OCR 区域</summary>
-    public static readonly int[] SwordListRoi = [98, 126, 235, 566];
+    /// <summary>上滑后到下一次截图之间的等待（毫秒）。L 形收尾正常时列表应已停稳，这里只用于避开滑动前的旧帧</summary>
+    public const int ScrollSettleMilliseconds = 150;
+
+    /// <summary>
+    /// 刀剑列表 OCR 区域。右边界 262 只覆盖刀名列，避开列表右侧状态列（伤/轻伤/远征中…）的文字；
+    /// 实测最长刀名「大千鸟十文字枪」右边界为 260。
+    /// </summary>
+    public static readonly int[] SwordListRoi = [98, 126, 164, 566];
 
     /// <summary>刀装/马匹列表 OCR 区域</summary>
     public static readonly int[] EquipListRoi = [943, 131, 176, 552];
 
-    /// <summary>刀剑列表上滑：x, 起点 y, x, 终点 y</summary>
-    public static readonly int[] SwordScroll = [106, 624, 106, 128];
+    /// <summary>刀剑列表上滑：x, 起点 y, x, 终点 y。起点整体右移到状态列上方，避开刀名与刀种图标所在区域</summary>
+    public static readonly int[] SwordScroll = [306, 624, 306, 128];
 
     /// <summary>刀装/马匹列表上滑</summary>
     public static readonly int[] EquipScroll = [864, 534, 864, 137];
@@ -64,8 +73,8 @@ public static class ListOcrScan
             // 命中多个时取最上方（y 最小）的匹配
             var hit = all
                 .Where(r => r.Score >= MinScore && r.Text != null && (exactMatch
-                    ? FormationNameMatcher.IsExactMatch(r.Text, target)
-                    : FormationNameMatcher.IsLegacyFuzzyMatch(r.Text, target)))
+                    ? SwordNameMatcher.IsExactMatch(r.Text, target)
+                    : SwordNameMatcher.IsLegacyFuzzyMatch(r.Text, target)))
                 .Where(r => r.Box is { Count: >= 4 })
                 .OrderBy(r => r.Box![1])
                 .FirstOrDefault();
@@ -88,7 +97,7 @@ public static class ListOcrScan
             lastOcr = current;
 
             ScrollUp(context, scroll);
-            ActionParamHelper.SleepWithStopCheck(context, 300);
+            ActionParamHelper.SleepWithStopCheck(context, ScrollSettleMilliseconds);
         }
     }
 
@@ -121,21 +130,60 @@ public static class ListOcrScan
         return false;
     }
 
-    /// <summary>上滑手势：按住起点 500ms → 滑动 800ms → 终点保持 1s → 松开</summary>
+    /// <summary>竖直拖动步数</summary>
+    private const int VerticalScrollSteps = 14;
+
+    /// <summary>竖直拖动每步间隔（毫秒），间隔越大越不容易被判定为快速甩动</summary>
+    private const int VerticalStepDelayMilliseconds = 40;
+
+    /// <summary>按下后的停顿（毫秒），确保按下被识别为拖拽起点而不是点击</summary>
+    private const int TouchDownDelayMilliseconds = 20;
+
+    /// <summary>L 形收尾的横向位移（像素）：抬手前的最后一段只横向移动，用于消除列表惯性</summary>
+    public const int InertiaBreakerOffset = 200;
+
+    /// <summary>L 形收尾的横向步数</summary>
+    private const int HorizontalScrollSteps = 10;
+
+    /// <summary>
+    /// L 形收尾每步间隔（毫秒）。收尾必须持续足够久（本配置约 400ms），
+    /// 才能让游戏的滑动采样窗口里只有水平位移，从而在抬手时不产生竖直惯性。
+    /// </summary>
+    private const int HorizontalStepDelayMilliseconds = 40;
+
+    /// <summary>
+    /// 上滑手势：全程只用一次按下、一次抬手，不中途松手；竖直拖动到位后紧接着横向移动收尾（L 形），
+    /// 使游戏在抬手前读到的最后几个采样都是水平方向，判定为无竖直速度，从而不产生列表惯性。
+    /// 因此不需要在起点长按、也不需要等终点惯性停止。
+    /// </summary>
     public static void ScrollUp<T>(T context, int[] scroll) where T : IMaaContext
     {
-        context.TouchDown(0, scroll[0], scroll[1], 1);
-        Thread.Sleep(500);
+        var x = scroll[0];
+        var startY = scroll[1];
+        var endY = scroll[3];
 
-        int steps = 20;
-        for (int i = 1; i <= steps; i++)
+        LoggerHelper.Info($"[ListOcrScan] 上滑手势：竖直 ({x},{startY})→({x},{endY}) {VerticalScrollSteps} 步 × {VerticalStepDelayMilliseconds}ms；"
+            + $"L 形收尾 →({x + InertiaBreakerOffset},{endY}) {HorizontalScrollSteps} 步 × {HorizontalStepDelayMilliseconds}ms");
+
+        context.TouchDown(0, x, startY, 1);
+        // 短暂停顿：确保按下被识别为拖拽起点而不是点击
+        Thread.Sleep(TouchDownDelayMilliseconds);
+
+        for (var i = 1; i <= VerticalScrollSteps; i++)
         {
-            int y = scroll[1] - (scroll[1] - scroll[3]) * i / steps;
-            context.TouchMove(0, scroll[0], y, 1);
-            Thread.Sleep(800 / steps);
+            var y = startY - (startY - endY) * i / VerticalScrollSteps;
+            context.TouchMove(0, x, y, 1);
+            Thread.Sleep(VerticalStepDelayMilliseconds);
         }
 
-        Thread.Sleep(1000);
+        // L 形收尾：最后一整段只横向移动（途中不抬手），抬手时竖直速度为 0
+        for (var i = 1; i <= HorizontalScrollSteps; i++)
+        {
+            var currentX = x + InertiaBreakerOffset * i / HorizontalScrollSteps;
+            context.TouchMove(0, currentX, endY, 1);
+            Thread.Sleep(HorizontalStepDelayMilliseconds);
+        }
+
         context.TouchUp(0);
     }
 

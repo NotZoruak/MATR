@@ -17,6 +17,8 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
     private static readonly int[] SwordNameListRoi = [125, 155, 260, 535];
     private static readonly int[] SelectedCountRoi = [1140, 313, 125, 29];
     private static readonly int[] BottomMarkerRoi = [1115, 692, 1, 2];
+    /// <summary>刀解列表上滑坐标：x, 起点 y, x, 终点 y</summary>
+    private static readonly int[] ListScroll = [486, 650, 486, 160];
     private const byte BottomR = 114;
     private const byte BottomG = 113;
     private const byte BottomB = 113;
@@ -83,7 +85,8 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
                     return false;
                 }
 
-                ScrollDown(context);
+                ListOcrScan.ScrollUp(context, ListScroll);
+                ActionParamHelper.SleepWithStopCheck(context, ListOcrScan.ScrollSettleMilliseconds);
             }
         }
         catch (MaaStopException)
@@ -170,29 +173,4 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
             && Math.Abs(b - BottomB) <= BottomColorTolerance;
     }
 
-    /// <summary>连续按住 1.5 秒向下滑动刀解列表。</summary>
-    private static void ScrollDown<T>(T context) where T : IMaaContext
-    {
-        const int x = 486;
-        const int startY = 650;
-        const int endY = 160;
-        const int steps = 20;
-
-        context.TouchDown(0, x, startY, 1);
-        try
-        {
-            ActionParamHelper.SleepWithStopCheck(context, 500);
-            for (var step = 1; step <= steps; step++)
-            {
-                var y = startY + (endY - startY) * step / steps;
-                context.TouchMove(0, x, y, 1);
-                ActionParamHelper.SleepWithStopCheck(context, 500 / steps);
-            }
-            ActionParamHelper.SleepWithStopCheck(context, 500);
-        }
-        finally
-        {
-            context.TouchUp(0);
-        }
-    }
 }

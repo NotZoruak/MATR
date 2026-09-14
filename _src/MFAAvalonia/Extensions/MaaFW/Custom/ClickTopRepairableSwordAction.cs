@@ -44,10 +44,6 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
     /// <summary>长按滑动参数(可经 action_param 覆盖):按住起点 0.5s → 800ms 滑动到终点 → 再按住 1s</summary>
     public static readonly int[] DefaultSwipeFrom = [732, 638];
     public static readonly int[] DefaultSwipeTo = [732, 131];
-    public const int DefaultPressHoldMs = 500;
-    public const int DefaultSwipeDuration = 800;
-    public const int DefaultReleaseHoldMs = 1000;
-    public const int DefaultSwipeSteps = 20;
 
     private static readonly (string Key, int X, int Y)[] SwordFilterPoints =
     [
@@ -96,9 +92,6 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
         var maxSwipes = json?["max_swipes"]?.ToObject<int>() ?? DefaultMaxSwipes;
         var swipeFrom = json?["swipe_from"]?.ToObject<int[]>() ?? DefaultSwipeFrom;
         var swipeTo = json?["swipe_to"]?.ToObject<int[]>() ?? DefaultSwipeTo;
-        var pressHoldMs = json?["press_hold_ms"]?.ToObject<int>() ?? DefaultPressHoldMs;
-        var swipeDuration = json?["swipe_duration"]?.ToObject<int>() ?? DefaultSwipeDuration;
-        var releaseHoldMs = json?["release_hold_ms"]?.ToObject<int>() ?? DefaultReleaseHoldMs;
 
         string? previousListOcr = null;
         for (int attempt = 0; attempt <= maxSwipes; attempt++)
@@ -125,32 +118,10 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
             if (attempt >= maxSwipes)
                 break;
 
-            LoggerHelper.Info($"[修刀选刀] 当前视野未找到可修复刀剑,长按滑动列表({attempt + 1}/{maxSwipes})");
-            // 在同一个触摸会话内完成长按、上滑和终点保持，避免中途松手被识别为点击
-            var touchActive = false;
-            try
-            {
-                context.TouchDown(0, swipeFrom[0], swipeFrom[1], 1);
-                touchActive = true;
-                Thread.Sleep(pressHoldMs);
-
-                var stepDelay = Math.Max(1, swipeDuration / DefaultSwipeSteps);
-                for (var step = 1; step <= DefaultSwipeSteps; step++)
-                {
-                    var currentX = swipeFrom[0] + (swipeTo[0] - swipeFrom[0]) * step / DefaultSwipeSteps;
-                    var currentY = swipeFrom[1] + (swipeTo[1] - swipeFrom[1]) * step / DefaultSwipeSteps;
-                    context.TouchMove(0, currentX, currentY, 1);
-                    Thread.Sleep(stepDelay);
-                }
-
-                Thread.Sleep(releaseHoldMs);
-            }
-            finally
-            {
-                if (touchActive)
-                    context.TouchUp(0);
-            }
-            Thread.Sleep(300);
+            LoggerHelper.Info($"[修刀选刀] 当前视野未找到可修复刀剑，上滑列表({attempt + 1}/{maxSwipes})");
+            // 与其它列表共用同一套 L 形上滑手势，避免惯性跳过行
+            ListOcrScan.ScrollUp(context, [swipeFrom[0], swipeFrom[1], swipeTo[0], swipeTo[1]]);
+            ActionParamHelper.SleepWithStopCheck(context, ListOcrScan.ScrollSettleMilliseconds);
         }
 
         LoggerHelper.Warning("[修刀选刀] 滑动后仍未找到可修复刀剑");

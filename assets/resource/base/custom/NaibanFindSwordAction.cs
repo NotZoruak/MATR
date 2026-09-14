@@ -12,7 +12,8 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 public class NaibanFindSwordAction : IMaaCustomAction
 {
     private static readonly int[] SwordListRoi = [168, 126, 165, 566];
-    private static readonly int[] SwordScroll = [106, 624, 106, 128];
+    /// <summary>内番选刀列表上滑坐标：与编队选刀保持一致，起点右移到状态列上方</summary>
+    private static readonly int[] SwordScroll = [306, 624, 306, 128];
 
     public string Name { get; set; } = nameof(NaibanFindSwordAction);
 

@@ -25,6 +25,8 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
 
     private static readonly int[] SelectAll = [1145, 460, 111, 40];
     private static readonly int[] ClearAllSelection = [1151, 361, 101, 30];
+    /// <summary>素材列表上滑坐标：x, 起点 y, x, 终点 y</summary>
+    private static readonly int[] MaterialPageScroll = [1100, 617, 1100, 212];
 
     private const int RarityX = 246;
     private const int RarityY = 211;
@@ -230,35 +232,11 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         return false;
     }
 
-    /// <summary>连续按住完成素材列表滑动：起点、移动和终点各保持500毫秒。</summary>
+    /// <summary>上滑素材列表到下一页：与其它列表共用同一套 L 形手势与等待。</summary>
     private static void HoldSwipeToNextMaterialPage<T>(T context) where T : IMaaContext
     {
-        const int startX = 1100;
-        const int startY = 617;
-        const int endX = 1099;
-        const int endY = 212;
-        const int steps = 10;
-        var tasker = context.Tasker;
-
-        tasker.TouchDown(0, startX, startY, 100);
-        try
-        {
-            ActionParamHelper.SleepWithStopCheck(context, 500);
-            for (var step = 1; step <= steps; step++)
-            {
-                ActionParamHelper.ThrowIfStopping(context);
-                var x = startX + (endX - startX) * step / steps;
-                var y = startY + (endY - startY) * step / steps;
-                tasker.TouchMove(0, x, y, 100);
-                ActionParamHelper.SleepWithStopCheck(context, 500 / steps);
-            }
-
-            ActionParamHelper.SleepWithStopCheck(context, 500);
-        }
-        finally
-        {
-            tasker.TouchUp(0);
-        }
+        ListOcrScan.ScrollUp(context, MaterialPageScroll);
+        ActionParamHelper.SleepWithStopCheck(context, ListOcrScan.ScrollSettleMilliseconds);
     }
 
     /// <summary>滑动后恢复可能被起点误取消、已移动至下一页首行的第五行素材。</summary>
