@@ -57,7 +57,7 @@ public class DrillDangerCheckAction : IMaaCustomAction
             }
 
             var danger = ExtremeMarkerRois.Count(roi => IsAllWhite(bitmap, roi));
-            var names = FormationScan.OcrAll(context, image, SwordNameRoi)?.All ?? [];
+            var names = ListOcrScan.OcrAll(context, image, SwordNameRoi)?.All ?? [];
             if (names.Any(item => item.Text?.Contains("丙子", StringComparison.Ordinal) == true))
                 danger++;
 

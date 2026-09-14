@@ -77,9 +77,9 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
         if (image == null)
             return false;
 
-        var query = FormationScan.OcrAll(context, image, ListRoi);
+        var query = ListOcrScan.OcrAll(context, image, ListRoi);
         var candidates = query?.All
-            .Where(item => item.Score >= FormationScan.MinScore
+            .Where(item => item.Score >= ListOcrScan.MinScore
                 && item.Text != null
                 && item.Box is { Count: >= 4 }
                 && allowList.Any(name => item.Text.Contains(name, StringComparison.Ordinal)))

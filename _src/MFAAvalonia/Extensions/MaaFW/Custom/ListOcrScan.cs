@@ -10,7 +10,7 @@ using System.Threading;
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>自定编队滚动扫描公共逻辑：OCR 找目标 → 点击 / 滑动循环 / 与上屏相同判定到底</summary>
-public static class FormationScan
+public static class ListOcrScan
 {
     /// <summary>大范围 OCR 得分阈值</summary>
     public const double MinScore = 0.85;
@@ -32,7 +32,7 @@ public static class FormationScan
     {
         var taskModel = new MaaNode
         {
-            Name = "FormationScanOcr",
+            Name = "ListOcrScanOcr",
             Recognition = "OCR",
             Roi = new List<int>(roi),
         };
@@ -113,7 +113,7 @@ public static class FormationScan
         {
             int cx = hit.Box[0] + hit.Box[2] / 2;
             int cy = hit.Box[1] + hit.Box[3] / 2;
-            LoggerHelper.Info($"[FormationScan] 点击「确定」box=[{string.Join(",", hit.Box)}]");
+            LoggerHelper.Info($"[ListOcrScan] 点击「确定」box=[{string.Join(",", hit.Box)}]");
             context.Click(cx, cy);
             ActionParamHelper.SleepWithStopCheck(context, 500);
             return true;

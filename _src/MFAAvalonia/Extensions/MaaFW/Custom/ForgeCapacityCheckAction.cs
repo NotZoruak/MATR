@@ -50,8 +50,8 @@ public class ForgeCapacityCheckAction : IMaaCustomAction
 
             var capacityText = string.Join(
                 " ",
-                FormationScan.OcrAll(context, image, SwordCapacityRoi)?.All
-                    .Where(item => item.Score >= FormationScan.MinScore && !string.IsNullOrWhiteSpace(item.Text))
+                ListOcrScan.OcrAll(context, image, SwordCapacityRoi)?.All
+                    .Where(item => item.Score >= ListOcrScan.MinScore && !string.IsNullOrWhiteSpace(item.Text))
                     .Select(item => item.Text!) ?? []);
             var capacityMatch = Regex.Match(capacityText ?? string.Empty, @"(?<current>\d+)\s*/\s*(?<maximum>\d+)");
             if (!capacityMatch.Success

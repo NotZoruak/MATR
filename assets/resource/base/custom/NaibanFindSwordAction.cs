@@ -26,7 +26,7 @@ public class NaibanFindSwordAction : IMaaCustomAction
                 return false;
 
             if (NaibanOutfitSelectionContext.TryGetTarget(slot, out var target)
-                && FormationScan.ScanAndClick(context, target.Name, SwordListRoi, SwordScroll,
+                && ListOcrScan.ScanAndClick(context, target.Name, SwordListRoi, SwordScroll,
                     box => ClickSword(context, box[1]), "NaibanFindSword", exactMatch: true))
                 return true;
 
@@ -50,8 +50,8 @@ public class NaibanFindSwordAction : IMaaCustomAction
         if (image == null)
             return false;
 
-        var hit = FormationScan.OcrAll(context, image, SwordListRoi)?.All
-            .Where(result => result.Score >= FormationScan.MinScore && result.Box is { Count: >= 4 })
+        var hit = ListOcrScan.OcrAll(context, image, SwordListRoi)?.All
+            .Where(result => result.Score >= ListOcrScan.MinScore && result.Box is { Count: >= 4 })
             .OrderBy(result => result.Box![1])
             .FirstOrDefault();
         if (hit?.Box is not { Count: >= 4 })

@@ -32,11 +32,11 @@ public class FormationFindSwordAction : IMaaCustomAction
 
             LoggerHelper.Info($"[FormationFindSword] 槽位{slot} 寻找刀剑: {target}");
 
-            return FormationScan.ScanAndClick(
+            return ListOcrScan.ScanAndClick(
                 context,
                 target,
-                FormationScan.SwordListRoi,
-                FormationScan.SwordScroll,
+                ListOcrScan.SwordListRoi,
+                ListOcrScan.SwordScroll,
                 box =>
                 {
                     // 点击行右侧按钮：x 固定 1191，y 取命中文字左上角 y，单点

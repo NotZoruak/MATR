@@ -108,9 +108,9 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
         if (image == null)
             throw new InvalidOperationException("获取刀解列表截图失败");
 
-        var query = FormationScan.OcrAll(context, image, SwordNameListRoi);
+        var query = ListOcrScan.OcrAll(context, image, SwordNameListRoi);
         var candidates = query?.All
-            .Where(item => item.Score >= FormationScan.MinScore
+            .Where(item => item.Score >= ListOcrScan.MinScore
                 && item.Text != null
                 && item.Box is { Count: >= 4 }
                 && allowList.Any(name => item.Text.Contains(name, StringComparison.Ordinal)))

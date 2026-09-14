@@ -59,11 +59,11 @@ public class FormationEquipSelectAction : IMaaCustomAction
         string target = equipList[slot - 1];
         LoggerHelper.Info($"[FormationEquipSelect] 槽位{pos} 刀装槽{slot} 寻找刀装: {target}");
 
-        return FormationScan.ScanAndClick(
+        return ListOcrScan.ScanAndClick(
             context,
             target,
-            FormationScan.EquipListRoi,
-            FormationScan.EquipScroll,
+            ListOcrScan.EquipListRoi,
+            ListOcrScan.EquipScroll,
             box =>
             {
                 // 第一次点击：命中刀装位置中心；未出现「确定」时重试再点，最多 8 次
@@ -75,7 +75,7 @@ public class FormationEquipSelectAction : IMaaCustomAction
                     ActionParamHelper.SleepWithStopCheck(context, 500);
 
                     // 第二次点击：OCR [1027,130,54,561] 找「确定」并点击，冻结 100ms
-                    if (FormationScan.ClickConfirm(context))
+                    if (ListOcrScan.ClickConfirm(context))
                         return true;
                 }
                 LoggerHelper.Error("[FormationEquipSelect] 重试后仍未找到「确定」按钮");
