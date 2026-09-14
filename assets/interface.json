@@ -60,25 +60,6 @@
       "description": "按所选预设配置指定部队的刀剑、刀装与马匹。可在任务设置中新增、编辑、复制或删除预设，并勾选多个预设，任务会按设置页从上到下的顺序依次编成。\n\n刀装输入要求：刀装名称直接连写、无需分隔符，如「轻步重步」。支持的名称：轻步、重步、精锐、轻骑、重骑、投石、铳、弓、枪、盾。按输入个数装备：输入几个就装备几个，刀装槽不足的槽位自动跳过。"
     },
     {
-      "name": "日课",
-      "entry": "DailyTask",
-      "default_check": false,
-      "repeatable": false,
-      "repeat_count": 0,
-      "option": [
-        "D_同步后勤",
-        "D_登录奖励",
-        "D_暖心礼包",
-        "D_合成",
-        "D_刀解锻刀",
-        "D_演练",
-        "D_收取奖励",
-        "D_领取邮件"
-      ],
-      "label": "一键日课",
-      "description": "⚠该功能现处于测试阶段，目前仍在完善中，请务必在有人看管时运行。\n\n按固定顺序执行启用的日课项目：同步后勤 → 登录奖励 → 暖心礼包 → 合成 → 刀解锻刀 → 演练 → 领取奖励 → 领取邮件。每个已执行项目完成后会先返回本丸；未启用的项目直接跳过。登录奖励、暖心礼包、合成、刀解与锻刀在每个游戏日仅完成一次，游戏日于每日 5:00 刷新；未找到合成素材或未完成 3 次锻刀不会标记为完成。\n\n* **同步后勤**：使用「本丸后勤」任务中的设置，在日课开始前先检查队伍状态并派遣远征，同时处理修刀与内番。启用演练选项时，请确保演练使用的部队在「后勤」任务中设置为休息。\n* **登录奖励**：领取每日登录签到奖励。\n* **暖心礼包**：进入万屋领取免费礼包。\n* **合成**：固定选择第一把刀剑作为强化对象，并按刀解/合成许可名单选择一把未上锁刀剑作为材料。\n* **刀解锻刀**：可分别开启刀解与锻刀。刀解开启时，若本游戏日尚未刀解，会按许可名单至少刀解一把；收取已完成锻刀前刀位不足时，会按缺口刀解腾位，该次刀解同样计入当天刀解完成记录；锻刀按所选公式最多锻造 3 把，不使用加速符；选择限锻公式时，未检测到限锻活动会跳过锻刀。\n* **演练**：最多处理 5 个对手位置，累计胜利 3 次或处理完 5 个位置即结束。\n* **领取奖励**：可分别领取日常、月常、主线与活动任务奖励。\n* **领取邮件**：按所选邮件类别领取可收取的邮件。"
-    },
-    {
       "name": "合战场",
       "entry": "Sortie",
       "default_check": false,
@@ -6169,186 +6150,7 @@
             "UD_SB_FallbackWait": {"enabled": false},
             "Warehouse_FallbackWait": {"enabled": false},
             "FC_FallbackWait": {"enabled": false},
-            "UF_FallbackWait": {"enabled": false},
-            "DT_LoginRewardFallbackWait": {"enabled": false},
-            "DT_WarmGiftFallbackWait": {"enabled": false},
-            "DT_MixFallbackWait": {"enabled": false},
-            "DT_ForgeFallbackWait": {"enabled": false},
-            "DT_DrillFallbackWait": {"enabled": false},
-            "DT_KebiFallbackWait": {"enabled": false},
-            "DT_RewardFallbackWait": {"enabled": false},
-            "DT_MailResourceFallbackWait": {"enabled": false},
-            "DT_LoginRewardReturnHomeFallbackWait": {"enabled": false},
-            "DT_WarmGiftReturnHomeFallbackWait": {"enabled": false},
-            "DT_MixReturnHomeFallbackWait": {"enabled": false},
-            "DT_ForgeReturnHomeFallbackWait": {"enabled": false},
-            "DT_DrillReturnHomeFallbackWait": {"enabled": false},
-            "DT_KebiReturnHomeFallbackWait": {"enabled": false},
-            "DT_FallbackWait": {"enabled": false},
-            "DT_DetectWhereAmI": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGame"]
-            },
-            "DT_PrepareHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnPrepareHub"]
-            },
-            "DT_LoginRewardHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnLoginRewardHub"]
-            },
-            "DT_LoginRewardClosePopupHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnLoginRewardClosePopupHub"]
-            },
-            "DT_WarmGiftHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnWarmGiftHub"]
-            },
-            "DT_WarmGiftFinishClaimHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnWarmGiftFinishClaimHub"]
-            },
-            "DT_MixHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnMixHub"]
-            },
-            "DT_ForgeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnForgeHub"]
-            },
-            "DT_ForgeFindFreeSlot1Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnForgeFindFreeSlot1Hub"]
-            },
-            "DT_ForgeFindFreeSlot2Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnForgeFindFreeSlot2Hub"]
-            },
-            "DT_ForgeFindFreeSlot3Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnForgeFindFreeSlot3Hub"]
-            },
-            "DT_ForgeDisassembleHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnForgeDisassembleHub"]
-            },
-            "DT_DrillHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillHub"]
-            },
-            "DT_DrillOpponent1Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillOpponent1Hub"]
-            },
-            "DT_DrillBattle1Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillBattle1Hub"]
-            },
-            "DT_DrillOpponent2Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillOpponent2Hub"]
-            },
-            "DT_DrillBattle2Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillBattle2Hub"]
-            },
-            "DT_DrillOpponent3Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillOpponent3Hub"]
-            },
-            "DT_DrillBattle3Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillBattle3Hub"]
-            },
-            "DT_DrillOpponent4Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillOpponent4Hub"]
-            },
-            "DT_DrillBattle4Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillBattle4Hub"]
-            },
-            "DT_DrillOpponent5Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillOpponent5Hub"]
-            },
-            "DT_DrillBattle5Hub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillBattle5Hub"]
-            },
-            "DT_KebiHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnKebiHub"]
-            },
-            "DT_KebiPrepareFinishHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnKebiPrepareFinishHub"]
-            },
-            "DT_RewardHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardHub"]
-            },
-            "DT_MailResourceHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnMailResourceHub"]
-            },
-            "DT_RewardDailyClaimHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardDailyClaimHub"]
-            },
-            "DT_RewardAfterDailyHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardAfterDailyHub"]
-            },
-            "DT_RewardMonthlyClaimHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardMonthlyClaimHub"]
-            },
-            "DT_RewardAfterMonthlyHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardAfterMonthlyHub"]
-            },
-            "DT_RewardMainlineClaimHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardMainlineClaimHub"]
-            },
-            "DT_RewardAfterMainlineHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardAfterMainlineHub"]
-            },
-            "DT_RewardActivityClaimHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardActivityClaimHub"]
-            },
-            "DT_RewardClosePopupHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnRewardClosePopupHub"]
-            },
-            "DT_LoginRewardReturnHomeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnLoginRewardReturnHomeHub"]
-            },
-            "DT_WarmGiftReturnHomeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnWarmGiftReturnHomeHub"]
-            },
-            "DT_MixReturnHomeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnMixReturnHomeHub"]
-            },
-            "DT_ForgeReturnHomeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnForgeReturnHomeHub"]
-            },
-            "DT_DrillReturnHomeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnDrillReturnHomeHub"]
-            },
-            "DT_KebiReturnHomeHub": {
-              "timeout": 120000,
-              "on_error": ["DT_RestartGameReturnKebiReturnHomeHub"]
-            }
+            "UF_FallbackWait": {"enabled": false}
           }
         },
         {
@@ -6449,47 +6251,6 @@
       ],
       "pipeline_override": {
         "S_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "DT_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "DT_PrepareHub": {"timeout": "{timeout_seconds}000"},
-        "DT_LoginRewardHub": {"timeout": "{timeout_seconds}000"},
-        "DT_LoginRewardClosePopupHub": {"timeout": "{timeout_seconds}000"},
-        "DT_WarmGiftHub": {"timeout": "{timeout_seconds}000"},
-        "DT_WarmGiftFinishClaimHub": {"timeout": "{timeout_seconds}000"},
-        "DT_MixHub": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeFindFreeSlot1Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeFindFreeSlot2Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeFindFreeSlot3Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeDisassembleHub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillHub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillOpponent1Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillBattle1Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillOpponent2Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillBattle2Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillOpponent3Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillBattle3Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillOpponent4Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillBattle4Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillOpponent5Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillBattle5Hub": {"timeout": "{timeout_seconds}000"},
-        "DT_KebiHub": {"timeout": "{timeout_seconds}000"},
-        "DT_KebiPrepareFinishHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardHub": {"timeout": "{timeout_seconds}000"},
-        "DT_MailResourceHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardDailyClaimHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardAfterDailyHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardMonthlyClaimHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardAfterMonthlyHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardMainlineClaimHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardAfterMainlineHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardActivityClaimHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardClosePopupHub": {"timeout": "{timeout_seconds}000"},
-        "DT_LoginRewardReturnHomeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_WarmGiftReturnHomeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_MixReturnHomeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeReturnHomeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillReturnHomeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_KebiReturnHomeHub": {"timeout": "{timeout_seconds}000"},
         "LR_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
         "EC_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
         "FB_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
@@ -6567,10 +6328,7 @@
       "type": "switch",
       "default_case": "No",
       "cases": [
-        {
-          "name": "No",
-          "pipeline_override": {}
-        },
+        {"name": "No"},
         {
           "name": "Yes",
           "option": ["疲劳阈值"],
@@ -6962,9 +6720,6 @@
         {
           "name": "",
           "pipeline_override": {
-            "DT_IsHome": {
-              "next": ["Expedition"]
-            },
             "E_SelectMap1": {
               "action": {
                 "type": "Custom",
@@ -7031,9 +6786,7 @@
                 "param": {
                   "target": [1037, 169, 110, 44]
                 }
-              },
-              "next": ["DT_WaitRefresh"],
-              "on_error": ["DT_DetectWhereAmI"]
+              }
             },
             "E_AllTeamsBusy": {
               "action": {
@@ -7043,10 +6796,8 @@
                 }
               },
               "repeat": 2,
-              "repeat_delay": 500,
-              "next": ["DT_PrepareHub"]
-            },
-            "DT_WaitRefresh": {"enabled": true}
+              "repeat_delay": 500
+            }
           }
         }
       ],
@@ -7060,13 +6811,7 @@
       "cases": [
         {
           "name": "登录奖励",
-          "label": "登录奖励",
-          "pipeline_override": {
-            "DT_LoginRewardHub": {"enabled": true},
-            "DT_LoginRewardGate": {
-              "next": ["DT_LoginRewardOnceCheck"]
-            }
-          }
+          "label": "登录奖励"
         }
       ]
     },
@@ -7078,13 +6823,7 @@
       "cases": [
         {
           "name": "暖心礼包",
-          "label": "暖心礼包",
-          "pipeline_override": {
-            "DT_WarmGiftHub": {"enabled": true},
-            "DT_WarmGiftGate": {
-              "next": ["DT_WarmGiftOnceCheck"]
-            }
-          }
+          "label": "暖心礼包"
         }
       ]
     },
@@ -7096,13 +6835,7 @@
       "cases": [
         {
           "name": "合成",
-          "label": "合成",
-          "pipeline_override": {
-            "DT_MixHub": {"enabled": true},
-            "DT_MixGate": {
-              "next": ["DT_MixOnceCheck"]
-            }
-          }
+          "label": "合成"
         }
       ]
     },
@@ -7133,13 +6866,7 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["D_锻刀公式"],
-          "pipeline_override": {
-            "DT_ForgeHub": {"enabled": true},
-            "DT_ForgeOnceCheck": {"enabled": true},
-            "DT_ForgeClaimCompletedHub": {"enabled": true},
-            "DT_ForgeStartForgeOnceCheck": {"enabled": true}
-          }
+          "option": ["D_锻刀公式"]
         }
       ]
     },
@@ -7155,18 +6882,7 @@
         },
         {
           "name": "Yes",
-          "label": "开启",
-          "pipeline_override": {
-            "DT_ForgeHub": {"enabled": true},
-            "DT_ForgeDailyDisassembleOnceCheck": {"enabled": true},
-            "DT_ForgeCheckCapacity": {
-              "next": ["DT_ForgeDailyDisassembleOnceCheck"],
-              "on_error": ["DT_ForgeDisassembleHub"]
-            },
-            "DT_ForgeDailyDisassembleAlreadyCompleted": {
-              "next": ["DT_ForgeClaimCompletedHub"]
-            }
-          }
+          "label": "开启"
         }
       ]
     },
@@ -7179,27 +6895,11 @@
       "cases": [
         {
           "name": "limited",
-          "label": "限锻公式",
-          "pipeline_override": {
-            "DT_ForgeFormula1Limited": {"enabled": true},
-            "DT_ForgeFormula2Limited": {"enabled": true},
-            "DT_ForgeFormula3Limited": {"enabled": true},
-            "DT_ForgeFormula1All50": {"enabled": false},
-            "DT_ForgeFormula2All50": {"enabled": false},
-            "DT_ForgeFormula3All50": {"enabled": false}
-          }
+          "label": "限锻公式"
         },
         {
           "name": "limited_first",
-          "label": "限锻优先",
-          "pipeline_override": {
-            "DT_ForgeFormula1LimitedFirst": {"enabled": true},
-            "DT_ForgeFormula2LimitedFirst": {"enabled": true},
-            "DT_ForgeFormula3LimitedFirst": {"enabled": true},
-            "DT_ForgeFormula1All50": {"enabled": false},
-            "DT_ForgeFormula2All50": {"enabled": false},
-            "DT_ForgeFormula3All50": {"enabled": false}
-          }
+          "label": "限锻优先"
         },
         {
           "name": "all50",
@@ -7216,10 +6916,7 @@
         {
           "name": "演练",
           "label": "演练",
-          "option": ["D_演练部队", "D_演练阵形", "D_演练避战强敌"],
-          "pipeline_override": {
-            "DT_DrillHub": {"enabled": true}
-          }
+          "option": ["D_演练部队", "D_演练阵形", "D_演练避战强敌"]
         }
       ]
     },
@@ -7231,333 +6928,23 @@
       "cases": [
         {
           "name": "部队一",
-          "label": "部队一",
-          "pipeline_override": {
-            "DT_DrillClickTeam1": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeam2": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeam3": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeam4": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeam5": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeamAgain1": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeamAgain2": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeamAgain3": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeamAgain4": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
-            "DT_DrillClickTeamAgain5": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            }
-          }
+          "label": "部队一"
         },
         {
           "name": "部队二",
-          "label": "部队二",
-          "pipeline_override": {
-            "DT_DrillClickTeam1": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeam2": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeam3": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeam4": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeam5": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeamAgain1": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeamAgain2": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeamAgain3": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeamAgain4": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
-            "DT_DrillClickTeamAgain5": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            }
-          }
+          "label": "部队二"
         },
         {
           "name": "部队三",
-          "label": "部队三",
-          "pipeline_override": {
-            "DT_DrillClickTeam1": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeam2": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeam3": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeam4": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeam5": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain1": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain2": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain3": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain4": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain5": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            }
-          }
+          "label": "部队三"
         },
         {
           "name": "部队四",
-          "label": "部队四",
-          "pipeline_override": {
-            "DT_DrillClickTeam1": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeam2": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeam3": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeam4": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeam5": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeamAgain1": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeamAgain2": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeamAgain3": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeamAgain4": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
-            "DT_DrillClickTeamAgain5": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            }
-          }
+          "label": "部队四"
         },
         {
           "name": "部队五",
-          "label": "部队五",
-          "pipeline_override": {
-            "DT_DrillClickTeam1": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeam2": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeam3": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeam4": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeam5": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain1": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain2": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain3": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain4": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
-            "DT_DrillClickTeamAgain5": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            }
-          }
+          "label": "部队五"
         }
       ]
     },
@@ -7569,230 +6956,31 @@
       "cases": [
         {
           "name": "不启用",
-          "label": "不启用",
-          "pipeline_override": {
-            "DT_DrillIsFormationSelect1": {"enabled": false},
-            "DT_DrillIsFormationSelect2": {"enabled": false},
-            "DT_DrillIsFormationSelect3": {"enabled": false},
-            "DT_DrillIsFormationSelect4": {"enabled": false},
-            "DT_DrillIsFormationSelect5": {"enabled": false}
-          }
+          "label": "不启用"
         },
         {
           "name": "鱼鳞阵",
-          "label": "鱼鳞阵",
-          "pipeline_override": {
-            "DT_DrillClickFormation1A": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation1B": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation2A": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation2B": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation3A": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation3B": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation4A": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation4B": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation5A": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_DrillClickFormation5B": {
-              "target": [212, 234, 1, 1]
-            }
-          }
+          "label": "鱼鳞阵"
         },
         {
           "name": "横队阵",
-          "label": "横队阵",
-          "pipeline_override": {
-            "DT_DrillClickFormation1A": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation1B": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation2A": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation2B": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation3A": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation3B": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation4A": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation4B": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation5A": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_DrillClickFormation5B": {
-              "target": [591, 234, 1, 1]
-            }
-          }
+          "label": "横队阵"
         },
         {
           "name": "雁行阵",
-          "label": "雁行阵",
-          "pipeline_override": {
-            "DT_DrillClickFormation1A": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation1B": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation2A": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation2B": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation3A": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation3B": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation4A": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation4B": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation5A": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_DrillClickFormation5B": {
-              "target": [1037, 222, 1, 1]
-            }
-          }
+          "label": "雁行阵"
         },
         {
           "name": "鹤翼阵",
-          "label": "鹤翼阵",
-          "pipeline_override": {
-            "DT_DrillClickFormation1A": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation1B": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation2A": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation2B": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation3A": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation3B": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation4A": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation4B": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation5A": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_DrillClickFormation5B": {
-              "target": [195, 431, 1, 1]
-            }
-          }
+          "label": "鹤翼阵"
         },
         {
           "name": "方阵",
-          "label": "方阵",
-          "pipeline_override": {
-            "DT_DrillClickFormation1A": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation1B": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation2A": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation2B": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation3A": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation3B": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation4A": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation4B": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation5A": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_DrillClickFormation5B": {
-              "target": [625, 407, 1, 1]
-            }
-          }
+          "label": "方阵"
         },
         {
           "name": "逆行阵",
-          "label": "逆行阵",
-          "pipeline_override": {
-            "DT_DrillClickFormation1A": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation1B": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation2A": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation2B": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation3A": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation3B": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation4A": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation4B": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation5A": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_DrillClickFormation5B": {
-              "target": [1017, 421, 1, 1]
-            }
-          }
+          "label": "逆行阵"
         }
       ]
     },
@@ -7810,14 +6998,7 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["D_演练威胁度"],
-          "pipeline_override": {
-            "DT_DrillDangerCheck1": {"enabled": true},
-            "DT_DrillDangerCheck2": {"enabled": true},
-            "DT_DrillDangerCheck3": {"enabled": true},
-            "DT_DrillDangerCheck4": {"enabled": true},
-            "DT_DrillDangerCheck5": {"enabled": true}
-          }
+          "option": ["D_演练威胁度"]
         }
       ]
     },
@@ -7836,34 +7017,7 @@
           "maximum": 6,
           "tick_frequency": 1
         }
-      ],
-      "pipeline_override": {
-        "DT_DrillDangerCheck1": {
-          "action": {
-            "custom_action_param": {"threshold": "{threshold}"}
-          }
-        },
-        "DT_DrillDangerCheck2": {
-          "action": {
-            "custom_action_param": {"threshold": "{threshold}"}
-          }
-        },
-        "DT_DrillDangerCheck3": {
-          "action": {
-            "custom_action_param": {"threshold": "{threshold}"}
-          }
-        },
-        "DT_DrillDangerCheck4": {
-          "action": {
-            "custom_action_param": {"threshold": "{threshold}"}
-          }
-        },
-        "DT_DrillDangerCheck5": {
-          "action": {
-            "custom_action_param": {"threshold": "{threshold}"}
-          }
-        }
-      }
+      ]
     },
     "D_检非违使": {
       "name": "D_检非违使",
@@ -7874,10 +7028,7 @@
         {
           "name": "检非违使",
           "label": "检非违使",
-          "option": ["D_检非违使部队", "D_检非违使时代", "D_检非违使地域", "D_检非违使阵形"],
-          "pipeline_override": {
-            "DT_KebiHub": {"enabled": true}
-          }
+          "option": ["D_检非违使部队", "D_检非违使时代", "D_检非违使地域", "D_检非违使阵形"]
         }
       ]
     },
@@ -7889,63 +7040,23 @@
       "cases": [
         {
           "name": "部队一",
-          "label": "部队一",
-          "pipeline_override": {
-            "DT_KebiClickTeam": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            }
-          }
+          "label": "部队一"
         },
         {
           "name": "部队二",
-          "label": "部队二",
-          "pipeline_override": {
-            "DT_KebiClickTeam": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            }
-          }
+          "label": "部队二"
         },
         {
           "name": "部队三",
-          "label": "部队三",
-          "pipeline_override": {
-            "DT_KebiClickTeam": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            }
-          }
+          "label": "部队三"
         },
         {
           "name": "部队四",
-          "label": "部队四",
-          "pipeline_override": {
-            "DT_KebiClickTeam": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            }
-          }
+          "label": "部队四"
         },
         {
           "name": "部队五",
-          "label": "部队五",
-          "pipeline_override": {
-            "DT_KebiClickTeam": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            }
-          }
+          "label": "部队五"
         }
       ]
     },
@@ -7957,147 +7068,35 @@
       "cases": [
         {
           "name": "时代一",
-          "label": "时代一",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [246, 389, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["一", "l", "1"]
-                }
-              }
-            }
-          }
+          "label": "时代一"
         },
         {
           "name": "时代二",
-          "label": "时代二",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [345, 516, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["二"]
-                }
-              }
-            }
-          }
+          "label": "时代二"
         },
         {
           "name": "时代三",
-          "label": "时代三",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [447, 379, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["三"]
-                }
-              }
-            }
-          }
+          "label": "时代三"
         },
         {
           "name": "时代四",
-          "label": "时代四",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [546, 511, 3, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["四"]
-                }
-              }
-            }
-          }
+          "label": "时代四"
         },
         {
           "name": "时代五",
-          "label": "时代五",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [644, 375, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["五", "h"]
-                }
-              }
-            }
-          }
+          "label": "时代五"
         },
         {
           "name": "时代六",
-          "label": "时代六",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [750, 508, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["六"]
-                }
-              }
-            }
-          }
+          "label": "时代六"
         },
         {
           "name": "时代七",
-          "label": "时代七",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [849, 378, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["七"]
-                }
-              }
-            }
-          }
+          "label": "时代七"
         },
         {
           "name": "时代八",
-          "label": "时代八",
-          "pipeline_override": {
-            "DT_KebiClickEra": {
-              "target": [956, 519, 1, 1]
-            },
-            "DT_KebiVerifyEra": {
-              "recognition": {
-                "type": "OCR",
-                "param": {
-                  "roi": [831, 80, 26, 26],
-                  "expected": ["八"]
-                }
-              }
-            }
-          }
+          "label": "时代八"
         }
       ]
     },
@@ -8109,39 +7108,19 @@
       "cases": [
         {
           "name": "地域一",
-          "label": "地域一",
-          "pipeline_override": {
-            "DT_KebiClickRegion": {
-              "target": [191, 308, 62, 3]
-            }
-          }
+          "label": "地域一"
         },
         {
           "name": "地域二",
-          "label": "地域二",
-          "pipeline_override": {
-            "DT_KebiClickRegion": {
-              "target": [495, 307, 42, 3]
-            }
-          }
+          "label": "地域二"
         },
         {
           "name": "地域三",
-          "label": "地域三",
-          "pipeline_override": {
-            "DT_KebiClickRegion": {
-              "target": [804, 307, 53, 3]
-            }
-          }
+          "label": "地域三"
         },
         {
           "name": "地域四",
-          "label": "地域四",
-          "pipeline_override": {
-            "DT_KebiClickRegion": {
-              "target": [984, 307, 48, 3]
-            }
-          }
+          "label": "地域四"
         }
       ]
     },
@@ -8153,88 +7132,31 @@
       "cases": [
         {
           "name": "不启用",
-          "label": "不启用",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": false}
-          }
+          "label": "不启用"
         },
         {
           "name": "鱼鳞阵",
-          "label": "鱼鳞阵",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": true},
-            "DT_KebiClickFormation1": {
-              "target": [212, 234, 1, 1]
-            },
-            "DT_KebiClickFormation2": {
-              "target": [212, 234, 1, 1]
-            }
-          }
+          "label": "鱼鳞阵"
         },
         {
           "name": "横队阵",
-          "label": "横队阵",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": true},
-            "DT_KebiClickFormation1": {
-              "target": [591, 234, 1, 1]
-            },
-            "DT_KebiClickFormation2": {
-              "target": [591, 234, 1, 1]
-            }
-          }
+          "label": "横队阵"
         },
         {
           "name": "雁行阵",
-          "label": "雁行阵",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": true},
-            "DT_KebiClickFormation1": {
-              "target": [1037, 222, 1, 1]
-            },
-            "DT_KebiClickFormation2": {
-              "target": [1037, 222, 1, 1]
-            }
-          }
+          "label": "雁行阵"
         },
         {
           "name": "鹤翼阵",
-          "label": "鹤翼阵",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": true},
-            "DT_KebiClickFormation1": {
-              "target": [195, 431, 1, 1]
-            },
-            "DT_KebiClickFormation2": {
-              "target": [195, 431, 1, 1]
-            }
-          }
+          "label": "鹤翼阵"
         },
         {
           "name": "方阵",
-          "label": "方阵",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": true},
-            "DT_KebiClickFormation1": {
-              "target": [625, 407, 1, 1]
-            },
-            "DT_KebiClickFormation2": {
-              "target": [625, 407, 1, 1]
-            }
-          }
+          "label": "方阵"
         },
         {
           "name": "逆行阵",
-          "label": "逆行阵",
-          "pipeline_override": {
-            "DT_KebiIsFormationSelect": {"enabled": true},
-            "DT_KebiClickFormation1": {
-              "target": [1017, 421, 1, 1]
-            },
-            "DT_KebiClickFormation2": {
-              "target": [1017, 421, 1, 1]
-            }
-          }
+          "label": "逆行阵"
         }
       ]
     },
@@ -8247,10 +7169,7 @@
         {
           "name": "领取奖励",
           "label": "领取奖励",
-          "option": ["D_领取日常奖励", "D_领取月常奖励", "D_领取主线奖励", "D_领取活动奖励"],
-          "pipeline_override": {
-            "DT_RewardHub": {"enabled": true}
-          }
+          "option": ["D_领取日常奖励", "D_领取月常奖励", "D_领取主线奖励", "D_领取活动奖励"]
         }
       ]
     },
@@ -8266,10 +7185,7 @@
         },
         {
           "name": "Yes",
-          "label": "开启",
-          "pipeline_override": {
-            "DT_RewardDailyGate": {"enabled": true}
-          }
+          "label": "开启"
         }
       ]
     },
@@ -8285,10 +7201,7 @@
         },
         {
           "name": "Yes",
-          "label": "开启",
-          "pipeline_override": {
-            "DT_RewardMonthlyGate": {"enabled": true}
-          }
+          "label": "开启"
         }
       ]
     },
@@ -8304,10 +7217,7 @@
         },
         {
           "name": "Yes",
-          "label": "开启",
-          "pipeline_override": {
-            "DT_RewardMainlineGate": {"enabled": true}
-          }
+          "label": "开启"
         }
       ]
     },
@@ -8323,10 +7233,7 @@
         },
         {
           "name": "Yes",
-          "label": "开启",
-          "pipeline_override": {
-            "DT_RewardActivityGate": {"enabled": true}
-          }
+          "label": "开启"
         }
       ]
     },
@@ -8339,11 +7246,7 @@
         {
           "name": "领取邮件",
           "label": "领取邮件",
-          "option": ["D_邮件类别"],
-          "pipeline_override": {
-            "DT_MailResourceGate": {"enabled": true},
-            "DT_MailResourceHub": {"enabled": true}
-          }
+          "option": ["D_邮件类别"]
         }
       ]
     },
@@ -8355,55 +7258,27 @@
       "cases": [
         {
           "name": "资源",
-          "label": "资源",
-          "pipeline_override": {
-            "DT_MailResourceSelectFilter1": {"enabled": true}
-          }
+          "label": "资源"
         },
         {
           "name": "刀装",
-          "label": "刀装",
-          "pipeline_override": {
-            "DT_MailResourceGate": {"enabled": true},
-            "DT_MailResourceHub": {"enabled": true},
-            "DT_MailResourceSelectFilter2": {"enabled": true}
-          }
+          "label": "刀装"
         },
         {
           "name": "货币",
-          "label": "货币",
-          "pipeline_override": {
-            "DT_MailResourceGate": {"enabled": true},
-            "DT_MailResourceHub": {"enabled": true},
-            "DT_MailResourceSelectFilter3": {"enabled": true}
-          }
+          "label": "货币"
         },
         {
           "name": "便利道具",
-          "label": "便利道具",
-          "pipeline_override": {
-            "DT_MailResourceGate": {"enabled": true},
-            "DT_MailResourceHub": {"enabled": true},
-            "DT_MailResourceSelectFilter4": {"enabled": true}
-          }
+          "label": "便利道具"
         },
         {
           "name": "其他物品",
-          "label": "其他物品",
-          "pipeline_override": {
-            "DT_MailResourceGate": {"enabled": true},
-            "DT_MailResourceHub": {"enabled": true},
-            "DT_MailResourceSelectFilter5": {"enabled": true}
-          }
+          "label": "其他物品"
         },
         {
           "name": "景趣",
-          "label": "景趣",
-          "pipeline_override": {
-            "DT_MailResourceGate": {"enabled": true},
-            "DT_MailResourceHub": {"enabled": true},
-            "DT_MailResourceSelectFilter6": {"enabled": true}
-          }
+          "label": "景趣"
         }
       ]
     }
