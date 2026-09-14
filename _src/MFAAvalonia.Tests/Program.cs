@@ -376,34 +376,102 @@ AssertFalse(TaskQueueContinuationPolicy.ShouldInsertGoHome("WebhookAction"),
     "MFAA Webhook 特殊任务前不应插入回本丸");
 AssertFalse(TaskQueueContinuationPolicy.ShouldInsertGoHome(null),
     "没有下一个任务时不应插入回本丸");
-AssertFalse(FormationNameMatcher.IsExactMatch("次郎太刀", "太郎太刀"),
+AssertFalse(SwordNameMatcher.IsExactMatch("次郎太刀", "太郎太刀"),
     "刀剑一字之差不得命中，避免次郎太刀被误选");
-AssertTrue(FormationNameMatcher.IsExactMatch("太郎太刀", "太郎太刀"),
+AssertTrue(SwordNameMatcher.IsExactMatch("太郎太刀", "太郎太刀"),
     "刀剑同名必须命中");
-AssertTrue(FormationNameMatcher.IsExactMatch("05 太郎太刀", "太郎太刀"),
+AssertTrue(SwordNameMatcher.IsExactMatch("05 太郎太刀", "太郎太刀"),
     "刀剑带序号前缀应命中");
-AssertTrue(FormationNameMatcher.IsExactMatch("鶴丸国永", "鹤丸国永"),
+AssertTrue(SwordNameMatcher.IsExactMatch("鶴丸国永", "鹤丸国永"),
     "刀剑应容忍鶴/鹤字形差异");
-AssertTrue(FormationNameMatcher.IsExactMatch("山姥切国厂", "山姥切国广"),
+AssertTrue(SwordNameMatcher.IsExactMatch("山姥切国厂", "山姥切国广"),
     "刀剑应容忍厂/广形近误识");
-AssertTrue(FormationNameMatcher.IsExactMatch("軽歩兵", "轻步"),
+AssertTrue(SwordNameMatcher.IsExactMatch("軽歩兵", "轻步"),
     "刀装应容忍軽歩字形差异并命中完整显示名");
-AssertFalse(FormationNameMatcher.IsExactMatch("重歩兵", "轻步"),
+AssertFalse(SwordNameMatcher.IsExactMatch("重歩兵", "轻步"),
     "刀装不得因一字之差命中异种刀装");
-AssertFalse(FormationNameMatcher.IsExactMatch("高黑", "高楯黑"),
+AssertFalse(SwordNameMatcher.IsExactMatch("高黑", "高楯黑"),
     "刀装不启用丢字容错");
-AssertTrue(FormationNameMatcher.IsExactMatch("统兵·特上", "铳"),
+AssertTrue(SwordNameMatcher.IsExactMatch("统兵·特上", "铳"),
     "OCR 将铳识别为统时仍应命中铳兵刀装");
-AssertTrue(FormationNameMatcher.IsExactMatch("銃兵·特上", "铳"),
+AssertTrue(SwordNameMatcher.IsExactMatch("銃兵·特上", "铳"),
     "日文字形銃应归一到铳并命中");
-AssertTrue(FormationNameMatcher.IsExactMatch("槍兵·特上", "枪"),
+AssertTrue(SwordNameMatcher.IsExactMatch("槍兵·特上", "枪"),
     "日文字形槍应归一到枪并命中");
-AssertFalse(FormationNameMatcher.IsExactMatch("弓兵·特上", "铳"),
+AssertFalse(SwordNameMatcher.IsExactMatch("弓兵·特上", "铳"),
     "单字刀装归一化后仍不得命中异种刀装");
-AssertTrue(FormationNameMatcher.IsLegacyFuzzyMatch("高黑", "高楯黑"),
+AssertTrue(SwordNameMatcher.IsLegacyFuzzyMatch("高黑", "高楯黑"),
     "马匹保留 OCR 丢字容错");
-AssertTrue(FormationNameMatcher.IsLegacyFuzzyMatch("次郎太刀", "太郎太刀"),
+AssertTrue(SwordNameMatcher.IsLegacyFuzzyMatch("次郎太刀", "太郎太刀"),
     "马匹维持原有一字差容错");
+AssertTrue(SwordNameMatcher.IsExactMatch("蜻岭切", "蜻蛉切"),
+    "蜻蛉切的蛉被识别为形近的岭时应命中");
+AssertTrue(SwordNameMatcher.IsExactMatch("御手", "御手杵"),
+    "御手杵的杵被整字漏识时应命中");
+AssertTrue(SwordNameMatcher.IsExactMatch("平野滕四郎", "平野藤四郎"),
+    "OCR 将藤识别为滕时仍应命中平野藤四郎");
+AssertTrue(SwordNameMatcher.IsExactMatch("骨喻藤四郎", "骨喰藤四郎"),
+    "OCR 将喰识别为喻时仍应命中骨喰藤四郎");
+AssertTrue(SwordNameMatcher.IsExactMatch("百山吉光", "白山吉光"),
+    "OCR 将白识别为百时仍应命中白山吉光");
+AssertTrue(SwordNameMatcher.IsExactMatch("北谷莱切", "北谷菜切"),
+    "OCR 将菜识别为莱时仍应命中北谷菜切");
+AssertTrue(SwordNameMatcher.IsExactMatch("链贯", "笹贯"),
+    "OCR 将笹识别为链时仍应命中笹贯");
+AssertTrue(SwordNameMatcher.IsExactMatch("骨藤四郎", "骨喰藤四郎"),
+    "骨喰藤四郎漏识喰时仍应命中");
+AssertFalse(SwordNameMatcher.IsExactMatch("次郎太刀", "御手杵"),
+    "丢字容错不得让其它刀剑命中御手杵");
+
+// 许可名单与关键词复用同一套字形归一并保留原有语义
+var nameMatcherAllowList = new List<string> { "御手杵", "巴形薙刀" };
+AssertTrue(SwordNameMatcher.FindMatchedName("御手", nameMatcherAllowList) == "御手杵",
+    "许可名单应容忍御手杵漏识末尾的杵");
+AssertTrue(SwordNameMatcher.FindMatchedName("薙刀巴形刀", nameMatcherAllowList) == "巴形薙刀",
+    "许可名单应容忍巴形薙刀漏识薙");
+AssertTrue(SwordNameMatcher.FindMatchedName("蜻蛉切", nameMatcherAllowList) == null,
+    "许可名单外的刀剑不得命中");
+AssertTrue(SwordNameMatcher.ContainsName("丙子椒林剑", "丙子"),
+    "关键词匹配应保留原文命中");
+AssertFalse(SwordNameMatcher.ContainsName("三日月宗近", "丙子"),
+    "关键词不匹配时不得命中");
+
+// 名条解析：名条是「刀种 + 刀名」，需容忍漏字与形近误识，且只接受唯一命中
+var namePlateSwordMap = new Dictionary<string, string>(StringComparer.Ordinal)
+{
+    ["巴形薙刀"] = "薙刀",
+    ["静形薙刀"] = "薙刀",
+    ["蜻蛉切"] = "枪",
+    ["御手杵"] = "枪",
+    ["小夜左文字"] = "短刀",
+};
+AssertTrue(SwordNameResolver.TryResolve("刀巴形刀", namePlateSwordMap, out var resolvedPlateName1)
+    && resolvedPlateName1 == "巴形薙刀", "薙刀名条被读成刀巴形刀时仍应解析出巴形薙刀");
+AssertTrue(SwordNameResolver.TryResolve("枪蜻岭切", namePlateSwordMap, out var resolvedPlateName2)
+    && resolvedPlateName2 == "蜻蛉切", "名条的蛉被读成岭时仍应解析出蜻蛉切");
+AssertTrue(SwordNameResolver.TryResolve("枪御手", namePlateSwordMap, out var resolvedPlateName3)
+    && resolvedPlateName3 == "御手杵", "御手杵漏识末尾的杵时仍应解析出御手杵");
+AssertTrue(SwordNameResolver.TryResolve("短刀小夜左文字", namePlateSwordMap, out var resolvedPlateName4)
+    && resolvedPlateName4 == "小夜左文字", "完整名条应直接解析出刀名");
+AssertTrue(SwordNameResolver.TryResolve("小夜左文字", namePlateSwordMap, out var resolvedPlateName5)
+    && resolvedPlateName5 == "小夜左文字", "刀种前缀漏识时仍应解析出刀名");
+AssertFalse(SwordNameResolver.TryResolve("刀", namePlateSwordMap, out _),
+    "名条无法唯一匹配时不得接受");
+AssertFalse(SwordNameResolver.TryResolve("静形薙刀巴形薙刀", namePlateSwordMap, out _),
+    "整行命中多把刀剑时不得猜测具体刀剑");
+
+// 内番服识别状态：失败名条按出现顺序去重，新一轮清空
+var naibanFailureState = new NaibanOutfitRecognitionState();
+naibanFailureState.Begin();
+naibanFailureState.NoteFailedReading("饲", "枪蜻岭切");
+naibanFailureState.NoteFailedReading("饲", "枪蜻岭切");
+AssertTrue(naibanFailureState.FailedReadings.Count == 1,
+    "同一次对话重复读取的失败名条只保留一条");
+AssertTrue(naibanFailureState.TryFinishMissingOutfit(),
+    "未识别到内番服时结束本轮应提示未显示立绘");
+naibanFailureState.Begin();
+AssertTrue(naibanFailureState.FailedReadings.Count == 0,
+    "新一轮内番服识别应清空上一轮的失败名条");
 var rootViewSource = File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml.cs"));
 var rootViewMarkup = File.ReadAllText(Path.Combine(

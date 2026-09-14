@@ -82,7 +82,7 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
             .Where(item => item.Score >= ListOcrScan.MinScore
                 && item.Text != null
                 && item.Box is { Count: >= 4 }
-                && allowList.Any(name => item.Text.Contains(name, StringComparison.Ordinal)))
+                && SwordNameMatcher.FindMatchedName(item.Text, allowList) != null)
             .OrderBy(item => item.Box![1])
             .ToList() ?? [];
 

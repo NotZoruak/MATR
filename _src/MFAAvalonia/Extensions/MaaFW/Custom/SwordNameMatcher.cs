@@ -5,13 +5,15 @@ using System.Linq;
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>
-/// 自定编队列表名称匹配：
+/// 刀剑、刀装与马匹的名称匹配，供自定编队列表、刀解与合成许可名单、刀剑掉落与内番名条等识别共用：
 /// - 刀剑与刀装（IsExactMatch）：原文包含目标即命中；否则把常用日字形、繁体与形近误识字归一为简体后，
 ///   包含或全等才算命中。一字之差不再放行，避免「太郎太刀/次郎太刀」这类近似名被误选。
+///   刀帐目录中只出现在固定刀名里的生僻字（薙、杵）允许整字漏识后再做包含判断。
 /// - 马匹（IsLegacyFuzzyMatch）：保留原有 OCR 丢字容错（编辑距离 ≤ 1）。
+/// - 许可名单（FindMatchedName）与关键词（ContainsName）复用同一套归一规则。
 /// 纯文本逻辑、无 MaaFramework 依赖，可被测试工程直接编译。
 /// </summary>
-public static class FormationNameMatcher
+public static class SwordNameMatcher
 {
     /// <summary>
     /// 字形归一表：键为日文汉字字形、繁体字形或常见 OCR 形近误识字，值为简体代表字；
@@ -37,14 +39,27 @@ public static class FormationNameMatcher
         ['统'] = '铳',
         // 「祢祢切丸」的「祢」为生僻字，模型常识别为「称」；刀帐中无含「称」的刀名，映射不会误伤
         ['称'] = '祢',
+        // 「蜻蛉切」的「蛉」常被识别为形近的「岭」；刀帐中无含「岭」的刀名，映射不会误伤
+        ['岭'] = '蛉',
+        // 「平野藤四郎」「骨喰藤四郎」「白山吉光」的首字常被读成形近字；
+        // 刀帐中不含「滕」「喻」「百」，映射不会误伤其它刀名
+        ['滕'] = '藤',
+        ['喻'] = '喰',
+        ['百'] = '白',
+        // 「北谷菜切」的「菜」常被读成「莱」，「笹贯」的「笹」常被读成「链」；
+        // 刀帐中不含「莱」「链」，映射不会误伤其它刀名
+        ['莱'] = '菜',
+        ['链'] = '笹',
     };
 
     /// <summary>
     /// OCR 容易整字漏识的生僻字。刀帐中这些字只出现在固定的刀名里，
     /// 去掉后不会与其他刀名冲突，因此允许目标缺字后再做包含判断。
-    /// 当前仅「薙」：静形薙刀、巴形薙刀会被识别为「静形刀」「巴形刀」。
+    /// 「薙」：静形薙刀、巴形薙刀会被识别为「静形刀」「巴形刀」；
+    /// 「杵」：御手杵会被识别为「御手」。
+    /// 「喰」：骨喰藤四郎会被识别为「骨藤四郎」。
     /// </summary>
-    private static readonly char[] FrequentlyDroppedGlyphs = ['薙'];
+    private static readonly char[] FrequentlyDroppedGlyphs = ['薙', '杵', '喰'];
 
     /// <summary>
     /// 刀剑与刀装匹配：原文包含目标即命中；否则归一化字形后包含或全等才算命中。
@@ -72,6 +87,40 @@ public static class FormationNameMatcher
         return strippedTarget.Length >= 2
             && strippedTarget != normalizedTarget
             && normalizedOcr.Contains(strippedTarget, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// 许可名单匹配：返回第一个命中的刀名，未命中返回 null。
+    /// 供刀解、合成等按许可名单选刀的动作复用同一套字形归一与生僻字漏识容错。
+    /// </summary>
+    public static string? FindMatchedName(string? ocrText, IEnumerable<string>? allowedNames)
+    {
+        if (string.IsNullOrEmpty(ocrText) || allowedNames == null)
+            return null;
+
+        foreach (var name in allowedNames)
+        {
+            if (IsExactMatch(ocrText, name))
+                return name;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 关键词包含匹配：先按原文包含，再做字形归一后包含，只增加形近字容错，不会减少原文命中。
+    /// </summary>
+    public static bool ContainsName(string? ocrText, string? target)
+    {
+        if (string.IsNullOrEmpty(ocrText) || string.IsNullOrEmpty(target))
+            return false;
+        if (ocrText.Contains(target, StringComparison.Ordinal))
+            return true;
+
+        var normalizedOcr = Normalize(ocrText);
+        var normalizedTarget = Normalize(target);
+        return normalizedOcr.Length > 0 && normalizedTarget.Length > 0
+            && normalizedOcr.Contains(normalizedTarget, StringComparison.Ordinal);
     }
 
     /// <summary>去除目标中允许漏识的生僻字，用于漏字容错比较</summary>

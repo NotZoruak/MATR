@@ -16,11 +16,6 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 public class SwordDropLogAction : IMaaCustomAction
 {
-    private static readonly string[] SwordTypes =
-    [
-        "大太刀", "短刀", "胁差", "打刀", "太刀", "薙刀", "枪", "剑"
-    ];
-
     // 纯色校验缺省值:该区域全部像素命中目标色时判定为非刀剑掉落画面(如内番完成对话),
     // 跳过 OCR 与打点,但保留原点击行为
     private static readonly int[] DefaultCheckRoi = [53, 257, 54, 32];
@@ -366,24 +361,21 @@ public class SwordDropLogAction : IMaaCustomAction
         swordType = string.Empty;
         swordName = string.Empty;
 
-        var normalized = Regex.Replace(text ?? string.Empty, @"\s+", string.Empty);
-        if (string.IsNullOrEmpty(normalized))
+        // 名条解析与内番对话共用同一套归一与唯一匹配；刀种由标准刀名反查刀帐得到，
+        // 不依赖 OCR 把「薙刀」这类刀种读对。
+        var map = FormationContext.SwordTypeMap;
+        if (map == null || map.Count == 0)
+        {
+            map = FormationContext.LoadSwordTypeMap();
+            FormationContext.SwordTypeMap = map;
+        }
+
+        if (!SwordNameResolver.TryResolve(text, map, out var resolvedName)
+            || !map.TryGetValue(resolvedName, out var resolvedType))
             return false;
 
-        var type = SwordTypes.FirstOrDefault(normalized.StartsWith);
-        if (type == null)
-            return false;
-
-        var name = normalized[type.Length..];
-        if (name.Length < 2)
-            return false;
-
-        var map = FormationContext.LoadSwordTypeMap();
-        if (!SwordNameMatcher.TryMatch(name, type, map, out var canonicalName))
-            return false;
-
-        swordType = type;
-        swordName = canonicalName;
+        swordName = resolvedName;
+        swordType = resolvedType;
         return true;
     }
 
@@ -421,72 +413,4 @@ public class SwordDropLogAction : IMaaCustomAction
         return value.ToObject<int[]>()!;
     }
 
-    /// <summary>
-    /// 为刀剑掉落 OCR 提供受控的刀名相近字形匹配。
-    /// </summary>
-    private static class SwordNameMatcher
-    {
-        private static readonly string[] SimilarCharacterGroups =
-        [
-            "掘堀",
-            "広广厂",
-            "國国",
-        ];
-
-        public static bool TryMatch(
-            string recognizedName,
-            string expectedType,
-            IReadOnlyDictionary<string, string> swordTypeMap,
-            out string canonicalName)
-        {
-            canonicalName = string.Empty;
-            var normalized = Regex.Replace(recognizedName ?? string.Empty, @"\s+", string.Empty);
-            if (string.IsNullOrEmpty(normalized) || string.IsNullOrEmpty(expectedType))
-                return false;
-
-            if (swordTypeMap.TryGetValue(normalized, out var exactType)
-                && string.Equals(exactType, expectedType, StringComparison.Ordinal))
-            {
-                canonicalName = normalized;
-                return true;
-            }
-
-            var candidates = swordTypeMap
-                .Where(pair => string.Equals(pair.Value, expectedType, StringComparison.Ordinal))
-                .Select(pair => pair.Key)
-                .Where(candidate => IsSimilarName(normalized, candidate))
-                .ToList();
-
-            if (candidates.Count != 1)
-                return false;
-
-            canonicalName = candidates[0];
-            return true;
-        }
-
-        private static bool IsSimilarName(string recognizedName, string candidate)
-        {
-            if (recognizedName.Length != candidate.Length)
-                return false;
-
-            var differences = 0;
-            for (var i = 0; i < recognizedName.Length; i++)
-            {
-                if (recognizedName[i] == candidate[i])
-                    continue;
-
-                if (!IsSimilarCharacter(recognizedName[i], candidate[i]))
-                    return false;
-
-                differences++;
-                if (differences > 1)
-                    return false;
-            }
-
-            return differences == 1;
-        }
-
-        private static bool IsSimilarCharacter(char left, char right) =>
-            SimilarCharacterGroups.Any(group => group.Contains(left) && group.Contains(right));
-    }
 }

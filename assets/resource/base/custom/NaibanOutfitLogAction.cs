@@ -19,18 +19,6 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 /// </summary>
 public class NaibanOutfitLogAction : IMaaCustomAction
 {
-    private static readonly string[] SwordTypes =
-    [
-        "大太刀", "短刀", "胁差", "打刀", "太刀", "薙刀", "枪", "剑"
-    ];
-
-    private static readonly string[] SimilarCharacterGroups =
-    [
-        "掘堀",
-        "広广厂",
-        "國国",
-    ];
-
     private readonly NaibanOutfitRecognitionState _state = new();
 
     public string Name { get; set; } = nameof(NaibanOutfitLogAction);
@@ -47,7 +35,12 @@ public class NaibanOutfitLogAction : IMaaCustomAction
                 return true;
             case "finish":
                 if (_state.TryFinishMissingOutfit())
+                {
                     LoggerHelper.Info("[后勤] 未显示内番服立绘");
+                    // 失败时补充名条原文：判断是漏字、形近误识还是名条位置偏移都靠这几行
+                    foreach (var reading in _state.FailedReadings)
+                        LoggerHelper.Info($"[后勤] 内番服识别失败 {reading}");
+                }
                 else if (_state.SwordNames.Count > 0)
                 {
                     LoggerHelper.Info($"[后勤] 内番服 {string.Join("、", _state.SwordNames)}");
@@ -79,10 +72,15 @@ public class NaibanOutfitLogAction : IMaaCustomAction
             var indicatorRoi = ParseRoi(json["indicator_roi"] as JArray, "内番服提示 OCR ROI");
             var nameRoi = ParseRoi(json["name_roi"] as JArray, "内番服刀剑 OCR ROI");
             var indicatorText = Normalize(ReadText(context, indicatorRoi));
+            var nameText = Normalize(ReadText(context, nameRoi));
 
+            // 名条为「刀种 + 刀名」，OCR 会漏识生僻字（薙、杵）或把形近字读错（蛉→岭），
+            // 因此与刀剑掉落、自定编队共用同一套归一与唯一匹配。
             if ((indicatorText.Contains('饲') || indicatorText.Contains('耕'))
-                && TryValidateSword(ReadText(context, nameRoi), out var swordName))
+                && TryResolveSwordName(nameText, out var swordName))
                 _state.TryRecord(swordName);
+            else
+                _state.NoteFailedReading(indicatorText, nameText);
         }
         finally
         {
@@ -92,58 +90,21 @@ public class NaibanOutfitLogAction : IMaaCustomAction
         }
     }
 
-    private static bool TryValidateSword(string text, out string swordName)
+    /// <summary>
+    /// 解析内番对话名条中的刀剑名：与刀剑掉落、自定编队共用同一套归一与唯一匹配，
+    /// 只在刀帐中唯一命中时才接受，避免把内番服记到其它刀剑名下。
+    /// </summary>
+    private static bool TryResolveSwordName(string text, out string swordName)
     {
-        swordName = string.Empty;
-        var normalized = Normalize(text);
-        var swordType = SwordTypes.FirstOrDefault(normalized.StartsWith);
-        if (swordType == null)
-            return false;
-
-        var recognizedName = normalized[swordType.Length..];
-        if (recognizedName.Length < 2)
-            return false;
-
-        var map = FormationContext.LoadSwordTypeMap();
-        if (map.TryGetValue(recognizedName, out var exactType)
-            && string.Equals(exactType, swordType, StringComparison.Ordinal))
+        // 刀帐映射按需加载并复用 FormationContext 缓存，避免对话循环每帧重复解析目录文件
+        var map = FormationContext.SwordTypeMap;
+        if (map == null || map.Count == 0)
         {
-            swordName = recognizedName;
-            return true;
+            map = FormationContext.LoadSwordTypeMap();
+            FormationContext.SwordTypeMap = map;
         }
 
-        var candidates = map
-            .Where(pair => string.Equals(pair.Value, swordType, StringComparison.Ordinal))
-            .Select(pair => pair.Key)
-            .Where(candidate => IsSimilarName(recognizedName, candidate))
-            .ToList();
-        if (candidates.Count != 1)
-            return false;
-
-        swordName = candidates[0];
-        return true;
-    }
-
-    private static bool IsSimilarName(string recognizedName, string candidate)
-    {
-        if (recognizedName.Length != candidate.Length)
-            return false;
-
-        var differences = 0;
-        for (var i = 0; i < recognizedName.Length; i++)
-        {
-            if (recognizedName[i] == candidate[i])
-                continue;
-
-            if (!SimilarCharacterGroups.Any(group => group.Contains(recognizedName[i]) && group.Contains(candidate[i])))
-                return false;
-
-            differences++;
-            if (differences > 1)
-                return false;
-        }
-
-        return differences == 1;
+        return SwordNameResolver.TryResolve(text, map, out swordName);
     }
 
     private static string ReadText<T>(T context, int[] roi) where T : IMaaContext

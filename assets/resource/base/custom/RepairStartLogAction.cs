@@ -76,7 +76,26 @@ public class RepairStartLogAction : IMaaCustomAction
             .Select(roi => ParseNumber(ReadText(context, ParseRoi(roi, "修复资源 OCR ROI"))))
             .ToList();
 
-        return RepairDetailFormatter.Format(name, costs);
+        // 名条可能被漏字或形近误识（巴形刀/御手），能唯一归一到刀帐刀名时以标准名为准
+        return RepairDetailFormatter.Format(ResolveSwordName(name) ?? name, costs);
+    }
+
+    /// <summary>
+    /// 用刀帐目录把修复画面的名条归一到标准刀名，无法唯一匹配时返回 null（调用方保留原始 OCR 文本）。
+    /// </summary>
+    private static string? ResolveSwordName(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return null;
+
+        var map = FormationContext.SwordTypeMap;
+        if (map == null || map.Count == 0)
+        {
+            map = FormationContext.LoadSwordTypeMap();
+            FormationContext.SwordTypeMap = map;
+        }
+
+        return SwordNameResolver.TryResolve(text, map, out var swordName) ? swordName : null;
     }
 
     private static string ReadText<T>(T context, int[] roi) where T : IMaaContext

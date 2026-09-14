@@ -58,7 +58,7 @@ public class DrillDangerCheckAction : IMaaCustomAction
 
             var danger = ExtremeMarkerRois.Count(roi => IsAllWhite(bitmap, roi));
             var names = ListOcrScan.OcrAll(context, image, SwordNameRoi)?.All ?? [];
-            if (names.Any(item => item.Text?.Contains("丙子", StringComparison.Ordinal) == true))
+            if (names.Any(item => SwordNameMatcher.ContainsName(item.Text, "丙子")))
                 danger++;
 
             LoggerHelper.Info($"[日课 演练] 对手危险度={danger}，避战阈值={threshold}");
