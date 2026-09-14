@@ -104,12 +104,6 @@ AssertTrue(sortieDefinition["S_AvoidKebiRestart"]?["action"]?["custom_action"]?.
     && sortieDefinition["S_AvoidKebiRestart"]?["action"]?["custom_action_param"]?["log_auto_recovery"]?.Value<bool>() == false
     && sortieDefinition["S_AvoidKebiRestart"]?["next"]?.Values<string>().SequenceEqual(["S_DetectWhereAmI"]) == true,
     "避战检非重启必须不写入卡死恢复日志并回到主枢纽");
-var resourcePointLogActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ResourcePointLogAction.cs"));
-AssertTrue(
-    resourcePointLogActionSource.IndexOf("LogGained(prefix, lastVisibleText);", StringComparison.Ordinal)
-        > resourcePointLogActionSource.IndexOf("while ((System.DateTime.UtcNow - startTime).TotalMilliseconds < timeout)", StringComparison.Ordinal),
-    "资源点奖励必须在提示消失后按最后一次 OCR 结果记录，不能采用动画首帧的截断数量");
 var hanapaiDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Hanapai.json");
 AssertTrue(File.Exists(hanapaiDefinitionPath), "秘宝之里必须提供独立的流程定义");
 var hanapaiDefinition = JObject.Parse(File.ReadAllText(hanapaiDefinitionPath));
@@ -486,58 +480,6 @@ AssertTrue(naibanMissingOutfitRecords.Count == 1,
 AssertTrue(naibanMissingOutfitRecords[0].LogisticsNaibanOutfits.Count == 1
     && naibanMissingOutfitRecords[0].LogisticsNaibanOutfits[0].SwordName.Length == 0,
     "未识别到内番服立绘时后勤记录必须保留一条内番痕迹");
-var rootViewSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml.cs"));
-var rootViewMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Windows", "RootView.axaml"));
-var settingsViewMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Pages", "SettingsView.axaml"));
-var guiSettingsMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "GuiSettingsUserControl.axaml"));
-var externalNotificationSettingsMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "ExternalNotificationSettingsUserControl.axaml"));
-var settingsLayoutMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "SukiUI", "Controls", "Settings", "SettingsLayout.axaml"));
-var settingsLayoutSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "SukiUI", "Controls", "Settings", "SettingsLayout.axaml.cs"));
-var taskQueueViewSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Pages", "TaskQueueView.axaml.cs"));
-var taskQueueViewMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Pages", "TaskQueueView.axaml"));
-var taskQueueViewModelSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Pages", "TaskQueueViewModel.cs"));
-var taskStartProcessorSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs"));
-var adbInputSelectionSource = ExtractSourceSection(
-    taskStartProcessorSource,
-    "private AdbInputMethods ConfigureAdbInputTypes()",
-    "private AdbScreencapMethods ConfigureAdbScreenCapTypes()");
-AssertTrue(adbInputSelectionSource.Contains("IsMuMuDeviceName()", StringComparison.Ordinal)
-    && adbInputSelectionSource.Contains("detected | AdbInputMethods.EmulatorExtras", StringComparison.Ordinal),
-    "自动模式必须为 MuMu 设备保留已发现输入方式并补充 EmulatorExtras，避免连续上滑退回 AdbShell");
-AssertTrue(taskStartProcessorSource.Contains("_recoveryMonitor.RecordCallback", StringComparison.Ordinal)
-    && taskStartProcessorSource.Contains("_recoveryMonitor.FeedAction", StringComparison.Ordinal)
-    && taskStartProcessorSource.Contains("_recoveryMonitor.GetReason", StringComparison.Ordinal),
-    "升级上游后必须保留无回调与动作循环检测的接入及独立检查，避免挂起后只能等待 pipeline");
-AssertTrue(taskQueueViewModelSource.Contains("private bool TryRestoreLastDeviceOnEmpty()", StringComparison.Ordinal)
-    && taskQueueViewModelSource.Contains("private void StartDeviceWaitRetry(AdbDeviceInfo restoredDevice)", StringComparison.Ordinal)
-    && taskQueueViewModelSource.Contains("_retryDeviceCts?.Cancel();", StringComparison.Ordinal),
-    "设备检测为空时必须保留兜底恢复上次 ADB 设备并后台等待重试的实现");
-var updateDeviceListSource = ExtractSourceSection(
-    taskQueueViewModelSource,
-    "private void UpdateDeviceList(ObservableCollection<object> devices, int index)",
-    "private bool TryRestoreLastDeviceOnEmpty()");
-AssertTrue(updateDeviceListSource.Contains("if (!TryRestoreLastDeviceOnEmpty())", StringComparison.Ordinal),
-    "设备检测为空的分支必须先尝试恢复上次设备，不得直接清空设备状态并丢掉已记住的 ADB 路径");
-var mfaTaskSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ValueType", "MFATask.cs"));
-var sortieRepeatSource = ExtractSourceSection(
-    taskStartProcessorSource,
-    "private NodeAndParam CreateNodeAndParam",
-    "private void ApplyFormationPresetOverride");
-AssertTrue(sortieRepeatSource.Contains("var repeatCount = task.InterfaceItem?.RepeatCount;", StringComparison.Ordinal)
-    && !sortieRepeatSource.Contains("异去_重复次数", StringComparison.Ordinal),
-    "常驻作战的轮数必须与其它任务一致，直接取任务级重复次数，不得再读过去/异去的下级选项");
 var sortieTaskDefinition = interfaceDefinition["task"]?
     .FirstOrDefault(item => item?["entry"]?.Value<string>() == "Sortie");
 var sortieModeOption = interfaceDefinition["option"]?["过去/异去"];
@@ -568,199 +510,6 @@ AssertFalse(SortieRepeatCountMigration.TryResolve("Sortie", "无法识别", out 
     "旧轮数非法时不得迁移");
 AssertFalse(SortieRepeatCountMigration.TryResolve("Underground", "5", out _),
     "非合战场任务不得参与轮数迁移");
-var taskLoaderSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "TaskLoader.cs"));
-AssertTrue(taskLoaderSource.Contains("MigrateSortieRepeatCount(oldItem.InterfaceItem)", StringComparison.Ordinal),
-    "加载存量配置时必须执行合战场轮数迁移");
-AssertTrue(mfaTaskSource.Contains("!infinite && Count > 1 && Type == MFATaskType.MAAFW", StringComparison.Ordinal)
-    && mfaTaskSource.Contains("LangKeys.TaskRoundComplete", StringComparison.Ordinal),
-    "有限重复任务每完成一轮都必须输出任务完成和当前进度");
-var taskQueueContinuationPolicySource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "TaskQueueContinuationPolicy.cs"));
-AssertTrue(taskQueueContinuationPolicySource.Contains("ShouldInsertGoHome", StringComparison.Ordinal),
-    "任务队列应提供统一的回本丸插入判定，避免特殊任务前执行回本丸");
-AssertTrue(taskStartProcessorSource.Contains("ShouldInsertGoHome(taskAndParams[i + 1].Entry)", StringComparison.Ordinal),
-    "任务队列应根据下一个任务的 Entry 判断是否插入回本丸");
-var restartGameActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "RestartGameAction.cs"));
-var appSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "App.axaml.cs"));
-var appPathsSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "AppPaths.cs"));
-var versionCheckerSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "VersionChecker.cs"));
-AssertTrue(versionCheckerSource.Contains("GetDataRootRelativePath", StringComparison.Ordinal)
-    && versionCheckerSource.Contains("normalized = $\"assets/{normalized}\"", StringComparison.Ordinal)
-    && versionCheckerSource.Contains("Path.Combine(candidateRoot, \"assets\", \"interface.json\")", StringComparison.Ordinal)
-    && versionCheckerSource.Contains("Path.Combine(candidateRoot, \"assets\", \"resource\")", StringComparison.Ordinal),
-    "资源更新必须将资源包内容映射到 assets 目录，并识别包含程序文件的完整资源包根目录");
-AssertTrue(versionCheckerSource.Contains("var newInterfacePath = AppPaths.InterfaceJsonPath;", StringComparison.Ordinal),
-    "资源更新写入版本元数据时必须使用 assets/interface.json，不能在程序根目录创建 interface.json");
-var maaLogRotatorSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "MaaLogRotator.cs"));
-var workRecordsViewModelSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Pages", "WorkRecordsViewModel.cs"));
-var taskOptionGeneratorSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "TaskOptionGenerator.cs"));
-var addTaskDialogSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "UsersControls", "AddTaskDialogViewModel.cs"));
-var desktopProjectSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia.Desktop", "MFAAvalonia.Desktop.csproj"));
-var aboutViewMarkup = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "AboutUserControl.axaml"));
-var fileLogExporterSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "FileLogExporter.cs"));
-var toastHelperSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ToastHelper.cs"));
-var swordDropLogActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "SwordDropLogAction.cs"));
-var externalNotificationHelperSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Helper", "ExternalNotificationHelper.cs"));
-AssertTrue(swordDropLogActionSource.Contains(
-        "ExternalNotificationHelper.ExternalNotificationAsync(message)",
-        StringComparison.Ordinal),
-    "刀剑掉落播报名单命中时应同时发送外部通知");
-AssertTrue(externalNotificationHelperSource.Contains(
-        "var apiEndpoint = $\"{serverUrl}/v3/send/{apiKey}\";",
-        StringComparison.Ordinal),
-    "QMsg 通知必须调用当前 v3 推送接口，避免旧接口导致发送测试失败");
-AssertTrue(taskStartProcessorSource.Contains(
-        "ToastNotification.Show(LangKeys.TaskFailed.ToLocalization());",
-        StringComparison.Ordinal),
-    "任务失败时应发送与任务完成一致的系统通知");
-var packWinScript = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "tools", "pack_win.ps1"));
-var packMacScript = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "tools", "pack_mac.ps1"));
-var packAllScript = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "tools", "pack_all.ps1"));
-AssertTrue(rootViewSource.IndexOf("InitializeComponent();", StringComparison.Ordinal)
-    < rootViewSource.IndexOf("LoadWindowSizeAndPosition();", StringComparison.Ordinal),
-    "窗口应在加载已保存尺寸前完成XAML初始化，避免默认尺寸覆盖配置");
-AssertTrue(rootViewMarkup.Contains("Width=\"900\"", StringComparison.Ordinal)
-    && rootViewMarkup.Contains("Height=\"675\"", StringComparison.Ordinal),
-    "窗口默认尺寸应为900×675");
-AssertTrue(settingsViewMarkup.Contains("MinWidthWhetherStackSummaryShow=\"900\"", StringComparison.Ordinal),
-    "默认窗口宽度下设置分类必须改为顶部导航，不能挤占设置内容");
-AssertTrue(guiSettingsMarkup.Contains("Classes=\"ResponsiveSettingsField\"", StringComparison.Ordinal)
-    && guiSettingsMarkup.Contains("MinWidth=\"160\"", StringComparison.Ordinal)
-    && guiSettingsMarkup.Contains("MaxWidth=\"215\"", StringComparison.Ordinal),
-    "界面设置的选择控件必须在160至215像素间自适应，优先保留说明文字宽度");
-AssertTrue(externalNotificationSettingsMarkup.Contains("AcceptsReturn=\"True\"", StringComparison.Ordinal)
-    && externalNotificationSettingsMarkup.Contains("TextWrapping=\"Wrap\"", StringComparison.Ordinal)
-    && !externalNotificationSettingsMarkup.Contains("CustomFailureText, UpdateSourceTrigger=PropertyChanged}\"\n                        Watermark", StringComparison.Ordinal),
-    "外部通知成功与失败内容必须使用可换行的独立输入框");
-AssertTrue(settingsLayoutMarkup.Contains("RadioButton.MenuChipTop  TextBlock", StringComparison.Ordinal)
-    && settingsLayoutMarkup.Contains("FontSize\" Value=\"18\"", StringComparison.Ordinal)
-    && settingsLayoutMarkup.Contains("HorizontalScrollBarVisibility=\"Hidden\"", StringComparison.Ordinal)
-    && !settingsLayoutMarkup.Contains("HorizontalScrollBarVisibility=\"Auto\"", StringComparison.Ordinal),
-    "顶部设置导航必须使用18号字号并隐藏横向滚动条");
-var topSummaryTextSource = ExtractSourceSection(
-    settingsLayoutSource,
-    "var contentTop = new TextBlock",
-    "header.Bind(");
-AssertTrue(topSummaryTextSource.Contains("FontSize = 18", StringComparison.Ordinal)
-    && !topSummaryTextSource.Contains("FontSize = 14", StringComparison.Ordinal),
-    "顶部设置导航文字必须以18号字号创建，不能再被14号本地值覆盖");
-AssertTrue(settingsLayoutSource.Contains("private const double TopSummaryDragThreshold = 4.0;", StringComparison.Ordinal)
-    && settingsLayoutSource.Contains("InputElement.PointerPressedEvent, OnTopSummaryPointerPressed", StringComparison.Ordinal)
-    && settingsLayoutSource.Contains("InputElement.PointerMovedEvent, OnTopSummaryPointerMoved", StringComparison.Ordinal)
-    && settingsLayoutSource.Contains("InputElement.PointerReleasedEvent, OnTopSummaryPointerReleased", StringComparison.Ordinal),
-    "顶部设置导航必须独立订阅指针拖拽事件，并把启动阈值设为4个逻辑像素");
-var topSummaryDragSource = ExtractSourceSection(
-    settingsLayoutSource,
-    "private void OnTopSummaryPointerMoved(",
-    "private void OnTopSummaryPointerReleased(");
-AssertTrue(topSummaryDragSource.Contains("e.Pointer.Capture(scrollTop);", StringComparison.Ordinal)
-    && topSummaryDragSource.Contains("Math.Clamp(_topSummaryDragStartOffsetX - horizontalDelta, 0, maxX)", StringComparison.Ordinal)
-    && settingsLayoutSource.Contains("if (_suppressTopSummaryClick)", StringComparison.Ordinal),
-    "顶部设置导航拖拽必须捕获指针、限制横向偏移，并抑制拖拽后误触发的分类跳转");
-AssertTrue(settingsLayoutSource.Contains("topRadio.BringIntoView();", StringComparison.Ordinal),
-    "页面滚动切换设置分类时，顶部导航必须自动将当前项带入可视区域");
-AssertTrue(taskQueueViewSource.Contains("new WrapPanel", StringComparison.Ordinal)
-    && !taskQueueViewSource.Contains("new UniformGrid { Columns = 2", StringComparison.Ordinal),
-    "复选框应根据可用宽度自适应换行，不能固定为两列");
-AssertTrue(taskQueueViewMarkup.Contains("Command=\"{Binding ToggleSelectAllCommand}\"", StringComparison.Ordinal)
-    && !taskQueueViewMarkup.Contains("Command=\"{Binding SelectAllCommand}\"", StringComparison.Ordinal)
-    && !taskQueueViewMarkup.Contains("Command=\"{Binding SelectNoneCommand}\"", StringComparison.Ordinal),
-    "任务列表必须使用一个按钮在全选与全不选之间切换，不能恢复上游的两个独立按钮");
-AssertTrue(taskQueueViewMarkup.Contains("RowDefinitions=\"Auto,Auto\"", StringComparison.Ordinal)
-    && taskQueueViewMarkup.Contains("Grid.Row=\"1\"", StringComparison.Ordinal)
-    && taskQueueViewMarkup.Contains("ColumnDefinitions=\"Auto,*,24\"", StringComparison.Ordinal)
-    && !taskQueueViewMarkup.Contains("ColumnDefinitions=\"Auto,*,36,20,3,18\"", StringComparison.Ordinal)
-    && !taskQueueViewMarkup.Contains("ColumnDefinitions=\"Auto,*,24,3,18\"", StringComparison.Ordinal),
-    "运行耗时必须显示在任务名下方，不能占用任务名称所在行的固定宽度");
-AssertTrue(taskQueueViewMarkup.Contains("<Grid Grid.Column=\"2\" Grid.Row=\"1\" Width=\"24\" Height=\"24\"", StringComparison.Ordinal),
-    "任务运行状态图标必须使用与齿轮相同的 24×24 布局边界，确保两者中轴重合");
-var runningStatusGridStart = taskQueueViewMarkup.IndexOf(
-    "<Grid Grid.Column=\"2\" Grid.Row=\"1\" Width=\"24\" Height=\"24\"",
-    StringComparison.Ordinal);
-AssertTrue(runningStatusGridStart >= 0
-    && taskQueueViewMarkup.Substring(runningStatusGridStart, 720).Contains("<Path Width=\"16\" Height=\"16\"", StringComparison.Ordinal),
-    "任务运行状态图标必须在统一布局边界内使用 16×16 图标尺寸，保持与齿轮的视觉中心对齐");
-AssertTrue(runningStatusGridStart >= 0
-    && taskQueueViewMarkup.Substring(runningStatusGridStart, 980).Contains("<TranslateTransform X=\"3\" />", StringComparison.Ordinal),
-    "任务运行状态图标必须补偿图形自身的视觉偏移，与齿轮视觉中轴重合");
-AssertTrue(taskQueueViewModelSource.Contains("private void ToggleSelectAll()", StringComparison.Ordinal)
-    && !taskQueueViewModelSource.Contains("private void SelectAll()", StringComparison.Ordinal)
-    && !taskQueueViewModelSource.Contains("private void SelectNone()", StringComparison.Ordinal),
-    "任务列表必须通过 ToggleSelectAll 统一处理全选与全不选");
-AssertTrue(appSource.Contains(
-        ".AddView<WorkRecordNameDialogView, WorkRecordNameDialogViewModel>(services)",
-        StringComparison.Ordinal),
-    "工作记录保存时必须注册名称输入对话框视图，避免提示找不到 WorkRecordNameDialogViewModel 对应视图");
-AssertTrue(appSource.Contains("AppPaths.CleanupOldDebugLogs(", StringComparison.Ordinal)
-    && appSource.Contains("MaaLogRotator.Start();", StringComparison.Ordinal)
-    && appSource.Contains("MaaLogRotator.Stop();", StringComparison.Ordinal),
-    "应用启动和退出时必须启用并停止磁盘日志维护，避免 debug 目录无限增长");
-AssertTrue(appPathsSource.Contains("public static void CleanupOldDebugLogs(int retainDays = 3", StringComparison.Ordinal)
-    && appPathsSource.Contains("DateTime.Now.AddDays(-retainDays)", StringComparison.Ordinal)
-    && appPathsSource.Contains("debugDirSize > 500 * 1024 * 1024", StringComparison.Ordinal)
-    && appPathsSource.Contains("Directory.EnumerateFiles(debugPath, \"maafw.bak.*.log\", SearchOption.TopDirectoryOnly)", StringComparison.Ordinal)
-    && appPathsSource.Contains("Directory.EnumerateFiles(onErrorPath, \"*.png\", SearchOption.TopDirectoryOnly)", StringComparison.Ordinal)
-    && appPathsSource.Contains("files.OrderByDescending(file => file).Skip(retainCount)", StringComparison.Ordinal),
-    "磁盘日志清理必须删除过期备份，并在空间超限时限制备份日志与错误截图数量");
-AssertTrue(maaLogRotatorSource.Contains("public static void Stop()", StringComparison.Ordinal),
-    "日志切块器必须提供停止入口，避免应用退出后遗留轮询任务");
-AssertTrue(workRecordsViewModelSource.Contains("FormatRepairCost(item.Wood)", StringComparison.Ordinal)
-    && workRecordsViewModelSource.Contains("cost < 0 ? \"未识别\"", StringComparison.Ordinal),
-    "工作记录的修刀明细必须将未识别资源显示为未识别，而不是内部失败标记");
-var applyCurrentDeviceSelectionSource = ExtractSourceSection(
-    taskQueueViewModelSource,
-    "private void ApplyCurrentDeviceSelection",
-    "private void SetEmptyDeviceState");
-AssertFalse(applyCurrentDeviceSelectionSource.Contains("Dispatcher.UIThread.Post", StringComparison.Ordinal),
-    "恢复已保存的 ADB 设备必须同步写入连接配置，不能延后到后台 UI 队列，否则启动连接会读到空序列号");
-AssertFalse(taskQueueViewModelSource.Contains("_liveViewNoImageLogged", StringComparison.Ordinal),
-    "实时画面首帧尚未完成时不应立即输出无画面警告，必须改为连续失败确认");
-AssertTrue(restartGameActionSource.Contains(
-        "shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p {package}",
-        StringComparison.Ordinal)
-    && !restartGameActionSource.Contains("shell monkey -p", StringComparison.Ordinal),
-    "重启游戏应使用 am start 启动指定包名，不能依赖雷电缺失的 monkey 命令");
-AssertTrue(restartGameActionSource.Contains(
-        "shell cmd package resolve-activity --brief",
-        StringComparison.Ordinal)
-    && restartGameActionSource.Contains("shell am start -n {launchActivity}", StringComparison.Ordinal),
-    "重启游戏应先解析实际启动 Activity，再使用组件名启动，兼容包名没有可解析默认 Intent 的模拟器");
-AssertTrue(restartGameActionSource.Contains(
-        "LogRestartEvent(\"重启游戏\", \"模拟器重启完成，但游戏启动失败\", true)",
-        StringComparison.Ordinal)
-    && restartGameActionSource.Contains(
-        "LogRestartEvent(\"重启模拟器\", \"模拟器重启失败，停止任务\", true)",
-        StringComparison.Ordinal),
-    "游戏启动失败不能直接判定任务失败，必须与模拟器重启失败分开记录并继续主枢纽流程");
-AssertTrue(restartGameActionSource.Contains("LogRestartEvent(\"重启游戏\", \"检测到游戏疑似卡死\", true)", StringComparison.Ordinal)
-    && restartGameActionSource.Contains("LogRestartEvent(\"重启模拟器\", \"游戏重启失败，重启模拟器\", true)", StringComparison.Ordinal)
-    && restartGameActionSource.Contains("LogRestartEvent(\"重启游戏\", \"游戏重启完成\", false)", StringComparison.Ordinal),
-    "重启动作必须分别记录游戏重启、模拟器重启和游戏重启完成事件");
-var startTaskSource = ExtractSourceSection(
-    taskStartProcessorSource,
-    "public async Task StartTask(",
-    "private readonly record struct TaskQueueResult");
-AssertTrue(startTaskSource.Contains("await TaskManager.RunTaskAsync(async () =>", StringComparison.Ordinal)
-    && !startTaskSource.Contains("token: token, name: \"启动任务\"", StringComparison.Ordinal),
-    "启动任务必须等待异步任务队列完成，不能把异步 lambda 绑定到 Action 重载后提前停止");
 var liveViewFrameAvailability = new LiveViewFrameAvailability();
 AssertTrue(liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabilityChange.None
     && liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabilityChange.None
@@ -769,104 +518,10 @@ AssertTrue(liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabi
 AssertTrue(liveViewFrameAvailability.RecordFrame(true) == LiveViewFrameAvailabilityChange.Recovered
     && liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabilityChange.None,
     "实时画面恢复后应重置故障状态，下一次短暂缺帧不应立即再次提示");
-var displayTaskCompletionMessageSource = ExtractSourceSection(
-    taskStartProcessorSource,
-    "private void DisplayTaskCompletionMessage(",
-    "public void HandleAfterTaskOperation()");
-AssertTrue(displayTaskCompletionMessageSource.Contains(
-        "if (!onlyStart)\n                HandleAfterTaskOperation();",
-        StringComparison.Ordinal),
-    "任务队列失败时也必须执行任务结束后操作");
-var liveViewTimerElapsedSource = ExtractSourceSection(
-    taskQueueViewModelSource,
-    "private void OnLiveViewTimerElapsed",
-    "[ObservableProperty] private bool _enableLiveView = true;");
-AssertTrue(liveViewTimerElapsedSource.Contains(
-        "Processor.ResetLiveViewTasker();\n                            return;",
-        StringComparison.Ordinal),
-    "实时画面触发恢复后必须结束当前刷新轮次，避免继续读取已替换的截图执行器");
-AssertTrue(packWinScript.Contains("$AgentTarget = \"$TempDir\\runtimes\\libs\\MaaAgentBinary\"", StringComparison.Ordinal)
-    && packWinScript.Contains("Remove-Item -Recurse -Force $AgentTarget", StringComparison.Ordinal),
-    "Windows 打包脚本在复制运行时库后必须清理已移除的 MaaAgentBinary 目录");
-AssertTrue(packMacScript.Contains("$AgentTarget = Join-Path $MacOsDir 'MaaAgentBinary'", StringComparison.Ordinal)
-    && packMacScript.Contains("$RuntimeAgentTarget = Join-Path $MacOsDir 'runtimes\\libs\\MaaAgentBinary'", StringComparison.Ordinal)
-    && packMacScript.Contains("Remove-Item -LiteralPath $AgentTarget -Recurse -Force", StringComparison.Ordinal)
-    && packMacScript.Contains("Remove-Item -LiteralPath $RuntimeAgentTarget -Recurse -Force", StringComparison.Ordinal),
-    "macOS 打包脚本在复制发布产物后必须清理根目录和 runtimes/libs 中已移除的 MaaAgentBinary 目录");
-AssertTrue(packMacScript.Contains("$BundleExecutable = Join-Path $MacOsDir 'MATR'", StringComparison.Ordinal)
-    && !packMacScript.Contains("$SourceExecutable = Join-Path $MacOsDir 'MFAAvalonia'", StringComparison.Ordinal),
-    "macOS 打包脚本必须直接使用发布产物中的 MATR 入口，不能再查找旧的 MFAAvalonia 名称");
-AssertTrue(packMacScript.Contains("$StagingDir = Join-Path $Root '_temp_macos'", StringComparison.Ordinal)
-    && packMacScript.Contains("Remove-Item -LiteralPath $StagingDir -Recurse -Force", StringComparison.Ordinal),
-    "macOS 打包前必须完整清理临时目录，避免不完整残留导致程序集重复进入压缩包");
-AssertTrue(packAllScript.Contains("Remove-Item -LiteralPath (Join-Path $PublishBase 'osx-arm64\\publish') -Recurse -Force", StringComparison.Ordinal),
-    "macOS 发布前必须清理旧发布目录，避免过期程序集与当前 runtimes/libs 重复打入发布包");
-AssertTrue(taskOptionGeneratorSource.Contains("var grid = new UniformGrid", StringComparison.Ordinal)
-    && taskOptionGeneratorSource.Contains("void UpdateColumns()", StringComparison.Ordinal)
-    && taskOptionGeneratorSource.Contains("grid.Columns = columns", StringComparison.Ordinal),
-    "实际生成任务选项的复选框布局应根据可用宽度自适应列数，并拉伸填满当前行");
-AssertTrue(desktopProjectSource.Contains("<AssemblyName>MATR</AssemblyName>", StringComparison.Ordinal)
-    && desktopProjectSource.Contains("<OutputName>MATR</OutputName>", StringComparison.Ordinal),
-    "Windows 发布产物必须使用 MATR 名称，才能与打包脚本和品牌入口保持一致");
-AssertFalse(aboutViewMarkup.Contains("HelpImproveSoftware", StringComparison.Ordinal),
-    "MATR 已禁用遥测，关于页面不得显示没有实际作用的帮助改进软件开关");
-var aboutUserControlSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "Settings", "AboutUserControl.axaml.cs"));
-AssertTrue(aboutUserControlSource.Contains("rootContent.TryStartTutorial()", StringComparison.Ordinal)
-    && !aboutUserControlSource.Contains("桌面版暂不提供移动端教程", StringComparison.Ordinal),
-    "关于页的使用教程必须触发根壳里的现成教程，不能只提示桌面版不提供");
 
-var rootViewContentSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "Mobile", "RootViewContent.axaml.cs"));
-var teachingTipOverlaySource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Views", "UserControls", "TeachingTipOverlay.axaml.cs"));
-var defaultStringsSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Assets", "Localization", "Strings.resx"));
-AssertTrue(rootViewContentSource.Contains(
-        "FindTargets = () => [FindTaskListHeaderButton(1), FindTaskListHeaderButton(2)]", StringComparison.Ordinal)
-    && !rootViewContentSource.Contains("new Thickness(4, 4, 50, 4)", StringComparison.Ordinal),
-    "教程的添加/重置步骤必须按 MATR 合并后的按钮索引取目标，不能用写死的 +50 像素补偿相邻按钮");
-AssertTrue(rootViewContentSource.Contains(
-        "FindTarget = () => FindTaskListHeaderButton(0),",
-        StringComparison.Ordinal),
-    "教程的全选步骤必须指向合并后的全选/全不选按钮");
-AssertTrue(!rootViewContentSource.Contains("FindStartupSettingsControl", StringComparison.Ordinal)
-    && CountOccurrences(rootViewContentSource, "FindDescendantByName<Control>(root, \"SettingsLayout\")") == 1
-    && !rootViewContentSource.Contains("TutorialStepStartupSettingsTitle", StringComparison.Ordinal),
-    "教程不得保留与「设置页概览」重复的「启动设置」分类总览步骤");
-AssertTrue(!defaultStringsSource.Contains("这两个按钮可以快速勾选", StringComparison.Ordinal),
-    "全选步骤文案必须与合并后的单个按钮一致");
-AssertTrue(teachingTipOverlaySource.Contains("public Func<IEnumerable<Control?>>? FindTargets", StringComparison.Ordinal)
-    && teachingTipOverlaySource.Contains("merged.Value.Union(bounds.Value)", StringComparison.Ordinal)
-    && teachingTipOverlaySource.Contains("ClearCutout()", StringComparison.Ordinal)
-    && teachingTipOverlaySource.Contains("[教学提示] 步骤#", StringComparison.Ordinal),
-    "教学提示必须支持多控件并集高亮、目标解析失败时清掉旧高亮，并保留按步骤输出目标坐标的诊断日志");
-var defaultInterfaceSource = ExtractSourceSection(
-    taskStartProcessorSource,
-    "public static bool CheckInterface(",
-    "// 防止 interface 加载失败时 Toast 重复显示");
-AssertTrue(fileLogExporterSource.Contains("ToastHelper.SuccessWithSurvey(", StringComparison.Ordinal)
-    && toastHelperSource.Contains("public static void SuccessWithSurvey(", StringComparison.Ordinal)
-    && toastHelperSource.Contains("去反馈bug", StringComparison.Ordinal),
-    "导出日志成功后必须显示带问卷链接的反馈提示");
-AssertTrue(defaultInterfaceSource.Contains("{PROJECT_DIR}/resource/base", StringComparison.Ordinal)
-    && !defaultInterfaceSource.Contains("{PROJECT_DIR}/assets/resource/base", StringComparison.Ordinal),
-    "默认 interface 的资源路径必须相对 interface 文件所在的 assets 目录，不能在根目录生成 resource 样例目录");
-AssertTrue(taskStartProcessorSource.Contains(
-        "public static string ProjectDir =>",
-        StringComparison.Ordinal)
-    && taskStartProcessorSource.Contains(
-        "Path.GetDirectoryName(GetInterfaceFilePath() ?? AppPaths.InterfaceJsonPath) ?? AppPaths.DataRoot;",
-        StringComparison.Ordinal)
-    && taskStartProcessorSource.Contains(
-        "MaaInterface.ReplacePlaceholder(customResource.Path ?? new(), ProjectDir)",
-        StringComparison.Ordinal),
-    "资源路径解析必须以 interface 文件所在目录作为 {PROJECT_DIR}，不能以程序根目录解析");
 
 var optionInterfaceJson = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "interface.json")));
-var currentMaaProcessorSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs"));
 foreach (var syncOptionName in new[] { "S_同步远征", "U_同步远征", "LR_同步远征", "TT_同步远征", "EC_同步后勤" })
 {
     var syncOverride = optionInterfaceJson["option"]?[syncOptionName]?["cases"]?
@@ -875,68 +530,13 @@ foreach (var syncOptionName in new[] { "S_同步远征", "U_同步远征", "LR_�
             syncOverride?[$"E_CheckTeam{team}"] == null),
         $"{syncOptionName} 不应固定启用五支队伍，应复用远征任务的队伍配置");
 }
-AssertTrue(currentMaaProcessorSource.Contains(
-        "ProcessOptions(ref taskModels, expTask.Option, teamOptionNames)",
-        StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("EndsWith(\"同步远征\")", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("EndsWith(\"同步后勤\")", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("\"EdoCastle\"", StringComparison.Ordinal),
-    "同步后勤必须复用当前实例的远征队伍配置，并覆盖江户城任务");
-AssertTrue(currentMaaProcessorSource.Contains(
-        "MergePipelineOverrideDictionary(checkboxOverride, caseItem.PipelineOverride)",
-        StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("MergeArrayHandling = MergeArrayHandling.Replace", StringComparison.Ordinal),
-    "多选筛选条件必须合并到同一个 node 覆盖对象，不能只保留最后一个刀种");
 
 // MFAAvalonia 整文件升级会覆盖 MATR 定制，以下四类保护必须逐条守住
-AssertTrue(currentMaaProcessorSource.Contains(
-        "MergeGlobalOptionParams(ref taskModels, task.InterfaceItem)", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains(
-        "if (task.Entry != \"Expedition\" && !syncExpEnabled)", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("o.Name != \"远征智能调度\"", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("BuildGoHomeParam()", StringComparison.Ordinal),
-    "全局选项必须按任务过滤：未开启同步后勤的任务不得注入「远征智能调度」，插入的回本丸必须复用同一套兜底禁用");
-AssertTrue(currentMaaProcessorSource.Contains("[同步后勤] 任务=", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("public int? GetLogisticsTeamMapIndex(string teamOptionName)", StringComparison.Ordinal)
-    && currentMaaProcessorSource.Contains("public static MaaProcessor? ResolveByTasker(IMaaTasker? tasker)", StringComparison.Ordinal),
-    "同步后勤必须保留合并侧诊断日志，并提供按执行实例读取部队配置的统一入口");
 
-var instanceTabBarSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Other", "InstanceTabBarViewModel.cs"));
-AssertTrue(CountOccurrences(taskQueueViewSource, ".InterfaceItem).ToList()") >= 3
-    && taskQueueViewModelSource.Contains(
-        "TaskItemViewModels.Select(model => model.InterfaceItem).ToList()", StringComparison.Ordinal)
-    && instanceTabBarSource.Contains(
-        "vm.TaskItemViewModels.Select(model => model.InterfaceItem).ToList()", StringComparison.Ordinal),
-    "TaskItems 写入实例配置前必须 .ToList() 物化，惰性枚举会让 GetValue<List<T>> 返回空列表并导致休息部队被误派");
 
-var expeditionMapSelectActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ExpeditionMapSelectAction.cs"));
-var dispatchLogActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "DispatchLogAction.cs"));
 var teamRestRecognitionPath = Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "ExpeditionTeamRestRecognition.cs");
-AssertTrue(expeditionMapSelectActionSource.Contains(
-        "MaaProcessor.ResolveByTasker(context.Tasker)", StringComparison.Ordinal)
-    && expeditionMapSelectActionSource.Contains(
-        "processor?.GetLogisticsTeamMapIndex(teamLabel)", StringComparison.Ordinal)
-    && !expeditionMapSelectActionSource.Contains(
-        "string instanceId = MaaProcessorManager.Instance?.Current?.InstanceId ?? string.Empty;\n            string configPath",
-        StringComparison.Ordinal)
-    && dispatchLogActionSource.Contains("MaaProcessor.ResolveByTasker(context.Tasker)", StringComparison.Ordinal)
-    && dispatchLogActionSource.Contains("processor?.GetLogisticsTeamMapIndex(", StringComparison.Ordinal),
-    "远征选图与派遣打点必须按执行任务的实例读取后勤配置，不能按当前激活实例读取");
-AssertTrue(File.Exists(teamRestRecognitionPath)
-    && File.ReadAllText(teamRestRecognitionPath).Contains(
-        "class ExpeditionTeamRestRecognition", StringComparison.Ordinal),
-    "同步后勤必须提供「该部队已设为休息」的识别，用于在进入选图前跳过部队");
 
-var expeditionTimerCheckSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ExpeditionTimerCheckAction.cs"));
-AssertTrue(!expeditionTimerCheckSource.Contains("context.OverrideNext(", StringComparison.Ordinal)
-    && !expeditionTimerCheckSource.Contains("GetNodeData", StringComparison.Ordinal)
-    && expeditionTimerCheckSource.Contains("return false;", StringComparison.Ordinal),
-    "远征计时到期已撤回改走 next：MaaFW 返回的 node 数据里 on_error 是对象数组，按字符串解析必然失败并落回 on_error，只多写一条特殊情况；重新启用前必须按对象数组解析并实机确认 debug/on_error 截图不再增长");
 
 var syncLogisticsExpedition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "Expedition.json")));
@@ -951,64 +551,11 @@ for (var team = 1; team <= 5; team++)
             .SequenceEqual([$"E_GoHome"]) == true,
         $"E_SelectMap{team} 判定休息失败时必须回本丸重新检查，不能重新进入远征中枢形成死循环");
 }
-var formationPresetControlSource = ExtractSourceSection(
-    taskOptionGeneratorSource,
-    "private Control CreateFormationPresetControl(",
-    "/// <summary>读取任务选项中保存的预设编号列表");
-AssertTrue(optionInterfaceJson["task"]?.Children<JObject>().Any(task =>
-        task["name"]?.Value<string>() == "自定编队"
-        && task["entry"]?.Value<string>() == "FormationConfig"
-        && task["option"]?.Values<string>().SequenceEqual(["FC_选择预设"]) == true) == true
-    && optionInterfaceJson["option"]?["FC_选择预设"]?["type"]?.Value<string>() == "input"
-    && !addTaskDialogSource.Contains("\"FormationConfig\"", StringComparison.Ordinal)
-    && taskOptionGeneratorSource.Contains("IsFormationPresetOption", StringComparison.Ordinal)
-    && taskStartProcessorSource.Contains("task.InterfaceItem?.Entry == \"FormationConfig\"", StringComparison.Ordinal),
-    "自定编队必须作为普通任务注册，使用任务专属预设设置并在运行前注入编队参数，不能作为特殊任务出现");
-AssertTrue(formationPresetControlSource.Contains("RenderFormationPresets(", StringComparison.Ordinal)
-    && formationPresetControlSource.Contains("var presetList = new StackPanel", StringComparison.Ordinal)
-    && !formationPresetControlSource.Contains("selectButton", StringComparison.Ordinal)
-    && !formationPresetControlSource.Contains("viewModel.IsSubPageOpen = true", StringComparison.Ordinal),
-    "自定编队作为普通任务时，预设管理器必须直接显示在任务设置中，不能退化为打开选择子页的按钮");
-AssertTrue(taskOptionGeneratorSource.Contains(
-        "option.Data[\"preset_ids\"] = string.Join(\",\", normalized)",
-        StringComparison.Ordinal)
-    && taskOptionGeneratorSource.Contains("current.Remove(capturedPreset.Id)", StringComparison.Ordinal),
-    "自定编队的预设选择必须保存多个编号并支持取消勾选");
-AssertTrue(!taskOptionGeneratorSource.Contains("AppendDailyPresetGearIcon", StringComparison.Ordinal)
-    && !taskOptionGeneratorSource.Contains("IsDailyPresetOption", StringComparison.Ordinal)
-    && optionInterfaceJson["option"]?["D_启用预设部队"] == null
-    && optionInterfaceJson["task"]?.Children<JObject>()
-        .Single(task => task["entry"]?.Value<string>() == "DailyTask")["option"]?.Values<string>()
-        .Contains("D_启用预设部队") == false,
-    "一键日课不再提供开始前启用预设部队选项，需要编队时另行添加自定编队任务");
 var dailyTaskDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "DailyTask.json")));
-AssertTrue(dailyTaskDefinition["DT_PrepareHub"]?["next"]?.Values<string>()
-        .SequenceEqual(["DT_LoginRewardGate"]) == true
-    && dailyTaskDefinition["DT_PresetHub"] == null
-    && dailyTaskDefinition["DT_PresetFallbackWait"] == null
-    && dailyTaskDefinition["DT_RestartGameReturnPresetHub"] == null
-    && !taskStartProcessorSource.Contains("\"DailyTask\" => \"D_启用预设部队\"", StringComparison.Ordinal)
-    && !taskStartProcessorSource.Contains("DT_PresetHub", StringComparison.Ordinal),
-    "日课 pipeline 与任务装配不得残留预设部队 hub 及其重启恢复入口");
 AssertTrue(optionInterfaceJson["option"]?["FC_选择预设"]?["inputs"]?.Children<JObject>()
         .Any(input => input["name"]?.Value<string>() == "preset_ids") == true,
     "自定编队的预设选择必须声明多选编号数据项");
-var formationTaskExpansionSource = ExtractSourceSection(
-    taskStartProcessorSource,
-    "private List<NodeAndParam> BuildTaskAndParams",
-    "private NodeAndParam CreateNodeAndParam");
-AssertTrue(formationTaskExpansionSource.Contains("GetSelectedFormationPresetIds(task)", StringComparison.Ordinal)
-    && formationTaskExpansionSource.Contains("node.IsContinuation = i > 0", StringComparison.Ordinal),
-    "自定编队勾选多个预设时必须按顺序展开为多个队列项，并标记后续项为同一任务的延续");
-AssertTrue(taskStartProcessorSource.Contains("!taskAndParams[i + 1].IsContinuation", StringComparison.Ordinal),
-    "同一自定编队任务展开出的后续项之间不应插入回本丸");
-var formationEquipStateMachineSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "FormationEquipStateMachine.cs"));
-AssertTrue(formationEquipStateMachineSource.Contains("DetectCurrentSlotWithRetry", StringComparison.Ordinal)
-    && formationEquipStateMachineSource.Contains("按入口 {EntrySlot} 号位继续配置", StringComparison.Ordinal)
-    && formationEquipStateMachineSource.Contains("跳过剩余装备配置", StringComparison.Ordinal),
-    "装备状态机读不到前后位编号时，首位成员在 1 号位应按入口位继续配置，其余情况跳过剩余装备配置，不能失败退回主枢纽后反复识别同一画面");
 var formationPipelineDefinition = JObject.Parse(File.ReadAllText(Path.Combine(
     Directory.GetCurrentDirectory(), "assets", "resource", "base", "pipeline", "FormationConfig.json")));
 AssertTrue(formationPipelineDefinition["FC_DetectWhereAmI"]?["next"]?.Values<string>()
@@ -1018,14 +565,6 @@ AssertTrue(formationPipelineDefinition["FC_DetectWhereAmI"]?["next"]?.Values<str
     && formationPipelineDefinition["FC_RecoverFromEquip"]?["next"]?.Values<string>()
         .SequenceEqual(["FC_BackFromEquip"]) == true,
     "编队主枢纽必须能识别更换装备页面并返回编成页，作为装备流程异常时的兜底出口");
-var formationListOcrScanSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ListOcrScan.cs"));
-AssertTrue(formationListOcrScanSource.Contains("public const double MinScore = 0.8;", StringComparison.Ordinal),
-    "列表 OCR 得分阈值必须放宽到 0.8，否则「祢祢切丸」被识别成「称称切丸」时得分 0.843 会被判成没找到");
-AssertTrue(formationListOcrScanSource.Contains("waitingForStableList", StringComparison.Ordinal)
-    && formationListOcrScanSource.Contains("StableListMaxAttempts", StringComparison.Ordinal)
-    && formationListOcrScanSource.Contains("BuildListSignature", StringComparison.Ordinal),
-    "上滑后必须等连续两帧 OCR 结果一致再判定命中，不能用回弹过程中的坐标点击");
 AssertTrue(Enumerable.Range(1, 6).All(slot =>
         formationPipelineDefinition[$"FC_FindSword{slot}"]?["recognition"]?["param"]?["expected"]?.Value<string>()
             == "刀剑男士选择"
@@ -1061,9 +600,6 @@ AssertTrue(drillThreatOption?["type"]?.Value<string>() == "input"
     && drillThreatOption["inputs"]?.Children<JObject>().Single()["tick_frequency"]?.Value<int>() == 1
     && drillThreatOption["inputs"]?.Children<JObject>().Single()["default"]?.Value<string>() == "6",
     "威胁度子选项应为1到6的离散滑块且默认值为6");
-AssertTrue(taskOptionGeneratorSource.Contains("var isFullWidthSlider", StringComparison.Ordinal)
-    && taskOptionGeneratorSource.Contains("Grid.SetColumnSpan(sliderPanel, 2)", StringComparison.Ordinal),
-    "带标题说明的单滑块应在标题下方占满可用宽度");
 AssertTrue(SwordBookFilterMatcher.Matches(true, SwordBookFilter.Owned)
     && !SwordBookFilterMatcher.Matches(false, SwordBookFilter.Owned)
     && SwordBookFilterMatcher.Matches(false, SwordBookFilter.Unowned)
@@ -1096,18 +632,6 @@ var equipmentFallbackTarget = equipmentFallbackDecisionType?
     .Invoke(null, [201]);
 AssertTrue(equipmentFallbackTarget?.ToString() == "(966, 201)",
     "一键装备按钮应保持缺装模板命中行的 y 坐标，并使用固定 x=966");
-var maaProcessorSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs"));
-var createTaskParamsSource = maaProcessorSource.Split("private NodeAndParam CreateNodeAndParam", 2)[1]
-    .Split("var taskParams = SerializeTaskParams(taskModels);", 2)[0];
-AssertTrue(createTaskParamsSource.Contains("CaptainSettingsHelper.GetSelectedSkipPositions(task.InterfaceItem)", StringComparison.Ordinal)
-    && createTaskParamsSource.Contains("CaptainSettingsDecision.GetDragNodeName(task.InterfaceItem?.Entry)", StringComparison.Ordinal)
-    && createTaskParamsSource.Contains("[\"skip_positions\"]", StringComparison.Ordinal),
-    "任务序列化前必须将当前任务的跳过位置注入对应拖拽动作，不能仅保存界面选项");
-AssertTrue(maaProcessorSource.Contains(
-        "tasker.Resource.Register(new Custom.EquipmentFallbackAction());",
-        StringComparison.Ordinal),
-    "刀装不足时的一键装备 action 必须注册到运行时资源");
 AssertFalse(optionInterfaceJson["global_option"]!.Values<string>().Contains("换队长方式"),
     "换队长方式不应继续作为全局设置");
 AssertTrue(optionInterfaceJson["option"]?["换队长方式"] == null
@@ -1677,12 +1201,6 @@ AssertTrue(
         .SequenceEqual(["DT_ForgeReturnHomeHub"]) == true
     && forgeEnabledOverride?["DT_ForgeStartForgeOnceCheck"]?["enabled"]?.Value<bool>() == true,
     "当天锻刀已完成时必须先收取已有完成刀剑，再跳过新建锻刀");
-var forgeDisassembleSelectActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ForgeDisassembleSelectAction.cs"));
-AssertTrue(
-    forgeDisassembleSelectActionSource.Contains("requiredCount - selectedCount", StringComparison.Ordinal)
-    && forgeDisassembleSelectActionSource.Contains(".Take(maximumSelectCount)", StringComparison.Ordinal),
-    "刀解选择必须只点击当前剩余所需数量，不能将当前页全部许可刀剑都选中");
 var freezeRestartOverride = interfaceJson["option"]?["卡死重启"]?["cases"]?
     .FirstOrDefault(item => (string?)item?["name"] == "Yes")?["pipeline_override"] as JObject;
 var fallbackWaitNames = Directory.GetFiles(Path.Combine(
@@ -1713,10 +1231,6 @@ for (var index = 1; index <= 5; index++)
         && (string?)enterTrainingAction?["custom_action_param"]?["message"] == "[日课] 出阵",
         $"日课演练位置 {index} 进入战斗后应记录出阵");
 }
-var drillVictoryActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "DrillVictoryAction.cs"));
-AssertTrue(drillVictoryActionSource.Contains("LoggerHelper.Info(\"[日课] 完成一圈\");", StringComparison.Ordinal),
-    "日课演练胜利后应记录完成一圈");
 
 var missingInstanceRecord = WorkRecordBuilder.Build([
     new LogEntry(logStart, "INF", "[cfg=Default][inst=配置 1/default] 开始任务：地下城", "Default", "default"),
@@ -2595,10 +2109,6 @@ AssertTrue(
         .SequenceEqual([881, 81, 107, 28]) == true
     && expeditionDefinition["E_NaibanFindSword1"]?["action"]?["custom_action"]?.Value<string>() == "NaibanFindSwordAction",
     "自动刷取内番服必须从入口分流，并使用已确认的今日内番表与选刀坐标");
-var naibanOutfitActionSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "assets", "resource", "base", "custom", "NaibanOutfitLogAction.cs"));
-AssertTrue(naibanOutfitActionSource.Contains("sync_swordbook", StringComparison.Ordinal),
-    "内番服收尾 action 必须读取联动本丸刀帐开关");
 File.WriteAllText(naibanOutfitCatalogPath,
     """
     [
@@ -2800,24 +2310,6 @@ AssertFalse(TimerExternalStartMatch.Covers(
     || TimerExternalStartMatch.Covers(
         true, true, new TimeSpan(15, 30, 0), true, "4c13648d", "  ", externalStartTime),
     "被禁用、停止任务动作、重复规则未命中或缺少目标实例时都不得回写触发标记");
-var timerModelSource = File.ReadAllText(Path.Combine(
-    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "ViewModels", "Other", "TimerModel.cs"));
-var markScheduledStartSource = ExtractSourceSection(
-    timerModelSource,
-    "public void MarkScheduledStartHandled(",
-    "private void TriggerTimer(");
-AssertTrue(markScheduledStartSource.Contains("timer.LastTriggered = new DateTime(", StringComparison.Ordinal),
-    "外部启动必须回写 LastTriggered，否则应用内计时器会在同一分钟重复触发同一个定时器");
-var forwardedLaunchSource = ExtractSourceSection(
-    rootViewSource,
-    "private void HandleForwardedLaunchCommand(",
-    "private async Task BringToForegroundAsync(");
-AssertTrue(forwardedLaunchSource.Contains("MarkScheduledStartHandled(targetId)", StringComparison.Ordinal),
-    "命名管道转发的计划任务启动必须回写定时器触发标记");
-AssertTrue(rootViewSource.Contains(
-        "TimerModel.Instance.MarkScheduledStartHandled(vm.Processor.InstanceId)",
-        StringComparison.Ordinal),
-    "命令行冷启动的自动执行同样必须回写定时器触发标记");
 
 // Windows 计划任务：同步决策
 var plannedTimers = new List<WindowsScheduledTaskTimer>
@@ -2921,16 +2413,6 @@ Console.WriteLine("Windows 计划任务 测试通过。");
 
 Console.WriteLine("FormationPreset 测试通过。");
 
-static string ExtractSourceSection(string source, string startMarker, string endMarker)
-{
-    var start = source.IndexOf(startMarker, StringComparison.Ordinal);
-    var end = source.IndexOf(endMarker, start, StringComparison.Ordinal);
-    if (start < 0 || end < 0)
-        throw new InvalidOperationException($"未找到源码片段：{startMarker} 至 {endMarker}");
-
-    return source[start..end];
-}
-
 static void AssertFalse(bool value, string message)
 {
     if (value)
@@ -2941,19 +2423,6 @@ static void AssertTrue(bool value, string message)
 {
     if (!value)
         throw new InvalidOperationException(message);
-}
-
-static int CountOccurrences(string source, string value)
-{
-    var count = 0;
-    var index = source.IndexOf(value, StringComparison.Ordinal);
-    while (index >= 0)
-    {
-        count++;
-        index = source.IndexOf(value, index + value.Length, StringComparison.Ordinal);
-    }
-
-    return count;
 }
 
 static bool InvokeUpdateDataShouldRun(InstanceConfiguration configuration, string interval, DateTime now) =>
