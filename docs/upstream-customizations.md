@@ -35,6 +35,8 @@
 
 刀装与刀剑名称匹配由 `FormationNameMatcher` 统一处理。刀装中存在铳、弓、枪、盾这类单字目标，必须先在归一化后的文本上做包含判断，再做单字长度判断，否则单字目标拿不到形近字容错。归一字形需保留銃/铳、统/铳、槍/枪，避免 OCR 把“铳兵”识别成“统兵”后扫到列表底部仍判定未找到。
 
+刀剑列表扫描的得分阈值与静止判定同属实现约束。`ListOcrScan.MinScore` 不得高于 0.8：2026-09-14 实机中“祢祢切丸”被识别成“称称切丸”时得分 0.843，高于 0.8 的判定才能正常命中，低于阈值会被当作列表里没有而触发无谓的上滑。上滑后必须等连续两帧 OCR 结果一致（列表静止）再判定命中，命中与点击坐标一律取自同一静止帧，否则会用到回弹过程中的 y 点到相邻行。“自定编队”的 `FC_FindSword1~6` 必须带选刀页识别（OCR“刀剑男士选择”）并在 `next` 末尾自引用重试，`FC_ConfirmFilterApply1~6` 的 `next` 末尾各自保留 `FC_ConfirmFilter1~6` 作为筛选未生效时的回退；这些自引用位置必须保留 `max_hit` 上限，否则重试会退化成无限点击。
+
 ### `task-captain.skip-positions`
 
 任务运行前，`MaaProcessor.CreateNodeAndParam` 必须读取当前任务的换队长下级选项，通过 `CaptainSettingsHelper` 和 `CaptainSettingsDecision` 将 `skip_positions` 注入对应拖拽 action。合战场、地下城、联队战和江户城分别使用各自的配置；未勾选位置或关闭换队长时显式传入空数组，战术强化同样传入空数组。

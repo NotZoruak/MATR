@@ -15,11 +15,18 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 /// </summary>
 public static class ListOcrScan
 {
-    /// <summary>大范围 OCR 得分阈值</summary>
-    public const double MinScore = 0.85;
+    /// <summary>
+    /// 大范围 OCR 得分阈值。
+    /// 生僻字刀名会踩到这条线：2026-09-14 实机日志里「祢祢切丸」被识别成「称称切丸」时得分为 0.843，
+    /// 低于 0.85 就会被判定成「列表里没有」，进而触发无谓的上滑与错位点击。
+    /// </summary>
+    public const double MinScore = 0.8;
 
     /// <summary>上滑后到下一次截图之间的等待（毫秒）。L 形收尾正常时列表应已停稳，这里只用于避开滑动前的旧帧</summary>
     public const int ScrollSettleMilliseconds = 150;
+
+    /// <summary>上滑后等待列表停稳的最多取帧次数，超过则改用当前帧继续扫描（避免列表持续抖动时死等）</summary>
+    public const int StableListMaxAttempts = 6;
 
     /// <summary>
     /// 刀剑列表 OCR 区域。右边界 262 只覆盖刀名列，避开列表右侧状态列（伤/轻伤/远征中…）的文字；
@@ -52,11 +59,18 @@ public static class ListOcrScan
     }
 
     /// <summary>滚动扫描循环：OCR 找目标文本（得分 ≥ 阈值），命中执行点击动作；未命中上滑；与上屏相同判定到底返回 false。
-    /// exactMatch=true 时用刀剑/刀装的字形归一精确匹配（一字之差不命中）；false 时用马匹的原有丢字容错匹配。</summary>
+    /// exactMatch=true 时用刀剑/刀装的字形归一精确匹配（一字之差不命中）；false 时用马匹的原有丢字容错匹配。
+    /// 上滑后列表还在回弹，命中判定必须等到连续两帧 OCR 结果一致（列表静止）再做：
+    /// 2026-09-14 实机即因为用了回弹过程中的 y 去点击，点到了相邻行的按钮，选刀页始终不变而卡住。</summary>
     public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll, Func<List<int>, bool> clickAction,
         string logTag, bool exactMatch = false) where T : IMaaContext
     {
         string lastOcr = string.Empty;
+        string? lastFrameSignature = null;
+        // 上滑之后必须先等列表静止，静止前的帧只用来判断「还在动」，不参与命中
+        var waitingForStableList = false;
+        var stableAttempts = 0;
+
         while (true)
         {
             ActionParamHelper.ThrowIfStopping(context);
@@ -70,6 +84,26 @@ public static class ListOcrScan
 
             var query = OcrAll(context, image, roi);
             var all = query?.All ?? [];
+
+            var frameSignature = BuildListSignature(all);
+            if (waitingForStableList)
+            {
+                if (frameSignature != lastFrameSignature && stableAttempts < StableListMaxAttempts)
+                {
+                    lastFrameSignature = frameSignature;
+                    stableAttempts++;
+                    if (stableAttempts >= StableListMaxAttempts)
+                        LoggerHelper.Warning($"[{logTag}] 列表持续抖动，改用当前帧继续扫描");
+                    else
+                    {
+                        ActionParamHelper.SleepWithStopCheck(context, ScrollSettleMilliseconds);
+                        continue;
+                    }
+                }
+                waitingForStableList = false;
+            }
+            lastFrameSignature = frameSignature;
+
             // 命中多个时取最上方（y 最小）的匹配
             var hit = all
                 .Where(r => r.Score >= MinScore && r.Text != null && (exactMatch
@@ -98,8 +132,18 @@ public static class ListOcrScan
 
             ScrollUp(context, scroll);
             ActionParamHelper.SleepWithStopCheck(context, ScrollSettleMilliseconds);
+            waitingForStableList = true;
+            stableAttempts = 0;
+            lastFrameSignature = null;
         }
     }
+
+    /// <summary>列表帧签名：文本与坐标都一致才算同一画面。回弹位移只体现在 box 上，
+    /// 得分会在同一画面上下浮动（实测同一刀名 0.843 ~ 0.900），因此不参与比较。</summary>
+    private static string BuildListSignature(IEnumerable<MaaExtensions.RecognitionResult> results)
+        => string.Join("|", results
+            .Select(item => $"{(item.Box is { Count: >= 4 } ? string.Join(",", item.Box!) : "-")}:{item.Text}")
+            .OrderBy(signature => signature, StringComparer.Ordinal));
 
     /// <summary>刀装/马匹确定按钮 OCR 区域（右侧按钮列）</summary>
     public static readonly int[] ConfirmRoi = [1027, 130, 54, 561];

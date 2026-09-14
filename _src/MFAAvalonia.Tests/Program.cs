@@ -1018,6 +1018,28 @@ AssertTrue(formationPipelineDefinition["FC_DetectWhereAmI"]?["next"]?.Values<str
     && formationPipelineDefinition["FC_RecoverFromEquip"]?["next"]?.Values<string>()
         .SequenceEqual(["FC_BackFromEquip"]) == true,
     "编队主枢纽必须能识别更换装备页面并返回编成页，作为装备流程异常时的兜底出口");
+var formationListOcrScanSource = File.ReadAllText(Path.Combine(
+    Directory.GetCurrentDirectory(), "_src", "MFAAvalonia", "Extensions", "MaaFW", "Custom", "ListOcrScan.cs"));
+AssertTrue(formationListOcrScanSource.Contains("public const double MinScore = 0.8;", StringComparison.Ordinal),
+    "列表 OCR 得分阈值必须放宽到 0.8，否则「祢祢切丸」被识别成「称称切丸」时得分 0.843 会被判成没找到");
+AssertTrue(formationListOcrScanSource.Contains("waitingForStableList", StringComparison.Ordinal)
+    && formationListOcrScanSource.Contains("StableListMaxAttempts", StringComparison.Ordinal)
+    && formationListOcrScanSource.Contains("BuildListSignature", StringComparison.Ordinal),
+    "上滑后必须等连续两帧 OCR 结果一致再判定命中，不能用回弹过程中的坐标点击");
+AssertTrue(Enumerable.Range(1, 6).All(slot =>
+        formationPipelineDefinition[$"FC_FindSword{slot}"]?["recognition"]?["param"]?["expected"]?.Value<string>()
+            == "刀剑男士选择"
+        && formationPipelineDefinition[$"FC_FindSword{slot}"]?["next"]?.Values<string>().Last() == $"FC_FindSword{slot}"
+        && formationPipelineDefinition[$"FC_FindSword{slot}"]?["max_hit"]?.Value<int>() > 1),
+    "六个选刀 node 都必须先识别选刀页、末尾自引用重试，并设置 max_hit 上限避免无限重试");
+AssertTrue(Enumerable.Range(1, 6).All(slot =>
+    {
+        var expectedFilterRetry = new[] { $"FC_FindSword{slot}", $"FC_ConfirmFilter{slot}" };
+        return formationPipelineDefinition[$"FC_ConfirmFilterApply{slot}"]?["next"]?.Values<string>()
+                .SequenceEqual(expectedFilterRetry) == true
+            && formationPipelineDefinition[$"FC_ConfirmFilterApply{slot}"]?["max_hit"]?.Value<int>() > 1;
+    }),
+    "六个筛选确定 node 都必须在下个选刀 node 之后回退到本槽位的筛选面板，并设置 max_hit 上限避免无限重试");
 AssertTrue(optionInterfaceJson["resource"]?.Children<JObject>().Single(resource =>
         resource["name"]?.Value<string>() == "刀剑乱舞")["path"]?.Values<string>()
         .SequenceEqual(["{PROJECT_DIR}/resource/base"]) == true,
