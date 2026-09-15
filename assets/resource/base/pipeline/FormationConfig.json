@@ -31,6 +31,7 @@
       "FC_HasExpeditionReturn_Title",
       "FC_IsSwordDropColor",
       "FC_RecoverFromEquip",
+      "FC_LeaveSwordSelect",
       "FC_FallbackWait"
     ],
     "on_error": ["FC_RestartGame"]
@@ -52,6 +53,26 @@
       }
     },
     "post_delay": 500,
+    "next": ["FC_DetectWhereAmI"]
+  },
+  "FC_LeaveSwordSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [538, 9, 213, 38],
+        "expected": "刀剑男士选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [139, 8, 27, 29]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [496, 8, 288, 108]
+    },
     "next": ["FC_DetectWhereAmI"]
   },
   "FC_IsAnnouncementPopup": {
@@ -592,7 +613,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -727,7 +748,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -862,7 +883,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -997,7 +1018,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1132,7 +1153,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1267,7 +1288,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1382,7 +1403,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1400,7 +1421,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1418,7 +1439,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1436,7 +1457,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1454,7 +1475,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
@@ -1472,7 +1493,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [538, 9, 203, 38],
+        "roi": [538, 9, 213, 38],
         "expected": "刀剑男士选择"
       }
     },
