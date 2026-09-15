@@ -292,6 +292,17 @@
       "notes": "上游 v2.16.1 的桌面 AboutUserControl 中 StartTutorial_Click 只弹「桌面版暂不提供移动端教程。」；教程本身在共享根壳（RootViewContent 的 TutorialOverlay，桌面由 RootView.axaml 承载）里实现，桌面同样可用。"
     },
     {
+      "id": "ui.about-clear-cache-scope",
+      "title": "关于页清理缓存范围",
+      "purpose": "登记关于页「清理缓存」的既定范围与「除正在写入的文件外全部删除」的语义，避免升级上游时被改成清理其它目录或保留日志。",
+      "files": ["_src/MFAAvalonia/Views/UserControls/Settings/AboutUserControl.axaml.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 MATR 的清理范围（AppPaths.DataRoot/debug 与 AppPaths.LogsDirectory）与删除失败项被跳过的语义，不因日志承载工作记录与日课台账而缩小范围。",
+      "verification": ["所有实例 Tasker 已释放后才开始清理", "debug 下除被占用文件外的条目全部删除", "正在写入的 debug/logs/log-*.log 删除失败时只跳过该项", "被占用文件所在的目录保留并留待下次清理", "清理后重建 debug 与 AppPaths.LogsDirectory 目录"],
+      "notes": "清理范围包含 debug/logs 下的日志、daily-task-completion.log、log_screencap 与 debug/on_error 截图；工作记录页历史与日课台账会一并清空，属于既定行为。2026-09-15 实测：Directory.Delete(path, true) 在目录内存在被占用文件时仍会删除其余条目，只保留被占用项与其所在目录，「占用文件导致同目录其它文件残留」不成立。"
+    },
+    {
       "id": "ui.tutorial-highlight-targets",
       "title": "教学引导高亮目标解析",
       "purpose": "让教学引导的高亮框对准 MATR 当前的控件，而不是沿用上游的控件索引与写死像素补偿。",

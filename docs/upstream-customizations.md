@@ -241,6 +241,12 @@ MATR 在 Windows 上把应用内定时器同步为系统计划任务，补足「
 
 教程本身由共享根壳里的 `TeachingTipOverlay` 实现，桌面与移动同样可用；首次自动播放的条件保持不变（正常启动且配置 `UI.HasCompletedFirstUseTutorial` 为 `false`，完成后该键写为 `true`）。上游 v2.16.1 的桌面 `AboutUserControl` 只在点击时弹提示，属于未接入口的占位，升级时不得按上游原样覆盖。
 
+### `ui.about-clear-cache-scope`
+
+关于页「清理缓存」的既定范围是 `AppPaths.DataRoot/debug` 与 `AppPaths.LogsDirectory`。`AboutUserControl.ClearCache_Click` 先确保所有实例的 Tasker 已释放，再清空这两个目录并重建。清理包含 `debug` 下的全部日志与截图，其中 `debug/logs/log-*.log` 是工作记录页的历史来源、`debug/logs/daily-task-completion.log` 是日课台账，清空它们属于该按钮的既定行为，不因此缩小清理范围。
+
+Windows 上正在写入的 `debug/logs/log-*.log` 被日志器占用（`shared: true` 只共享读写、不含删除），删除失败只记录警告并跳过该项，其余条目照常清理；被占用文件所在的目录因非空而保留，留待下次清理。2026-09-15 实测确认 `Directory.Delete(path, true)` 在目录内存在被占用文件时同样会删除其余条目、只保留被占用项与其所在目录，因此不能把「整目录递归」当作批量残留的原因。
+
 ### `ui.tutorial-highlight-targets`
 
 教学引导的高亮框必须对准 MATR 当前的控件。任务列表顶部按钮的步骤要按 MATR 合并后的顺序取目标：`0` = 全选/全不选（`ToggleSelectAllCommand` 已合并为一个按钮）、`1` = 添加任务、`2` = 重置、`3` = 开始/停止；需要同时高亮多个控件时用 `TutorialStep.FindTargets` 返回多个控件并取矩形并集，不得再用 `CutoutPadding` 的写死像素去补相邻按钮（上游是「index 0 右扩 50 覆盖全不选、index 2 右扩 50 覆盖重置」，在 MATR 会圈到相邻按钮）。「全选」步骤的说明文案要写成「一个按钮在全选与全不选之间切换」，四个语言资源同步。
