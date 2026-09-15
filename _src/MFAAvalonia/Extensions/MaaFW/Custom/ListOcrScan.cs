@@ -40,8 +40,8 @@ public static class ListOcrScan
     /// <summary>刀剑列表上滑：x, 起点 y, x, 终点 y。起点整体右移到状态列上方，避开刀名与刀种图标所在区域</summary>
     public static readonly int[] SwordScroll = [306, 624, 306, 128];
 
-    /// <summary>刀装/马匹列表上滑</summary>
-    public static readonly int[] EquipScroll = [864, 534, 864, 137];
+    /// <summary>刀装/马匹列表上滑：x, 起点 y, x, 终点 y。终点由 137 下移到 187，少滑 50px</summary>
+    public static readonly int[] EquipScroll = [864, 534, 864, 187];
 
     /// <summary>对指定区域执行 OCR，返回全部识别结果（含 box/score/text），失败返回 null</summary>
     public static MaaExtensions.RecognitionQuery? OcrAll<T>(T context, IMaaImageBuffer image, int[] roi) where T : IMaaContext
