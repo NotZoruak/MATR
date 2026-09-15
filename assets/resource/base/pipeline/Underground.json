@@ -247,9 +247,12 @@
         "threshold": [0.98]
       }
     },
-    "post_delay": 500,
-    "next": ["U_RecognizeResourcePoint", "U_IsTrainingApplication"],
-    "on_error": ["U_DetectWhereAmI"]
+    "pre_delay": 0,
+    "post_delay": 0,
+    "timeout": 2500,
+    "rate_limit": 250,
+    "next": ["U_RecognizeResourcePoint"],
+    "on_error": ["U_IsTrainingApplication"]
   },
   "U_RecognizeResourcePoint": {
     "recognition": {
@@ -259,6 +262,7 @@
         "expected": "获得"
       }
     },
+    "pre_delay": 0,
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",

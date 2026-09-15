@@ -52,9 +52,12 @@
         "threshold": [0.98]
       }
     },
-    "post_delay": 500,
-    "next": ["S_RecognizeResourcePoint", "S_IsTrainingApplication"],
-    "on_error": ["S_DetectWhereAmI"]
+    "pre_delay": 0,
+    "post_delay": 0,
+    "timeout": 2500,
+    "rate_limit": 250,
+    "next": ["S_RecognizeResourcePoint"],
+    "on_error": ["S_IsTrainingApplication"]
   },
   "S_RecognizeResourcePoint": {
     "recognition": {
@@ -64,6 +67,7 @@
         "expected": "获得"
       }
     },
+    "pre_delay": 0,
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
