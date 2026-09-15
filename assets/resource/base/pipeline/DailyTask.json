@@ -328,7 +328,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [1042, 272, 84, 34]
+        "target": [1042, 272, 84, 29]
       }
     },
     "post_wait_freezes": {

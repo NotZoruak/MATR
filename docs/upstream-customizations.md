@@ -181,9 +181,11 @@ MATR 的资源包固定在 `assets/`：`AppPaths.InterfaceJsonPath`、`AppPaths.
 
 ### `resource.sword-drop-recognition`
 
-MATR 使用 `SwordDropLogAction` 记录合战场、地下城、联队战和战术强化中的刀剑掉落，并支持播报和初掉落截图。初掉落不使用动画文字 OCR，而是检查 1280×720 基准画面的 `[180,397,8,30]` 区域；区域内所有像素都必须命中 RGB `[195,13,24] ±1`，命中后才进入初掉落截图与刀名识别流程。
+MATR 使用 `SwordDropLogAction` 记录合战场、地下城、联队战、战术强化、秘宝之里和日课中的刀剑掉落，并支持播报与结果画面留档。初掉落不使用动画文字 OCR，而是检查 1280×720 基准画面的 `[180,397,8,30]` 区域；区域内所有像素都必须命中 RGB `[195,13,24] ±1`，命中后才进入初掉落截图与刀名识别流程。
 
-特化和极化仍由动画 ROI 的 OCR 识别。升级资源或自定义动作时，必须保留四个 pipeline 挂载点、颜色匹配规则和 `debug/sword_drop/` 截图行为。
+极化归来画面与刀剑掉落画面共用同一套对话框色条（`[598,543,66,1]`、`[88,48,2]` 至 `[96,56,10]`），而动画 ROI 的 OCR 读不到「极」，因此改用模板 `Common/极化归来.png` 在 `[60,368,121,100]` 做 TemplateMatch（阈值 0.9）。命中后与初掉落一样保存完整画面到 `debug/sword_drop/`，文件名后缀为「极化归来」，但不写掉落日志、不播报。该判定必须排在纯色校验之前：否则极化归来画面会先被当作「非刀剑掉落画面」直接跳过，截图随之丢失。
+
+特化仍由动画 ROI 的 OCR 识别，内番完成对话由 `[53,257,54,32]` 的纯色校验排除。升级资源或自定义动作时，必须保留 6 个 pipeline 文件中的 8 个挂载点、颜色匹配规则、极化归来模板图与 `debug/sword_drop/` 截图行为。
 
 ### `resource.naiban-outfit-swordbook-link`
 
@@ -238,6 +240,12 @@ MATR 在 Windows 上把应用内定时器同步为系统计划任务，补足「
 桌面端「关于我们 → 使用教程」必须真正重播现成的多步引导，不能只弹一句「桌面版暂不提供移动端教程。」。`AboutUserControl.StartTutorial_Click` 通过视觉树定位到共用根壳 `RootViewContent`（`Views/Windows/RootView.axaml` 承载）并调用其 `TryStartTutorial()`；取不到根壳时记录警告并提示回到任务页重试。
 
 教程本身由共享根壳里的 `TeachingTipOverlay` 实现，桌面与移动同样可用；首次自动播放的条件保持不变（正常启动且配置 `UI.HasCompletedFirstUseTutorial` 为 `false`，完成后该键写为 `true`）。上游 v2.16.1 的桌面 `AboutUserControl` 只在点击时弹提示，属于未接入口的占位，升级时不得按上游原样覆盖。
+
+### `ui.about-clear-cache-scope`
+
+关于页「清理缓存」的既定范围是 `AppPaths.DataRoot/debug` 与 `AppPaths.LogsDirectory`。`AboutUserControl.ClearCache_Click` 先确保所有实例的 Tasker 已释放，再清空这两个目录并重建。清理包含 `debug` 下的全部日志与截图，其中 `debug/logs/log-*.log` 是工作记录页的历史来源、`debug/logs/daily-task-completion.log` 是日课台账，清空它们属于该按钮的既定行为，不因此缩小清理范围。
+
+Windows 上正在写入的 `debug/logs/log-*.log` 被日志器占用（`shared: true` 只共享读写、不含删除），删除失败只记录警告并跳过该项，其余条目照常清理；被占用文件所在的目录因非空而保留，留待下次清理。2026-09-15 实测确认 `Directory.Delete(path, true)` 在目录内存在被占用文件时同样会删除其余条目、只保留被占用项与其所在目录，因此不能把「整目录递归」当作批量残留的原因。
 
 ### `ui.tutorial-highlight-targets`
 
