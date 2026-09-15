@@ -8,7 +8,6 @@ public enum SwordDropAnimationKind
 {
     Unknown,
     Specialization,
-    Kiwame,
     InitialDrop,
 }
 
@@ -31,15 +30,15 @@ public static class SwordDropNotificationMatcher
             && Math.Abs(blue - targetBlue) <= safeTolerance;
     }
 
-    /// <summary>识别刀剑结果动画标记。</summary>
+    /// <summary>
+    /// 识别刀剑结果动画标记:动画 ROI 的 OCR 只稳定读出「特」。
+    /// 极化归来画面的标志 OCR 读不出「极」,由 SwordDropLogAction 的标志模板匹配判定,不在这里处理。
+    /// </summary>
     public static SwordDropAnimationKind GetAnimationKind(string? text)
     {
         var normalized = string.Concat((text ?? string.Empty).Where(character => !char.IsWhiteSpace(character)));
         if (normalized.Contains('特'))
             return SwordDropAnimationKind.Specialization;
-
-        if (normalized.Contains('极') || normalized.Contains('極'))
-            return SwordDropAnimationKind.Kiwame;
 
         return SwordDropAnimationKind.Unknown;
     }

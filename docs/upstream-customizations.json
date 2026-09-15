@@ -205,14 +205,14 @@
     },
     {
       "id": "resource.sword-drop-recognition",
-      "title": "刀剑掉落记录与初掉落颜色识别",
-      "purpose": "保留 MATR 的刀剑掉落日志、播报和初掉落截图，并使用资源画面特征识别初掉落。",
-      "files": ["assets/resource/base/custom/SwordDropLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwordDropNotificationMatcher.cs", "assets/resource/base/pipeline/Sortie.json", "assets/resource/base/pipeline/Underground.json", "assets/resource/base/pipeline/LRentaisen.json", "assets/resource/base/pipeline/TacticalTraining.json"],
+      "title": "刀剑掉落记录、初掉落与极化归来识别",
+      "purpose": "保留 MATR 的刀剑掉落日志、播报与结果画面留档，并使用资源画面特征区分初掉落、极化归来与非掉落画面。",
+      "files": ["assets/resource/base/custom/SwordDropLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwordDropNotificationMatcher.cs", "assets/resource/base/image/Common/极化归来.png", "assets/resource/base/pipeline/Sortie.json", "assets/resource/base/pipeline/Underground.json", "assets/resource/base/pipeline/LRentaisen.json", "assets/resource/base/pipeline/Hanapai.json", "assets/resource/base/pipeline/TacticalTraining.json", "assets/resource/base/pipeline/DailyTask.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留四类任务的 SwordDropLogAction 挂载、刀名校验与播报；初掉落只使用 [180,397,8,30] 区域的 RGB [195,13,24] ±1 全像素匹配，不恢复初掉落 OCR。",
-      "verification": ["初掉落颜色区域全部命中时保存截图并继续识别刀名", "颜色区域任一点超出容差时不判定为初掉落", "特化和极化继续由动画 OCR 识别", "SwordDropLogAction 动态编译并注册成功"],
-      "notes": "初掉落动画文字 OCR 不稳定，不能作为初掉落截图触发条件；颜色匹配按 1280×720 基准坐标执行。"
+      "migration_strategy": "保留全部任务的 SwordDropLogAction 挂载、刀名校验与播报；初掉落只使用 [180,397,8,30] 区域的 RGB [195,13,24] ±1 全像素匹配，不恢复初掉落 OCR；极化归来使用 Common/极化归来.png 在 [60,368,121,100] 模板匹配，命中后只留档、不写掉落日志。",
+      "verification": ["初掉落颜色区域全部命中时保存截图并继续识别刀名", "颜色区域任一点超出容差时不判定为初掉落", "极化归来模板命中时保存截图且不产出掉落记录与播报", "极化归来判定排在纯色校验之前，截图不会因纯色校验被跳过", "特化继续由动画 OCR 识别", "SwordDropLogAction 动态编译并注册成功"],
+      "notes": "初掉落动画文字 OCR 不稳定，不能作为初掉落截图触发条件；极化归来的标志 OCR 读不到「极」，只能靠模板匹配；模板判定必须排在纯色校验之前，否则该画面会被当作非刀剑掉落画面跳过；所有坐标按 1280×720 基准执行。"
     },
     {
       "id": "runtime.custom-action-loading-isolation",

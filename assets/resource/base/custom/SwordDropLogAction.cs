@@ -23,6 +23,12 @@ public class SwordDropLogAction : IMaaCustomAction
     private static readonly int[] InitialDropColorRoi = [180, 397, 8, 30];
     private static readonly int[] InitialDropColor = [195, 13, 24];
     private static readonly int[] AnimationRoi = [131, 354, 136, 126];
+    // 极化归来标志:该画面与刀剑掉落共用同一套对话框色条,动画 ROI 又读不到「极」,
+    // 只能用标志图形的模板匹配区分,命中后只留档、不视为掉落
+    private static readonly int[] KiwameReturnRoi = [60, 368, 121, 100];
+    private const string KiwameReturnTemplate = "Common/极化归来.png";
+    private const string KiwameReturnSuffix = "极化归来";
+    private const double KiwameReturnThreshold = 0.9;
     // 掉落画面色条:与各掉落 node 的 ColorMatch 参数(roi [598,543,66,1] 区间 [88,48,2]~[96,56,10])保持一致,
     // 用于确认画面是否仍停留在掉落画面
     private static readonly int[] BannerRoi = [598, 543, 66, 1];
@@ -45,10 +51,18 @@ public class SwordDropLogAction : IMaaCustomAction
         var click = ParseArray(json["click"] as JArray, "刀剑掉落点击区域");
         var task = (string?)json["task"] ?? "刀剑掉落";
         var prefix = $"[{task}]";
-        // 只有产出掉落记录的路径才需要等待画面关闭
+        // 产出掉落记录与需要留档的路径都要等画面关闭,避免同一次画面被重复处理
         var shouldWaitForClose = false;
 
-        if (IsPlainBackdrop(context, json))
+        // 极化归来判定放在最前:该画面的对话框色条与刀剑掉落一致,若先跑纯色校验可能被直接跳过而丢失截图
+        if (IsKiwameReturn(context))
+        {
+            // 与初掉落一样保存完整画面,但不视为掉落:不写掉落日志、不播报
+            SaveKiwameReturnScreenshot(context, roi, prefix);
+            LoggerHelper.Info($"{prefix} 极化归来画面，跳过刀剑掉落识别");
+            shouldWaitForClose = true;
+        }
+        else if (IsPlainBackdrop(context, json))
         {
             // 说明性日志供排查,解析器只认词表行,该行不会计入统计
             LoggerHelper.Info($"{prefix} 非刀剑掉落画面，跳过 OCR 打点");
@@ -58,9 +72,9 @@ public class SwordDropLogAction : IMaaCustomAction
             var animationKind = IsInitialDropMarker(context)
                 ? SwordDropAnimationKind.InitialDrop
                 : SwordDropNotificationMatcher.GetAnimationKind(ReadText(context, AnimationRoi));
-            if (animationKind is SwordDropAnimationKind.Specialization or SwordDropAnimationKind.Kiwame)
+            if (animationKind == SwordDropAnimationKind.Specialization)
             {
-                LoggerHelper.Info($"{prefix} 特化或极化动画，跳过刀剑掉落识别");
+                LoggerHelper.Info($"{prefix} 特化动画，跳过刀剑掉落识别");
             }
             else if (animationKind == SwordDropAnimationKind.InitialDrop)
             {
@@ -92,6 +106,50 @@ public class SwordDropLogAction : IMaaCustomAction
         if (shouldWaitForClose)
             WaitDropScreenClosed(context, click, prefix);
         return true;
+    }
+
+    /// <summary>
+    /// 极化归来标志模板匹配:命中即判定当前是极化归来画面。
+    /// 该画面的标志与初印位置相近但图形不同,动画 ROI 的 OCR 读不出「极」,只能靠标志图形区分。
+    /// </summary>
+    private static bool IsKiwameReturn<T>(T context) where T : IMaaContext
+    {
+        using var image = context.GetImage();
+        if (image == null)
+            return false;
+
+        var taskModel = new MaaNode
+        {
+            Name = "SwordDropKiwameReturn",
+            Recognition = "TemplateMatch",
+            Roi = KiwameReturnRoi,
+            Template = [KiwameReturnTemplate],
+            Threshold = new List<double> { KiwameReturnThreshold },
+            GreenMask = true,
+        };
+        var detail = context.RunRecognition(taskModel, image);
+        if (detail?.Detail == null)
+            return false;
+
+        var query = JsonConvert.DeserializeObject<MaaExtensions.RecognitionQuery>(detail.Detail);
+        return query?.Best != null;
+    }
+
+    /// <summary>
+    /// 极化归来画面按初掉落的方式留档:刀名可解析时以刀名命名截图,解析不出时记为未识别刀剑。
+    /// 该画面不产出掉落记录、不播报。
+    /// </summary>
+    private static void SaveKiwameReturnScreenshot<T>(T context, int[] roi, string prefix) where T : IMaaContext
+    {
+        var text = ReadText(context, roi);
+        if (TryValidateSword(text, out _, out var swordName))
+        {
+            SaveScreenshot(context, swordName, KiwameReturnSuffix);
+            return;
+        }
+
+        SaveScreenshot(context, "未识别刀剑", KiwameReturnSuffix);
+        LoggerHelper.Warning($"{prefix} 极化归来刀名 OCR 校验失败: {text}");
     }
 
     /// <summary>
