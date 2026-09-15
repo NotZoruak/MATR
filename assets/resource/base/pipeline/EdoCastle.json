@@ -68,9 +68,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200},
     "next": ["EC_IsAnnouncementPopup", "EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 200}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_IsSupplyPopup": {
     "recognition": {
@@ -81,13 +81,13 @@
         "threshold": [0.98]
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1241, 37, 1, 1]
       }
     },
-    "pre_delay": 100,
     "post_delay": 500,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -102,38 +102,38 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
-    "next": ["EC_LoginRewardClick2"],
-    "on_error": ["EC_DetectWhereAmI"],
+    "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["EC_LoginRewardClick2"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_LoginRewardClick2": {
+    "pre_delay": 1000,
     "action": {
       "type": "Click",
       "param": {
         "target": [1092, 318, 1, 1]
       }
     },
-    "pre_delay": 1000,
-    "next": ["EC_LoginRewardClick3"],
-    "on_error": ["EC_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 200,
       "target": [240, 104, 803, 561]
-    }
+    },
+    "next": ["EC_LoginRewardClick3"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_LoginRewardClick3": {
+    "pre_delay": 1000,
     "action": {
       "type": "Click",
       "param": {
         "target": [1092, 318, 1, 1]
       }
     },
-    "pre_delay": 1000,
     "timeout": 3000,
     "next": ["EC_IsLoginReward"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -146,13 +146,13 @@
         "expected": "经验"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [388, 59, 54, 25]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -164,13 +164,13 @@
         "expected": "远征结果"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [388, 59, 54, 25]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -179,8 +179,8 @@
       "type": "ColorMatch",
       "param": {
         "roi": [66, 58, 11, 13],
-        "upper": [40, 155, 30],
-        "lower": [23, 95, 15]
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
       }
     },
     "next": ["EC_IsHome", "EC_DetectWhereAmI"],
@@ -223,8 +223,8 @@
         "threshold": [0.8]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "post_delay": 3000,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -257,8 +257,8 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "post_delay": 3000,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -273,8 +273,8 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "post_delay": 2000,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -287,13 +287,13 @@
         "expected": "更新"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [578, 440, 130, 55]
       }
     },
-    "pre_delay": 100,
     "post_delay": 2000,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -308,8 +308,8 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -321,13 +321,13 @@
         "expected": "连接中断"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [738, 449, 100, 39]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -415,13 +415,13 @@
         "expected": "经验"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [388, 59, 54, 25]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -433,8 +433,8 @@
         "expected": "战斗结果"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -443,21 +443,21 @@
       "type": "ColorMatch",
       "param": {
         "roi": [598, 543, 66, 1],
-        "upper": [96, 56, 10],
-        "lower": [88, 48, 2]
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [947, 533, 67, 75]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
-"EC_IsTeamSelect": {
+  "EC_IsTeamSelect": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -482,13 +482,13 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_OnSortieScreen": {
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [8, 299, 32, 89]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -500,8 +500,8 @@
         "expected": "出阵"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_DetectWhereAmI"]
   },
   "EC_PostClickMenuHub": {
@@ -529,22 +529,22 @@
         "expected": "目"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_PostClickMenuHub"],
     "on_error": ["EC_DetectWhereAmI"]
   },
-"EC_ClickTeam": {
+  "EC_ClickTeam": {
     "action": {
       "type": "Click",
       "param": {
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["EC_CaptainHub"],
-    "on_error": ["EC_DetectWhereAmI"],
     "repeat": 2,
-    "repeat_delay": 300
+    "repeat_delay": 300,
+    "next": ["EC_CaptainHub"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_TryClickHome": {
     "next": ["EC_ClickHomeInMenu", "EC_DetectWhereAmI"],
@@ -552,13 +552,13 @@
   },
   "EC_ClickHomeInMenu": {
     "enabled": false,
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1037, 169, 110, 44]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_VerifyHomeMenuClosed"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -612,13 +612,13 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ClickDifficulty": {
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [984, 307, 48, 3]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_IsTeamSelect", "EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -637,13 +637,13 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_AfterCaptain": {
+    "pre_delay": 500,
     "action": {
       "type": "Click",
       "param": {
         "target": [1153, 584, 96, 89]
       }
     },
-    "pre_delay": 500,
     "post_delay": 500,
     "next": ["EC_DetectTicket"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -668,13 +668,13 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ReplenishTicket": {
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [480, 468, 1, 1]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_ClickRestore3"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -686,12 +686,13 @@
         "expected": "恢复3个"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_ClickReplenishConfirm"],
     "on_error": ["EC_ClickRestore3"]
   },
   "EC_ClickReplenishConfirm": {
+    "pre_delay": 500,
     "action": {
       "type": "Custom",
       "custom_action": "LogAction",
@@ -701,7 +702,6 @@
         "click": [603, 449, 78, 38]
       }
     },
-    "pre_delay": 500,
     "next": ["EC_AfterCaptain"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -726,13 +726,13 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ConfirmEnterMap": {
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [599, 582, 81, 41]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -744,8 +744,8 @@
         "expected": "目"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_PostClickMenuHub"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -761,13 +761,13 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ClickSortieNow": {
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1204, 629, 1, 1]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_PostSortieHub"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -775,7 +775,7 @@
     "next": ["EC_IsPreSortieConfirm"],
     "on_error": ["EC_DetectWhereAmI"]
   },
-"EC_TerminateRound": {
+  "EC_TerminateRound": {
     "action": {
       "type": "Custom",
       "custom_action": "LogAction",
@@ -872,7 +872,7 @@
   },
   "EC_CheckMoreSpecialDrops": {
     "timeout": 10000,
-    "next": ["EC_IsSpecialDrop", "EC_WaitForEventPage", "EC_IsActionSelect","EC_DeclineUmeboshiUse"],
+    "next": ["EC_IsSpecialDrop", "EC_WaitForEventPage", "EC_IsActionSelect", "EC_DeclineUmeboshiUse"],
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_IsActionSelect": {
@@ -945,6 +945,7 @@
         "expected": "出阵确认"
       }
     },
+    "pre_delay": 100,
     "action": {
       "type": "Custom",
       "custom_action": "LogAction",
@@ -954,7 +955,6 @@
         "click": [590, 593, 84, 17]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_WaitActionSelectAfterEnter"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -1032,8 +1032,8 @@
         "expected": "出阵"
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -1041,13 +1041,13 @@
     "next": ["EC_ClickMenu", "EC_DetectWhereAmI"]
   },
   "EC_CloseTicketPopup": {
+    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [782, 465, 1, 1]
       }
     },
-    "pre_delay": 100,
     "next": ["EC_TerminateNoTicket"],
     "on_error": ["EC_DetectWhereAmI"]
   },
@@ -1067,12 +1067,12 @@
         "target": [772, 448, 32, 40]
       }
     },
-    "next": ["EC_LogPreDamage"],
-    "on_error": ["EC_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [368, 464, 539, 90]
-    }
+    },
+    "next": ["EC_LogPreDamage"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_LogPreDamage": {
     "action": {
@@ -1096,9 +1096,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200},
     "next": ["EC_ClickRepairInMenu", "EC_ClickMenuForRepair"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 200}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ClickRepairInMenu": {
     "recognition": {
@@ -1109,9 +1109,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["EC_SelectDamagedSword", "EC_ClickRepairInMenu"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_SelectDamagedSword": {
     "recognition": {
@@ -1134,9 +1134,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["EC_ConfirmSelectSlot"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_SelectRepairSlot2": {
     "recognition": {
@@ -1148,9 +1148,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["EC_ConfirmSelectSlot"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_SelectRepairSlot3": {
     "recognition": {
@@ -1162,9 +1162,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["EC_ConfirmSelectSlot"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_SelectRepairSlot4": {
     "recognition": {
@@ -1176,9 +1176,9 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
     "next": ["EC_ConfirmSelectSlot"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "post_wait_freezes": {"time": 100}
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_CheckRepairScreen": {
     "recognition": {
@@ -1200,20 +1200,20 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["EC_CheckAccel", "EC_ClickAccel"],
-    "on_error": ["EC_LogNoDamagedSword"],
     "post_wait_freezes": {
       "time": 200,
       "target": [262, 307, 147, 46]
-    }
+    },
+    "next": ["EC_CheckAccel", "EC_ClickAccel"],
+    "on_error": ["EC_LogNoDamagedSword"]
   },
   "EC_CheckAccel": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [1162, 258, 6, 4],
-        "upper": [178, 27, 27],
-        "lower": [172, 21, 21]
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
       }
     },
     "next": ["EC_ClickRepairDone"],
@@ -1226,12 +1226,12 @@
         "target": [1156, 241, 27, 25]
       }
     },
-    "next": ["EC_CaptureRepairInfo"],
-    "on_error": ["EC_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1156, 241, 27, 25]
-    }
+    },
+    "next": ["EC_CaptureRepairInfo"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_CaptureRepairInfo": {
     "action": {
@@ -1260,12 +1260,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["EC_LogRepairDone"],
-    "on_error": ["EC_DetectWhereAmI"],
     "post_wait_freezes": {
       "time": 100,
       "target": [1159, 588, 83, 44]
-    }
+    },
+    "next": ["EC_LogRepairDone"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_LogRepairDone": {
     "action": {
@@ -1362,8 +1362,8 @@
         "threshold": [0.95]
       }
     },
-    "action": {"type": "Click"},
     "pre_delay": 100,
+    "action": {"type": "Click"},
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   }

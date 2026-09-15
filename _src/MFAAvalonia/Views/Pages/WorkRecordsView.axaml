@@ -368,11 +368,6 @@
                                            IsVisible="{Binding SelectedHasSortie}"
                                            Margin="0,0,24,6" />
                                 <TextBlock
-                                           Text="{Binding SelectedRecord.MarchCount, StringFormat=行军次数：{0}}"
-                                           FontSize="14"
-                                           Foreground="#344054"
-                                           Margin="0,0,24,6" />
-                                <TextBlock
                                            Text="{Binding SelectedRecord.RoundCount, StringFormat=完成圈数：{0}}"
                                            FontSize="14"
                                            Foreground="#344054"

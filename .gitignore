@@ -56,8 +56,9 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
-# 本地项目文档
-/docs/
+# 本地项目文档(仅 docs/分支流程.md 随仓库分发)
+/docs/*
+!/docs/分支流程.md
 
 # 打包产物
 /MATR-*.zip

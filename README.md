@@ -144,7 +144,6 @@ MATR/
 │   ├── MFAAvalonia/                      ← 核心库、界面、服务和业务逻辑
 │   ├── MFAAvalonia.Desktop/              ← Windows/macOS 桌面端宿主
 │   ├── MFAAvalonia.Android/              ← Android 端宿主
-│   ├── MFAAvalonia.Tests/                ← 自动化测试
 │   └── MFAAvalonia.sln                   ← Visual Studio 解决方案
 ├── docs/                                 ← 项目文档
 ├── tools/                                ← 构建/发布脚本
