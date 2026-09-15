@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.1-beta.2",
+  "version": "v0.14.1-beta.1",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.1-beta.2 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.1-beta.1 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -58,6 +58,25 @@
       "option": ["FC_选择预设"],
       "label": "自定编队",
       "description": "按所选预设配置指定部队的刀剑、刀装与马匹。可在任务设置中新增、编辑、复制或删除预设，并勾选多个预设，任务会按设置页从上到下的顺序依次编成。\n\n刀装输入要求：刀装名称直接连写、无需分隔符，如「轻步重步」。支持的名称：轻步、重步、精锐、轻骑、重骑、投石、铳、弓、枪、盾。按输入个数装备：输入几个就装备几个，刀装槽不足的槽位自动跳过。"
+    },
+    {
+      "name": "日课",
+      "entry": "DailyTask",
+      "default_check": false,
+      "repeatable": false,
+      "repeat_count": 0,
+      "option": [
+        "DT_同步后勤",
+        "DT_登录奖励",
+        "DT_暖心礼包",
+        "DT_合成",
+        "DT_刀解锻刀",
+        "DT_演练",
+        "DT_收取奖励",
+        "DT_领取邮件"
+      ],
+      "label": "一键日课",
+      "description": "按固定顺序执行启用的日课项目：同步后勤 → 登录奖励 → 暖心礼包 → 合成 → 刀解锻刀 → 演练 → 领取奖励 → 领取邮件。未启用的项目直接跳过。登录奖励、暖心礼包、合成、刀解与锻刀在每个游戏日只完成一次，演练按当日累计胜利 3 次计算，游戏日于每日 5:00 刷新；同步后勤、领取奖励与领取邮件每次运行各执行一次。\n\n* **同步后勤**：使用「本丸后勤」任务中的设置，先检查队伍状态并派遣远征，同时处理修刀与内番，不启动远征倒计时。启用演练选项时，请确保演练使用的部队在「后勤」任务中设置为休息。\n* **登录奖励**：领取每日登录签到奖励。\n* **暖心礼包**：进入万屋领取免费礼包。\n* **合成**：固定选择第一把刀剑作为强化对象，并按刀解/合成许可名单选择一把未上锁刀剑作为材料；找不到可合成对象或无可用素材时，本次运行跳过合成，不记为今日已完成。\n* **刀解锻刀**：可分别开启刀解与锻刀。刀解开启时按许可名单至少刀解一把；收取已完成锻刀前刀位不足时按缺口刀解腾位，该次刀解同样计入当天刀解完成记录；锻刀按所选公式在每个游戏日最多锻造 3 把，不使用加速符；刀位不足、无空闲锻冶所或未找到限锻公式时跳过本次锻刀。\n* **演练**：最多处理 5 个对手位置，当日累计胜利 3 次或处理完 5 个位置即结束，每个位置本轮只挑战一次。\n* **领取奖励**：可分别领取日常、月常、主线与活动任务奖励，每次运行执行一次。\n* **领取邮件**：按所选邮件类别领取可收取的邮件，每次运行执行一次。"
     },
     {
       "name": "合战场",
@@ -6150,7 +6169,54 @@
             "UD_SB_FallbackWait": {"enabled": false},
             "Warehouse_FallbackWait": {"enabled": false},
             "FC_FallbackWait": {"enabled": false},
-            "UF_FallbackWait": {"enabled": false}
+            "UF_FallbackWait": {"enabled": false},
+            "DT_FallbackWait": {"enabled": false},
+            "DT_LoginRewardFallbackWait": {"enabled": false},
+            "DT_WarmGiftFallbackWait": {"enabled": false},
+            "DT_MixFallbackWait": {"enabled": false},
+            "DT_ForgeFallbackWait": {"enabled": false},
+            "DT_DrillFallbackWait": {"enabled": false},
+            "DT_RewardFallbackWait": {"enabled": false},
+            "DT_MailFallbackWait": {"enabled": false},
+            "DT_LoginRewardEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_WarmGiftEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_MixEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_ForgeEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_ForgeNavigateToDisassemble": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_DrillEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_RewardEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_MailEntry": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_ReturnHomeHub": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_WarmGiftFinishClaimHub": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_DrillBattleHub": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_RewardClosePopupHub": {
+              "on_error": ["DT_RestartGame"]
+            },
+            "DT_MailCloseMailboxHub": {
+              "on_error": ["DT_RestartGame"]
+            }
           }
         },
         {
@@ -6259,7 +6325,20 @@
         "G_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
         "SF_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
         "TT_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "Expedition": {"timeout": "{timeout_seconds}000"}
+        "Expedition": {"timeout": "{timeout_seconds}000"},
+        "DT_LoginRewardEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_WarmGiftEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_MixEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_ForgeEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_ForgeNavigateToDisassemble": {"timeout": "{timeout_seconds}000"},
+        "DT_DrillEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_RewardEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_MailEntry": {"timeout": "{timeout_seconds}000"},
+        "DT_ReturnHomeHub": {"timeout": "{timeout_seconds}000"},
+        "DT_WarmGiftFinishClaimHub": {"timeout": "{timeout_seconds}000"},
+        "DT_DrillBattleHub": {"timeout": "{timeout_seconds}000"},
+        "DT_RewardClosePopupHub": {"timeout": "{timeout_seconds}000"},
+        "DT_MailCloseMailboxHub": {"timeout": "{timeout_seconds}000"}
       }
     },
     "U_跳过位置": {
@@ -6712,8 +6791,8 @@
         }
       ]
     },
-    "D_同步后勤": {
-      "name": "D_同步后勤",
+    "DT_同步后勤": {
+      "name": "DT_同步后勤",
       "label": "同步后勤",
       "type": "checkbox",
       "cases": [
@@ -6786,7 +6865,9 @@
                 "param": {
                   "target": [1037, 169, 110, 44]
                 }
-              }
+              },
+              "next": ["DT_WaitRefresh"],
+              "on_error": ["DT_ProjectRouter"]
             },
             "E_AllTeamsBusy": {
               "action": {
@@ -6796,51 +6877,62 @@
                 }
               },
               "repeat": 2,
-              "repeat_delay": 500
-            }
+              "repeat_delay": 500,
+              "next": ["DT_SyncLogisticsSkipCurrentRun"]
+            },
+            "DT_StepSyncLogistics": {"enabled": true}
           }
         }
       ],
       "default_case": []
     },
-    "D_登录奖励": {
-      "name": "D_登录奖励",
+    "DT_登录奖励": {
+      "name": "DT_登录奖励",
       "label": "登录奖励",
       "type": "checkbox",
       "default_case": [],
       "cases": [
         {
           "name": "登录奖励",
-          "label": "登录奖励"
+          "label": "登录奖励",
+          "pipeline_override": {
+            "DT_StepLoginReward": {"enabled": true}
+          }
         }
       ]
     },
-    "D_暖心礼包": {
-      "name": "D_暖心礼包",
+    "DT_暖心礼包": {
+      "name": "DT_暖心礼包",
       "label": "暖心礼包",
       "type": "checkbox",
       "default_case": [],
       "cases": [
         {
           "name": "暖心礼包",
-          "label": "暖心礼包"
+          "label": "暖心礼包",
+          "pipeline_override": {
+            "DT_StepWarmGift": {"enabled": true}
+          }
         }
       ]
     },
-    "D_合成": {
-      "name": "D_合成",
+    "DT_合成": {
+      "name": "DT_合成",
       "label": "合成",
       "type": "checkbox",
       "default_case": [],
       "cases": [
         {
           "name": "合成",
-          "label": "合成"
+          "label": "合成",
+          "pipeline_override": {
+            "DT_StepMix": {"enabled": true}
+          }
         }
       ]
     },
-    "D_刀解锻刀": {
-      "name": "D_刀解锻刀",
+    "DT_刀解锻刀": {
+      "name": "DT_刀解锻刀",
       "label": "刀解锻刀",
       "type": "checkbox",
       "default_case": [],
@@ -6848,12 +6940,12 @@
         {
           "name": "刀解锻刀",
           "label": "刀解锻刀",
-          "option": ["D_锻刀", "D_刀解"]
+          "option": ["DT_锻刀", "DT_刀解"]
         }
       ]
     },
-    "D_锻刀": {
-      "name": "D_锻刀",
+    "DT_锻刀": {
+      "name": "DT_锻刀",
       "label": "锻刀",
       "type": "switch",
       "inline_sub_options": true,
@@ -6866,12 +6958,17 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["D_锻刀公式"]
+          "option": ["DT_锻刀公式"],
+          "pipeline_override": {
+            "DT_StepForge": {"enabled": true},
+            "DT_ForgeClaimCompletedHub": {"enabled": true},
+            "DT_ForgeDetectResourceInput": {"enabled": true}
+          }
         }
       ]
     },
-    "D_刀解": {
-      "name": "D_刀解",
+    "DT_刀解": {
+      "name": "DT_刀解",
       "label": "刀解",
       "type": "switch",
       "default_case": "No",
@@ -6882,12 +6979,19 @@
         },
         {
           "name": "Yes",
-          "label": "开启"
+          "label": "开启",
+          "pipeline_override": {
+            "DT_StepDisassemble": {"enabled": true},
+            "DT_ForgeDailyDisassembleOnceCheck": {"enabled": true},
+            "DT_ForgeCheckCapacity": {
+              "on_error": ["DT_ForgeNavigateToDisassemble"]
+            }
+          }
         }
       ]
     },
-    "D_锻刀公式": {
-      "name": "D_锻刀公式",
+    "DT_锻刀公式": {
+      "name": "DT_锻刀公式",
       "label": "锻刀公式",
       "description": "限锻公式：检测到限锻复选框时勾选后锻刀，未检测到则跳过锻刀。\n限锻优先：检测到限锻复选框时勾选后锻刀，未检测到则改用 ALL 50。\nALL 50：始终使用四项资源均为 50 的公式。\n\n三种公式均不使用加速符。",
       "type": "select",
@@ -6895,20 +6999,35 @@
       "cases": [
         {
           "name": "limited",
-          "label": "限锻公式"
+          "label": "限锻公式",
+          "pipeline_override": {
+            "DT_ForgeFormulaAll50": {"enabled": false},
+            "DT_ForgeFormulaLimited": {"enabled": true},
+            "DT_ForgeFormulaLimitedFirst": {"enabled": false}
+          }
         },
         {
           "name": "limited_first",
-          "label": "限锻优先"
+          "label": "限锻优先",
+          "pipeline_override": {
+            "DT_ForgeFormulaAll50": {"enabled": false},
+            "DT_ForgeFormulaLimitedFirst": {"enabled": true},
+            "DT_ForgeFormulaLimited": {"enabled": false}
+          }
         },
         {
           "name": "all50",
-          "label": "ALL 50"
+          "label": "ALL 50",
+          "pipeline_override": {
+            "DT_ForgeFormulaAll50": {"enabled": true},
+            "DT_ForgeFormulaLimited": {"enabled": false},
+            "DT_ForgeFormulaLimitedFirst": {"enabled": false}
+          }
         }
       ]
     },
-    "D_演练": {
-      "name": "D_演练",
+    "DT_演练": {
+      "name": "DT_演练",
       "label": "演练",
       "type": "checkbox",
       "default_case": [],
@@ -6916,76 +7035,152 @@
         {
           "name": "演练",
           "label": "演练",
-          "option": ["D_演练部队", "D_演练阵形", "D_演练避战强敌"]
+          "option": ["DT_演练部队", "DT_演练阵形", "DT_演练避战强敌"],
+          "pipeline_override": {
+            "DT_StepDrill": {"enabled": true}
+          }
         }
       ]
     },
-    "D_演练部队": {
-      "name": "D_演练部队",
+    "DT_演练部队": {
+      "name": "DT_演练部队",
       "label": "选择部队",
       "type": "select",
       "default_case": "部队一",
       "cases": [
         {
           "name": "部队一",
-          "label": "部队一"
+          "label": "部队一",
+          "pipeline_override": {
+            "DT_DrillSelectTeam": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            }
+          }
         },
         {
           "name": "部队二",
-          "label": "部队二"
+          "label": "部队二",
+          "pipeline_override": {
+            "DT_DrillSelectTeam": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            }
+          }
         },
         {
           "name": "部队三",
-          "label": "部队三"
+          "label": "部队三",
+          "pipeline_override": {
+            "DT_DrillSelectTeam": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            }
+          }
         },
         {
           "name": "部队四",
-          "label": "部队四"
+          "label": "部队四",
+          "pipeline_override": {
+            "DT_DrillSelectTeam": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            }
+          }
         },
         {
           "name": "部队五",
-          "label": "部队五"
+          "label": "部队五",
+          "pipeline_override": {
+            "DT_DrillSelectTeam": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            }
+          }
         }
       ]
     },
-    "D_演练阵形": {
-      "name": "D_演练阵形",
+    "DT_演练阵形": {
+      "name": "DT_演练阵形",
       "label": "选择阵形",
       "type": "select",
       "default_case": "不启用",
       "cases": [
         {
           "name": "不启用",
-          "label": "不启用"
+          "label": "不启用",
+          "pipeline_override": {
+            "DT_DrillIsInFormationSelect": {"enabled": false}
+          }
         },
         {
           "name": "鱼鳞阵",
-          "label": "鱼鳞阵"
+          "label": "鱼鳞阵",
+          "pipeline_override": {
+            "DT_DrillSelectFormation": {
+              "target": [212, 234, 1, 1]
+            }
+          }
         },
         {
           "name": "横队阵",
-          "label": "横队阵"
+          "label": "横队阵",
+          "pipeline_override": {
+            "DT_DrillSelectFormation": {
+              "target": [591, 234, 1, 1]
+            }
+          }
         },
         {
           "name": "雁行阵",
-          "label": "雁行阵"
+          "label": "雁行阵",
+          "pipeline_override": {
+            "DT_DrillSelectFormation": {
+              "target": [1037, 222, 1, 1]
+            }
+          }
         },
         {
           "name": "鹤翼阵",
-          "label": "鹤翼阵"
+          "label": "鹤翼阵",
+          "pipeline_override": {
+            "DT_DrillSelectFormation": {
+              "target": [195, 431, 1, 1]
+            }
+          }
         },
         {
           "name": "方阵",
-          "label": "方阵"
+          "label": "方阵",
+          "pipeline_override": {
+            "DT_DrillSelectFormation": {
+              "target": [625, 407, 1, 1]
+            }
+          }
         },
         {
           "name": "逆行阵",
-          "label": "逆行阵"
+          "label": "逆行阵",
+          "pipeline_override": {
+            "DT_DrillSelectFormation": {
+              "target": [1017, 421, 1, 1]
+            }
+          }
         }
       ]
     },
-    "D_演练避战强敌": {
-      "name": "D_演练避战强敌",
+    "DT_演练避战强敌": {
+      "name": "DT_演练避战强敌",
       "label": "避战强敌",
       "type": "switch",
       "inline_sub_options": true,
@@ -6998,12 +7193,15 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["D_演练威胁度"]
+          "option": ["DT_演练威胁度"],
+          "pipeline_override": {
+            "DT_DrillDangerCheck": {"enabled": true}
+          }
         }
       ]
     },
-    "D_演练威胁度": {
-      "name": "D_演练威胁度",
+    "DT_演练威胁度": {
+      "name": "DT_演练威胁度",
       "label": "威胁度阈值",
       "type": "input",
       "description": "对面每有一把丙子或极化刀剑，威胁度加一；威胁度达到阈值时视为强敌。",
@@ -7017,151 +7215,17 @@
           "maximum": 6,
           "tick_frequency": 1
         }
-      ]
-    },
-    "D_检非违使": {
-      "name": "D_检非违使",
-      "label": "检非违使",
-      "type": "checkbox",
-      "default_case": [],
-      "cases": [
-        {
-          "name": "检非违使",
-          "label": "检非违使",
-          "option": ["D_检非违使部队", "D_检非违使时代", "D_检非违使地域", "D_检非违使阵形"]
+      ],
+      "pipeline_override": {
+        "DT_DrillDangerCheck": {
+          "action": {
+            "custom_action_param": {"threshold": "{threshold}"}
+          }
         }
-      ]
+      }
     },
-    "D_检非违使部队": {
-      "name": "D_检非违使部队",
-      "label": "选择出阵部队",
-      "type": "select",
-      "default_case": "部队一",
-      "cases": [
-        {
-          "name": "部队一",
-          "label": "部队一"
-        },
-        {
-          "name": "部队二",
-          "label": "部队二"
-        },
-        {
-          "name": "部队三",
-          "label": "部队三"
-        },
-        {
-          "name": "部队四",
-          "label": "部队四"
-        },
-        {
-          "name": "部队五",
-          "label": "部队五"
-        }
-      ]
-    },
-    "D_检非违使时代": {
-      "name": "D_检非违使时代",
-      "label": "选择时代",
-      "type": "select",
-      "default_case": "时代一",
-      "cases": [
-        {
-          "name": "时代一",
-          "label": "时代一"
-        },
-        {
-          "name": "时代二",
-          "label": "时代二"
-        },
-        {
-          "name": "时代三",
-          "label": "时代三"
-        },
-        {
-          "name": "时代四",
-          "label": "时代四"
-        },
-        {
-          "name": "时代五",
-          "label": "时代五"
-        },
-        {
-          "name": "时代六",
-          "label": "时代六"
-        },
-        {
-          "name": "时代七",
-          "label": "时代七"
-        },
-        {
-          "name": "时代八",
-          "label": "时代八"
-        }
-      ]
-    },
-    "D_检非违使地域": {
-      "name": "D_检非违使地域",
-      "label": "选择地域",
-      "type": "select",
-      "default_case": "地域一",
-      "cases": [
-        {
-          "name": "地域一",
-          "label": "地域一"
-        },
-        {
-          "name": "地域二",
-          "label": "地域二"
-        },
-        {
-          "name": "地域三",
-          "label": "地域三"
-        },
-        {
-          "name": "地域四",
-          "label": "地域四"
-        }
-      ]
-    },
-    "D_检非违使阵形": {
-      "name": "D_检非违使阵形",
-      "label": "选择阵形",
-      "type": "select",
-      "default_case": "不启用",
-      "cases": [
-        {
-          "name": "不启用",
-          "label": "不启用"
-        },
-        {
-          "name": "鱼鳞阵",
-          "label": "鱼鳞阵"
-        },
-        {
-          "name": "横队阵",
-          "label": "横队阵"
-        },
-        {
-          "name": "雁行阵",
-          "label": "雁行阵"
-        },
-        {
-          "name": "鹤翼阵",
-          "label": "鹤翼阵"
-        },
-        {
-          "name": "方阵",
-          "label": "方阵"
-        },
-        {
-          "name": "逆行阵",
-          "label": "逆行阵"
-        }
-      ]
-    },
-    "D_收取奖励": {
-      "name": "D_收取奖励",
+    "DT_收取奖励": {
+      "name": "DT_收取奖励",
       "label": "领取奖励",
       "type": "checkbox",
       "default_case": [],
@@ -7169,44 +7233,15 @@
         {
           "name": "领取奖励",
           "label": "领取奖励",
-          "option": ["D_领取日常奖励", "D_领取月常奖励", "D_领取主线奖励", "D_领取活动奖励"]
+          "option": ["DT_领取日常奖励", "DT_领取月常奖励", "DT_领取主线奖励", "DT_领取活动奖励"],
+          "pipeline_override": {
+            "DT_StepReward": {"enabled": true}
+          }
         }
       ]
     },
-    "D_领取日常奖励": {
-      "name": "D_领取日常奖励",
-      "label": "日常奖励",
-      "type": "switch",
-      "default_case": "Yes",
-      "cases": [
-        {
-          "name": "No",
-          "label": "关闭"
-        },
-        {
-          "name": "Yes",
-          "label": "开启"
-        }
-      ]
-    },
-    "D_领取月常奖励": {
-      "name": "D_领取月常奖励",
-      "label": "月常奖励",
-      "type": "switch",
-      "default_case": "No",
-      "cases": [
-        {
-          "name": "No",
-          "label": "关闭"
-        },
-        {
-          "name": "Yes",
-          "label": "开启"
-        }
-      ]
-    },
-    "D_领取主线奖励": {
-      "name": "D_领取主线奖励",
+    "DT_领取主线奖励": {
+      "name": "DT_领取主线奖励",
       "label": "主线奖励",
       "type": "switch",
       "default_case": "No",
@@ -7217,12 +7252,53 @@
         },
         {
           "name": "Yes",
-          "label": "开启"
+          "label": "开启",
+          "pipeline_override": {
+            "DT_RewardSelectMainline": {"enabled": true}
+          }
         }
       ]
     },
-    "D_领取活动奖励": {
-      "name": "D_领取活动奖励",
+    "DT_领取日常奖励": {
+      "name": "DT_领取日常奖励",
+      "label": "日常奖励",
+      "type": "switch",
+      "default_case": "Yes",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "DT_RewardSelectDaily": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "DT_领取月常奖励": {
+      "name": "DT_领取月常奖励",
+      "label": "月常奖励",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "DT_RewardSelectMonthly": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "DT_领取活动奖励": {
+      "name": "DT_领取活动奖励",
       "label": "活动奖励",
       "type": "switch",
       "default_case": "No",
@@ -7233,12 +7309,15 @@
         },
         {
           "name": "Yes",
-          "label": "开启"
+          "label": "开启",
+          "pipeline_override": {
+            "DT_RewardSelectActivity": {"enabled": true}
+          }
         }
       ]
     },
-    "D_领取邮件": {
-      "name": "D_领取邮件",
+    "DT_领取邮件": {
+      "name": "DT_领取邮件",
       "label": "领取邮件",
       "type": "checkbox",
       "default_case": [],
@@ -7246,39 +7325,60 @@
         {
           "name": "领取邮件",
           "label": "领取邮件",
-          "option": ["D_邮件类别"]
+          "option": ["DT_邮件类别"],
+          "pipeline_override": {
+            "DT_StepMail": {"enabled": true}
+          }
         }
       ]
     },
-    "D_邮件类别": {
-      "name": "D_邮件类别",
+    "DT_邮件类别": {
+      "name": "DT_邮件类别",
       "label": "邮件类别",
       "type": "checkbox",
       "default_case": ["资源", "货币", "便利道具", "其他物品", "景趣"],
       "cases": [
         {
           "name": "资源",
-          "label": "资源"
+          "label": "资源",
+          "pipeline_override": {
+            "DT_MailSelectFilter1": {"enabled": true}
+          }
         },
         {
           "name": "刀装",
-          "label": "刀装"
+          "label": "刀装",
+          "pipeline_override": {
+            "DT_MailSelectFilter2": {"enabled": true}
+          }
         },
         {
           "name": "货币",
-          "label": "货币"
+          "label": "货币",
+          "pipeline_override": {
+            "DT_MailSelectFilter3": {"enabled": true}
+          }
         },
         {
           "name": "便利道具",
-          "label": "便利道具"
+          "label": "便利道具",
+          "pipeline_override": {
+            "DT_MailSelectFilter4": {"enabled": true}
+          }
         },
         {
           "name": "其他物品",
-          "label": "其他物品"
+          "label": "其他物品",
+          "pipeline_override": {
+            "DT_MailSelectFilter5": {"enabled": true}
+          }
         },
         {
           "name": "景趣",
-          "label": "景趣"
+          "label": "景趣",
+          "pipeline_override": {
+            "DT_MailSelectFilter6": {"enabled": true}
+          }
         }
       ]
     }

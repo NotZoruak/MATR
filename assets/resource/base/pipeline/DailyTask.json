@@ -1,803 +1,285 @@
 {
   "DailyTask": {
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGame"]
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskRunResetAction"
+    },
+    "next": ["DT_ProjectRouter"]
   },
-  "DT_DetectWhereAmI": {
-    "timeout": 120000,
+  "DT_ProjectRouter": {
     "next": [
-      "DT_CheckHomeBrightness",
-      "DT_IsExpeditionExperience",
-      "DT_IsSwordDropColor",
-      "DT_IsAnnouncementPopup",
-      "DT_IsTrainingLetter",
-      "DT_IsLoginReward",
-      "DT_IsAdvertisementPopup",
-      "DT_IsGameIcon",
-      "DT_IsLoginButton",
-      "DT_IsGameUpdatePopup",
-      "DT_IsInGameUpdatePopup",
-      "DT_IsInternalReport",
-      "DT_IsTrainingApplication",
-      "DT_LeaveTroopRecord",
-      "DT_DetectMenuDirectory",
-      "DT_IsNetworkRequestTimeout",
-      "DT_IsConnectionInterrupted",
-      "DT_DetectClickMenu"
-    ],
-    "on_error": ["DT_RestartGame"]
+      "DT_StepSyncLogistics",
+      "DT_StepLoginReward",
+      "DT_StepWarmGift",
+      "DT_StepMix",
+      "DT_StepDisassemble",
+      "DT_StepForge",
+      "DT_StepDrill",
+      "DT_StepReward",
+      "DT_StepMail",
+      "DT_Finish"
+    ]
   },
-  "DT_DetectClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_PrepareHub"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_DetectMenuDirectory": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1043, 170, 85, 40]
-      }
-    },
-    "next": ["DT_PrepareHub"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_CheckHomeBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["DT_IsHome", "DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsHome": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_CheckHomeBrightness2"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_CheckHomeBrightness2": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["DT_IsHome2", "DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsHome2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_PrepareHub"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsExpeditionExperience": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsSwordDropColor": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [598, 543, 66, 1],
-        "lower": [88, 48, 2],
-        "upper": [96, 56, 10]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_HandleExperience": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleSwordDrop": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [598, 543, 66, 1],
-        "lower": [88, 48, 2],
-        "upper": [96, 56, 10]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1067, 558, 120, 79]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleLeaveTroopRecord": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [63, 28, 17, 17]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_HandleConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": [],
-    "on_error": []
-  },
-  "DT_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "repeat": 3,
-    "repeat_delay": 500,
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1056, 463, 63, 193]
-    },
-    "next": ["DT_IsAnnouncementPopup", "DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["DT_LoginRewardClick2"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["DT_LoginRewardClick3"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["DT_IsLoginReward"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_LeaveTroopRecord": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [63, 28, 17, 17]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [577, 8, 130, 35]
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_PrepareHub": {
-    "timeout": 120000,
-    "next": ["DT_LoginRewardGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_LoginRewardGate": {
-    "timeout": 120000,
-    "next": ["DT_LoginRewardHub", "DT_WarmGiftGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_LoginRewardOnceCheck": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionCheckAction",
-      "custom_action_param": {"item": "login_reward"}
-    },
-    "next": ["DT_LoginRewardHub"],
-    "on_error": ["DT_LoginRewardAlreadyCompleted"]
-  },
-  "DT_LoginRewardAlreadyCompleted": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 登录奖励 今日已完成，跳过"}
-    },
-    "next": ["DT_WarmGiftGate"],
-    "on_error": ["DT_WarmGiftGate"]
-  },
-  "DT_LoginRewardHub": {
+  "DT_StepSyncLogistics": {
     "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "SyncLogistics",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_SyncLogisticsEntry"]
+  },
+  "DT_StepLoginReward": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "LoginReward",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_LoginRewardEntry"]
+  },
+  "DT_StepWarmGift": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "WarmGift",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_WarmGiftEntry"]
+  },
+  "DT_StepMix": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Mix",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_MixEntry"]
+  },
+  "DT_StepForge": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Forge",
+          "required_count": 3
+        }
+      }
+    },
+    "next": ["DT_ForgeEntry"]
+  },
+  "DT_StepDisassemble": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Disassemble",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_ForgeEntry"]
+  },
+  "DT_StepDrill": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Drill",
+          "required_count": 3
+        }
+      }
+    },
+    "next": ["DT_DrillEntry"]
+  },
+  "DT_StepReward": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Reward",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_RewardEntry"]
+  },
+  "DT_StepMail": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Mail",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_MailEntry"]
+  },
+  "DT_SyncLogisticsEntry": {
+    "timeout": 120000,
+    "next": ["Expedition"]
+  },
+  "DT_WaitRefresh": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "post_delay": 1000,
+    "next": ["E_CheckTeamStatus"],
+    "on_error": ["DT_ProjectRouter"]
+  },
+  "DT_SyncLogisticsSkipCurrentRun": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskStepSkipAction",
+      "custom_action_param": {
+        "item": "SyncLogistics",
+        "reason": "本次运行已完成同步后勤"
+      }
+    },
+    "next": ["DT_ProjectRouter"]
+  },
+  "DT_LoginRewardEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_LoginRewardAnnouncement1",
-      "DT_LoginRewardAnnouncement2",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]DT_EnterMenu",
+      "DT_LoginRewardIsInMenu",
       "DT_LoginRewardSignIn",
       "DT_LoginRewardFallbackWait"
     ]
   },
-  "DT_LoginRewardAnnouncement1": {
+  "DT_LoginRewardIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1111, 406, 65, 31],
-        "expected": "公告"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1111, 406, 65, 31]
-    },
-    "next": ["DT_LoginRewardHub"],
-    "on_error": ["DT_LoginRewardHub"]
-  },
-  "DT_LoginRewardAnnouncement2": {
-    "recognition": {
-      "type": "OCR",
+    "action": {
+      "type": "Click",
       "param": {
-        "roi": [1195, 282, 61, 27],
-        "expected": "公告"
+        "target": [1111, 359, 29, 31]
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1195, 282, 61, 27]
-    },
-    "next": ["DT_LoginRewardSignIn", "DT_LoginRewardHub"],
-    "on_error": ["DT_LoginRewardHub"]
+    "next": ["DT_LoginRewardEntry"]
   },
   "DT_LoginRewardSignIn": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [498, 33, 75, 33],
-        "expected": "签到"
+        "roi": [512, 34, 51, 29],
+        "expected": "签到",
+        "only_rec": true
+      }
+    },
+    "action": {"type": "Click"},
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["DT_LoginRewardClaim", "DT_LoginRewardEntry"]
+  },
+  "DT_LoginRewardClaim": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [820, 581, 168, 46],
+        "expected": "领取奖励",
+        "only_rec": true
       }
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
-      "target": [498, 33, 75, 33]
+      "target": [820, 581, 168, 46]
     },
-    "next": ["DT_LoginRewardDailyAvailable", "DT_LoginRewardAlreadyClaimed"],
-    "on_error": ["DT_LoginRewardHub"]
+    "next": ["DT_LoginRewardClosePopup", "DT_LoginRewardEntry"]
   },
-  "DT_LoginRewardDailyAvailable": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [895, 576, 33, 8],
-        "lower": [228, 75, 103],
-        "upper": [234, 81, 109]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_LoginRewardAlreadyClaimed"],
-    "on_error": ["DT_LoginRewardHub"]
-  },
-  "DT_LoginRewardAlreadyClaimed": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1181, 11, 38, 35]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1181, 11, 38, 35]
-    },
-    "next": ["DT_LoginRewardAlreadyClaimedFinished", "DT_LoginRewardAlreadyClaimedMenuDirectory", "DT_LoginRewardAlreadyClaimedRetry"],
-    "on_error": ["DT_LoginRewardHub"]
-  },
-  "DT_LoginRewardAlreadyClaimedFinished": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1192, 20, 26, 38],
-        "expected": "目"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "login_reward"}
-    },
-    "next": ["DT_LoginRewardCompletedLog"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
-  },
-  "DT_LoginRewardAlreadyClaimedMenuDirectory": {
+  "DT_LoginRewardClosePopup": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
+        "roi": [1184, 13, 32, 31],
+        "template": "Common/黑色关闭按钮1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "login_reward"}
-    },
-    "next": ["DT_LoginRewardCompletedLog"],
-    "on_error": ["DT_LoginRewardAlreadyClaimedRetry"]
-  },
-  "DT_LoginRewardAlreadyClaimedRetry": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1179, 13, 82, 36]
-      }
-    },
-    "post_delay": 500,
-    "next": ["DT_LoginRewardAlreadyClaimedFinished", "DT_LoginRewardAlreadyClaimedMenuDirectory", "DT_LoginRewardAlreadyClaimedRetry"],
-    "on_error": ["DT_LoginRewardAlreadyClaimedRetry"]
-  },
-  "DT_LoginRewardClosePopupHub": {
-    "timeout": 120000,
-    "next": ["DT_LoginRewardClosePopup", "DT_LoginRewardFinished", "DT_LoginRewardCatalogFinished"],
-    "on_error": ["DT_LoginRewardHub"]
-  },
-  "DT_LoginRewardClosePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1180, 10, 42, 39],
-        "expected": ["×", "x", "X"]
-      }
-    },
     "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
-      "target": [1180, 10, 42, 39]
+      "target": [1184, 13, 32, 31]
     },
-    "next": ["DT_LoginRewardClosePopupHub"],
-    "on_error": ["DT_LoginRewardClosePopupHub"]
+    "next": ["DT_LoginRewardClosePopupCheck", "DT_LoginRewardClosePopup", "DT_LoginRewardEntry"]
   },
-  "DT_LoginRewardFinished": {
+  "DT_LoginRewardClosePopupCheck": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1192, 20, 26, 38],
-        "expected": "目"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "login_reward"}
-    },
-    "next": ["DT_LoginRewardCompletedLog"],
-    "on_error": ["DT_LoginRewardClosePopupHub"]
+    "next": ["DT_LoginRewardMarkCompleted"]
   },
-  "DT_LoginRewardCatalogFinished": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [587, 33, 108, 52],
-        "expected": "目录"
-      }
-    },
+  "DT_LoginRewardMarkCompleted": {
     "action": {
       "type": "Custom",
       "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "login_reward"}
+      "custom_action_param": {"item": "LoginReward"}
     },
-    "next": ["DT_LoginRewardCompletedLog"],
-    "on_error": ["DT_LoginRewardClosePopupHub"]
+    "next": ["DT_LoginRewardCompletedLog"]
   },
   "DT_LoginRewardCompletedLog": {
     "action": {
@@ -805,115 +287,67 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 登录奖励 领取完成"}
     },
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
+    "next": ["DT_ProjectRouter"]
   },
   "DT_LoginRewardFallbackWait": {
     "action": {"type": "DoNothing"},
-    "next": ["DT_LoginRewardHub"],
-    "on_error": ["DT_LoginRewardHub"]
+    "next": ["DT_LoginRewardEntry"]
   },
-  "DT_WarmGiftGate": {
-    "timeout": 120000,
-    "next": ["DT_WarmGiftHub", "DT_MixGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_WarmGiftOnceCheck": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionCheckAction",
-      "custom_action_param": {"item": "warm_gift"}
-    },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftAlreadyCompleted"]
-  },
-  "DT_WarmGiftAlreadyCompleted": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 暖心礼包 今日已完成，跳过"}
-    },
-    "next": ["DT_MixGate"],
-    "on_error": ["DT_MixGate"]
-  },
-  "DT_WarmGiftHub": {
-    "enabled": false,
+  "DT_WarmGiftEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_WarmGiftClickStore",
-      "DT_WarmGiftDetectPrice",
-      "DT_WarmGiftClickMenu",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_WarmGiftIsInMenu",
+      "DT_WarmGiftIsInShop",
+      "[JumpBack]DT_EnterMenu",
       "DT_WarmGiftFallbackWait"
     ]
   },
-  "DT_WarmGiftClickMenu": {
+  "DT_WarmGiftIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftHub"]
-  },
-  "DT_WarmGiftClickStore": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [600, 40, 80, 37],
-        "expected": "目"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
     "action": {
       "type": "Click",
       "param": {
-        "target": [1028, 267, 104, 41]
+        "target": [1042, 272, 84, 34]
       }
     },
     "post_wait_freezes": {
-      "time": 500,
-      "target": [1028, 267, 104, 41]
+      "time": 200,
+      "target": [1042, 272, 84, 34]
     },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftEntry"]
   },
-  "DT_WarmGiftDetectPrice": {
+  "DT_WarmGiftIsInShop": {
     "recognition": {
       "type": "OCR",
       "param": {
         "roi": [1105, 84, 102, 26],
-        "expected": "所持道具"
+        "expected": "所持道具",
+        "only_rec": true
       }
     },
-    "next": ["DT_WarmGiftClaim1", "DT_WarmGiftClaim2", "DT_WarmGiftClaim3", "DT_WarmGiftClaim4", "DT_WarmGiftAlreadyClaimed"]
-  },
-  "DT_WarmGiftAlreadyClaimed": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "warm_gift"}
-    },
-    "next": ["DT_WarmGiftCompletedLog"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
+    "next": ["DT_WarmGiftClaim1", "DT_WarmGiftClaim2", "DT_WarmGiftClaim3", "DT_WarmGiftClaim4", "DT_WarmGiftLeaveShop"],
+    "on_error": ["DT_WarmGiftEntry"]
   },
   "DT_WarmGiftClaim1": {
     "recognition": {
@@ -928,8 +362,7 @@
       "time": 200,
       "target": [510, 308, 82, 26]
     },
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftClaim2": {
     "recognition": {
@@ -944,8 +377,7 @@
       "time": 200,
       "target": [1100, 307, 83, 27]
     },
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftClaim3": {
     "recognition": {
@@ -960,8 +392,7 @@
       "time": 200,
       "target": [515, 543, 84, 28]
     },
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftClaim4": {
     "recognition": {
@@ -976,13 +407,10 @@
       "time": 200,
       "target": [1100, 545, 85, 29]
     },
-    "next": ["DT_WarmGiftFinishClaimHub"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftFinishClaimHub": {
-    "timeout": 120000,
-    "next": ["DT_WarmGiftPurchaseDetail", "DT_WarmGiftCloseClaimPopup"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftPurchaseDetail", "DT_WarmGiftCloseClaimPopup"]
   },
   "DT_WarmGiftPurchaseDetail": {
     "recognition": {
@@ -998,12 +426,7 @@
         "target": [593, 479, 97, 48]
       }
     },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [593, 479, 97, 48]
-    },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftFinishClaimHub"]
+    "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftCloseClaimPopup": {
     "action": {
@@ -1012,24 +435,39 @@
         "target": [122, 73, 36, 39]
       }
     },
-    "next": ["DT_WarmGiftFinished", "DT_WarmGiftCloseClaimPopup"],
-    "on_error": ["DT_WarmGiftFinishClaimHub"]
+    "next": ["DT_WarmGiftEntry"]
   },
-  "DT_WarmGiftFinished": {
+  "DT_WarmGiftLeaveShop": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
+        "roi": [1194, 23, 24, 33],
+        "expected": "目",
+        "only_rec": true
       }
     },
+    "action": {"type": "Click"},
+    "next": ["DT_WarmGiftLeaveShopCheck", "DT_WarmGiftLeaveShop"],
+    "on_error": ["DT_WarmGiftEntry"]
+  },
+  "DT_WarmGiftLeaveShopCheck": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
+      }
+    },
+    "next": ["DT_WarmGiftMarkCompleted"]
+  },
+  "DT_WarmGiftMarkCompleted": {
     "action": {
       "type": "Custom",
       "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "warm_gift"}
+      "custom_action_param": {"item": "WarmGift"}
     },
-    "next": ["DT_WarmGiftCompletedLog"],
-    "on_error": ["DT_WarmGiftCloseClaimPopup"]
+    "next": ["DT_WarmGiftCompletedLog"]
   },
   "DT_WarmGiftCompletedLog": {
     "action": {
@@ -1037,95 +475,55 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 暖心礼包 领取完成"}
     },
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
+    "next": ["DT_ProjectRouter"]
   },
   "DT_WarmGiftFallbackWait": {
     "action": {"type": "DoNothing"},
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_WarmGiftHub"]
+    "next": ["DT_WarmGiftEntry"]
   },
-  "DT_MixGate": {
-    "timeout": 120000,
-    "next": ["DT_MixHub", "DT_ForgeGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_MixOnceCheck": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionCheckAction",
-      "custom_action_param": {"item": "mix"}
-    },
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixAlreadyCompleted"]
-  },
-  "DT_MixAlreadyCompleted": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 合成 今日已完成，跳过"}
-    },
-    "next": ["DT_ForgeGate"],
-    "on_error": ["DT_ForgeGate"]
-  },
-  "DT_MixHub": {
-    "enabled": false,
+  "DT_MixEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_MixClickEnhance",
-      "DT_MixSelectSword",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_MixIsInMenu",
+      "DT_MixIsSelectSword",
       "DT_MixMaterialPage",
-      "DT_MixClickCombine1",
-      "DT_MixClickMenu",
+      "DT_MixClickCombine",
+      "[JumpBack]DT_EnterMenu",
       "DT_MixFallbackWait"
     ]
   },
-  "DT_MixClickMenu": {
+  "DT_MixIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"]
-  },
-  "DT_MixClickEnhance": {
-    "recognition": {
-      "type": "OCR",
+    "action": {
+      "type": "Click",
       "param": {
-        "roi": [448, 274, 94, 37],
-        "expected": "强化"
+        "target": [455, 277, 80, 33]
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [448, 274, 94, 37]
-    },
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"]
+    "next": ["DT_MixEntry"]
   },
-  "DT_MixSelectSword": {
+  "DT_MixIsSelectSword": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1133,8 +531,7 @@
         "expected": "刀剑"
       }
     },
-    "next": ["DT_MixFindSelectSword"],
-    "on_error": ["DT_MixHub"]
+    "next": ["DT_MixFindSelectSword", "DT_MixNoAllowedMaterial"]
   },
   "DT_MixFindSelectSword": {
     "recognition": {
@@ -1146,9 +543,7 @@
       }
     },
     "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"]
+    "next": ["DT_MixEntry"]
   },
   "DT_MixMaterialPage": {
     "recognition": {
@@ -1158,8 +553,7 @@
         "expected": "强化项目"
       }
     },
-    "next": ["DT_MixFindAllowedMaterial"],
-    "on_error": ["DT_MixHub"]
+    "next": ["DT_MixFindAllowedMaterial"]
   },
   "DT_MixFindAllowedMaterial": {
     "action": {
@@ -1170,19 +564,10 @@
       "time": 200,
       "target": [1156, 600, 91, 58]
     },
-    "next": ["DT_MixHub"],
+    "next": ["DT_MixEntry"],
     "on_error": ["DT_MixNoAllowedMaterial"]
   },
-  "DT_MixNoAllowedMaterial": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 合成 未找到可用素材"}
-    },
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"]
-  },
-  "DT_MixClickCombine1": {
+  "DT_MixClickCombine": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1196,28 +581,30 @@
         "target": [727, 607, 112, 42]
       }
     },
-    "post_delay": 500,
-    "next": ["DT_MixClickCombine2"],
-    "on_error": ["DT_MixHub"]
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["DT_MixClickCombineCheck", "DT_MixClickCombine"],
+    "on_error": ["DT_MixEntry"]
   },
-  "DT_MixClickCombine2": {
-    "action": {
-      "type": "Click",
+  "DT_MixClickCombineCheck": {
+    "recognition": {
+      "type": "OCR",
       "param": {
-        "target": [727, 607, 112, 42]
+        "roi": [1194, 23, 24, 33],
+        "expected": "目",
+        "only_rec": true
       }
     },
-    "next": ["DT_MixComplete"],
-    "on_error": ["DT_MixHub"]
+    "action": {"type": "Click"},
+    "next": ["DT_MixMarkCompleted"]
   },
-  "DT_MixComplete": {
+  "DT_MixMarkCompleted": {
     "action": {
       "type": "Custom",
       "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "mix"}
+      "custom_action_param": {"item": "Mix"}
     },
-    "next": ["DT_MixCompletedLog"],
-    "on_error": ["DT_MixReturnHomeHub"]
+    "next": ["DT_MixCompletedLog"]
   },
   "DT_MixCompletedLog": {
     "action": {
@@ -1225,78 +612,110 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 合成 完成"}
     },
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"]
+    "next": ["DT_ProjectRouter"]
   },
-  "DT_MixFallbackWait": {
-    "action": {"type": "DoNothing"},
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_MixHub"]
-  },
-  "DT_ForgeGate": {
-    "timeout": 120000,
-    "next": ["DT_ForgeHub", "DT_DrillGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_ForgeOnceCheck": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionCheckAction",
-      "custom_action_param": {"item": "forge"}
-    },
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeAlreadyCompleted"]
-  },
-  "DT_ForgeAlreadyCompleted": {
+  "DT_MixNoAllowedMaterial": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 今日已完成，跳过"}
+      "custom_action_param": {"message": "日课 合成 未找到可合成对象，或无可用素材"}
     },
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "next": ["DT_MixSkipCurrentRun"]
   },
-  "DT_ForgeHub": {
-    "enabled": false,
+  "DT_MixSkipCurrentRun": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskStepSkipAction",
+      "custom_action_param": {
+        "item": "Mix",
+        "reason": "未找到可合成对象，或无可用素材"
+      }
+    },
+    "next": ["DT_ReturnHomeHub"]
+  },
+  "DT_MixFallbackWait": {
+    "action": {"type": "DoNothing"},
+    "next": ["DT_MixEntry"]
+  },
+  "DT_ForgeEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_ForgeClickForge",
-      "DT_ForgeDetectStatus",
-      "DT_ForgeReturnFromDisassemble",
-      "DT_ForgeClickMenu",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_ForgeIsInMenu",
+      "DT_ForgeIsInStatus",
+      "DT_ForgeDetectResourceInput",
+      "[JumpBack]DT_EnterMenu",
       "DT_ForgeFallbackWait"
     ]
   },
-  "DT_ForgeClickForge": {
+  "DT_ForgeIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [741, 273, 88, 38],
-        "expected": "锻刀"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [741, 273, 88, 38]
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [743, 274, 78, 35]
+      }
     },
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeHub"]
+    "next": ["DT_ForgeEntry"]
   },
-  "DT_ForgeDetectStatus": {
+  "DT_ForgeIsInStatus": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [574, 64, 133, 34],
+        "expected": "锻刀状况",
+        "only_rec": true
+      }
+    },
+    "next": ["DT_ForgeCheckCapacity"]
+  },
+  "DT_ForgeCheckCapacity": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "ForgeCapacityCheckAction"
+    },
+    "next": ["DT_ForgeDailyDisassembleOnceCheck", "DT_ForgeClaimCompletedHub", "DT_ForgeSkipForge"],
+    "on_error": ["DT_ForgeSkipDisassemble"]
+  },
+  "DT_ForgeDailyDisassembleOnceCheck": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Disassemble",
+          "required_count": 1
+        }
+      }
+    },
+    "next": ["DT_ForgeNavigateToDisassemble"]
+  },
+  "DT_ForgeNavigateToDisassemble": {
+    "next": ["DT_ForgeClickDisassemble", "DT_ForgeIsInDisassembleSelect"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeClickDisassemble": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1304,33 +723,116 @@
         "expected": "锻刀状况"
       }
     },
-    "next": ["DT_ForgeCheckCapacity"],
-    "on_error": ["DT_ForgeHub"]
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [10, 305, 30, 67]
+      }
+    },
+    "next": ["DT_ForgeNavigateToDisassemble"]
   },
-  "DT_ForgeReturnFromDisassemble": {
+  "DT_ForgeIsInDisassembleSelect": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [566, 63, 151, 40],
+        "roi": [553, 59, 173, 43],
         "expected": "刀解选择"
       }
     },
+    "next": ["DT_ForgeHideProtectedSwords", "DT_ForgeSelectAllowedSwords"]
+  },
+  "DT_ForgeHideProtectedSwords": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [137, 141, 4, 4],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [137, 141, 4, 4]
+    },
+    "next": ["DT_ForgeIsInDisassembleSelect"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeSelectAllowedSwords": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "ForgeDisassembleSelectAction",
+      "custom_action_param": {"minimum_count": 1}
+    },
+    "next": ["DT_ForgeClickDisassembleConfirm"],
+    "on_error": ["DT_ForgeSkipCurrentRun"]
+  },
+  "DT_ForgeClickDisassembleConfirm": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1178, 586, 53, 16],
+        "lower": [20, 81, 177],
+        "upper": [26, 87, 183]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_ForgeClickDisassembleConfirmPopup", "DT_ForgeClickDisassembleConfirm"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeClickDisassembleConfirmPopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [735, 605, 103, 45],
+        "expected": "确认"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [735, 605, 103, 45]
+    },
+    "next": ["DT_ForgeMarkDisassembleCompleted", "DT_ForgeClickBackToStatus"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeMarkDisassembleCompleted": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Disassemble",
+          "required_count": 1
+        }
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action_param": {
+        "item": "Disassemble",
+        "required_count": 1
+      }
+    },
+    "next": ["DT_ForgeDisassembleCompletedLog"]
+  },
+  "DT_ForgeDisassembleCompletedLog": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "日课 刀解 完成"}
+    },
+    "next": ["DT_ForgeClickBackToStatus"]
+  },
+  "DT_ForgeClickBackToStatus": {
     "action": {
       "type": "Click",
       "param": {
         "target": [5, 167, 39, 84]
       }
     },
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeCheckCapacity": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "ForgeCapacityCheckAction"
-    },
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeSkipDisassemble"]
+    "next": ["DT_ForgeIsInStatus", "DT_ForgeEntry"]
   },
   "DT_ForgeSkipDisassemble": {
     "action": {
@@ -1338,43 +840,39 @@
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "warn:日课 锻刀 待收取刀剑超过空余刀位，未开启刀解，跳过收刀与锻刀"}
     },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "next": ["DT_ForgeSkipCurrentRun"]
   },
-  "DT_ForgeDailyDisassembleOnceCheck": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionCheckAction",
-      "custom_action_param": {"item": "disassemble"}
-    },
-    "next": ["DT_ForgeDisassembleHub"],
-    "on_error": ["DT_ForgeDailyDisassembleAlreadyCompleted"]
-  },
-  "DT_ForgeDailyDisassembleAlreadyCompleted": {
+  "DT_ForgeSkipForge": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 刀解 今日已完成，跳过"}
+      "custom_action_param": {"message": "日课 锻刀 未开启，跳过收刀与锻刀"}
     },
-    "next": ["DT_ForgeCheckCapacity"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "next": ["DT_ReturnHomeHub"]
+  },
+  "DT_ForgeSkipCurrentRun": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskStepSkipAction",
+      "custom_action_param": {
+        "item": "Forge",
+        "reason": "刀位不足，或可刀解刀剑不足，或已无空闲锻冶所，或限锻未开启，或刀解许可名单为空"
+      }
+    },
+    "next": ["DT_ReturnHomeHub"]
   },
   "DT_ForgeClaimCompletedHub": {
     "enabled": false,
-    "timeout": 3000,
-    "next": ["DT_ForgeClaimSkipDropAnimation", "DT_ForgeClaimIsSwordDropColor", "DT_ForgeClaimCompleted", "DT_ForgeClaimTenCompleted", "DT_ForgeClaimTenClaim"],
-    "on_error": ["DT_ForgeStartForgeOnceCheck"]
-  },
-  "DT_ForgeStartForgeOnceCheck": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionCheckAction",
-      "custom_action_param": {"item": "forge"}
-    },
-    "next": ["DT_ForgeFindFreeSlot1Hub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "timeout": 5000,
+    "next": [
+      "DT_ForgeClaimSkipDropAnimation",
+      "DT_ForgeClaimIsSwordDropColor",
+      "DT_ForgeClaimCompleted",
+      "DT_ForgeClaimTenCompleted",
+      "DT_ForgeClaimTenClaim",
+      "DT_ForgeIsIdle"
+    ],
+    "on_error": ["DT_ForgeNoFreeSlot"]
   },
   "DT_ForgeClaimSkipDropAnimation": {
     "recognition": {
@@ -1386,12 +884,7 @@
       }
     },
     "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [328, 315, 9, 12]
-    },
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeClaimCompletedHub"]
+    "next": ["DT_ForgeClaimCompletedHub"]
   },
   "DT_ForgeClaimIsSwordDropColor": {
     "recognition": {
@@ -1411,8 +904,7 @@
         "click": [947, 533, 67, 75]
       }
     },
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeClaimCompletedHub"]
+    "next": ["DT_ForgeClaimCompletedHub"]
   },
   "DT_ForgeClaimCompleted": {
     "recognition": {
@@ -1423,8 +915,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeClaimCompletedHub"]
+    "next": ["DT_ForgeClaimCompletedHub"]
   },
   "DT_ForgeClaimTenCompleted": {
     "recognition": {
@@ -1435,8 +926,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeClaimCompletedHub"]
+    "next": ["DT_ForgeClaimCompletedHub"]
   },
   "DT_ForgeClaimTenClaim": {
     "recognition": {
@@ -1447,1027 +937,325 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_ForgeClaimCompletedHub"],
-    "on_error": ["DT_ForgeClaimCompletedHub"]
+    "next": ["DT_ForgeClaimCompletedHub"]
   },
-  "DT_ForgeFindFreeSlot1Hub": {
-    "timeout": 120000,
-    "next": ["DT_ForgeFindFreeSlot1_1", "DT_ForgeFindFreeSlot1_2", "DT_ForgeFindFreeSlot1_3", "DT_ForgeFindFreeSlot1_4", "DT_ForgeNoFreeSlot1"],
-    "on_error": ["DT_ForgeNoFreeSlot1"]
-  },
-  "DT_ForgeFindFreeSlot1_1": {
+  "DT_ForgeIsIdle": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [205, 181, 167, 51],
+        "roi": [205, 181, 167, 473],
         "expected": "空闲中"
       }
     },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput1"],
-    "on_error": ["DT_ForgeFindFreeSlot1Hub"]
+    "next": ["DT_ForgeCheckQuota", "DT_ForgeCompletedLog"]
   },
-  "DT_ForgeFindFreeSlot1_2": {
+  "DT_ForgeCheckQuota": {
     "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [205, 318, 168, 52],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput1"],
-    "on_error": ["DT_ForgeFindFreeSlot1Hub"]
-  },
-  "DT_ForgeFindFreeSlot1_3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [204, 452, 169, 53],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput1"],
-    "on_error": ["DT_ForgeFindFreeSlot1Hub"]
-  },
-  "DT_ForgeFindFreeSlot1_4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [204, 586, 169, 53],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput1"],
-    "on_error": ["DT_ForgeFindFreeSlot1Hub"]
-  },
-  "DT_ForgeDetectResourceInput1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [521, 59, 234, 43],
-        "expected": "锻刀资源投入"
-      }
-    },
-    "next": ["DT_ForgeFormula1Limited", "DT_ForgeFormula1LimitedFirst", "DT_ForgeFormula1All50"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFormula1All50": {
-    "next": ["DT_ForgeAll50Check1_1", "DT_ForgeAll50Reset1_1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFormula1Limited": {
-    "enabled": false,
-    "next": ["DT_ForgeLimitedDetect1", "DT_ForgeLimitedMissing"]
-  },
-  "DT_ForgeFormula1LimitedFirst": {
-    "enabled": false,
-    "next": ["DT_ForgeLimitedDetect1", "DT_ForgeFormula1All50"]
-  },
-  "DT_ForgeAll50Check1_1": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 178, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check1_2", "DT_ForgeAll50Reset1_2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check1_2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 310, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check1_3", "DT_ForgeAll50Reset1_3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check1_3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 442, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check1_4", "DT_ForgeAll50Reset1_4"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check1_4": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 575, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeClickStart1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset1_1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 178, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset1_2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 310, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset1_3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 442, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset1_4": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 575, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Initialize1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [466, 488, 84, 44],
-        "expected": "初始化"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_delay": 300,
-    "next": ["DT_ForgeAll50Confirm1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Confirm1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [593, 584, 93, 34]
-      }
-    },
-    "next": ["DT_ForgeAll50Check1_1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeLimitedDetect1": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [971, 144, 5, 2],
-        "lower": [1, 102, 114],
-        "upper": [3, 104, 116],
-        "count": 10
-      }
-    },
-    "timeout": 2000,
-    "next": ["DT_ForgeLimitedChecked1", "DT_ForgeLimitedClick1"]
-  },
-  "DT_ForgeLimitedChecked1": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [939, 139, 30, 29],
-        "lower": [150, 0, 0],
-        "upper": [210, 80, 80],
-        "count": 20
-      }
-    },
-    "timeout": 2000,
-    "next": ["DT_ForgeClickStart1"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"]
-  },
-  "DT_ForgeLimitedClick1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [939, 139, 30, 29]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [939, 139, 30, 29]
-    },
-    "next": ["DT_ForgeLimitedDetect1"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"]
-  },
-  "DT_ForgeClickStart1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1133, 601, 95, 59],
-        "expected": "锻刀"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["DT_ForgeClickStartClose1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeClickStartClose1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1133, 601, 95, 59],
-        "expected": "锻刀"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [454, 457, 58, 28]
-      }
-    },
-    "post_delay": 500,
-    "next": ["DT_ForgeClickStartClose1", "DT_ForgeFindFreeSlot2Hub"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFindFreeSlot2Hub": {
-    "timeout": 120000,
-    "next": ["DT_ForgeFindFreeSlot2_1", "DT_ForgeFindFreeSlot2_2", "DT_ForgeFindFreeSlot2_3", "DT_ForgeFindFreeSlot2_4", "DT_ForgeNoFreeSlot2"],
-    "on_error": ["DT_ForgeNoFreeSlot2"]
-  },
-  "DT_ForgeFindFreeSlot2_1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [205, 181, 167, 51],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput2"],
-    "on_error": ["DT_ForgeFindFreeSlot2Hub"]
-  },
-  "DT_ForgeFindFreeSlot2_2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [205, 318, 168, 52],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput2"],
-    "on_error": ["DT_ForgeFindFreeSlot2Hub"]
-  },
-  "DT_ForgeFindFreeSlot2_3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [204, 452, 169, 53],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput2"],
-    "on_error": ["DT_ForgeFindFreeSlot2Hub"]
-  },
-  "DT_ForgeFindFreeSlot2_4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [204, 586, 169, 53],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput2"],
-    "on_error": ["DT_ForgeFindFreeSlot2Hub"]
-  },
-  "DT_ForgeDetectResourceInput2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [521, 59, 234, 43],
-        "expected": "锻刀资源投入"
-      }
-    },
-    "next": ["DT_ForgeFormula2Limited", "DT_ForgeFormula2LimitedFirst", "DT_ForgeFormula2All50"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFormula2All50": {
-    "next": ["DT_ForgeAll50Check2_1", "DT_ForgeAll50Reset2_1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFormula2Limited": {
-    "enabled": false,
-    "next": ["DT_ForgeLimitedDetect2", "DT_ForgeLimitedMissing"]
-  },
-  "DT_ForgeFormula2LimitedFirst": {
-    "enabled": false,
-    "next": ["DT_ForgeLimitedDetect2", "DT_ForgeFormula2All50"]
-  },
-  "DT_ForgeAll50Check2_1": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 178, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check2_2", "DT_ForgeAll50Reset2_2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check2_2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 310, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check2_3", "DT_ForgeAll50Reset2_3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check2_3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 442, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check2_4", "DT_ForgeAll50Reset2_4"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check2_4": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 575, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeClickStart2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset2_1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 178, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset2_2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 310, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset2_3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 442, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset2_4": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 575, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Initialize2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [466, 488, 84, 44],
-        "expected": "初始化"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_delay": 300,
-    "next": ["DT_ForgeAll50Confirm2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Confirm2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [593, 584, 93, 34]
-      }
-    },
-    "next": ["DT_ForgeAll50Check2_1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeLimitedDetect2": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [971, 144, 5, 2],
-        "lower": [1, 102, 114],
-        "upper": [3, 104, 116],
-        "count": 10
-      }
-    },
-    "timeout": 2000,
-    "next": ["DT_ForgeLimitedChecked2", "DT_ForgeLimitedClick2"]
-  },
-  "DT_ForgeLimitedChecked2": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [939, 139, 30, 29],
-        "lower": [150, 0, 0],
-        "upper": [210, 80, 80],
-        "count": 20
-      }
-    },
-    "timeout": 2000,
-    "next": ["DT_ForgeClickStart2"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"]
-  },
-  "DT_ForgeLimitedClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [939, 139, 30, 29]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [939, 139, 30, 29]
-    },
-    "next": ["DT_ForgeLimitedDetect2"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"]
-  },
-  "DT_ForgeClickStart2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1133, 601, 95, 59],
-        "expected": "锻刀"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["DT_ForgeClickStartClose2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeClickStartClose2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1133, 601, 95, 59],
-        "expected": "锻刀"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [454, 457, 58, 28]
-      }
-    },
-    "post_delay": 500,
-    "next": ["DT_ForgeClickStartClose2", "DT_ForgeFindFreeSlot3Hub"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFindFreeSlot3Hub": {
-    "timeout": 120000,
-    "next": ["DT_ForgeFindFreeSlot3_1", "DT_ForgeFindFreeSlot3_2", "DT_ForgeFindFreeSlot3_3", "DT_ForgeFindFreeSlot3_4", "DT_ForgeNoFreeSlot3"],
-    "on_error": ["DT_ForgeNoFreeSlot3"]
-  },
-  "DT_ForgeFindFreeSlot3_1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [205, 181, 167, 51],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput3"],
-    "on_error": ["DT_ForgeFindFreeSlot3Hub"]
-  },
-  "DT_ForgeFindFreeSlot3_2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [205, 318, 168, 52],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput3"],
-    "on_error": ["DT_ForgeFindFreeSlot3Hub"]
-  },
-  "DT_ForgeFindFreeSlot3_3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [204, 452, 169, 53],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput3"],
-    "on_error": ["DT_ForgeFindFreeSlot3Hub"]
-  },
-  "DT_ForgeFindFreeSlot3_4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [204, 586, 169, 53],
-        "expected": "空闲中"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDetectResourceInput3"],
-    "on_error": ["DT_ForgeFindFreeSlot3Hub"]
-  },
-  "DT_ForgeDetectResourceInput3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [521, 59, 234, 43],
-        "expected": "锻刀资源投入"
-      }
-    },
-    "next": ["DT_ForgeFormula3Limited", "DT_ForgeFormula3LimitedFirst", "DT_ForgeFormula3All50"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFormula3All50": {
-    "next": ["DT_ForgeAll50Check3_1", "DT_ForgeAll50Reset3_1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeFormula3Limited": {
-    "enabled": false,
-    "next": ["DT_ForgeLimitedDetect3", "DT_ForgeLimitedMissing"]
-  },
-  "DT_ForgeFormula3LimitedFirst": {
-    "enabled": false,
-    "next": ["DT_ForgeLimitedDetect3", "DT_ForgeFormula3All50"]
-  },
-  "DT_ForgeAll50Check3_1": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 178, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check3_2", "DT_ForgeAll50Reset3_2"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check3_2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 310, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check3_3", "DT_ForgeAll50Reset3_3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check3_3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 442, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeAll50Check3_4", "DT_ForgeAll50Reset3_4"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Check3_4": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [695, 575, 209, 86],
-        "template": "Common/all50锻刀公式.png"
-      }
-    },
-    "next": ["DT_ForgeClickStart3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset3_1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 178, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset3_2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 310, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset3_3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 442, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Reset3_4": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [695, 575, 209, 86]
-      }
-    },
-    "next": ["DT_ForgeAll50Initialize3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Initialize3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [466, 488, 84, 44],
-        "expected": "初始化"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_delay": 300,
-    "next": ["DT_ForgeAll50Confirm3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeAll50Confirm3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [593, 584, 93, 34]
-      }
-    },
-    "next": ["DT_ForgeAll50Check3_1"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeLimitedDetect3": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [971, 144, 5, 2],
-        "lower": [1, 102, 114],
-        "upper": [3, 104, 116],
-        "count": 10
-      }
-    },
-    "timeout": 2000,
-    "next": ["DT_ForgeLimitedChecked3", "DT_ForgeLimitedClick3"]
-  },
-  "DT_ForgeLimitedChecked3": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [939, 139, 30, 29],
-        "lower": [150, 0, 0],
-        "upper": [210, 80, 80],
-        "count": 20
-      }
-    },
-    "timeout": 2000,
-    "next": ["DT_ForgeClickStart3"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"]
-  },
-  "DT_ForgeLimitedClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [939, 139, 30, 29]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [939, 139, 30, 29]
-    },
-    "next": ["DT_ForgeLimitedDetect3"],
-    "on_error": ["DT_ForgeLimitedSelectFailed"]
-  },
-  "DT_ForgeClickStart3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1133, 601, 95, 59],
-        "expected": "锻刀"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["DT_ForgeClickStartClose3"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeClickStartClose3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1133, 601, 95, 59],
-        "expected": "锻刀"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [454, 457, 58, 28]
-      }
-    },
-    "post_delay": 500,
-    "next": ["DT_ForgeClickStartClose3", "DT_ForgeCompletedThreeTimes"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeLimitedMissing": {
-    "action": {
       "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "warn:日课 锻刀 未检测到限锻开启，跳过锻刀"}
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Forge",
+          "required_count": 3
+        }
+      }
     },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeLimitedSelectFailed": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "warn:日课 锻刀 限锻公式勾选未生效，跳过锻刀"}
-    },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeCompletedThreeTimes": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "forge"}
-    },
-    "next": ["DT_ForgeCompletedLog"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "next": ["DT_ForgeFindFreeSlot", "DT_ForgeClaimCompletedHub"],
+    "on_error": ["DT_ForgeCompletedLog"]
   },
   "DT_ForgeCompletedLog": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 已完成 3 次锻刀"}
+      "custom_action_param": {"message": "日课 锻刀 今日已完成3次锻刀"}
     },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "next": ["DT_ReturnHomeHub"]
   },
-  "DT_ForgeNoFreeSlot1": {
+  "DT_ForgeNoFreeSlot": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 已无空闲锻冶所"}
+      "custom_action_param": {"message": "日课 锻刀 已无空闲锻刀位"}
     },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "next": ["DT_ForgeSkipCurrentRun"]
   },
-  "DT_ForgeNoFreeSlot2": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 已完成 1 次锻刀，已无空闲锻冶所"}
-    },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeNoFreeSlot3": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 已完成 2 次锻刀，已无空闲锻冶所"}
-    },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeDisassembleHub": {
-    "timeout": 120000,
-    "next": ["DT_ForgeDisassembleClickEntry", "DT_ForgeDisassembleDetectSelect"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeDisassembleClickEntry": {
+  "DT_ForgeFindFreeSlot": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [552, 56, 171, 50],
-        "expected": "锻刀状况"
+        "roi": [203, 182, 176, 458],
+        "expected": "空闲中"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_ForgeDetectResourceInput", "DT_ForgeFindFreeSlot"],
+    "on_error": ["DT_ForgeClaimCompletedHub"]
+  },
+  "DT_ForgeDetectResourceInput": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [521, 59, 234, 43],
+        "expected": "锻刀资源投入"
+      }
+    },
+    "next": ["DT_ForgeFormulaLimited", "DT_ForgeFormulaLimitedFirst", "DT_ForgeFormulaAll50"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeFormulaLimited": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect", "DT_ForgeSkipCurrentRun"]
+  },
+  "DT_ForgeFormulaLimitedFirst": {
+    "enabled": false,
+    "next": ["DT_ForgeLimitedDetect", "DT_ForgeFormulaAll50"]
+  },
+  "DT_ForgeLimitedDetect": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [971, 144, 5, 2],
+        "lower": [1, 102, 114],
+        "upper": [3, 104, 116],
+        "count": 10
+      }
+    },
+    "next": ["DT_ForgeLimitedChecked", "DT_ForgeLimitedClick"]
+  },
+  "DT_ForgeLimitedChecked": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [939, 139, 30, 29],
+        "lower": [150, 0, 0],
+        "upper": [210, 80, 80],
+        "count": 20
+      }
+    },
+    "next": ["DT_ForgeClickStart"],
+    "on_error": ["DT_ForgeSkipCurrentRun"]
+  },
+  "DT_ForgeLimitedClick": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [939, 139, 30, 29]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [939, 139, 30, 29]
+    },
+    "next": ["DT_ForgeLimitedDetect"],
+    "on_error": ["DT_ForgeSkipCurrentRun"]
+  },
+  "DT_ForgeFormulaAll50": {
+    "next": ["DT_ForgeAll50Check1", "DT_ForgeAll50Reset1"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Check1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [695, 178, 209, 86],
+        "template": "Common/all50锻刀公式.png"
+      }
+    },
+    "next": ["DT_ForgeAll50Check2", "DT_ForgeAll50Reset2"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Check2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [695, 310, 209, 86],
+        "template": "Common/all50锻刀公式.png"
+      }
+    },
+    "next": ["DT_ForgeAll50Check3", "DT_ForgeAll50Reset3"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Check3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [695, 442, 209, 86],
+        "template": "Common/all50锻刀公式.png"
+      }
+    },
+    "next": ["DT_ForgeAll50Check4", "DT_ForgeAll50Reset4"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Check4": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [695, 575, 209, 86],
+        "template": "Common/all50锻刀公式.png"
+      }
+    },
+    "next": ["DT_ForgeClickStart"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Reset1": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [695, 178, 209, 86]
+      }
+    },
+    "next": ["DT_ForgeAll50Initialize"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Reset2": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [695, 310, 209, 86]
+      }
+    },
+    "next": ["DT_ForgeAll50Initialize"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Reset3": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [695, 442, 209, 86]
+      }
+    },
+    "next": ["DT_ForgeAll50Initialize"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Reset4": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [695, 575, 209, 86]
+      }
+    },
+    "next": ["DT_ForgeAll50Initialize"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Initialize": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [466, 488, 84, 44],
+        "expected": "初始化"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_delay": 300,
+    "next": ["DT_ForgeAll50Confirm"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeAll50Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [593, 584, 93, 34]
+      }
+    },
+    "next": ["DT_ForgeAll50Check1"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeClickStart": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1133, 601, 95, 59],
+        "expected": "锻刀"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_ForgeClickStartClose"],
+    "on_error": ["DT_ForgeEntry"]
+  },
+  "DT_ForgeClickStartClose": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1133, 601, 95, 59],
+        "expected": "锻刀"
       }
     },
     "action": {
       "type": "Click",
       "param": {
-        "target": [10, 305, 30, 67]
+        "target": [454, 457, 58, 28]
       }
     },
-    "next": ["DT_ForgeDisassembleHub"],
-    "on_error": ["DT_ForgeDisassembleHub"]
+    "post_delay": 500,
+    "next": ["DT_ForgeClickStartClose", "DT_ForgeMarkProgress"],
+    "on_error": ["DT_ForgeEntry"]
   },
-  "DT_ForgeDisassembleDetectSelect": {
+  "DT_ForgeMarkProgress": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [553, 59, 173, 43],
-        "expected": "刀解选择"
+        "roi": [574, 64, 133, 34],
+        "expected": "锻刀状况",
+        "only_rec": true
       }
     },
-    "next": ["DT_ForgeDisassembleHideProtected", "DT_ForgeDisassembleSelectAllowed"],
-    "on_error": ["DT_ForgeDisassembleHub"]
-  },
-  "DT_ForgeDisassembleHideProtected": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [137, 141, 4, 4],
-        "lower": [172, 21, 21],
-        "upper": [178, 27, 27]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [137, 141, 4, 4]
-    },
-    "next": ["DT_ForgeDisassembleDetectSelect"],
-    "on_error": ["DT_ForgeDisassembleSelectAllowed"]
-  },
-  "DT_ForgeDisassembleSelectAllowed": {
     "action": {
       "type": "Custom",
-      "custom_action": "ForgeDisassembleSelectAction",
-      "custom_action_param": {"minimum_count": 1}
-    },
-    "next": ["DT_ForgeDisassembleClickConfirm"],
-    "on_error": ["DT_DrillGate"]
-  },
-  "DT_ForgeDisassembleClickConfirm": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1178, 586, 53, 16],
-        "lower": [20, 81, 177],
-        "upper": [26, 87, 183]
+      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action_param": {
+        "item": "Forge",
+        "required_count": 3
       }
     },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeDisassembleConfirmPopup"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeDisassembleConfirmPopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [735, 605, 103, 45],
-        "expected": "确认"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [735, 605, 103, 45]
-    },
-    "next": ["DT_ForgeDisassembleCompleted"],
-    "on_error": ["DT_ForgeHub"]
-  },
-  "DT_ForgeDisassembleCompleted": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "disassemble"}
-    },
-    "next": ["DT_ForgeDisassembleCompletedLog"],
-    "on_error": ["DT_ForgeDisassembleReturnToForge"]
-  },
-  "DT_ForgeDisassembleCompletedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 刀解 完成"}
-    },
-    "next": ["DT_ForgeDisassembleReturnToForge"],
-    "on_error": ["DT_ForgeDisassembleReturnToForge"]
-  },
-  "DT_ForgeDisassembleReturnToForge": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [5, 167, 39, 84]
-      }
-    },
-    "next": ["DT_ForgeDisassemblePostProcessGate"],
-    "on_error": ["DT_ForgeDisassemblePostProcessGate"]
-  },
-  "DT_ForgeDisassemblePostProcessGate": {
-    "next": ["DT_ForgeOnceCheck", "DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeHub"]
+    "next": ["DT_ForgeCheckQuota", "DT_ForgeCompletedLog"],
+    "on_error": ["DT_ForgeEntry"]
   },
   "DT_ForgeFallbackWait": {
     "action": {"type": "DoNothing"},
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_ForgeHub"]
+    "next": ["DT_ForgeEntry"]
   },
-  "DT_DrillGate": {
-    "timeout": 120000,
-    "next": ["DT_DrillHub", "DT_KebiGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_DrillHub": {
-    "enabled": false,
+  "DT_DrillEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_DrillClickDrill",
-      "DT_DrillDetectOpponentSelect",
-      "DT_DrillClickMenu",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_DrillIsInMenu",
+      "DT_DrillIsInOpponentSelect",
+      "[JumpBack]DT_EnterMenu",
       "DT_DrillFallbackWait"
     ]
   },
-  "DT_DrillClickDrill": {
+  "DT_DrillIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [160, 381, 89, 40],
-        "expected": "演练"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
-    "action": {"type": "Click"},
-    "next": ["DT_DrillHub"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillClickMenu": {
-    "recognition": {
-      "type": "OCR",
+    "action": {
+      "type": "Click",
       "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
+        "target": [169, 381, 73, 38]
       }
     },
-    "action": {"type": "Click"},
-    "next": ["DT_DrillHub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillEntry"]
   },
-  "DT_DrillDetectOpponentSelect": {
+  "DT_DrillIsInOpponentSelect": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -2475,35 +1263,157 @@
         "expected": "演练对手选择"
       }
     },
-    "next": ["DT_DrillResetVictoryCount"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillResetVictoryCount": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DrillResetVictoryAction"
-    },
-    "next": ["DT_DrillOpponent1Hub"],
-    "on_error": ["DT_DrillHub"]
+  "DT_DrillOpponentSelectCheck": {
+    "next": [
+      "DT_DrillOpponentVictory1",
+      "DT_DrillOpponentVictory2",
+      "DT_DrillOpponentVictory3",
+      "DT_DrillOpponentVictory4",
+      "DT_DrillOpponentVictory5",
+      "DT_DrillOpponent1",
+      "DT_DrillOpponent2",
+      "DT_DrillOpponent3",
+      "DT_DrillOpponent4",
+      "DT_DrillOpponent5",
+      "DT_DrillOpponentFailure1",
+      "DT_DrillOpponentFailure2",
+      "DT_DrillOpponentFailure3",
+      "DT_DrillOpponentFailure4",
+      "DT_DrillOpponentFailure5",
+      "DT_DrillFinishFive"
+    ]
   },
-  "DT_DrillOpponent1Hub": {
-    "timeout": 120000,
-    "next": ["DT_DrillOpponentSelectComplete1"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillChallenge1": {
+  "DT_DrillOpponent1": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1127, 165, 127, 58],
+        "roi": [1157, 174, 62, 33],
         "expected": "挑战"
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_DrillOpponentInfo1"],
-    "on_error": ["DT_DrillOpponent1Hub"]
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry1"],
+    "on_error": ["DT_DrillEntry"]
   },
-  "DT_DrillFailure1": {
+  "DT_DrillOpponentRetry1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1157, 174, 62, 33],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry1"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponent2": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1157, 287, 63, 34],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry2"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponentRetry2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1157, 287, 63, 34],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry2"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponent3": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1157, 398, 64, 35],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry3"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponentRetry3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1157, 398, 64, 35],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry3"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponent4": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1155, 508, 65, 36],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry4"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponentRetry4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1155, 508, 65, 36],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry4"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponent5": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1155, 620, 65, 36],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_delay": 1000,
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry5"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponentRetry5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1155, 620, 65, 36],
+        "expected": "挑战"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_delay": 1000,
+    "next": ["DT_DrillOpponentInfo", "DT_DrillOpponentRetry5"],
+    "on_error": ["DT_DrillEntry"]
+  },
+  "DT_DrillOpponentFailure1": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -2511,10 +1421,79 @@
         "expected": "失败"
       }
     },
-    "next": ["DT_DrillLogFailure1"],
-    "on_error": ["DT_DrillOpponent1Hub"]
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "日课 演练 战败了"}
+    },
+    "next": ["DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillVictory1": {
+  "DT_DrillOpponentFailure2": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1124, 273, 128, 59],
+        "expected": "失败"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "日课 演练 战败了"}
+    },
+    "next": ["DT_DrillOpponentSelectCheck"]
+  },
+  "DT_DrillOpponentFailure3": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1125, 385, 128, 59],
+        "expected": "失败"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "日课 演练 战败了"}
+    },
+    "next": ["DT_DrillOpponentSelectCheck"]
+  },
+  "DT_DrillOpponentFailure4": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1123, 489, 128, 59],
+        "expected": "失败"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "日课 演练 战败了"}
+    },
+    "next": ["DT_DrillOpponentSelectCheck"]
+  },
+  "DT_DrillOpponentFailure5": {
+    "max_hit": 1,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1123, 605, 128, 59],
+        "expected": "失败"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "GuiLogAction",
+      "custom_action_param": {"message": "日课 演练 战败了"}
+    },
+    "next": ["DT_DrillOpponentSelectCheck"]
+  },
+  "DT_DrillOpponentVictory1": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -2524,117 +1503,16 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DrillVictoryAction",
-      "custom_action_param": {"position": 1}
-    },
-    "next": ["DT_DrillVictoryLimitCheck1", "DT_DrillOpponent2Hub"],
-    "on_error": ["DT_DrillOpponent2Hub"]
-  },
-  "DT_DrillVictoryLimitCheck1": {
-    "recognition": {
-      "type": "Custom",
-      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
-    },
-    "next": ["DT_DrillFinishThreeVictories"],
-    "on_error": ["DT_DrillOpponent2Hub"]
-  },
-  "DT_DrillOpponentInfo1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "next": ["DT_DrillDangerCheck1", "DT_DrillEnterTraining1"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillDangerCheck1": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "DrillDangerCheckAction"
-    },
-    "next": ["DT_DrillEnterTraining1"],
-    "on_error": ["DT_DrillLeaveStrong1"]
-  },
-  "DT_DrillLeaveStrong1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [134, 6, 33, 37]
-      }
-    },
-    "next": ["DT_DrillStrongLog1"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillStrongLog1": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 位置1 判定为强敌，跳过"}
-    },
-    "next": ["DT_DrillOpponent2Hub"],
-    "on_error": ["DT_DrillOpponent2Hub"]
-  },
-  "DT_DrillEnterTraining1": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
+      "custom_action": "DailyTaskStepMarkAction",
       "custom_action_param": {
-        "level": "Info",
-        "message": "[日课] 出阵",
-        "click": [1146, 581, 109, 92]
+        "item": "Drill",
+        "required_count": 3
       }
     },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillVictoryLimit", "DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillBattle1Hub": {
-    "timeout": 120000,
-    "next": [
-      "DT_DrillIsTeamSelect1",
-      "DT_DrillIsFormationSelect1",
-      "DT_DrillIsBattleResultExp1",
-      "DT_DrillIsBattleResultTitle1",
-      "DT_DrillOpponentInfoRetry1",
-      "DT_DrillOpponentSelectComplete1"
-    ],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillOpponent2Hub": {
-    "timeout": 120000,
-    "next": ["DT_DrillOpponentSelectComplete2"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillChallenge2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1124, 273, 128, 59],
-        "expected": "挑战"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DrillOpponentInfo2"],
-    "on_error": ["DT_DrillOpponent2Hub"]
-  },
-  "DT_DrillFailure2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1124, 273, 128, 59],
-        "expected": "失败"
-      }
-    },
-    "next": ["DT_DrillLogFailure2"],
-    "on_error": ["DT_DrillOpponent2Hub"]
-  },
-  "DT_DrillVictory2": {
+  "DT_DrillOpponentVictory2": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -2644,117 +1522,16 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DrillVictoryAction",
-      "custom_action_param": {"position": 2}
-    },
-    "next": ["DT_DrillVictoryLimitCheck2", "DT_DrillOpponent3Hub"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillVictoryLimitCheck2": {
-    "recognition": {
-      "type": "Custom",
-      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
-    },
-    "next": ["DT_DrillFinishThreeVictories"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillOpponentInfo2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "next": ["DT_DrillDangerCheck2", "DT_DrillEnterTraining2"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillDangerCheck2": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "DrillDangerCheckAction"
-    },
-    "next": ["DT_DrillEnterTraining2"],
-    "on_error": ["DT_DrillLeaveStrong2"]
-  },
-  "DT_DrillLeaveStrong2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [134, 6, 33, 37]
-      }
-    },
-    "next": ["DT_DrillStrongLog2"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillStrongLog2": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 位置2 判定为强敌，跳过"}
-    },
-    "next": ["DT_DrillOpponent3Hub"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillEnterTraining2": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
+      "custom_action": "DailyTaskStepMarkAction",
       "custom_action_param": {
-        "level": "Info",
-        "message": "[日课] 出阵",
-        "click": [1146, 581, 109, 92]
+        "item": "Drill",
+        "required_count": 3
       }
     },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillVictoryLimit", "DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillBattle2Hub": {
-    "timeout": 120000,
-    "next": [
-      "DT_DrillIsTeamSelect2",
-      "DT_DrillIsFormationSelect2",
-      "DT_DrillIsBattleResultExp2",
-      "DT_DrillIsBattleResultTitle2",
-      "DT_DrillOpponentInfoRetry2",
-      "DT_DrillOpponentSelectComplete2"
-    ],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillOpponent3Hub": {
-    "timeout": 120000,
-    "next": ["DT_DrillOpponentSelectComplete3"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillChallenge3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1125, 385, 128, 59],
-        "expected": "挑战"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DrillOpponentInfo3"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillFailure3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1125, 385, 128, 59],
-        "expected": "失败"
-      }
-    },
-    "next": ["DT_DrillLogFailure3"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillVictory3": {
+  "DT_DrillOpponentVictory3": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -2764,117 +1541,16 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DrillVictoryAction",
-      "custom_action_param": {"position": 3}
-    },
-    "next": ["DT_DrillVictoryLimitCheck3", "DT_DrillOpponent4Hub"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillVictoryLimitCheck3": {
-    "recognition": {
-      "type": "Custom",
-      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
-    },
-    "next": ["DT_DrillFinishThreeVictories"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillOpponentInfo3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "next": ["DT_DrillDangerCheck3", "DT_DrillEnterTraining3"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillDangerCheck3": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "DrillDangerCheckAction"
-    },
-    "next": ["DT_DrillEnterTraining3"],
-    "on_error": ["DT_DrillLeaveStrong3"]
-  },
-  "DT_DrillLeaveStrong3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [134, 6, 33, 37]
-      }
-    },
-    "next": ["DT_DrillStrongLog3"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillStrongLog3": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 位置3 判定为强敌，跳过"}
-    },
-    "next": ["DT_DrillOpponent4Hub"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillEnterTraining3": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
+      "custom_action": "DailyTaskStepMarkAction",
       "custom_action_param": {
-        "level": "Info",
-        "message": "[日课] 出阵",
-        "click": [1146, 581, 109, 92]
+        "item": "Drill",
+        "required_count": 3
       }
     },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillVictoryLimit", "DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillBattle3Hub": {
-    "timeout": 120000,
-    "next": [
-      "DT_DrillIsTeamSelect3",
-      "DT_DrillIsFormationSelect3",
-      "DT_DrillIsBattleResultExp3",
-      "DT_DrillIsBattleResultTitle3",
-      "DT_DrillOpponentInfoRetry3",
-      "DT_DrillOpponentSelectComplete3"
-    ],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillOpponent4Hub": {
-    "timeout": 120000,
-    "next": ["DT_DrillOpponentSelectComplete4"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillChallenge4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1123, 489, 128, 59],
-        "expected": "挑战"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DrillOpponentInfo4"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillFailure4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1123, 489, 128, 59],
-        "expected": "失败"
-      }
-    },
-    "next": ["DT_DrillLogFailure4"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillVictory4": {
+  "DT_DrillOpponentVictory4": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -2884,117 +1560,16 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DrillVictoryAction",
-      "custom_action_param": {"position": 4}
-    },
-    "next": ["DT_DrillVictoryLimitCheck4", "DT_DrillOpponent5Hub"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillVictoryLimitCheck4": {
-    "recognition": {
-      "type": "Custom",
-      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
-    },
-    "next": ["DT_DrillFinishThreeVictories"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillOpponentInfo4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "next": ["DT_DrillDangerCheck4", "DT_DrillEnterTraining4"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillDangerCheck4": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "DrillDangerCheckAction"
-    },
-    "next": ["DT_DrillEnterTraining4"],
-    "on_error": ["DT_DrillLeaveStrong4"]
-  },
-  "DT_DrillLeaveStrong4": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [134, 6, 33, 37]
-      }
-    },
-    "next": ["DT_DrillStrongLog4"],
-    "on_error": ["DT_DrillHub"]
-  },
-  "DT_DrillStrongLog4": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 位置4 判定为强敌，跳过"}
-    },
-    "next": ["DT_DrillOpponent5Hub"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillEnterTraining4": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
+      "custom_action": "DailyTaskStepMarkAction",
       "custom_action_param": {
-        "level": "Info",
-        "message": "[日课] 出阵",
-        "click": [1146, 581, 109, 92]
+        "item": "Drill",
+        "required_count": 3
       }
     },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillVictoryLimit", "DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillBattle4Hub": {
-    "timeout": 120000,
-    "next": [
-      "DT_DrillIsTeamSelect4",
-      "DT_DrillIsFormationSelect4",
-      "DT_DrillIsBattleResultExp4",
-      "DT_DrillIsBattleResultTitle4",
-      "DT_DrillOpponentInfoRetry4",
-      "DT_DrillOpponentSelectComplete4"
-    ],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillOpponent5Hub": {
-    "timeout": 120000,
-    "next": ["DT_DrillOpponentSelectComplete5"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillChallenge5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1123, 605, 128, 59],
-        "expected": "挑战"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_DrillOpponentInfo5"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillFailure5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1123, 605, 128, 59],
-        "expected": "失败"
-      }
-    },
-    "next": ["DT_DrillLogFailure5"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillVictory5": {
+  "DT_DrillOpponentVictory5": {
+    "max_hit": 1,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -3004,1399 +1579,259 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DrillVictoryAction",
-      "custom_action_param": {"position": 5}
+      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action_param": {
+        "item": "Drill",
+        "required_count": 3
+      }
     },
-    "next": ["DT_DrillVictoryLimitCheck5", "DT_DrillFinishFive"],
-    "on_error": ["DT_DrillFinishFive"]
+    "next": ["DT_DrillVictoryLimit", "DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillVictoryLimitCheck5": {
-    "recognition": {
-      "type": "Custom",
-      "param": {"custom_recognition": "DrillVictoryLimitRecognition"}
-    },
-    "next": ["DT_DrillFinishThreeVictories"],
-    "on_error": ["DT_DrillFinishFive"]
-  },
-  "DT_DrillOpponentInfo5": {
+  "DT_DrillOpponentInfo": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [529, 6, 222, 43],
+        "roi": [536, 3, 209, 47],
         "expected": "演练对手情报"
       }
     },
-    "next": ["DT_DrillDangerCheck5", "DT_DrillEnterTraining5"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillDangerCheck", "DT_DrillEnterTraining"]
   },
-  "DT_DrillDangerCheck5": {
+  "DT_DrillDangerCheck": {
     "enabled": false,
     "action": {
       "type": "Custom",
-      "custom_action": "DrillDangerCheckAction"
+      "custom_action": "DrillDangerCheckAction",
+      "custom_action_param": {"threshold": 6}
     },
-    "next": ["DT_DrillEnterTraining5"],
-    "on_error": ["DT_DrillLeaveStrong5"]
+    "next": ["DT_DrillEnterTraining"],
+    "on_error": ["DT_DrillLeaveStrong"]
   },
-  "DT_DrillLeaveStrong5": {
+  "DT_DrillLeaveStrong": {
     "action": {
       "type": "Click",
       "param": {
         "target": [134, 6, 33, 37]
       }
     },
-    "next": ["DT_DrillStrongLog5"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillStrongLog"],
+    "on_error": ["DT_DrillEntry"]
   },
-  "DT_DrillStrongLog5": {
+  "DT_DrillStrongLog": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 位置5 判定为强敌，跳过"}
+      "custom_action_param": {"message": "日课 演练 判定为强敌，跳过"}
     },
-    "next": ["DT_DrillFinishFive"],
-    "on_error": ["DT_DrillFinishFive"]
+    "next": ["DT_DrillOpponentSelectCheck"]
   },
-  "DT_DrillEnterTraining5": {
+  "DT_DrillEnterTraining": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1157, 587, 81, 40],
+        "expected": "进入"
+      }
+    },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[日课] 出阵",
-        "click": [1146, 581, 109, 92]
+      "type": "Click",
+      "param": {
+        "target": [1146, 581, 109, 92]
       }
     },
     "post_wait_freezes": {
-      "time": 500,
+      "time": 200,
       "target": [1146, 581, 109, 92]
     },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillBattleHub"]
   },
-  "DT_DrillBattle5Hub": {
-    "timeout": 120000,
-    "next": [
-      "DT_DrillIsTeamSelect5",
-      "DT_DrillIsFormationSelect5",
-      "DT_DrillIsBattleResultExp5",
-      "DT_DrillIsBattleResultTitle5",
-      "DT_DrillOpponentInfoRetry5",
-      "DT_DrillOpponentSelectComplete5"
-    ],
-    "on_error": ["DT_DrillBattle5Hub"]
+  "DT_DrillBattleHub": {
+    "next": ["DT_DrillIsInTeamSelect", "DT_DrillIsInFormationSelect", "DT_DrillBattleFinished"],
+    "on_error": ["DT_DrillEntry"]
   },
-  "DT_DrillFinishThreeVictories": {
+  "DT_DrillIsInTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "next": ["DT_DrillSelectTeam"]
+  },
+  "DT_DrillSelectTeam": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["DT_DrillClickSortie", "DT_DrillBattleHub"]
+  },
+  "DT_DrillClickSortie": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1159, 587, 82, 43],
+        "expected": "演练"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["DT_DrillBattleHub"]
+  },
+  "DT_DrillIsInFormationSelect": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [623, 1, 33, 5],
+        "lower": [173, 22, 22],
+        "upper": [177, 26, 26]
+      }
+    },
+    "next": ["DT_DrillSelectFormation"]
+  },
+  "DT_DrillSelectFormation": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1017, 421, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["DT_DrillBattleHub"]
+  },
+  "DT_DrillBattleFinished": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [510, 54, 257, 55],
+        "expected": "演练对手选择"
+      }
+    },
+    "next": ["DT_DrillIsInOpponentSelect", "DT_DrillEntry"]
+  },
+  "DT_DrillVictoryLimit": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "DailyTaskStepRecognition",
+        "custom_recognition_param": {
+          "item": "Drill",
+          "required_count": 3
+        }
+      }
+    },
+    "inverse": true,
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 演练 已完成 3 胜"}
     },
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"]
+    "next": ["DT_ReturnHomeHub"]
   },
   "DT_DrillFinishFive": {
-    "action": {"type": "DoNothing"},
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"]
-  },
-  "DT_DrillIsTeamSelect1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["DT_DrillClickTeam1"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillClickTeam1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "post_delay": 500,
-    "next": ["DT_DrillClickTeamAgain1"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillClickTeamAgain1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["DT_DrillIsImmediateSortie1"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillIsImmediateSortie1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "演练"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillIsFormationSelect1": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_DrillClickFormation1A"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillClickFormation1A": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillClickFormation1B"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillClickFormation1B": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillIsBattleResultExp1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillIsBattleResultTitle1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillOpponentInfoRetry1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1146, 581, 109, 92]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillOpponentSelectComplete1": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [510, 54, 257, 55],
-        "expected": "演练对手选择"
-      }
-    },
-    "next": ["DT_DrillCheckOutcome1"],
-    "on_error": ["DT_DrillBattle1Hub"]
-  },
-  "DT_DrillCheckOutcome1": {
-    "next": ["DT_DrillChallenge1", "DT_DrillFailure1", "DT_DrillVictory1", "DT_DrillBattle1Hub"],
-    "on_error": ["DT_DrillOpponent1Hub"]
-  },
-  "DT_DrillLogFailure1": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 失败了"}
+      "custom_action_param": {"message": "日课 演练 已完成 5 个位置"}
     },
-    "next": ["DT_DrillOpponent2Hub"],
-    "on_error": ["DT_DrillOpponent2Hub"]
+    "next": ["DT_DrillSkipCurrentRun"]
   },
-  "DT_DrillIsTeamSelect2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["DT_DrillClickTeam2"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillClickTeam2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "post_delay": 500,
-    "next": ["DT_DrillClickTeamAgain2"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillClickTeamAgain2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["DT_DrillIsImmediateSortie2"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillIsImmediateSortie2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "演练"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillIsFormationSelect2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_DrillClickFormation2A"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillClickFormation2A": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillClickFormation2B"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillClickFormation2B": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillIsBattleResultExp2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillIsBattleResultTitle2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillOpponentInfoRetry2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1146, 581, 109, 92]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillOpponentSelectComplete2": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [510, 54, 257, 55],
-        "expected": "演练对手选择"
-      }
-    },
-    "next": ["DT_DrillCheckOutcome2"],
-    "on_error": ["DT_DrillBattle2Hub"]
-  },
-  "DT_DrillCheckOutcome2": {
-    "next": ["DT_DrillChallenge2", "DT_DrillFailure2", "DT_DrillVictory2", "DT_DrillBattle2Hub"],
-    "on_error": ["DT_DrillOpponent2Hub"]
-  },
-  "DT_DrillLogFailure2": {
+  "DT_DrillSkipCurrentRun": {
     "action": {
       "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 失败了"}
-    },
-    "next": ["DT_DrillOpponent3Hub"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillIsTeamSelect3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+      "custom_action": "DailyTaskStepSkipAction",
+      "custom_action_param": {
+        "item": "Drill",
+        "reason": "本次运行内五个位置均已处理完"
       }
     },
-    "next": ["DT_DrillClickTeam3"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillClickTeam3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "post_delay": 500,
-    "next": ["DT_DrillClickTeamAgain3"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillClickTeamAgain3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["DT_DrillIsImmediateSortie3"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillIsImmediateSortie3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "演练"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillIsFormationSelect3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_DrillClickFormation3A"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillClickFormation3A": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillClickFormation3B"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillClickFormation3B": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillIsBattleResultExp3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillIsBattleResultTitle3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillOpponentInfoRetry3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1146, 581, 109, 92]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillOpponentSelectComplete3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [510, 54, 257, 55],
-        "expected": "演练对手选择"
-      }
-    },
-    "next": ["DT_DrillCheckOutcome3"],
-    "on_error": ["DT_DrillBattle3Hub"]
-  },
-  "DT_DrillCheckOutcome3": {
-    "next": ["DT_DrillChallenge3", "DT_DrillFailure3", "DT_DrillVictory3", "DT_DrillBattle3Hub"],
-    "on_error": ["DT_DrillOpponent3Hub"]
-  },
-  "DT_DrillLogFailure3": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 失败了"}
-    },
-    "next": ["DT_DrillOpponent4Hub"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillIsTeamSelect4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["DT_DrillClickTeam4"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillClickTeam4": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "post_delay": 500,
-    "next": ["DT_DrillClickTeamAgain4"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillClickTeamAgain4": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["DT_DrillIsImmediateSortie4"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillIsImmediateSortie4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "演练"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillIsFormationSelect4": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_DrillClickFormation4A"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillClickFormation4A": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillClickFormation4B"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillClickFormation4B": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillIsBattleResultExp4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillIsBattleResultTitle4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillOpponentInfoRetry4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1146, 581, 109, 92]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillOpponentSelectComplete4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [510, 54, 257, 55],
-        "expected": "演练对手选择"
-      }
-    },
-    "next": ["DT_DrillCheckOutcome4"],
-    "on_error": ["DT_DrillBattle4Hub"]
-  },
-  "DT_DrillCheckOutcome4": {
-    "next": ["DT_DrillChallenge4", "DT_DrillFailure4", "DT_DrillVictory4", "DT_DrillBattle4Hub"],
-    "on_error": ["DT_DrillOpponent4Hub"]
-  },
-  "DT_DrillLogFailure4": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 失败了"}
-    },
-    "next": ["DT_DrillOpponent5Hub"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillIsTeamSelect5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["DT_DrillClickTeam5"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillClickTeam5": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "post_delay": 500,
-    "next": ["DT_DrillClickTeamAgain5"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillClickTeamAgain5": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["DT_DrillIsImmediateSortie5"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillIsImmediateSortie5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "演练"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillIsFormationSelect5": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_DrillClickFormation5A"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillClickFormation5A": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillClickFormation5B"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillClickFormation5B": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillIsBattleResultExp5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillIsBattleResultTitle5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [180, 11, 25, 28]
-      }
-    },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillOpponentInfoRetry5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [529, 6, 222, 43],
-        "expected": "演练对手情报"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1146, 581, 109, 92]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [1146, 581, 109, 92]
-    },
-    "next": ["DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillOpponentSelectComplete5": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [510, 54, 257, 55],
-        "expected": "演练对手选择"
-      }
-    },
-    "next": ["DT_DrillCheckOutcome5"],
-    "on_error": ["DT_DrillBattle5Hub"]
-  },
-  "DT_DrillCheckOutcome5": {
-    "next": ["DT_DrillChallenge5", "DT_DrillFailure5", "DT_DrillVictory5", "DT_DrillBattle5Hub"],
-    "on_error": ["DT_DrillOpponent5Hub"]
-  },
-  "DT_DrillLogFailure5": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 失败了"}
-    },
-    "next": ["DT_DrillFinishFive"],
-    "on_error": ["DT_DrillFinishFive"]
+    "next": ["DT_ReturnHomeHub"]
   },
   "DT_DrillFallbackWait": {
     "action": {"type": "DoNothing"},
-    "next": ["DT_DrillHub"],
-    "on_error": ["DT_DrillHub"]
+    "next": ["DT_DrillEntry"]
   },
-  "DT_KebiGate": {
-    "timeout": 120000,
-    "next": ["DT_RewardGate"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_KebiHub": {
-    "enabled": false,
+  "DT_RewardEntry": {
     "timeout": 120000,
     "next": [
-      "DT_KebiIsMarching",
-      "DT_KebiIsBattleResultExp",
-      "DT_KebiIsBattleResultTitle",
-      "DT_KebiHasExpeditionReturnTitle",
-      "DT_KebiIsFormationSelect",
-      "DT_KebiIsTeamSelect",
-      "DT_KebiIsPastEraSelect",
-      "DT_KebiIsPastRegionSelect",
-      "DT_KebiIsKebiishi",
-      "DT_KebiIsMenuDirectory",
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_KebiClickMenu",
-      "DT_KebiFallbackWait"
-    ]
-  },
-  "DT_KebiIsPastEraSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [104, 331, 49, 235],
-        "template": "Common/时代选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_KebiClickEra"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiClickEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [246, 389, 1, 1]
-      }
-    },
-    "post_delay": 200,
-    "next": ["DT_KebiConfirmEra"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiConfirmEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1206, 642, 1, 1]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsPastRegionSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [848, 607, 257, 63],
-        "template": "Common/地域选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_KebiVerifyEra", "DT_KebiClickBackToEra"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiVerifyEra": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [831, 80, 26, 26],
-        "expected": ["一"]
-      }
-    },
-    "next": ["DT_KebiClickRegion"],
-    "on_error": ["DT_KebiClickBackToEra"]
-  },
-  "DT_KebiClickBackToEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [127, 77, 26, 28]
-      }
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiClickRegion": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [173, 365, 97, 96]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsTeamSelect": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["DT_KebiClickTeam"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiClickTeam": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["DT_KebiIsImmediateSortie"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsImmediateSortie": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "即刻"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsFormationSelect": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_KebiClickFormation1"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiClickFormation1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_KebiClickFormation2"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiClickFormation2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsMarching": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1067, 558, 120, 79],
-        "template": "Common/合战场_行军.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_KebiPostClickMarching"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiPostClickMarching": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1072, 563, 110, 69]
-      }
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsBattleResultExp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsBattleResultTitle": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiHasExpeditionReturnTitle": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsKebiishi": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [522, 93, 79, 64],
-        "template": "Common/检非.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_KebiPrepareFinishHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiPrepareFinishHub": {
-    "timeout": 120000,
-    "next": ["DT_KebiGoHomeAfterBattle", "DT_KebiIsFormationSelect", "DT_KebiIsBattleResultExp", "DT_KebiIsBattleResultTitle"],
-    "on_error": ["DT_KebiPrepareFinishHub"]
-  },
-  "DT_KebiGoHomeAfterBattle": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1164, 407, 88, 40],
-        "expected": "返回"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1173, 416, 70, 68]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [369, 287, 546, 238]
-    },
-    "next": ["DT_KebiConfirmReturnHome", "DT_KebiPrepareFinishHub"],
-    "on_error": ["DT_KebiPrepareFinishHub"]
-  },
-  "DT_KebiConfirmReturnHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [548, 295, 182, 56],
-        "expected": "确认返回本丸"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [490, 469, 10, 10]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [490, 469, 10, 10]
-    },
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiPrepareFinishHub"]
-  },
-  "DT_KebiClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiIsMenuDirectory": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_KebiClickSortieInMenu"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_KebiFallbackWait": {
-    "action": {"type": "DoNothing"},
-    "post_delay": 1000,
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_KebiHub"]
-  },
-  "DT_RewardGate": {
-    "timeout": 120000,
-    "next": ["DT_RewardHub", "DT_MailResourceGate", "DT_Finish"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_RewardHub": {
-    "enabled": false,
-    "timeout": 120000,
-    "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_RewardClickTaskEntry",
-      "DT_RewardClickTask",
-      "DT_RewardDetectTaskList",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_RewardIsInMenu",
+      "DT_RewardIsInTaskList",
+      "[JumpBack]DT_EnterMenu",
       "DT_RewardFallbackWait"
     ]
   },
-  "DT_RewardClickTaskEntry": {
+  "DT_RewardIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1197, 390, 50, 30],
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1061, 478, 1, 1]
+      }
+    },
+    "next": ["DT_RewardEntry"]
+  },
+  "DT_RewardIsInTaskList": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [520, 39, 260, 58],
         "expected": "任务"
+      }
+    },
+    "next": [
+      "DT_RewardClickClaim",
+      "DT_RewardSelectDaily",
+      "DT_RewardSelectMonthly",
+      "DT_RewardSelectMainline",
+      "DT_RewardSelectActivity",
+      "DT_RewardFinishedLog"
+    ],
+    "on_error": ["DT_RewardEntry"]
+  },
+  "DT_RewardClickClaim": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1136, 570, 26, 21],
+        "lower": [208, 113, 5],
+        "upper": [214, 119, 11]
       }
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
-      "target": [1197, 390, 50, 30]
+      "target": [1136, 570, 26, 21]
     },
-    "next": ["DT_RewardHub"],
-    "on_error": ["DT_RewardHub"]
+    "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
-  "DT_RewardClickTask": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [989, 518, 66, 31],
-        "expected": "任务"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [989, 518, 66, 31]
-    },
-    "next": ["DT_RewardHub"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardDetectTaskList": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [572, 39, 139, 39],
-        "expected": "任务列表"
-      }
-    },
-    "next": ["DT_RewardDailyGate", "DT_RewardMonthlyGate", "DT_RewardMainlineGate", "DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardDailyGate": {
+  "DT_RewardSelectDaily": {
     "enabled": false,
+    "max_hit": 1,
     "action": {
       "type": "Click",
       "param": {
@@ -4405,38 +1840,11 @@
     },
     "repeat": 3,
     "repeat_delay": 500,
-    "next": ["DT_RewardDailyClaimHub"],
-    "on_error": ["DT_RewardHub"]
+    "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
-  "DT_RewardDailyClaimHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardClaimAvailable", "DT_RewardAfterDailyHub"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardClaimAvailable": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1136, 570, 26, 21],
-        "lower": [208, 113, 5],
-        "upper": [214, 119, 11]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1136, 570, 26, 21]
-    },
-    "next": ["DT_RewardAfterDailyHub"],
-    "on_error": ["DT_RewardAfterDailyHub"]
-  },
-  "DT_RewardAfterDailyHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardMonthlyGate", "DT_RewardMainlineGate", "DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardMonthlyGate": {
+  "DT_RewardSelectMonthly": {
     "enabled": false,
+    "max_hit": 1,
     "action": {
       "type": "Click",
       "param": {
@@ -4445,38 +1853,11 @@
     },
     "repeat": 3,
     "repeat_delay": 500,
-    "next": ["DT_RewardMonthlyClaimHub"],
-    "on_error": ["DT_RewardHub"]
+    "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
-  "DT_RewardMonthlyClaimHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardMonthlyClaimAvailable", "DT_RewardAfterMonthlyHub"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardMonthlyClaimAvailable": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1136, 570, 26, 21],
-        "lower": [208, 113, 5],
-        "upper": [214, 119, 11]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1136, 570, 26, 21]
-    },
-    "next": ["DT_RewardAfterMonthlyHub"],
-    "on_error": ["DT_RewardAfterMonthlyHub"]
-  },
-  "DT_RewardAfterMonthlyHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardMainlineGate", "DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardMainlineGate": {
+  "DT_RewardSelectMainline": {
     "enabled": false,
+    "max_hit": 1,
     "action": {
       "type": "Click",
       "param": {
@@ -4485,38 +1866,11 @@
     },
     "repeat": 3,
     "repeat_delay": 500,
-    "next": ["DT_RewardMainlineClaimHub"],
-    "on_error": ["DT_RewardHub"]
+    "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
-  "DT_RewardMainlineClaimHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardMainlineClaimAvailable", "DT_RewardAfterMainlineHub"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardMainlineClaimAvailable": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1136, 570, 26, 21],
-        "lower": [208, 113, 5],
-        "upper": [214, 119, 11]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1136, 570, 26, 21]
-    },
-    "next": ["DT_RewardAfterMainlineHub"],
-    "on_error": ["DT_RewardAfterMainlineHub"]
-  },
-  "DT_RewardAfterMainlineHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardActivityGate", "DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardActivityGate": {
+  "DT_RewardSelectActivity": {
     "enabled": false,
+    "max_hit": 1,
     "action": {
       "type": "Click",
       "param": {
@@ -4525,44 +1879,29 @@
     },
     "repeat": 3,
     "repeat_delay": 500,
-    "next": ["DT_RewardActivityClaimHub"],
-    "on_error": ["DT_RewardHub"]
+    "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
-  "DT_RewardActivityClaimHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardActivityClaimAvailable", "DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardHub"]
-  },
-  "DT_RewardActivityClaimAvailable": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1136, 570, 26, 21],
-        "lower": [208, 113, 5],
-        "upper": [214, 119, 11]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1136, 570, 26, 21]
-    },
-    "next": ["DT_RewardTaskFinishedLog"],
-    "on_error": ["DT_RewardTaskFinishedLog"]
-  },
-  "DT_RewardTaskFinishedLog": {
+  "DT_RewardFinishedLog": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 任务奖励领取完成"}
     },
-    "next": ["DT_RewardClosePopupHub"],
-    "on_error": ["DT_RewardClosePopupHub"]
+    "next": ["DT_RewardSkipCurrentRun"]
+  },
+  "DT_RewardSkipCurrentRun": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskStepSkipAction",
+      "custom_action_param": {
+        "item": "Reward",
+        "reason": "本次运行已完成领取奖励"
+      }
+    },
+    "next": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardClosePopupHub": {
-    "timeout": 120000,
-    "next": ["DT_RewardClosePopup", "DT_MailResourceGate", "DT_Finish"],
-    "on_error": ["DT_MailResourceGate"]
+    "next": ["DT_RewardClosePopup", "DT_ReturnHomeHub"]
   },
   "DT_RewardClosePopup": {
     "recognition": {
@@ -4577,63 +1916,43 @@
       "time": 300,
       "target": [1234, 11, 34, 36]
     },
-    "next": ["DT_RewardClosePopupHub"],
-    "on_error": ["DT_RewardClosePopupHub"]
+    "next": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardFallbackWait": {
     "action": {"type": "DoNothing"},
-    "next": ["DT_RewardHub"],
-    "on_error": ["DT_RewardHub"]
+    "next": ["DT_RewardEntry"]
   },
-  "DT_MailResourceGate": {
-    "enabled": false,
-    "timeout": 120000,
-    "next": ["DT_MailResourceHub", "DT_Finish"],
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_MailResourceHub": {
-    "enabled": false,
+  "DT_MailEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_HandleExperience",
-      "[JumpBack]DT_HandleSwordDrop",
-      "[JumpBack]DT_HandleAnnouncementPopup",
-      "[JumpBack]DT_HandleTrainingLetter",
-      "[JumpBack]DT_HandleInternalReport",
-      "[JumpBack]DT_HandleLeaveTroopRecord",
-      "[JumpBack]DT_HandleAdvertisementPopup",
-      "[JumpBack]DT_HandleGameIcon",
-      "[JumpBack]DT_HandleLoginButton",
-      "[JumpBack]DT_HandleGameUpdatePopup",
-      "[JumpBack]DT_HandleInGameUpdatePopup",
-      "[JumpBack]DT_HandleNetworkRequestTimeout",
-      "[JumpBack]DT_HandleConnectionInterrupted",
-      "DT_MailResourceOpenFromHome",
-      "DT_MailResourceOpenFromMenu",
-      "DT_MailResourceOpenFilter",
-      "DT_MailResourceIsFilter",
-      "DT_MailResourceFallbackWait"
-    ],
-    "on_error": ["DT_RestartGame"]
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_MailIsInMenu",
+      "DT_MailOpenFilter",
+      "DT_MailIsInFilterSelect",
+      "[JumpBack]DT_EnterMenu",
+      "DT_MailFallbackWait"
+    ]
   },
-  "DT_MailResourceOpenFromHome": {
+  "DT_MailIsInMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1188, 173, 75, 29],
-        "expected": "收件箱"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["DT_MailResourceHub"],
-    "on_error": ["DT_MailResourceHub"]
-  },
-  "DT_MailResourceOpenFromMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [980, 407, 82, 31],
-        "expected": "收件箱"
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
       }
     },
     "action": {
@@ -4642,10 +1961,9 @@
         "target": [1060, 403, 1, 1]
       }
     },
-    "next": ["DT_MailResourceHub"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailEntry"]
   },
-  "DT_MailResourceOpenFilter": {
+  "DT_MailOpenFilter": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -4659,10 +1977,9 @@
         "target": [965, 111, 48, 24]
       }
     },
-    "next": ["DT_MailResourceHub"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailEntry"]
   },
-  "DT_MailResourceIsFilter": {
+  "DT_MailIsInFilterSelect": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -4671,17 +1988,17 @@
       }
     },
     "next": [
-      "DT_MailResourceSelectFilter1",
-      "DT_MailResourceSelectFilter2",
-      "DT_MailResourceSelectFilter3",
-      "DT_MailResourceSelectFilter4",
-      "DT_MailResourceSelectFilter5",
-      "DT_MailResourceSelectFilter6",
-      "DT_MailResourceConfirmFilter"
+      "DT_MailSelectFilter1",
+      "DT_MailSelectFilter2",
+      "DT_MailSelectFilter3",
+      "DT_MailSelectFilter4",
+      "DT_MailSelectFilter5",
+      "DT_MailSelectFilter6",
+      "DT_MailConfirmFilter"
     ],
-    "on_error": ["DT_MailResourceHub"]
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceSelectFilter1": {
+  "DT_MailSelectFilter1": {
     "enabled": false,
     "action": {
       "type": "Click",
@@ -4691,16 +2008,16 @@
     },
     "post_delay": 200,
     "next": [
-      "DT_MailResourceSelectFilter2",
-      "DT_MailResourceSelectFilter3",
-      "DT_MailResourceSelectFilter4",
-      "DT_MailResourceSelectFilter5",
-      "DT_MailResourceSelectFilter6",
-      "DT_MailResourceConfirmFilter"
+      "DT_MailSelectFilter2",
+      "DT_MailSelectFilter3",
+      "DT_MailSelectFilter4",
+      "DT_MailSelectFilter5",
+      "DT_MailSelectFilter6",
+      "DT_MailConfirmFilter"
     ],
-    "on_error": ["DT_MailResourceHub"]
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceSelectFilter2": {
+  "DT_MailSelectFilter2": {
     "enabled": false,
     "action": {
       "type": "Click",
@@ -4709,10 +2026,10 @@
       }
     },
     "post_delay": 200,
-    "next": ["DT_MailResourceSelectFilter3", "DT_MailResourceSelectFilter4", "DT_MailResourceSelectFilter5", "DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailSelectFilter3", "DT_MailSelectFilter4", "DT_MailSelectFilter5", "DT_MailSelectFilter6", "DT_MailConfirmFilter"],
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceSelectFilter3": {
+  "DT_MailSelectFilter3": {
     "enabled": false,
     "action": {
       "type": "Click",
@@ -4721,10 +2038,10 @@
       }
     },
     "post_delay": 200,
-    "next": ["DT_MailResourceSelectFilter4", "DT_MailResourceSelectFilter5", "DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailSelectFilter4", "DT_MailSelectFilter5", "DT_MailSelectFilter6", "DT_MailConfirmFilter"],
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceSelectFilter4": {
+  "DT_MailSelectFilter4": {
     "enabled": false,
     "action": {
       "type": "Click",
@@ -4733,10 +2050,10 @@
       }
     },
     "post_delay": 200,
-    "next": ["DT_MailResourceSelectFilter5", "DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailSelectFilter5", "DT_MailSelectFilter6", "DT_MailConfirmFilter"],
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceSelectFilter5": {
+  "DT_MailSelectFilter5": {
     "enabled": false,
     "action": {
       "type": "Click",
@@ -4745,10 +2062,10 @@
       }
     },
     "post_delay": 200,
-    "next": ["DT_MailResourceSelectFilter6", "DT_MailResourceConfirmFilter"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailSelectFilter6", "DT_MailConfirmFilter"],
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceSelectFilter6": {
+  "DT_MailSelectFilter6": {
     "enabled": false,
     "action": {
       "type": "Click",
@@ -4757,10 +2074,10 @@
       }
     },
     "post_delay": 200,
-    "next": ["DT_MailResourceConfirmFilter"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailConfirmFilter"],
+    "on_error": ["DT_MailEntry"]
   },
-  "DT_MailResourceConfirmFilter": {
+  "DT_MailConfirmFilter": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -4773,10 +2090,9 @@
       "time": 200,
       "target": [603, 603, 73, 46]
     },
-    "next": ["DT_MailResourceClaim", "DT_MailResourceCloseMailboxHub"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailClickClaim", "DT_MailIsInFilterSelect", "DT_MailCloseMailboxHub"]
   },
-  "DT_MailResourceClaim": {
+  "DT_MailClickClaim": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
@@ -4788,14 +2104,12 @@
     "pre_delay": 500,
     "action": {"type": "Click"},
     "post_delay": 500,
-    "next": ["DT_MailResourceCloseMailboxHub"],
-    "on_error": ["DT_MailResourceCloseMailboxHub"]
+    "next": ["DT_MailClickClaim", "DT_MailCloseMailboxHub"]
   },
-  "DT_MailResourceCloseMailboxHub": {
-    "next": ["DT_MailResourceCloseMailbox", "DT_MailResourceFinishedLog"],
-    "on_error": ["DT_MailResourceFinishedLog"]
+  "DT_MailCloseMailboxHub": {
+    "next": ["DT_MailCloseMailbox", "DT_MailFinishedLog"]
   },
-  "DT_MailResourceCloseMailbox": {
+  "DT_MailCloseMailbox": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -4808,60 +2122,55 @@
       "time": 100,
       "target": [1234, 11, 34, 36]
     },
-    "next": ["DT_MailResourceCloseMailboxHub"],
-    "on_error": ["DT_MailResourceCloseMailboxHub"]
+    "next": ["DT_MailCloseMailboxHub"],
+    "on_error": ["DT_MailCloseMailboxHub"]
   },
-  "DT_MailResourceFinishedLog": {
+  "DT_MailFinishedLog": {
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
       "custom_action_param": {"message": "日课 邮件领取完成"}
     },
-    "next": ["DT_Finish"],
-    "on_error": ["DT_Finish"]
+    "next": ["DT_MailSkipCurrentRun"]
   },
-  "DT_MailResourceFallbackWait": {
+  "DT_MailSkipCurrentRun": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "DailyTaskStepSkipAction",
+      "custom_action_param": {
+        "item": "Mail",
+        "reason": "本次运行已完成领取邮件"
+      }
+    },
+    "next": ["DT_ReturnHomeHub"]
+  },
+  "DT_MailFallbackWait": {
     "action": {"type": "DoNothing"},
-    "next": ["DT_MailResourceHub"],
-    "on_error": ["DT_MailResourceHub"]
+    "next": ["DT_MailEntry"]
   },
-  "DT_LoginRewardReturnHomeHub": {
-    "timeout": 120000,
-    "next": ["DT_LoginRewardReturnHomeCheckBrightness", "DT_LoginRewardReturnHomeClickMenu", "DT_LoginRewardReturnHomeClickHome", "DT_LoginRewardReturnHomeFallbackWait"]
+  "DT_ReturnHomeHub": {
+    "next": [
+      "DT_ReturnHomeCheckHomeBrightness",
+      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]DT_IsSwordDropColor",
+      "[JumpBack]DT_IsAnnouncementPopup",
+      "[JumpBack]DT_IsTrainingLetter",
+      "[JumpBack]DT_IsLoginReward",
+      "[JumpBack]DT_IsAdvertisementPopup",
+      "[JumpBack]DT_IsGameIcon",
+      "[JumpBack]DT_IsLoginButton",
+      "[JumpBack]DT_IsGameUpdatePopup",
+      "[JumpBack]DT_IsInGameUpdatePopup",
+      "[JumpBack]DT_IsInternalReport",
+      "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_IsInMenu",
+      "[JumpBack]DT_EnterMenu",
+      "[JumpBack]DT_IsNetworkRequestTimeout",
+      "[JumpBack]DT_IsConnectionInterrupted",
+      "DT_FallbackWait"
+    ]
   },
-  "DT_LoginRewardReturnHomeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
-  },
-  "DT_LoginRewardReturnHomeClickHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1037, 166, 101, 47],
-        "expected": "本丸"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1037, 166, 101, 47]
-    },
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
-  },
-  "DT_LoginRewardReturnHomeCheckBrightness": {
+  "DT_ReturnHomeCheckHomeBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
@@ -4870,431 +2179,194 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["DT_LoginRewardReturnHomeIsHome"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
+    "next": ["DT_ReturnHomeIsHome", "DT_ReturnHomeHub"]
   },
-  "DT_LoginRewardReturnHomeIsHome": {
+  "DT_ReturnHomeIsHome": {
+    "next": ["DT_ProjectRouter"]
+  },
+  "DT_ProjectRecover": {
+    "action": {"type": "DoNothing"},
+    "next": ["DT_ReturnHomeHub"]
+  },
+  "DT_Finish": {},
+  "DT_IsExpeditionReturn": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [388, 59, 54, 25],
+        "expected": "经验"
       }
     },
-    "next": ["DT_WarmGiftGate"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
-  },
-  "DT_LoginRewardReturnHomeFallbackWait": {
     "action": {
       "type": "Click",
       "param": {
-        "target": [180, 11, 25, 28]
+        "target": [947, 533, 67, 75]
       }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [180, 11, 25, 28]
-    },
-    "next": ["DT_LoginRewardReturnHomeHub"],
-    "on_error": ["DT_LoginRewardReturnHomeHub"]
+    }
   },
-  "DT_WarmGiftReturnHomeHub": {
-    "timeout": 120000,
-    "next": ["DT_WarmGiftReturnHomeCheckBrightness", "DT_WarmGiftReturnHomeClickMenu", "DT_WarmGiftReturnHomeClickHome", "DT_WarmGiftReturnHomeFallbackWait"]
-  },
-  "DT_WarmGiftReturnHomeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
-  },
-  "DT_WarmGiftReturnHomeClickHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1037, 166, 101, 47],
-        "expected": "本丸"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1037, 166, 101, 47]
-    },
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
-  },
-  "DT_WarmGiftReturnHomeCheckBrightness": {
+  "DT_IsSwordDropColor": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
+        "roi": [598, 543, 66, 1],
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
       }
     },
-    "next": ["DT_WarmGiftReturnHomeIsHome"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
-  },
-  "DT_WarmGiftReturnHomeIsHome": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_MixGate"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
-  },
-  "DT_WarmGiftReturnHomeFallbackWait": {
     "action": {
       "type": "Click",
       "param": {
-        "target": [180, 11, 25, 28]
+        "target": [947, 533, 67, 75]
       }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [180, 11, 25, 28]
-    },
-    "next": ["DT_WarmGiftReturnHomeHub"],
-    "on_error": ["DT_WarmGiftReturnHomeHub"]
+    }
   },
-  "DT_MixReturnHomeHub": {
-    "timeout": 120000,
-    "next": ["DT_MixReturnHomeCheckBrightness", "DT_MixReturnHomeClickMenu", "DT_MixReturnHomeClickHome", "DT_MixReturnHomeFallbackWait"]
-  },
-  "DT_MixReturnHomeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"]
-  },
-  "DT_MixReturnHomeClickHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1037, 166, 101, 47],
-        "expected": "本丸"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1037, 166, 101, 47]
-    },
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"]
-  },
-  "DT_MixReturnHomeCheckBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["DT_MixReturnHomeIsHome"],
-    "on_error": ["DT_MixReturnHomeHub"]
-  },
-  "DT_MixReturnHomeIsHome": {
+  "DT_IsAnnouncementPopup": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "roi": [1056, 463, 63, 193],
+        "template": "Common/公告弹窗.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"},
+    "repeat": 3,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1056, 463, 63, 193]
+    }
+  },
+  "DT_IsTrainingLetter": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1037, 438, 206, 76],
+        "template": "Common/修行书信.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "DT_IsLoginReward": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [816, 577, 182, 59],
+        "template": "Common/登录奖励.png",
         "green_mask": true,
         "threshold": [0.98]
       }
     },
-    "next": ["DT_ForgeGate"],
-    "on_error": ["DT_MixReturnHomeHub"]
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    }
   },
-  "DT_MixReturnHomeFallbackWait": {
+  "DT_LoginRewardClick2": {
     "action": {
       "type": "Click",
       "param": {
-        "target": [180, 11, 25, 28]
+        "target": [1092, 318, 1, 1]
       }
     },
     "post_wait_freezes": {
       "time": 200,
-      "target": [180, 11, 25, 28]
+      "target": [240, 104, 803, 561]
     },
-    "next": ["DT_MixReturnHomeHub"],
-    "on_error": ["DT_MixReturnHomeHub"]
+    "next": ["DT_LoginRewardClick3"]
   },
-  "DT_ForgeReturnHomeHub": {
-    "timeout": 120000,
-    "next": ["DT_ForgeReturnHomeCheckBrightness", "DT_ForgeReturnHomeClickMenu", "DT_ForgeReturnHomeClickHome", "DT_ForgeReturnHomeFallbackWait"]
-  },
-  "DT_ForgeReturnHomeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeReturnHomeClickHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1037, 166, 101, 47],
-        "expected": "本丸"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1037, 166, 101, 47]
-    },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeReturnHomeCheckBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["DT_ForgeReturnHomeIsHome"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeReturnHomeIsHome": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["DT_DrillGate"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
-  },
-  "DT_ForgeReturnHomeFallbackWait": {
+  "DT_LoginRewardClick3": {
     "action": {
       "type": "Click",
       "param": {
-        "target": [180, 11, 25, 28]
+        "target": [1092, 318, 1, 1]
       }
     },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [180, 11, 25, 28]
-    },
-    "next": ["DT_ForgeReturnHomeHub"],
-    "on_error": ["DT_ForgeReturnHomeHub"]
+    "timeout": 3000,
+    "next": ["DT_ReturnHomeHub"]
   },
-  "DT_DrillReturnHomeHub": {
-    "timeout": 120000,
-    "next": ["DT_DrillReturnHomeCheckBrightness", "DT_DrillReturnHomeClickMenu", "DT_DrillReturnHomeClickHome", "DT_DrillReturnHomeFallbackWait"]
-  },
-  "DT_DrillReturnHomeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"]
-  },
-  "DT_DrillReturnHomeClickHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1037, 166, 101, 47],
-        "expected": "本丸"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1037, 166, 101, 47]
-    },
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"]
-  },
-  "DT_DrillReturnHomeCheckBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["DT_DrillReturnHomeIsHome"],
-    "on_error": ["DT_DrillReturnHomeHub"]
-  },
-  "DT_DrillReturnHomeIsHome": {
+  "DT_IsAdvertisementPopup": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [1017, 101, 62, 21],
+        "template": "Common/广告.png",
+        "threshold": [0.8]
       }
     },
-    "next": ["DT_KebiGate"],
-    "on_error": ["DT_DrillReturnHomeHub"]
-  },
-  "DT_DrillReturnHomeFallbackWait": {
     "action": {
       "type": "Click",
       "param": {
-        "target": [180, 11, 25, 28]
+        "target": [1095, 103, 14, 15]
       }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [180, 11, 25, 28]
-    },
-    "next": ["DT_DrillReturnHomeHub"],
-    "on_error": ["DT_DrillReturnHomeHub"]
+    }
   },
-  "DT_KebiReturnHomeHub": {
-    "timeout": 120000,
-    "next": ["DT_KebiReturnHomeCheckBrightness", "DT_KebiReturnHomeClickMenu", "DT_KebiReturnHomeClickHome", "DT_KebiReturnHomeFallbackWait"]
-  },
-  "DT_KebiReturnHomeClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1186, 19, 38, 36],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1186, 19, 38, 36]
-    },
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiReturnHomeHub"]
-  },
-  "DT_KebiReturnHomeClickHome": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1037, 166, 101, 47],
-        "expected": "本丸"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1037, 166, 101, 47]
-    },
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiReturnHomeHub"]
-  },
-  "DT_KebiReturnHomeCheckBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["DT_KebiReturnHomeIsHome"],
-    "on_error": ["DT_KebiReturnHomeHub"]
-  },
-  "DT_KebiReturnHomeIsHome": {
+  "DT_IsGameIcon": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "roi": [0, 0, 1600, 900],
+        "template": "Common/游戏图标.png",
+        "green_mask": true,
+        "threshold": [0.8]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "DT_IsLoginButton": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [665, 529, 124, 78],
+        "template": "Common/登录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
     },
-    "next": ["DT_RewardGate"],
-    "on_error": ["DT_KebiReturnHomeHub"]
+    "action": {"type": "Click"}
   },
-  "DT_KebiReturnHomeFallbackWait": {
+  "DT_IsGameUpdatePopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [443, 431, 120, 46],
+        "template": "Common/游戏更新.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "DT_IsInGameUpdatePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [498, 291, 77, 50],
+        "expected": "更新"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
-        "target": [180, 11, 25, 28]
+        "target": [578, 440, 130, 55]
       }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [180, 11, 25, 28]
-    },
-    "next": ["DT_KebiReturnHomeHub"],
-    "on_error": ["DT_KebiReturnHomeHub"]
+    }
   },
-  "DT_WaitRefresh": {
+  "DT_IsInternalReport": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "roi": [569, 322, 138, 31],
+        "template": "Common/内番报告.png",
         "green_mask": true,
         "threshold": [0.98]
       }
     },
-    "post_delay": 1000,
-    "next": ["E_CheckTeamStatus"],
-    "on_error": ["DT_DetectWhereAmI"]
-  },
-  "DT_Finish": {
-    "on_error": ["DT_RestartGame"]
-  },
-  "DT_FallbackWait": {
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGame"]
+    "action": {"type": "Click"}
   },
   "DT_IsTrainingApplication": {
     "recognition": {
@@ -5311,9 +2383,7 @@
       "param": {
         "target": [197, 600, 52, 26]
       }
-    },
-    "next": ["DT_ClickTrainingApplication", "DT_CancelTrainingApplication", "DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
+    }
   },
   "DT_ClickTrainingApplication": {
     "recognition": {
@@ -5331,8 +2401,7 @@
         "target": [96, 558, 54, 38]
       }
     },
-    "next": ["DT_CancelTrainingApplication", "DT_ClickTrainingApplication"],
-    "on_error": ["DT_DetectWhereAmI"]
+    "next": ["DT_CancelTrainingApplication"]
   },
   "DT_CancelTrainingApplication": {
     "recognition": {
@@ -5348,343 +2417,74 @@
         "target": [460, 587, 69, 37]
       }
     },
-    "next": ["DT_CancelTrainingApplication", "DT_DetectWhereAmI"],
-    "on_error": ["DT_DetectWhereAmI"]
+    "next": ["DT_ReturnHomeHub"]
+  },
+  "DT_IsNetworkRequestTimeout": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [524, 304, 56, 35],
+        "expected": "网络"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [599, 442, 93, 55]
+      }
+    }
+  },
+  "DT_IsConnectionInterrupted": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [588, 274, 96, 25],
+        "expected": "连接中断"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [738, 449, 100, 39]
+      }
+    }
+  },
+  "DT_IsInMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [606, 40, 68, 35],
+        "expected": "目录",
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1043, 165, 86, 46]
+      }
+    }
+  },
+  "DT_EnterMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1194, 23, 24, 33],
+        "expected": "目",
+        "only_rec": true
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "DT_FallbackWait": {
+    "next": ["DT_ProjectRouter"]
   },
   "DT_RestartGame": {
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["DT_DetectWhereAmI"],
+    "next": ["DT_ProjectRouter"],
     "on_error": ["DT_RestartGame"]
-  },
-  "DT_RestartGameReturnPrepareHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnPrepareHub"]
-  },
-  "DT_RestartGameReturnLoginRewardHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_LoginRewardHub"],
-    "on_error": ["DT_RestartGameReturnLoginRewardHub"]
-  },
-  "DT_RestartGameReturnLoginRewardClosePopupHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_LoginRewardHub"],
-    "on_error": ["DT_RestartGameReturnLoginRewardClosePopupHub"]
-  },
-  "DT_RestartGameReturnWarmGiftHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_WarmGiftHub"],
-    "on_error": ["DT_RestartGameReturnWarmGiftHub"]
-  },
-  "DT_RestartGameReturnWarmGiftFinishClaimHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnWarmGiftFinishClaimHub"]
-  },
-  "DT_RestartGameReturnMixHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_MixHub"],
-    "on_error": ["DT_RestartGameReturnMixHub"]
-  },
-  "DT_RestartGameReturnForgeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_ForgeHub"],
-    "on_error": ["DT_RestartGameReturnForgeHub"]
-  },
-  "DT_RestartGameReturnForgeClaimCompletedHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnForgeClaimCompletedHub"]
-  },
-  "DT_RestartGameReturnForgeFindFreeSlot1Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnForgeFindFreeSlot1Hub"]
-  },
-  "DT_RestartGameReturnForgeFindFreeSlot2Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnForgeFindFreeSlot2Hub"]
-  },
-  "DT_RestartGameReturnForgeFindFreeSlot3Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnForgeFindFreeSlot3Hub"]
-  },
-  "DT_RestartGameReturnForgeDisassembleHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnForgeDisassembleHub"]
-  },
-  "DT_RestartGameReturnDrillHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DrillHub"],
-    "on_error": ["DT_RestartGameReturnDrillHub"]
-  },
-  "DT_RestartGameReturnDrillOpponent1Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillOpponent1Hub"]
-  },
-  "DT_RestartGameReturnDrillBattle1Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillBattle1Hub"]
-  },
-  "DT_RestartGameReturnDrillOpponent2Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillOpponent2Hub"]
-  },
-  "DT_RestartGameReturnDrillBattle2Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillBattle2Hub"]
-  },
-  "DT_RestartGameReturnDrillOpponent3Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillOpponent3Hub"]
-  },
-  "DT_RestartGameReturnDrillBattle3Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillBattle3Hub"]
-  },
-  "DT_RestartGameReturnDrillOpponent4Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillOpponent4Hub"]
-  },
-  "DT_RestartGameReturnDrillBattle4Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillBattle4Hub"]
-  },
-  "DT_RestartGameReturnDrillOpponent5Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillOpponent5Hub"]
-  },
-  "DT_RestartGameReturnDrillBattle5Hub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillBattle5Hub"]
-  },
-  "DT_RestartGameReturnKebiHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_KebiHub"],
-    "on_error": ["DT_RestartGameReturnKebiHub"]
-  },
-  "DT_RestartGameReturnKebiPrepareFinishHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnKebiPrepareFinishHub"]
-  },
-  "DT_RestartGameReturnRewardHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_RewardHub"],
-    "on_error": ["DT_RestartGameReturnRewardHub"]
-  },
-  "DT_RestartGameReturnRewardDailyClaimHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardDailyClaimHub"]
-  },
-  "DT_RestartGameReturnRewardAfterDailyHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardAfterDailyHub"]
-  },
-  "DT_RestartGameReturnRewardMonthlyClaimHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardMonthlyClaimHub"]
-  },
-  "DT_RestartGameReturnRewardAfterMonthlyHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardAfterMonthlyHub"]
-  },
-  "DT_RestartGameReturnRewardMainlineClaimHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardMainlineClaimHub"]
-  },
-  "DT_RestartGameReturnRewardAfterMainlineHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardAfterMainlineHub"]
-  },
-  "DT_RestartGameReturnRewardActivityClaimHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardActivityClaimHub"]
-  },
-  "DT_RestartGameReturnRewardClosePopupHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnRewardClosePopupHub"]
-  },
-  "DT_RestartGameReturnLoginRewardReturnHomeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnLoginRewardReturnHomeHub"]
-  },
-  "DT_RestartGameReturnWarmGiftReturnHomeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnWarmGiftReturnHomeHub"]
-  },
-  "DT_RestartGameReturnMixReturnHomeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnMixReturnHomeHub"]
-  },
-  "DT_RestartGameReturnForgeReturnHomeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnForgeReturnHomeHub"]
-  },
-  "DT_RestartGameReturnDrillReturnHomeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnDrillReturnHomeHub"]
-  },
-  "DT_RestartGameReturnKebiReturnHomeHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_DetectWhereAmI"],
-    "on_error": ["DT_RestartGameReturnKebiReturnHomeHub"]
-  },
-  "DT_RestartGameReturnMailResourceHub": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["DT_MailResourceHub"],
-    "on_error": ["DT_RestartGameReturnMailResourceHub"]
   }
 }

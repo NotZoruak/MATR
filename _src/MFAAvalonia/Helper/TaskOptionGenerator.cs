@@ -9,12 +9,14 @@ using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Avalonia.Xaml.Interactivity;
 using MFAAvalonia.Configuration;
 using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper.ValueType;
 using MFAAvalonia.Models;
+using MFAAvalonia.Services;
 using MFAAvalonia.ViewModels.Pages;
 using MFAAvalonia.ViewModels.UsersControls;
 using MFAAvalonia.ViewModels.UsersControls.Settings;
@@ -55,6 +57,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             AddOptionsWithCheckboxGrid(panel, dragItem, dragItem.InterfaceItem.Option.ToList());
         }
 
+        if (entry == "DailyTask")
+        {
+            AppendDailyTaskCompletionSummary(panel);
+        }
+
         if (dragItem.InterfaceItem?.Advanced != null)
         {
             foreach (var option in dragItem.InterfaceItem.Advanced.ToList())
@@ -79,6 +86,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         if (dragItem.InterfaceItem?.Option != null)
         {
             AddOptionsWithCheckboxGrid(panel, dragItem, dragItem.InterfaceItem.Option.ToList());
+        }
+
+        if (entry == "DailyTask")
+        {
+            AppendDailyTaskCompletionSummary(panel);
         }
     }
 
@@ -153,6 +165,55 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
         FlushBatch();
     }
+
+    /// <summary>在日课复选项后显示当前游戏日的完成汇总。</summary>
+    private static void AppendDailyTaskCompletionSummary(StackPanel panel)
+    {
+        var summary = new TextBlock
+        {
+            FontSize = 12,
+            Foreground = Brushes.Gray,
+            Margin = new Thickness(10, 8, 10, 3),
+            TextWrapping = TextWrapping.Wrap,
+        };
+
+        void RefreshSummary()
+        {
+            var completedItems = DailyTaskCompletionService.GetCompletedItems(DateTime.Now)
+                .Select(GetDailyTaskDisplayName)
+                .ToArray();
+            summary.Text = completedItems.Length == 0
+                ? "今日已完成：暂无"
+                : $"今日已完成：{string.Join("、", completedItems)}";
+        }
+
+        EventHandler completionChangedHandler = (_, _) =>
+            Dispatcher.UIThread.Post(RefreshSummary);
+        summary.AttachedToVisualTree += (_, _) =>
+        {
+            DailyTaskCompletionService.CompletionChanged += completionChangedHandler;
+            RefreshSummary();
+        };
+        summary.DetachedFromVisualTree += (_, _) =>
+            DailyTaskCompletionService.CompletionChanged -= completionChangedHandler;
+
+        RefreshSummary();
+        panel.Children.Add(summary);
+    }
+
+    /// <summary>将日课项目标识转换为设置页中的显示名称。</summary>
+    private static string GetDailyTaskDisplayName(string item) => item switch
+    {
+        "LoginReward" => "登录奖励",
+        "WarmGift" => "暖心礼包",
+        "Mix" => "合成",
+        "Forge" => "锻刀",
+        "Disassemble" => "刀解",
+        "Drill" => "演练",
+        "Reward" => "领取奖励",
+        "Mail" => "领取邮件",
+        _ => item,
+    };
 
     public void GenerateAdvancedPanelContent(StackPanel panel, DragItemViewModel dragItem)
     {

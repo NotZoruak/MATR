@@ -4121,7 +4121,7 @@ public class MaaProcessor
                             "Hanapai" => "HP_NavigateToActivity",
                             "TacticalTraining" => "TT_NavigateToActivity",
                             "EdoCastle" => "EC_NavigateToActivity",
-                            "DailyTask" => "DT_PrepareHub",
+                            "DailyTask" => "DT_ProjectRouter",
                             _ => "LR_NavigateToActivity"
                         };
                         taskModels.Merge(new Dictionary<string, JToken>
@@ -5502,6 +5502,10 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.RepairCooldownCheckAction());
             tasker.Resource.Register(new Custom.DailyTaskCompletionCheckAction());
             tasker.Resource.Register(new Custom.DailyTaskCompletionMarkAction());
+            tasker.Resource.Register(new Custom.DailyTaskStepRecognition());
+            tasker.Resource.Register(new Custom.DailyTaskStepMarkAction());
+            tasker.Resource.Register(new Custom.DailyTaskStepSkipAction());
+            tasker.Resource.Register(new Custom.DailyTaskRunResetAction());
             tasker.Resource.Register(new Custom.ForgeCapacityCheckAction());
             tasker.Resource.Register(new Custom.ForgeDisassembleSelectAction());
             tasker.Resource.Register(new Custom.DrillDangerCheckAction());

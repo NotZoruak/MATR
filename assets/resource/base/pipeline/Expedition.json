@@ -584,7 +584,7 @@
     "on_error": ["Expedition"]
   },
   "E_GoHome": {
-    "next": ["E_ClickDirectoryTop", "E_LeaveTroopRecord"],
+    "next": ["E_ClickDirectoryTop", "E_LeaveTroopRecord", "E_VerifyMenuDir"],
     "on_error": ["Expedition"]
   },
   "E_ClickDirectoryTop": {
@@ -596,12 +596,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["E_PostClickDirectoryHub"],
-    "on_error": ["Expedition"]
-  },
-  "E_PostClickDirectoryHub": {
-    "next": ["E_VerifyMenuDir", "E_GoHome"],
-    "on_error": ["Expedition"]
+    "next": ["E_GoHome"]
   },
   "E_VerifyMenuDir": {
     "recognition": {
@@ -613,8 +608,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["E_ClickBackToHome"],
-    "on_error": ["Expedition"]
+    "next": ["E_ClickBackToHome"]
   },
   "E_ClickBackToHome": {
     "pre_delay": 1000,
@@ -624,8 +618,7 @@
         "target": [1037, 169, 110, 44]
       }
     },
-    "next": ["E_WaitRefresh"],
-    "on_error": ["Expedition"]
+    "next": ["E_WaitRefresh"]
   },
   "E_ClickExpeditionReturn_Exp": {
     "recognition": {
