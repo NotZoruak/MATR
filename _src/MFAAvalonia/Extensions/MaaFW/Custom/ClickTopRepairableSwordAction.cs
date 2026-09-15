@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.Media.Imaging;
 using MaaFramework.Binding;
 using MaaFramework.Binding.Buffers;
 using MaaFramework.Binding.Custom;
@@ -8,7 +7,6 @@ using MFAAvalonia.Helper;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
@@ -262,12 +260,6 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
             LoggerHelper.Warning("[修刀选刀] 截图转 Bitmap 失败");
             return null;
         }
-
-        var diagnosticDirectory = Path.Combine(AppPaths.InstallRoot, "debug", "repair_selection");
-        Directory.CreateDirectory(diagnosticDirectory);
-        var diagnosticPath = Path.Combine(diagnosticDirectory, $"repair_selection_{DateTime.Now:yyyyMMdd_HHmmss_fff}.png");
-        bitmap.Save(diagnosticPath);
-        LoggerHelper.Info($"[修刀选刀] 诊断截图={diagnosticPath}, PixelFormat={bitmap.Format}, AlphaFormat={bitmap.AlphaFormat}");
 
         int x0 = roi[0], y0 = roi[1], w = roi[2], h = roi[3];
         if (w <= 0 || h <= 0 || x0 < 0 || y0 < 0 || x0 + w > bitmap.PixelSize.Width || y0 + h > bitmap.PixelSize.Height)
