@@ -59,7 +59,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
         if (entry == "DailyTask")
         {
-            AppendDailyTaskCompletionSummary(panel);
+            AppendDailyTaskCompletionSummary(panel, viewModel.Processor.InstanceId);
         }
 
         if (dragItem.InterfaceItem?.Advanced != null)
@@ -90,7 +90,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
         if (entry == "DailyTask")
         {
-            AppendDailyTaskCompletionSummary(panel);
+            AppendDailyTaskCompletionSummary(panel, viewModel.Processor.InstanceId);
         }
     }
 
@@ -166,9 +166,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         FlushBatch();
     }
 
-    /// <summary>在日课复选项后显示当前游戏日的完成汇总。</summary>
-    private static void AppendDailyTaskCompletionSummary(StackPanel panel)
+    /// <summary>在日课复选项后显示该实例当前游戏日的完成汇总。</summary>
+    private static void AppendDailyTaskCompletionSummary(StackPanel panel, string instanceId)
     {
+        var instanceKey = DailyTaskCompletionService.NormalizeInstanceKey(instanceId);
         var summary = new TextBlock
         {
             FontSize = 12,
@@ -179,7 +180,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
         void RefreshSummary()
         {
-            var completedItems = DailyTaskCompletionService.GetCompletedItems(DateTime.Now)
+            var completedItems = DailyTaskCompletionService.GetCompletedItems(instanceKey, DateTime.Now)
                 .Select(GetDailyTaskDisplayName)
                 .ToArray();
             summary.Text = completedItems.Length == 0
@@ -187,8 +188,14 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 : $"今日已完成：{string.Join("、", completedItems)}";
         }
 
-        EventHandler completionChangedHandler = (_, _) =>
+        EventHandler<string> completionChangedHandler = (_, changedInstanceKey) =>
+        {
+            // 只刷新本实例的面板，其它实例的完成记录不影响当前显示
+            if (!string.Equals(changedInstanceKey, instanceKey, StringComparison.Ordinal))
+                return;
+
             Dispatcher.UIThread.Post(RefreshSummary);
+        };
         summary.AttachedToVisualTree += (_, _) =>
         {
             DailyTaskCompletionService.CompletionChanged += completionChangedHandler;

@@ -31,11 +31,13 @@ public sealed class DailyTaskStepMarkAction : IMaaCustomAction
                 return false;
             }
 
+            var instanceId = ActionParamHelper.ResolveOwnerInstanceId(context);
             var completedCount = DailyTaskCompletionService.RecordProgress(
+                instanceId,
                 item,
                 requiredCount,
                 DateTime.Now);
-            LoggerHelper.Info($"[日课] 记录进度：项目={item}，次数={completedCount}/{requiredCount}");
+            LoggerHelper.Info($"[日课] 记录进度：实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)}，项目={item}，次数={completedCount}/{requiredCount}");
             return true;
         }
         catch (MaaStopException)

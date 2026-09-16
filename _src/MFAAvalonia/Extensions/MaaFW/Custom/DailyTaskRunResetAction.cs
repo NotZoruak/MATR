@@ -19,8 +19,9 @@ public sealed class DailyTaskRunResetAction : IMaaCustomAction
         try
         {
             ActionParamHelper.ThrowIfStopping(context);
-            DailyTaskCompletionService.ClearRunSkips();
-            LoggerHelper.Info("[日课] 已重置本次运行的跳过状态");
+            var instanceId = ActionParamHelper.ResolveOwnerInstanceId(context);
+            DailyTaskCompletionService.ClearRunSkips(instanceId);
+            LoggerHelper.Info($"[日课] 实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)} 已重置本次运行的跳过状态");
             return true;
         }
         catch (MaaStopException)

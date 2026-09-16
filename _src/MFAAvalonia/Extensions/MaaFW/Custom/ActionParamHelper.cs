@@ -22,6 +22,13 @@ public static class ActionParamHelper
     public static MaaProcessor? ResolveOwnerProcessor(IMaaContext? context)
         => MaaProcessor.ResolveByTasker(context?.Tasker) ?? MaaProcessorManager.Instance?.Current;
 
+    /// <summary>
+    /// 取当前任务所属实例的标识。多实例下按实例分别保存状态的自定义动作都用它定位实例，
+    /// 定位不到时返回 null，由调用方与服务层统一兜底。
+    /// </summary>
+    public static string? ResolveOwnerInstanceId(IMaaContext? context)
+        => ResolveOwnerProcessor(context)?.InstanceId;
+
     public static JObject Parse(string actionParam)
     {
         if (string.IsNullOrWhiteSpace(actionParam))
