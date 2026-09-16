@@ -22,10 +22,6 @@ public static class MixGreedySelectionDecision
     /// <summary>下一级需求数字未识别时使用的备用 OCR 区域。</summary>
     public static MixGreedyRectangle FallbackNeedOcrRoi => new(431, 342, 15, 17);
 
-    /// <summary>判断滑动起点误取消第五行素材后是否需要恢复选择。</summary>
-    public static bool ShouldRestoreLastSelectedMaterialAfterSwipe(bool wasLastSelectedBeforeSwipe, bool isFirstSelectedAfterSwipe) =>
-        wasLastSelectedBeforeSwipe && !isFirstSelectedAfterSwipe;
-
     private static readonly int[][] MaterialNeeds =
     [
         [],

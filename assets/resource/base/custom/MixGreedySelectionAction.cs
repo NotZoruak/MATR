@@ -49,6 +49,10 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
     private const int BottomX = 1112;
     private const int BottomY = 686;
     private const int MaxPageScrolls = 20;
+    /// <summary>画面处于白屏过渡时，稀有度色值的最大重读次数。</summary>
+    private const int ScreenReadyAttempts = 12;
+    /// <summary>画面处于白屏过渡时，两次稀有度色值读取之间的间隔毫秒数。</summary>
+    private const int ScreenReadyIntervalMilliseconds = 200;
 
     public string Name { get; set; } = nameof(MixGreedySelectionAction);
 
@@ -57,7 +61,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         try
         {
             ActionParamHelper.ThrowIfStopping(context);
-            if (!TryReadRarity(context, out var rarity)
+            if (!TryReadRarityAfterScreenReady(context, out var rarity)
                 || !TryReadInteger(context, LevelX, LevelY, LevelWidth, LevelHeight, out var level)
                 || !TryReadNeedForNextLevel(context, out var needForNextLevel))
             {
@@ -143,33 +147,35 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         return false;
     }
 
-    /// <summary>按升序逐页选择素材；每页只处理五个完整素材行。</summary>
+    /// <summary>按升序逐页选择素材；每页只处理五个完整素材行，数量一律以画面上的「选择中 X/30」为准。</summary>
     private static bool SelectMaterials<T>(T context, int required) where T : IMaaContext
     {
-        var selectedCount = 0;
-        for (var page = 0; selectedCount < required && page <= MaxPageScrolls; page++)
+        var expectedCount = -1;
+        for (var page = 0; page <= MaxPageScrolls; page++)
         {
-            foreach (var index in Enumerable.Range(0, SelectedMaterialMarkers.Length))
+            if (!TryReadSelectedCount(context, out var selectedCount))
             {
-                if (selectedCount == required)
-                    return true;
+                LoggerHelper.Warning("[习合] 无法读取已选素材数量");
+                return false;
+            }
+
+            if (expectedCount >= 0 && selectedCount != expectedCount)
+            {
+                LoggerHelper.Info($"[习合] 滑动后已选数量由{expectedCount}把变为{selectedCount}把，改按画面数量继续");
+            }
+
+            if (selectedCount > required)
+            {
+                LoggerHelper.Warning($"[习合] 已选数量超过预期：{selectedCount}，预期：{required}");
+                return false;
+            }
+
+            for (var index = 0; index < SelectedMaterialMarkers.Length && selectedCount < required; index++)
+            {
                 if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
                     continue;
 
-                var selectPosition = MixGreedySelectionDecision.CancelPositions[index];
-                var selected = false;
-                for (var attempt = 1; attempt <= MixGreedySelectionDecision.ManualClickAttempts; attempt++)
-                {
-                    context.Click(selectPosition.X, selectPosition.Y);
-                    ActionParamHelper.SleepWithStopCheck(context, 200);
-                    selected = IsSelectedMaterial(context, SelectedMaterialMarkers[index]);
-                    if (selected)
-                        break;
-
-                    LoggerHelper.Warning($"[习合] 第{index + 1}行素材第{attempt}次选择后未出现绿色状态");
-                }
-
-                if (!selected)
+                if (!SelectSingleMaterial(context, index))
                     return false;
 
                 selectedCount++;
@@ -183,11 +189,29 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 return false;
             }
 
-            if (!HoldSwipeAndRestoreLastMaterial(context))
-                return false;
+            expectedCount = selectedCount;
+            HoldSwipeToNextMaterialPage(context);
+            ActionParamHelper.SleepWithStopCheck(context, MixGreedySelectionDecision.SwipeSettleDelayMilliseconds);
         }
 
         LoggerHelper.Warning("[习合] 素材列表翻页次数超过上限");
+        return false;
+    }
+
+    /// <summary>点击指定行选择素材，并确认该行已经变为选中状态。</summary>
+    private static bool SelectSingleMaterial<T>(T context, int index) where T : IMaaContext
+    {
+        var selectPosition = MixGreedySelectionDecision.CancelPositions[index];
+        for (var attempt = 1; attempt <= MixGreedySelectionDecision.ManualClickAttempts; attempt++)
+        {
+            context.Click(selectPosition.X, selectPosition.Y);
+            ActionParamHelper.SleepWithStopCheck(context, 200);
+            if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
+                return true;
+
+            LoggerHelper.Warning($"[习合] 第{index + 1}行素材第{attempt}次选择后未出现绿色状态");
+        }
+
         return false;
     }
 
@@ -224,8 +248,8 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 return false;
             }
 
-            if (!HoldSwipeAndRestoreLastMaterial(context))
-                return false;
+            HoldSwipeToNextMaterialPage(context);
+            ActionParamHelper.SleepWithStopCheck(context, MixGreedySelectionDecision.SwipeSettleDelayMilliseconds);
         }
 
         LoggerHelper.Warning("[习合] 素材列表翻页次数超过上限");
@@ -237,32 +261,6 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
     {
         ListOcrScan.ScrollUp(context, MaterialPageScroll);
         ActionParamHelper.SleepWithStopCheck(context, ListOcrScan.ScrollSettleMilliseconds);
-    }
-
-    /// <summary>滑动后恢复可能被起点误取消、已移动至下一页首行的第五行素材。</summary>
-    private static bool HoldSwipeAndRestoreLastMaterial<T>(T context) where T : IMaaContext
-    {
-        var wasLastSelectedBeforeSwipe = IsSelectedMaterial(context, SelectedMaterialMarkers[^1]);
-        HoldSwipeToNextMaterialPage(context);
-        ActionParamHelper.SleepWithStopCheck(context, MixGreedySelectionDecision.SwipeSettleDelayMilliseconds);
-
-        var isFirstSelectedAfterSwipe = IsSelectedMaterial(context, SelectedMaterialMarkers[0]);
-        if (!MixGreedySelectionDecision.ShouldRestoreLastSelectedMaterialAfterSwipe(
-                wasLastSelectedBeforeSwipe,
-                isFirstSelectedAfterSwipe))
-            return true;
-
-        var restorePosition = MixGreedySelectionDecision.CancelPositions[0];
-        context.Click(restorePosition.X, restorePosition.Y);
-        ActionParamHelper.SleepWithStopCheck(context, 200);
-        if (IsSelectedMaterial(context, SelectedMaterialMarkers[0]))
-        {
-            LoggerHelper.Info("[习合] 已恢复被滑动起点误取消的素材");
-            return true;
-        }
-
-        LoggerHelper.Warning("[习合] 滑动后恢复被误取消的素材失败");
-        return false;
     }
 
     /// <summary>判断指定素材行右侧是否显示已选中的绿色背景。</summary>
@@ -315,6 +313,30 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
 
         var pixel = ReadPixel(bitmap, RarityX, RarityY);
         return MixGreedySelectionDecision.TryGetRarity(pixel.R, pixel.G, pixel.B, out rarity);
+    }
+
+    /// <summary>习合完成返回选刀画面时会短暂出现白屏过渡，整帧被白色蒙层冲淡，色值读取必然失败；此时等待画面恢复后再读。</summary>
+    private static bool TryReadRarityAfterScreenReady<T>(T context, out int rarity) where T : IMaaContext
+    {
+        for (var attempt = 1; attempt <= ScreenReadyAttempts; attempt++)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            if (TryReadRarity(context, out rarity))
+            {
+                if (attempt > 1)
+                    LoggerHelper.Info($"[习合] 画面已恢复，第 {attempt} 次读取到稀有度 {rarity}");
+                return true;
+            }
+
+            if (attempt == 1)
+                LoggerHelper.Info("[习合] 稀有度色值异常，画面可能处于白屏过渡，等待画面恢复");
+
+            if (attempt < ScreenReadyAttempts)
+                ActionParamHelper.SleepWithStopCheck(context, ScreenReadyIntervalMilliseconds);
+        }
+
+        rarity = 0;
+        return false;
     }
 
     /// <summary>读取仅包含一个正整数的 OCR 区域。</summary>
