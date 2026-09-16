@@ -13,8 +13,10 @@
       "HP_IsMenuDirectory",
       "HP_IsTeamStatusPanel",
       "HP_IsTeamSelect",
+      "HP_IsBattleResult_Exp",
+      "HP_IsBattleResult_Title",
       "HP_IsSwordDropColor",
-      "HP_IsSpecialDrop",
+      "HP_IsSpecialDrop1",
       "HP_LeaveTroopRecord",
       "HP_IsAnnouncementPopup",
       "HP_IsTrainingLetter",
@@ -500,19 +502,6 @@
     },
     "next": ["HP_DetectWhereAmI"]
   },
-  "HP_VerifyEventPage": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/地下城.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["HP_SelectDifficulty", "HP_DetectWhereAmI"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
   "HP_TryClickSortie": {
     "next": ["HP_ClickSortieInMenu", "HP_DetectWhereAmI"]
   },
@@ -741,18 +730,30 @@
     "next": ["HP_IsTeamSelect", "HP_DetectWhereAmI"],
     "on_error": ["HP_DetectWhereAmI"]
   },
-  "HP_IsSpecialDrop": {
+  "HP_IsSpecialDrop1": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [169, 154, 117, 120],
-        "template": "Activity/秘宝之里_达成报酬.png",
+        "roi": [349, 265, 579, 158],
+        "template": "Activity/秘宝之里_达成报酬1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
     },
-    "next": ["HP_CheckMoreSpecialDrops"],
+    "next": ["HP_IsSpecialDrop2"],
     "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_IsSpecialDrop2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [169, 154, 117, 120],
+        "template": "Activity/秘宝之里_达成报酬2.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HP_TerminateRound"]
   },
   "HP_ClickMenu": {
     "recognition": {
@@ -805,53 +806,6 @@
       }
     },
     "next": []
-  },
-  "HP_CheckMoreSpecialDrops": {
-    "timeout": 10000,
-    "next": ["HP_IsSpecialDrop", "HP_CheckSwordDropAfterSpecial"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
-  "HP_CheckSwordDropAfterSpecial": {
-    "pre_delay": 1000,
-    "timeout": 5000,
-    "next": ["HP_IsSwordDropAfter", "HP_WaitForEventPage"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
-  "HP_IsSwordDropAfter": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [598, 543, 66, 1],
-        "lower": [88, 48, 2],
-        "upper": [96, 56, 10]
-      }
-    },
-    "pre_delay": 100,
-    "action": {
-      "type": "Custom",
-      "custom_action": "SwordDropLogAction",
-      "custom_action_param": {
-        "task": "秘宝之里",
-        "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
-      }
-    },
-    "next": ["HP_WaitForEventPage"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
-  "HP_WaitForEventPage": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "timeout": 10000,
-    "next": ["HP_TerminateRound"],
-    "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_IsTicketConfirm": {
     "recognition": {
