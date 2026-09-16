@@ -29,10 +29,11 @@ public sealed class DailyTaskStepSkipAction : IMaaCustomAction
                 return false;
             }
 
-            DailyTaskCompletionService.MarkSkippedForCurrentRun(item);
+            var instanceId = ActionParamHelper.ResolveOwnerInstanceId(context);
+            DailyTaskCompletionService.MarkSkippedForCurrentRun(instanceId, item);
             LoggerHelper.Info(string.IsNullOrWhiteSpace(reason)
-                ? $"[日课] 本次运行跳过项目：{item}"
-                : $"[日课] 本次运行跳过项目：{item}（{reason}）");
+                ? $"[日课] 实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)} 本次运行跳过项目：{item}"
+                : $"[日课] 实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)} 本次运行跳过项目：{item}（{reason}）");
             return true;
         }
         catch (MaaStopException)

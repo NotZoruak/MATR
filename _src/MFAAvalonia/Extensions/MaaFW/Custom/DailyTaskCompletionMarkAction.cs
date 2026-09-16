@@ -23,10 +23,12 @@ public sealed class DailyTaskCompletionMarkAction : IMaaCustomAction
                 return false;
             }
 
+            var instanceId = ActionParamHelper.ResolveOwnerInstanceId(context);
             DailyTaskCompletionService.MarkCompleted(
+                instanceId,
                 item,
                 DateTime.Now);
-            LoggerHelper.Info($"[日课] 项目={item} 已记录为当前游戏日完成");
+            LoggerHelper.Info($"[日课] 实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)}，项目={item} 已记录为当前游戏日完成");
             return true;
         }
         catch (MaaStopException)
