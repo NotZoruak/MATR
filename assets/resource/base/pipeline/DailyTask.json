@@ -1497,8 +1497,8 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1113, 145, 140, 77],
-        "expected": "胜利"
+        "roi": [1127, 165, 127, 58],
+        "expected": "利"
       }
     },
     "action": {
@@ -1516,8 +1516,8 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1118, 253, 141, 78],
-        "expected": "胜利"
+        "roi": [1124, 273, 128, 59],
+        "expected": "利"
       }
     },
     "action": {
@@ -1535,8 +1535,8 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1116, 368, 141, 78],
-        "expected": "胜利"
+        "roi": [1125, 385, 128, 59],
+        "expected": "利"
       }
     },
     "action": {
@@ -1554,8 +1554,8 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1117, 481, 141, 78],
-        "expected": "胜利"
+        "roi": [1123, 489, 128, 59],
+        "expected": "利"
       }
     },
     "action": {
@@ -1573,8 +1573,8 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1118, 590, 141, 78],
-        "expected": "胜利"
+        "roi": [1123, 605, 128, 59],
+        "expected": "利"
       }
     },
     "action": {
