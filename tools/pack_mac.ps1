@@ -84,6 +84,18 @@ Copy-Item (Join-Path $Root 'LICENSE') -Destination $MacOsDir -Force
     if (Test-Path $path) { Remove-Item -LiteralPath $path -Recurse -Force }
 }
 
+# 与 pack_win.ps1 保持一致：剔除运行期产物与未使用的图片素材，不随包分发
+@(
+    'assets\config',
+    'assets\resource\config',
+    'assets\resource\temp',
+    'assets\resource\backup',
+    'assets\resource\base\image\unused'
+) | ForEach-Object {
+    $path = Join-Path $MacOsDir $_
+    if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Recurse -Force }
+}
+
 $bundleVersion = Get-BundleVersion $Version
 @"
 <?xml version="1.0" encoding="UTF-8"?>
