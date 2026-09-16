@@ -295,7 +295,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [1127, 579, 29, 22],
+        "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -307,7 +307,9 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["WH_ClickTrainingApplication", "WH_CancelTrainingApplication", "WH_MainHub"],
+    "repeat": 10,
+    "repeat_delay": 500,
+    "next": ["WH_ClickTrainingApplication", "WH_CancelTrainingApplication"],
     "on_error": ["WH_MainHub"]
   },
   "WH_ClickTrainingApplication": {

@@ -2942,12 +2942,15 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
             .Where(m => m.IsResourceOptionItem && m.ResourceItem?.SelectOptions != null)
             .ToList();
 
+        // 全局选项只在设置区的「全局」页呈现，任务列表里已不再生成 __GlobalOption__ 项，
+        // 取不到该合成项时回退到内存中的 GlobalSelectOptions，保证全局页的改动能落盘。
         var globalItem = allItems.FirstOrDefault(m => m.ResourceItem?.Name == "__GlobalOption__");
-        if (globalItem?.ResourceItem?.SelectOptions != null)
+        var globalOptions = globalItem?.ResourceItem?.SelectOptions ?? MaaProcessor.Interface?.GlobalSelectOptions;
+        if (globalOptions != null)
         {
             instanceConfig.SetValue(
                 ConfigurationKeys.GlobalOptionItems,
-                globalItem.ResourceItem.SelectOptions);
+                globalOptions);
         }
 
         const string controllerPrefix = "__ControllerOption__";

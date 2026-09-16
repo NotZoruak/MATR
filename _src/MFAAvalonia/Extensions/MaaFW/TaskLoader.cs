@@ -836,33 +836,6 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
     }
 
     /// <summary>
-    /// 创建 global_option 的置顶任务项（包含所有全局选项，与资源选项项行为一致）
-    /// </summary>
-    private DragItemViewModel? CreateGlobalOptionItem(IList<DragItemViewModel>? existingDrags)
-    {
-        if (maaInterface?.GlobalSelectOptions == null || maaInterface.GlobalSelectOptions.Count == 0)
-            return null;
-
-        // 检查是否已存在全局选项项
-        var existing = existingDrags?.FirstOrDefault(d =>
-            d.IsResourceOptionItem && d.ResourceItem?.Name == "__GlobalOption__");
-        if (existing != null)
-            return existing;
-
-        // 创建合成资源，Name 固定为 "__GlobalOption__"，由 DragItemViewModel 按 Name 处理 i18n 显示
-        var syntheticResource = new MaaInterface.MaaInterfaceResource
-        {
-            Name = "__GlobalOption__",
-            SelectOptions = maaInterface.GlobalSelectOptions,
-        };
-        syntheticResource.InitializeDisplayName();
-
-        var item = new DragItemViewModel(syntheticResource) { OwnerViewModel = taskQueueViewModel };
-        item.IsVisible = true;
-        return item;
-    }
-
-    /// <summary>
     /// 获取当前控制器对象
     /// </summary>
     private MaaInterface.MaaResourceController? GetCurrentControllerObject()

@@ -339,7 +339,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [1127, 579, 29, 22],
+        "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -351,7 +351,9 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["HP_ClickTrainingApplication", "HP_CancelTrainingApplication", "HP_DetectWhereAmI"],
+    "repeat": 10,
+    "repeat_delay": 500,
+    "next": ["HP_ClickTrainingApplication", "HP_CancelTrainingApplication"],
     "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_ClickTrainingApplication": {

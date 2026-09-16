@@ -2569,12 +2569,16 @@ public partial class TaskQueueView : UserControl
             .ToList();
 
         // 保存全局选项到 GlobalOptionItems
+        // 全局选项只在设置区的「全局」页呈现，任务列表里已不再生成 __GlobalOption__ 项，
+        // 因此先取该合成项的 SelectOptions，取不到时直接落盘内存中的 GlobalSelectOptions，
+        // 否则全局页的改动只留在内存，重启后会被配置里的旧值覆盖。
         var globalItem = allItems.FirstOrDefault(m => m.ResourceItem?.Name == "__GlobalOption__");
-        if (globalItem?.ResourceItem?.SelectOptions != null)
+        var globalOptions = globalItem?.ResourceItem?.SelectOptions ?? MaaProcessor.Interface?.GlobalSelectOptions;
+        if (globalOptions != null)
         {
             vm.Processor.InstanceConfiguration.SetValue(
                 ConfigurationKeys.GlobalOptionItems,
-                globalItem.ResourceItem.SelectOptions);
+                globalOptions);
         }
 
         // 保存控制器选项到 ControllerOptionItems（Name 以 "__ControllerOption__" 开头）

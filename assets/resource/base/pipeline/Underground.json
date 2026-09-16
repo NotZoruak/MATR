@@ -241,7 +241,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [1127, 579, 29, 22],
+        "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -628,7 +628,9 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["U_ClickTrainingApplication", "U_CancelTrainingApplication", "U_DetectWhereAmI"],
+    "repeat": 10,
+    "repeat_delay": 500,
+    "next": ["U_ClickTrainingApplication", "U_CancelTrainingApplication"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_ClickTrainingApplication": {
@@ -2435,7 +2437,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [1127, 579, 29, 22],
+        "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -2447,7 +2449,9 @@
         "target": [197, 600, 52, 26]
       }
     },
-    "next": ["UF_ClickTrainingApplication", "UF_CancelTrainingApplication", "UF_DetectWhereAmI"],
+    "repeat": 10,
+    "repeat_delay": 500,
+    "next": ["UF_ClickTrainingApplication", "UF_CancelTrainingApplication"],
     "on_error": ["UF_DetectWhereAmI"]
   },
   "UF_ClickTrainingApplication": {
