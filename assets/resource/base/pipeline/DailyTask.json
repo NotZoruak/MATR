@@ -190,6 +190,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "[JumpBack]DT_EnterMenu",
@@ -308,6 +310,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "DT_WarmGiftIsInMenu",
@@ -496,6 +500,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "DT_MixIsInMenu",
@@ -652,6 +658,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "DT_ForgeIsInMenu",
@@ -1230,6 +1238,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "DT_DrillIsInMenu",
@@ -1770,6 +1780,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "DT_RewardIsInMenu",
@@ -1937,6 +1949,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsNetworkRequestTimeout",
       "[JumpBack]DT_IsConnectionInterrupted",
       "DT_MailIsInMenu",
@@ -2163,6 +2177,8 @@
       "[JumpBack]DT_IsInGameUpdatePopup",
       "[JumpBack]DT_IsInternalReport",
       "[JumpBack]DT_IsTrainingApplication",
+      "[JumpBack]DT_ClickTrainingApplication",
+      "[JumpBack]DT_CancelTrainingApplication",
       "[JumpBack]DT_IsInMenu",
       "[JumpBack]DT_EnterMenu",
       "[JumpBack]DT_IsNetworkRequestTimeout",
@@ -2372,7 +2388,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [1127, 579, 29, 22],
+        "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -2383,7 +2399,9 @@
       "param": {
         "target": [197, 600, 52, 26]
       }
-    }
+    },
+    "repeat": 10,
+    "repeat_delay": 500
   },
   "DT_ClickTrainingApplication": {
     "recognition": {
@@ -2400,8 +2418,7 @@
       "param": {
         "target": [96, 558, 54, 38]
       }
-    },
-    "next": ["DT_CancelTrainingApplication"]
+    }
   },
   "DT_CancelTrainingApplication": {
     "recognition": {
@@ -2416,8 +2433,7 @@
       "param": {
         "target": [460, 587, 69, 37]
       }
-    },
-    "next": ["DT_ReturnHomeHub"]
+    }
   },
   "DT_IsNetworkRequestTimeout": {
     "recognition": {
