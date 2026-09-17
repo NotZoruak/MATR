@@ -975,7 +975,7 @@
     "action": {
       "type": "Custom",
       "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 今日已完成3次锻刀"}
+      "custom_action_param": {"message": "日课 锻刀 已完成3次锻刀"}
     },
     "next": ["DT_ReturnHomeHub"]
   },
