@@ -57,7 +57,9 @@
 
 ### `services.update-data-scheduling`
 
-更新数据任务按间隔执行，状态存入实例配置。需验证间隔跳过与实例重新加载。
+更新数据任务的触发间隔按任务分别记录成功时间：优先用任务备注与显示名称，未写备注时按「识别内容」区分（实例配置键 `UpdateData.LastSucceededAt.<任务:备注 | 范围:识别内容>`，默认识别范围兼容旧版的单键记录），因此同一队列里的两个更新数据任务可以设置不同频率而不会互相顶掉。间隔判断由自定义识别 `UpdateDataIntervalRecognition` 在入口 node `UD_IsIntervalDue` 完成，未到间隔时识别失败，由 `UD_IntervalSkipped` 结束本次任务，不操作游戏；成功时间由 `UpdateDataMarkSuccessAction` 在任务末尾按同一调度键写入。
+
+「识别内容」与「触发间隔」是两个独立选项，如果分别生成同一个 node 的 `pipeline_override`，MaaFramework 只保留最后一层。因此 `MaaProcessor.ApplyUpdateDataScheduleParams` 在合并完任务选项后，把调度键与触发间隔合成一次注入，并写明 `UD_IsIntervalDue.recognition` 与 `UD_MarkSuccess.action` 的完整结构。升级时必须保留该注入：删掉它会让间隔退化为 pipeline 里的默认值（每天 + 范围:仓库+刀帐），成功时间也会全部记到默认调度键上。
 
 ### `daily-task.per-game-day-completion`
 

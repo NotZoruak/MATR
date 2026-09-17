@@ -9,6 +9,7 @@ using MFAAvalonia.Configuration;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.ValueType;
 using MFAAvalonia.Helper.Converters;
+using MFAAvalonia.Services;
 using MFAAvalonia.ViewModels.Other;
 using MFAAvalonia.ViewModels.Pages;
 using MFAAvalonia.Views.Windows;
@@ -4058,6 +4059,51 @@ public class MaaProcessor
         }));
     }
 
+    /// <summary>
+    /// 把更新数据任务的「识别内容」与「触发间隔」合成一次 pipeline 注入：
+    /// 判断 node 同时拿到触发间隔与识别范围，成功 node 只带识别范围。
+    /// MaaFramework 对同一 node 的多层覆盖只保留最后一层，两个选项不能各自覆盖同一个 node。
+    /// </summary>
+    private void ApplyUpdateDataScheduleParams(ref MaaToken taskModels, MaaInterface.MaaInterfaceTask interfaceItem)
+    {
+        var scheduleKey = UpdateDataScheduleService.ResolveKey(interfaceItem);
+        var interval = UpdateDataScheduleService.ResolveInterval(interfaceItem.Option);
+
+        var checkNode = new JObject
+        {
+            ["recognition"] = new JObject
+            {
+                ["type"] = "Custom",
+                ["param"] = new JObject
+                {
+                    ["custom_recognition"] = "UpdateDataIntervalRecognition",
+                    ["custom_recognition_param"] = new JObject
+                    {
+                        ["interval"] = interval,
+                        ["key"] = scheduleKey.StorageKey,
+                    },
+                },
+            },
+        };
+        var markNode = new JObject
+        {
+            ["action"] = new JObject
+            {
+                ["type"] = "Custom",
+                ["custom_action"] = "UpdateDataMarkSuccessAction",
+                ["custom_action_param"] = new JObject { ["key"] = scheduleKey.StorageKey },
+            },
+        };
+
+        taskModels.Merge(new Dictionary<string, JToken>
+        {
+            ["UD_IsIntervalDue"] = checkNode,
+            ["UD_MarkSuccess"] = markNode,
+        });
+
+        LoggerHelper.Info($"[更新数据] 实例={InstanceId}，调度键={scheduleKey.StorageKey}，触发间隔={interval}");
+    }
+
     private NodeAndParam CreateNodeAndParam(DragItemViewModel task, int index, long runId, int? formationPresetId)
     {
         var taskModels = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(JsonConvert.SerializeObject(task.InterfaceItem?.PipelineOverride ?? new Dictionary<string, JToken>(), new JsonSerializerSettings()
@@ -4079,6 +4125,13 @@ public class MaaProcessor
 
         // 4. 合并任务自身的 option（task.option，最高优先级）
         UpdateTaskDictionary(ref taskModels, task.InterfaceItem?.Option, task.InterfaceItem?.Advanced);
+
+        // 更新数据任务的识别范围与触发间隔分属两个选项，各自生成同名 node 覆盖时后者会丢掉前者，
+        // 因此在合并完选项后，把两者合成一次注入。
+        if (task.InterfaceItem?.Entry == "UpdateData")
+        {
+            ApplyUpdateDataScheduleParams(ref taskModels, task.InterfaceItem);
+        }
 
         // 5. 同步后勤任务复用当前实例的远征队伍、修刀、内番和刷新间隔配置
         if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")

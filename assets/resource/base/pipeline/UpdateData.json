@@ -1,8 +1,24 @@
 {
   "UpdateData": {
-    "next": ["UD_DetectWhereAmI"],
+    "next": ["UD_IsIntervalDue", "UD_IntervalSkipped"],
     "on_error": ["UD_DetectWhereAmI"]
   },
+  "UD_IsIntervalDue": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "UpdateDataIntervalRecognition",
+        "custom_recognition_param": {
+          "interval": "每天",
+          "key": "范围:仓库+刀帐"
+        }
+      }
+    },
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["UD_DetectWhereAmI"]
+  },
+  "UD_IntervalSkipped": {},
   "UD_DetectWhereAmI": {
     "timeout": 120000,
     "next": [
@@ -471,8 +487,7 @@
   "UD_MarkSuccess": {
     "action": {
       "type": "Custom",
-      "custom_action": "UpdateDataMarkSuccessAction",
-      "custom_action_param": {"interval": "每天"}
+      "custom_action": "UpdateDataMarkSuccessAction"
     },
     "next": [],
     "on_error": []

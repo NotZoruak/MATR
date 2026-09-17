@@ -63,13 +63,13 @@
     {
       "id": "services.update-data-scheduling",
       "title": "更新数据调度与持久化",
-      "purpose": "按用户设置的间隔执行更新数据任务，并在实例配置中持久化状态。",
-      "files": ["_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia/Services/UpdateDataScheduleService.cs", "_src/MFAAvalonia/Configuration/ConfigurationKeys.cs"],
+      "purpose": "按用户设置的间隔执行更新数据任务，状态按任务（备注/显示名称，未写备注时按识别内容）持久化到实例配置。",
+      "files": ["_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia/Services/UpdateDataScheduleService.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Configuration/ConfigurationKeys.cs", "assets/resource/base/pipeline/UpdateData.json", "assets/resource/base/custom/UpdateDataIntervalRecognition.cs", "assets/resource/base/custom/UpdateDataMarkSuccessAction.cs", "assets/interface.json"],
       "baseline_upstream": "2.13.0",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "适配 2.16.1 的配置和实例生命周期，不保留旧模型的并行路径。",
-      "verification": ["间隔未到时跳过", "重新加载实例后状态保持"],
-      "notes": "与任务队列统计共同验证。"
+      "migration_strategy": "适配 2.16.1 的配置和实例生命周期；成功时间按调度键（备注/显示名称优先，未写备注时按识别内容）分别记录，调度键与触发间隔必须由 MaaProcessor 合成一次注入，不得改回两个选项各自覆盖同一个 node。",
+      "verification": ["间隔未到时在入口跳过且不操作游戏", "写了备注的仓库与刀帐两个更新数据任务可用不同间隔独立执行", "未写备注时按识别内容区分", "重新加载实例后状态保持", "设置页显示当前调度键的上次成功时间"],
+      "notes": "旧版单键 UpdateData.LastSucceededAt 保留为默认识别范围的兼容读取来源；改名或改备注会另起一条记录；与任务队列统计共同验证。"
     },
     {
       "id": "daily-task.per-game-day-completion",
