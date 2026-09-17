@@ -3568,8 +3568,7 @@
       "time": 200,
       "target": [1183, 18, 87, 40]
     },
-    "next": ["SF_PostClickMenuHub", "SF_ClickMenu"],
-    "on_error": ["SF_DetectWhereAmI"]
+    "next": ["SF_PostClickMenuHub", "SF_ClickMenu", "SF_DetectWhereAmI"]
   },
   "SF_PostClickMenuHub": {
     "recognition": {
