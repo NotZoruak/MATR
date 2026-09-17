@@ -316,6 +316,10 @@ public static class WorkRecordBuilder
         if (prefix == "DragCaptain" && action.StartsWith("无可用位置", StringComparison.Ordinal))
             return;
 
+        // 列表扫描的抖动兜底提示（见 ListOcrScan.ScanAndClick）一次扫描可能连刷多条，只用于排查，不作为用户可见的特殊情况。
+        if (action.StartsWith("列表持续抖动", StringComparison.Ordinal))
+            return;
+
         if (prefix == "中断")
         {
             record.HasInterrupt = true;

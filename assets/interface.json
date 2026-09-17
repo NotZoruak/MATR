@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.1-beta.4",
+  "version": "v0.14.1-beta.5",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.1-beta.4 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.1-beta.5 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -7010,7 +7010,7 @@
           "name": "limited_first",
           "label": "限锻优先",
           "pipeline_override": {
-            "DT_ForgeFormulaAll50": {"enabled": false},
+            "DT_ForgeFormulaAll50": {"enabled": true},
             "DT_ForgeFormulaLimitedFirst": {"enabled": true},
             "DT_ForgeFormulaLimited": {"enabled": false}
           }
