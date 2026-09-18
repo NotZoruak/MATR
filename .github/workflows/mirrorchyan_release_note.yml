@@ -19,7 +19,9 @@ jobs:
         uses: MirrorChyan/release-note-action@v1
         with:
           mirrorchyan_rid: MATR
-          version_name: ${{ inputs.tag }}
+          # 与 mirrorchyan_release.yml 保持一致：自动触发时取当前 release 的 tag，
+          # 手动派发时 inputs.tag 优先，留空才回退到默认行为。
+          version_name: ${{ inputs.tag || github.event.release.tag_name }}
 
           owner: NotZoruak
           repo: MATR

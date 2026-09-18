@@ -30,7 +30,9 @@ jobs:
           filetype: latest-release
           filename: ${{ matrix.filename }}
           mirrorchyan_rid: MATR
-          tag: ${{ inputs.tag }}
+          # 自动触发时取当前 release 的 tag，避免 action 自行推断到「最新」tag；
+          # 手动派发时 inputs.tag 优先，留空才回退到默认行为。
+          tag: ${{ inputs.tag || github.event.release.tag_name }}
 
           os: ${{ matrix.os }}
           arch: ${{ matrix.arch }}
