@@ -2536,7 +2536,15 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
-            }
+            },
+            "HF_ClickTeamN": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "HF_UseRecord_Step2_Rec1": {"enabled": true},
+            "HF_EqRefill_Step2_Rec1": {"enabled": true}
           }
         },
         {
@@ -2547,7 +2555,15 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            }
+            },
+            "HF_ClickTeamN": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "HF_UseRecord_Step2_Rec2": {"enabled": true},
+            "HF_EqRefill_Step2_Rec2": {"enabled": true}
           }
         },
         {
@@ -2558,7 +2574,15 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
-            }
+            },
+            "HF_ClickTeamN": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "HF_UseRecord_Step2_Rec3": {"enabled": true},
+            "HF_EqRefill_Step2_Rec3": {"enabled": true}
           }
         },
         {
@@ -2569,7 +2593,15 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            }
+            },
+            "HF_ClickTeamN": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "HF_UseRecord_Step2_Rec4": {"enabled": true},
+            "HF_EqRefill_Step2_Rec4": {"enabled": true}
           }
         },
         {
@@ -2580,7 +2612,15 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
-            }
+            },
+            "HF_ClickTeamN": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "HF_UseRecord_Step2_Rec5": {"enabled": true},
+            "HF_EqRefill_Step2_Rec5": {"enabled": true}
           }
         }
       ]
@@ -2602,9 +2642,9 @@
               "next": ["HP_FatigueCheck"]
             },
             "HP_FatigueCheck": {"enabled": true},
-            "SF_Hub": {"enabled": true},
-            "SF_UseRecord_Step1": {"enabled": true},
-            "SF_EqRefill_Step1": {"enabled": true}
+            "HF_Hub": {"enabled": true},
+            "HF_UseRecord_Step1": {"enabled": true},
+            "HF_EqRefill_Step1": {"enabled": true}
           }
         },
         {
@@ -2618,7 +2658,7 @@
               "enabled": true,
               "on_error": []
             },
-            "SF_Hub": {"enabled": false}
+            "HF_Hub": {"enabled": false}
           }
         }
       ]
@@ -6170,6 +6210,7 @@
             "Warehouse_FallbackWait": {"enabled": false},
             "FC_FallbackWait": {"enabled": false},
             "UF_FallbackWait": {"enabled": false},
+            "HF_FallbackWait": {"enabled": false},
             "DT_FallbackWait": {"enabled": false},
             "DT_LoginRewardFallbackWait": {"enabled": false},
             "DT_WarmGiftFallbackWait": {"enabled": false},
