@@ -1,6 +1,6 @@
 # 自定义动作迁移纯 pipeline 设计
 
-> 状态：迁移分任务推进中；一键日课、海陆联队与秘宝之里已完成部分迁移
+> 状态：迁移分任务推进中；一键日课已完成迁移，海陆联队与秘宝之里已完成部分迁移
 > 最后更新：2026-09-19
 > 范围：`assets/resource/base/pipeline/*.json` 与 `assets/interface.json` 中实际引用的自定义动作与自定义识别
 
@@ -23,7 +23,7 @@
 | `special:` 标记识别 | 已完成 | `FocusHandler` 已在官方消息键形式的对象、字符串数组、字符串三种 `focus` 写法中识别开头精确匹配的 `special:`，并在实时展示前移除该前缀。普通文本保持原样。该行为已有自动化测试覆盖。 |
 | 特殊情况写入链路 | 已完成 | `FocusHandler` 已把 `special:` 的识别结果传递给 `AddMarkdown(recordAsSpecial: true)`；该路径以 Info 级别写入 `[Record][Special]`，不借用 Warning。 |
 | 工作记录解析器 | 已完成 | `WorkRecordBuilder` 已识别 `[Record][Special]` 并归入特殊情况，同时保留 `WRN` → 特殊情况的既有规则；已覆盖正常特殊结果、真实 Warning、普通记录三类测试。 |
-| 一键日课重构 | 进行中 | 已完成 9 条完成日志、5 条跳过日志与 5 条演练战败日志迁移，及 6 个本次运行跳过出口的 `anchor` 迁移。锻刀容量不足且未开启刀解、演练战败使用 `special:` Info 记录；本次运行跳过仅控制路由、不输出日志。anchor 机制已完成实机验证；刀剑掉落与状态台账类逻辑尚未改动。 |
+| 一键日课重构 | 已完成 | 已完成 9 条完成日志、5 条跳过日志与 5 条演练战败日志迁移，及 6 个本次运行跳过出口的 `anchor` 迁移，`focus` 共 19 处。锻刀容量不足且未开启刀解、演练战败使用 `special:` Info 记录；本次运行跳过仅控制路由、不输出日志。anchor 机制已完成实机验证。剩余 16 处自定义动作引用与 13 处自定义识别引用全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。 |
 | 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在入口 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花子枢纽 `HF_` 链本次不纳入，后续会单独抽成一条任务中刷花的公用流程，详见下文「秘宝之里实施记录」。下一步接江户潜入与战术强化。 |
 | 海陆联队重构 | 进行中 | 已完成 `RB_SortieSuccess`、`RB_IsConfirmPurchase`、`RB_TerminateRound` 三条日志打点的 `focus` 迁移。剩余 9 处引用中，`RB_CheckCaptainDamage` 的 `CaptainDamageAction` 属于批次一候选，`RB_RetreatOnCaptainDamage` 的 `LogAction` 借 Warning 级别进入特殊情况、属于批次二，其余 7 处均在「明确保留」清单内。详见下文「海陆联队实施记录」。 |
 | 秘宝之里重构 | 已停止（等待刷花公用流程） | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；剩余 10 处自定义动作引用全部属于「明确保留」清单，唯一的候选是 `HF_Hub` 的刷花打点，随 `HF_` 链一并等待刷花公用流程。详见下文「秘宝之里实施记录」。 |
@@ -38,6 +38,8 @@
 同日完成第二小批：跳过日志。合成无可用对象、锻刀未开启、无空闲锻刀位、演练跳过强敌四条改为普通 Info `focus`；「待收取刀剑超过空余刀位，未开启刀解」属于正常结束但需回顾的结果，改为 `special:` 的 Info `focus`，写入工作记录的特殊情况。五个分支出口均保留，避免改变现有跳过与返回逻辑。
 
 同日完成第三小批：演练战败日志。五个位置的战败识别 node 保留原有 `max_hit: 1`、识别范围和回到对手选择的 `next`，仅将 `GuiLogAction` 替换为带 `special:` 的 `focus`。战败结果会以 Info 级别写入日志，并在工作记录中归入特殊情况。至此，`DailyTask.json` 不再引用 `GuiLogAction`。
+
+收尾盘点：`DailyTask.json` 现在共 178 个 node，其中 19 个挂着 `focus`（9 条完成日志、5 条跳过日志、5 条演练战败日志），与三小批的记录一一对应；`LogAction`、`GuiLogAction` 与显式 `DoNothing` 的引用数均为 0，`special:` 文案 6 条。剩余 16 处自定义动作引用与 13 处自定义识别引用全部属于本文档「明确保留」清单：`DailyTaskCompletionMarkAction` 10 处与 `DailyTaskStepRecognition` 13 处承担每日完成台账的读写，`MixFindAllowedMaterialAction`、`ForgeDisassembleSelectAction` 承担跨 node 运行期状态，`ForgeCapacityCheckAction`、`DrillDangerCheckAction` 需要数值比较，`SwordDropLogAction` 需要逐像素判断与刀名联合校验，`RestartGameAction` 属于宿主 API。至此本任务的纯 pipeline 迁移部分已经做完，后续只有台账与战斗风险判断这类必须留在 C# 的逻辑。
 
 ### 一键日课本次运行跳过的 `anchor` 迁移（已实施并完成实机验证）
 
