@@ -476,6 +476,20 @@ public class MaaProcessor
     }
 
     /// <summary>
+    /// 只把 focus 日志写入日志文件，不进入 GUI 日志面板，也不发布平台日志。
+    /// 用于「出阵」这类每轮都会产生、只给工作记录解析用的打点。
+    /// </summary>
+    public void AddMarkdownToFile(string content, bool recordAsSpecial = false)
+    {
+        // 与 AddMarkdown 一样投递到主线程，保持与其它日志相同的写入顺序
+        DispatcherHelper.PostOnMainThread(() =>
+        {
+            using var logScope = BeginInstanceLogScope("MonitorMarkdown", "Monitor");
+            LoggerHelper.Info(recordAsSpecial ? $"[Record][Special] {content}" : content);
+        });
+    }
+
+    /// <summary>
     /// JSON 加载设置，忽略注释（支持 JSONC 格式）
     /// </summary>
     private static readonly JsonLoadSettings JsoncLoadSettings = new()

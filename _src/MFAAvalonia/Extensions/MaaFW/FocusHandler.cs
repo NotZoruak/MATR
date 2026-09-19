@@ -242,6 +242,10 @@ public class FocusHandler
                 case "log":
                     _viewModel.AddMarkdown(TaskQueueView.ConvertCustomMarkup(displayText), recordAsSpecial: recordAsSpecial);
                     break;
+                case "file":
+                    // 只写日志文件，不进入 GUI 日志面板
+                    _viewModel.Processor.AddMarkdownToFile(displayText, recordAsSpecial);
+                    break;
                 case "toast":
                     DispatcherHelper.RunOnMainThread(() =>
                         ToastHelper.CreateToastByType(
