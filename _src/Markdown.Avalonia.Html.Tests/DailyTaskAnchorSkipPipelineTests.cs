@@ -52,7 +52,9 @@ public class DailyTaskAnchorSkipPipelineTests
     {
         var skip = pipeline[skipName]!.AsObject();
 
-        Assert.Equal("DoNothing", skip["action"]!["type"]!.GetValue<string>());
+        // 跳过出口只需保持无副作用：action 缺省即为 DoNothing，不再显式声明
+        var skipAction = skip["action"]?.AsObject();
+        Assert.True(skipAction is null || skipAction["type"]?.GetValue<string>() == "DoNothing");
         Assert.Equal(string.Empty, skip["anchor"]!["DT_Route" + routeName]!.GetValue<string>());
         Assert.Null(skip["focus"]);
     }

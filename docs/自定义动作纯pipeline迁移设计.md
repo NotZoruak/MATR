@@ -24,17 +24,18 @@
 | 特殊情况写入链路 | 已完成 | `FocusHandler` 已把 `special:` 的识别结果传递给 `AddMarkdown(recordAsSpecial: true)`；该路径以 Info 级别写入 `[Record][Special]`，不借用 Warning。 |
 | 工作记录解析器 | 已完成 | `WorkRecordBuilder` 已识别 `[Record][Special]` 并归入特殊情况，同时保留 `WRN` → 特殊情况的既有规则；已覆盖正常特殊结果、真实 Warning、普通记录三类测试。 |
 | 一键日课重构 | 进行中 | 已完成 9 条完成日志、5 条跳过日志与 5 条演练战败日志迁移，及 6 个本次运行跳过出口的 `anchor` 迁移。锻刀容量不足且未开启刀解、演练战败使用 `special:` Info 记录；本次运行跳过仅控制路由、不输出日志。anchor 机制已完成实机验证；刀剑掉落与状态台账类逻辑尚未改动。 |
-| 后续任务重构 | 未开始 | 一键日课完成并验证后，依次处理联队战、本丸后勤、常驻作战。 |
+| 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在入口 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花子枢纽 `HF_` 链暂不纳入。下一步接江户潜入与战术强化。 |
+| 后续任务重构 | 进行中 | 海陆联队已完成修刀与刀装补充的公共链拆分；接着处理本丸后勤与常驻作战。 |
 
 `special:` 只是 MATR 约定的内容前缀，不是 MaaFramework `focus` schema 的字段。当前实现会在实时展示前清理该前缀，并仅对日志文件写入 `[Record][Special]`；实时日志和文件日志均保持 Info 级别。该链路已经可以承载迁移后的正常特殊结果，但现有 Warning 词表仍须逐条评估，不能不分语义地全部替换为 `special:`。
 
 ### 一键日课实施记录
 
-2026-09-19 已完成第一小批：完成日志。登录奖励、暖心礼包、合成、刀解四条原本仅用于写日志的插入式 node 已删除，日志改挂到对应的完成台账动作 `Node.Action.Succeeded` 回调；锻刀完成、演练三胜、演练五位置、任务奖励、邮件领取五条保留原分支出口，仅将 `GuiLogAction` 替换为 `DoNothing + focus`，保持原 `next` 路径不变。此次不涉及 `special:`，所有消息均为普通 Info 完成记录。
+2026-09-19 已完成第一小批：完成日志。登录奖励、暖心礼包、合成、刀解四条原本仅用于写日志的插入式 node 已删除，日志改挂到对应的完成台账动作 `Node.Action.Succeeded` 回调；锻刀完成、演练三胜、演练五位置、任务奖励、邮件领取五条保留原分支出口，仅将 `GuiLogAction` 替换为 `focus`（空操作由 `action` 缺省表达，不再显式写 `DoNothing`），保持原 `next` 路径不变。此次不涉及 `special:`，所有消息均为普通 Info 完成记录。
 
 同日完成第二小批：跳过日志。合成无可用对象、锻刀未开启、无空闲锻刀位、演练跳过强敌四条改为普通 Info `focus`；「待收取刀剑超过空余刀位，未开启刀解」属于正常结束但需回顾的结果，改为 `special:` 的 Info `focus`，写入工作记录的特殊情况。五个分支出口均保留，避免改变现有跳过与返回逻辑。
 
-同日完成第三小批：演练战败日志。五个位置的战败识别 node 保留原有 `max_hit: 1`、识别范围和回到对手选择的 `next`，仅将 `GuiLogAction` 替换为 `DoNothing + special: focus`。战败结果会以 Info 级别写入日志，并在工作记录中归入特殊情况。至此，`DailyTask.json` 不再引用 `GuiLogAction`。
+同日完成第三小批：演练战败日志。五个位置的战败识别 node 保留原有 `max_hit: 1`、识别范围和回到对手选择的 `next`，仅将 `GuiLogAction` 替换为带 `special:` 的 `focus`。战败结果会以 Info 级别写入日志，并在工作记录中归入特殊情况。至此，`DailyTask.json` 不再引用 `GuiLogAction`。
 
 ### 一键日课本次运行跳过的 `anchor` 迁移（已实施并完成实机验证）
 
@@ -42,7 +43,7 @@
 
 未重写 `DT_ProjectRouter` 的业务顺序，只把已有本次运行跳过需求的六个直接候选替换为锚点候选：同步后勤、合成、锻刀、演练、任务奖励、邮件。登录奖励、暖心礼包、刀解继续保持直接候选。日课入口 `DailyTask` 在每次执行时通过 `anchor` 字段将六个路由锚点分别初始化为对应的 `DT_Step*`；这一步显式覆盖上次任务链可能留下的运行期锚点状态。
 
-当某项目决定本次跳过时，原 `DT_*SkipCurrentRun` 出口已改为 `DoNothing`，并将对应路由锚点设置为空字符串。例如合成无可用对象时，`DT_MixSkipCurrentRun` 写入 `"anchor": { "DT_RouteMix": "" }`。官方协议规定空字符串表示清除该锚点；`DT_ProjectRouter` 中的 `[Anchor]DT_RouteMix` 随后解析不到目标，候选会被跳过，路由器继续尝试下一个项目。各出口原有的 `next` 收尾路径保持不变。
+当某项目决定本次跳过时，原 `DT_*SkipCurrentRun` 出口已改为空操作（`action` 缺省，不再显式写 `DoNothing`），并将对应路由锚点设置为空字符串。例如合成无可用对象时，`DT_MixSkipCurrentRun` 写入 `"anchor": { "DT_RouteMix": "" }`。官方协议规定空字符串表示清除该锚点；`DT_ProjectRouter` 中的 `[Anchor]DT_RouteMix` 随后解析不到目标，候选会被跳过，路由器继续尝试下一个项目。各出口原有的 `next` 收尾路径保持不变。
 
 六个跳过出口不配置 `focus`：本次运行跳过只用于控制路由，不输出 GUI 或文件日志，也不写入工作记录。已删除 `DailyTaskStepSkipAction`、`DailyTaskRunResetAction`、动作注册、`DailyTaskCompletionService` 的运行期跳过内存集合及其读写清理方法，并移除 `DailyTaskStepRecognition` 对该内存状态的读取；`DailyTaskCompletionMarkAction`、每日完成台账和 `DailyTaskStepRecognition` 对持久化完成次数的判断保持不变。
 
@@ -229,7 +230,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 | 动作或识别 | 引用处数 | 当前职责 | 可迁移性 |
 |---|---|---|---|
 | `SortieRoundDoneRecognition` | 1 | 通过出阵 node 的命中计数判断这一圈是否已打完 | 可用 `max_hit` 加顺序分支表达，需要验证计数在每轮任务运行时是否从零开始 |
-| `TeamSwitchNeededRecognition` 加 `TeamSwitchAction` | 1 加 1 | OCR 剩余轮次，按配置决定换哪支部队并双击确认 | 需要跨轮次的当前部队状态，暂不具备纯 pipeline 表达条件 |
+| `TeamSwitchCheckAction`（原 `TeamSwitchNeededRecognition` 加 `TeamSwitchAction` 合并） | 1（海陆联队） | OCR 剩余轮次，按配置决定换哪支部队并双击确认 | 需要跨轮次的当前部队状态，暂不具备纯 pipeline 表达条件 |
 | `DispatchLogAction` | 6 | 读取实例配置里的目的地，输出 GUI 日志与词表 | GUI 日志部分可用 `focus`；目的地文本需要由选项注入或保留读取配置 |
 | `RepairStartLogAction` | 8 | 读修复画面刀名与资源消耗，组合成一行词表，并在确认前点击 | `mode=gui` 的日志部分可用 `focus`；多 ROI OCR 拼接与刀名归一必须保留 |
 
@@ -288,7 +289,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ### 跨 node 状态机与台账
 
-`DailyTaskCompletionCheckAction`、`DailyTaskCompletionMarkAction`、`DailyTaskStepRecognition`、`TeamSwitchAction`、`TeamSwitchNeededRecognition`、`TeamSwitchDecision`、`FormationConfigAction`、`FormationEquipStateMachine`、`FormationEquipSelectAction`、`DragCaptainAction`、`ExpeditionTeamRestRecognition`、`NaibanOutfitSelectionAction`、`MixFindAllowedMaterialAction`、`ForgeDisassembleSelectAction`、`NewMixTargetSelectionRecognition`、`EdoLastActionRetreatRecognition`。
+`DailyTaskCompletionCheckAction`、`DailyTaskCompletionMarkAction`、`DailyTaskStepRecognition`、`TeamSwitchCheckAction`、`TeamSwitchDecision`、`FormationConfigAction`、`FormationEquipStateMachine`、`FormationEquipSelectAction`、`DragCaptainAction`、`ExpeditionTeamRestRecognition`、`NaibanOutfitSelectionAction`、`MixFindAllowedMaterialAction`、`ForgeDisassembleSelectAction`、`NewMixTargetSelectionRecognition`、`EdoLastActionRetreatRecognition`。
 
 ### 需要名单或目录联合校验的识别
 
@@ -298,7 +299,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ### 近期实施范围与顺序
 
-本轮仅重构以下四个任务，严格按此顺序推进：一键日课（`DailyTask.json`）→ 联队战（`LRentaisen.json`）→ 本丸后勤（`Expedition.json`）→ 常驻作战（`Sortie.json`）。每个任务完成重构和验证后再进入下一个任务，其余任务暂不纳入本轮迁移。
+本轮仅重构以下四个任务，严格按此顺序推进：一键日课（`DailyTask.json`）→ 联队战／海陆联队（`RegimentBattle.json`，旧 `LRentaisen.json` 已随重构移除）→ 本丸后勤（`Expedition.json`）→ 常驻作战（`Sortie.json`）。每个任务完成重构和验证后再进入下一个任务，其余任务暂不纳入本轮迁移。
 
 ### 批次一：Info 级日志
 
@@ -347,6 +348,8 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 前置：确认 `max_hit` 的计数在每轮任务运行时重置，以及 `focus` 在正常结束与提前结束两种路径上的触发次数。
 
 ## 附录：引用统计
+
+本表为 2026-09-19 迁移前的扫描快照，后续任务重构与旧文件移除不回溯更新；`LRentaisen.json`（联队战）已重构为 `RegimentBattle.json` 并移除，表中相关条目仅作历史参考。
 
 自定义动作引用次数，按降序排列。
 

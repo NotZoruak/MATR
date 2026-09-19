@@ -1,0 +1,207 @@
+{
+  "IsPreDamage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["NavigateToRepair"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，准备进入修复流程",
+        "display": "log"
+      }
+    }
+  },
+  "NavigateToRepair": {
+    "next": ["ClickMenuForRepair", "ClickRepairInMenu", "[Anchor]Hub"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "ClickMenuForRepair": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "pre_delay": 100,
+    "action": {"type": "Click"},
+    "next": ["NavigateToRepair"]
+  },
+  "ClickRepairInMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [451, 379, 84, 40],
+        "expected": "修复"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [451, 379, 84, 40]
+    },
+    "next": ["ClickRepairInMenu", "IsRepairScreen", "NavigateToRepair"]
+  },
+  "IsRepairScreen": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [567, 59, 148, 40],
+        "expected": "修复状况"
+      }
+    },
+    "next": ["SelectRepairSlot", "CompleteCurrentTaskAfterNoRepairSlot"]
+  },
+  "SelectRepairSlot": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [345, 182, 175, 474],
+        "template": "Common/未使用修刀槽.png",
+        "threshold": [0.9]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [297, 160, 133, 369]
+    },
+    "next": ["ConfirmSelectSlot", "SelectRepairSlot"],
+    "on_error": ["LogNoDamagedSword"]
+  },
+  "ConfirmSelectSlot": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1052, 138, 32, 31],
+        "expected": "选"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [262, 307, 147, 46]
+    },
+    "next": ["CheckAccel", "ClickAccel"]
+  },
+  "CheckAccel": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1162, 258, 6, 4],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "next": ["CaptureRepairInfo"]
+  },
+  "ClickAccel": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1156, 241, 27, 25]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1156, 241, 27, 25]
+    },
+    "next": ["CaptureRepairInfo"]
+  },
+  "CaptureRepairInfo": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RepairStartLogAction",
+      "custom_action_param": {
+        "mode": "capture",
+        "name_roi": [195, 242, 150, 32],
+        "cost_rois": [
+          [301, 409, 66, 22],
+          [301, 479, 66, 23],
+          [299, 549, 70, 26],
+          [300, 620, 67, 25]
+        ]
+      }
+    },
+    "next": ["ClickRepairDone"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "ClickRepairDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1159, 588, 83, 44],
+        "expected": "修复"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1159, 588, 83, 44]
+    },
+    "next": ["LogRepairDone", "ClickRepairDone"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "LogRepairDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [567, 59, 148, 40],
+        "expected": "修复状况"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1183, 18, 87, 40]
+      }
+    },
+    "next": ["[Anchor]RepairDone"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[重伤检测] 修复完成",
+        "display": "log"
+      }
+    }
+  },
+  "LogNoDamagedSword": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["[Anchor]RepairAborted"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 未检测到可修复刀剑",
+        "display": "log"
+      }
+    }
+  },
+  "CompleteCurrentTaskAfterNoRepairSlot": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "无可用空闲修复工坊"}
+    }
+  }
+}

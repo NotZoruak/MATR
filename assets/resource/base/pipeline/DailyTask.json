@@ -169,29 +169,26 @@
     "on_error": ["DT_ProjectRouter"]
   },
   "DT_SyncLogisticsSkipCurrentRun": {
-    "action": {"type": "DoNothing"},
     "anchor": {"DT_RouteSyncLogistics": ""},
     "next": ["DT_ProjectRouter"]
   },
   "DT_LoginRewardEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]DT_EnterMenu",
       "DT_LoginRewardIsInMenu",
       "DT_LoginRewardSignIn",
@@ -291,28 +288,25 @@
     }
   },
   "DT_LoginRewardFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_LoginRewardEntry"]
   },
   "DT_WarmGiftEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_WarmGiftIsInMenu",
       "DT_WarmGiftIsInShop",
       "[JumpBack]DT_EnterMenu",
@@ -482,28 +476,25 @@
     }
   },
   "DT_WarmGiftFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_WarmGiftEntry"]
   },
   "DT_MixEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_MixIsInMenu",
       "DT_MixIsSelectSword",
       "DT_MixMaterialPage",
@@ -622,7 +613,6 @@
     }
   },
   "DT_MixNoAllowedMaterial": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_MixSkipCurrentRun"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -632,33 +622,29 @@
     }
   },
   "DT_MixSkipCurrentRun": {
-    "action": {"type": "DoNothing"},
     "anchor": {"DT_RouteMix": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_MixFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_MixEntry"]
   },
   "DT_ForgeEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_ForgeIsInMenu",
       "DT_ForgeIsInStatus",
       "DT_ForgeDetectResourceInput",
@@ -838,7 +824,6 @@
     "next": ["DT_ForgeIsInStatus", "DT_ForgeEntry"]
   },
   "DT_ForgeSkipDisassemble": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_ForgeSkipCurrentRun"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -848,7 +833,6 @@
     }
   },
   "DT_ForgeSkipForge": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_ReturnHomeHub"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -858,7 +842,6 @@
     }
   },
   "DT_ForgeSkipCurrentRun": {
-    "action": {"type": "DoNothing"},
     "anchor": {"DT_RouteForge": ""},
     "next": ["DT_ReturnHomeHub"]
   },
@@ -965,7 +948,6 @@
     "on_error": ["DT_ForgeCompletedLog"]
   },
   "DT_ForgeCompletedLog": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_ReturnHomeHub"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -975,7 +957,6 @@
     }
   },
   "DT_ForgeNoFreeSlot": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_ForgeSkipCurrentRun"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1217,28 +1198,25 @@
     "on_error": ["DT_ForgeEntry"]
   },
   "DT_ForgeFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_ForgeEntry"]
   },
   "DT_DrillEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_DrillIsInMenu",
       "DT_DrillIsInOpponentSelect",
       "DT_DrillOpponentInfo",
@@ -1429,7 +1407,6 @@
         "expected": "失败"
       }
     },
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillOpponentSelectCheck"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1447,7 +1424,6 @@
         "expected": "失败"
       }
     },
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillOpponentSelectCheck"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1465,7 +1441,6 @@
         "expected": "失败"
       }
     },
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillOpponentSelectCheck"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1483,7 +1458,6 @@
         "expected": "失败"
       }
     },
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillOpponentSelectCheck"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1501,7 +1475,6 @@
         "expected": "失败"
       }
     },
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillOpponentSelectCheck"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1637,7 +1610,6 @@
     "on_error": ["DT_DrillEntry"]
   },
   "DT_DrillStrongLog": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillOpponentSelectCheck"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1763,7 +1735,6 @@
       }
     },
     "inverse": true,
-    "action": {"type": "DoNothing"},
     "next": ["DT_ReturnHomeHub"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1773,7 +1744,6 @@
     }
   },
   "DT_DrillFinishFive": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillSkipCurrentRun"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1783,33 +1753,29 @@
     }
   },
   "DT_DrillSkipCurrentRun": {
-    "action": {"type": "DoNothing"},
     "anchor": {"DT_RouteDrill": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_DrillFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_DrillEntry"]
   },
   "DT_RewardEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_RewardIsInMenu",
       "DT_RewardIsInTaskList",
       "[JumpBack]DT_EnterMenu",
@@ -1920,7 +1886,6 @@
     "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
   "DT_RewardFinishedLog": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_RewardSkipCurrentRun"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -1930,7 +1895,6 @@
     }
   },
   "DT_RewardSkipCurrentRun": {
-    "action": {"type": "DoNothing"},
     "anchor": {"DT_RouteReward": ""},
     "next": ["DT_RewardClosePopupHub"]
   },
@@ -1953,28 +1917,25 @@
     "next": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_RewardEntry"]
   },
   "DT_MailEntry": {
     "timeout": 120000,
     "next": [
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_MailIsInMenu",
       "DT_MailOpenFilter",
       "DT_MailIsInFilterSelect",
@@ -2162,7 +2123,6 @@
     "on_error": ["DT_MailCloseMailboxHub"]
   },
   "DT_MailFinishedLog": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_MailSkipCurrentRun"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -2172,35 +2132,31 @@
     }
   },
   "DT_MailSkipCurrentRun": {
-    "action": {"type": "DoNothing"},
     "anchor": {"DT_RouteMail": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_MailFallbackWait": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_MailEntry"]
   },
   "DT_ReturnHomeHub": {
     "next": [
       "DT_ReturnHomeCheckHomeBrightness",
-      "[JumpBack]DT_IsExpeditionReturn",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]DT_IsSwordDropColor",
-      "[JumpBack]DT_IsAnnouncementPopup",
-      "[JumpBack]DT_IsTrainingLetter",
-      "[JumpBack]DT_IsLoginReward",
-      "[JumpBack]DT_IsAdvertisementPopup",
-      "[JumpBack]DT_IsGameIcon",
-      "[JumpBack]DT_IsLoginButton",
-      "[JumpBack]DT_IsGameUpdatePopup",
-      "[JumpBack]DT_IsInGameUpdatePopup",
-      "[JumpBack]DT_IsInternalReport",
-      "[JumpBack]DT_IsTrainingApplication",
-      "[JumpBack]DT_ClickTrainingApplication",
-      "[JumpBack]DT_CancelTrainingApplication",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
       "[JumpBack]DT_IsInMenu",
       "[JumpBack]DT_EnterMenu",
-      "[JumpBack]DT_IsNetworkRequestTimeout",
-      "[JumpBack]DT_IsConnectionInterrupted",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "DT_FallbackWait"
     ]
   },
@@ -2219,25 +2175,9 @@
     "next": ["DT_ProjectRouter"]
   },
   "DT_ProjectRecover": {
-    "action": {"type": "DoNothing"},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_Finish": {},
-  "DT_IsExpeditionReturn": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    }
-  },
   "DT_IsSwordDropColor": {
     "recognition": {
       "type": "ColorMatch",
@@ -2251,235 +2191,6 @@
       "type": "Click",
       "param": {
         "target": [947, 533, 67, 75]
-      }
-    }
-  },
-  "DT_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "repeat": 3,
-    "repeat_delay": 500,
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1056, 463, 63, 193]
-    }
-  },
-  "DT_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"}
-  },
-  "DT_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    }
-  },
-  "DT_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["DT_LoginRewardClick3"]
-  },
-  "DT_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["DT_ReturnHomeHub"]
-  },
-  "DT_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    }
-  },
-  "DT_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"}
-  },
-  "DT_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"}
-  },
-  "DT_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"}
-  },
-  "DT_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    }
-  },
-  "DT_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"}
-  },
-  "DT_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500
-  },
-  "DT_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    }
-  },
-  "DT_CancelTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    }
-  },
-  "DT_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    }
-  },
-  "DT_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
       }
     }
   },
