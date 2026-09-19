@@ -34,12 +34,6 @@ public sealed class DailyTaskStepRecognition : IMaaCustomRecognition
             var instanceId = ActionParamHelper.ResolveOwnerInstanceId(context);
             var instanceKey = DailyTaskCompletionService.NormalizeInstanceKey(instanceId);
 
-            if (DailyTaskCompletionService.IsSkippedForCurrentRun(instanceId, item))
-            {
-                LoggerHelper.Info($"[日课] Step 实例={instanceKey}，项目={item}，本次运行已跳过");
-                return false;
-            }
-
             var shouldRun = DailyTaskCompletionService.ShouldRun(instanceId, item, requiredCount, DateTime.Now);
             LoggerHelper.Info($"[日课] Step 实例={instanceKey}，项目={item}，要求次数={requiredCount}，当前游戏日{(shouldRun ? "未完成" : "已完成")}");
             return shouldRun;

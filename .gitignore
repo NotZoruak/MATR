@@ -60,6 +60,9 @@ desktop.ini
 /docs/*
 !/docs/分支流程.md
 
+# 本地参考仓库（仅供开发时查阅）
+/_reference/
+
 # 打包产物
 /MATR-*.zip
 /MATR-*/

@@ -456,7 +456,8 @@ public class MaaProcessor
         AddLogByKey(key, brush, changeColor, transformKey, formatArgsKeys);
     }
 
-    public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true, params string[] formatArgsKeys)
+    public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true,
+        bool recordAsSpecial = false, params string[] formatArgsKeys)
     {
         brush ??= Brushes.Black;
         // 与 AddLogByKey 一致：直接投递，避免线程池乱序导致 GUI 日志顺序错乱。
@@ -469,7 +470,7 @@ public class MaaProcessor
             LogItemViewModels.Add(log);
             PublishPlatformLog(log);
             using var logScope = BeginInstanceLogScope("MonitorMarkdown", "Monitor");
-            LoggerHelper.Info(log.Content);
+            LoggerHelper.Info(recordAsSpecial ? $"[Record][Special] {log.Content}" : log.Content);
             TrimExcessLogs();
         });
     }
@@ -5554,11 +5555,8 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.ClickTopRepairableSwordAction());
             tasker.Resource.Register(new Custom.RepairCooldownCheckAction());
             tasker.Resource.Register(new Custom.DailyTaskCompletionCheckAction());
-            tasker.Resource.Register(new Custom.DailyTaskCompletionMarkAction());
             tasker.Resource.Register(new Custom.DailyTaskStepRecognition());
-            tasker.Resource.Register(new Custom.DailyTaskStepMarkAction());
-            tasker.Resource.Register(new Custom.DailyTaskStepSkipAction());
-            tasker.Resource.Register(new Custom.DailyTaskRunResetAction());
+            tasker.Resource.Register(new Custom.DailyTaskCompletionMarkAction());
             tasker.Resource.Register(new Custom.ForgeCapacityCheckAction());
             tasker.Resource.Register(new Custom.ForgeDisassembleSelectAction());
             tasker.Resource.Register(new Custom.DrillDangerCheckAction());

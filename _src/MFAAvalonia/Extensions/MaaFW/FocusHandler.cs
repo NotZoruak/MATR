@@ -34,6 +34,7 @@ namespace MFAAvalonia.Extensions.MaaFW;
 /// </summary>
 public class FocusHandler
 {
+    private const string SpecialContentPrefix = "special:";
     private const double ToastMarkdownMaxHeight = 220;
     private const double DialogMarkdownMaxHeight = 420;
     private const double DialogMarkdownMinWidth = 320;
@@ -90,6 +91,19 @@ public class FocusHandler
         }
 
         return (input, null);
+    }
+
+    /// <summary>
+    /// 提取项目约定的特殊情况标记，并返回去除标记后的展示文本。
+    /// </summary>
+    public static bool TryExtractSpecialContent(string content, out string displayContent)
+    {
+        displayContent = content;
+        if (!content.StartsWith(SpecialContentPrefix, StringComparison.Ordinal))
+            return false;
+
+        displayContent = content[SpecialContentPrefix.Length..];
+        return true;
     }
 
     /// <summary>
@@ -188,7 +202,8 @@ public class FocusHandler
             if (content != null)
             {
                 var displayText = ResolveFocusContent(content, detailsObj, imageBuffer);
-                DispatchToChannels(displayText, displays);
+                var recordAsSpecial = TryExtractSpecialContent(displayText, out displayText);
+                DispatchToChannels(displayText, displays, recordAsSpecial);
             }
         }
         else if (templateToken.Type == JTokenType.Array)
@@ -200,7 +215,8 @@ public class FocusHandler
                 {
                     var template = item.Value<string>();
                     var displayText = ResolveFocusContent(template, detailsObj, imageBuffer);
-                    DispatchToChannels(displayText, new List<string> { "log" });
+                    var recordAsSpecial = TryExtractSpecialContent(displayText, out displayText);
+                    DispatchToChannels(displayText, new List<string> { "log" }, recordAsSpecial);
                 }
             }
         }
@@ -209,21 +225,22 @@ public class FocusHandler
             // 字符串形式：display=log
             var template = templateToken.Value<string>();
             var displayText = ResolveFocusContent(template, detailsObj, imageBuffer);
-            DispatchToChannels(displayText, new List<string> { "log" });
+            var recordAsSpecial = TryExtractSpecialContent(displayText, out displayText);
+            DispatchToChannels(displayText, new List<string> { "log" }, recordAsSpecial);
         }
     }
 
     /// <summary>
     /// 根据 display 渠道列表分发消息
     /// </summary>
-    private void DispatchToChannels(string displayText, List<string> displays)
+    private void DispatchToChannels(string displayText, List<string> displays, bool recordAsSpecial)
     {
         foreach (var channel in displays)
         {
             switch (channel.ToLower())
             {
                 case "log":
-                    _viewModel.AddMarkdown(TaskQueueView.ConvertCustomMarkup(displayText));
+                    _viewModel.AddMarkdown(TaskQueueView.ConvertCustomMarkup(displayText), recordAsSpecial: recordAsSpecial);
                     break;
                 case "toast":
                     DispatcherHelper.RunOnMainThread(() =>

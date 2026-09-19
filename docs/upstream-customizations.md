@@ -65,7 +65,7 @@
 
 一键日课的登录奖励、暖心礼包、合成、刀解和锻刀使用 MATR 自定义的游戏日完成台账。完成日期按每日 5:00 切换；状态写入 `debug/logs/daily-task-completion.log`。开启刀解时，首次刀解至少一把；若收取完成锻刀所需刀位不足，则按缺口刀解腾位。两种刀解均写入同一当天完成记录：已经完成当天刀解后，仍会在收刀缺位时继续按缺口刀解。每页选择许可名单中的刀剑前，必须读取当前已选数量，并且只选择剩余所需数量，不能因同页存在多把许可刀剑而超选。当天锻刀完成记录只阻止新建锻刀，仍必须进入锻刀状况页收取已完成刀剑。无合成素材、刀解素材不足或未完成 3 次锻刀均不得标记为完成；其中无合成素材走「本次运行跳过」，只写运行期状态，台账与设置页保持不变，下一次运行仍会重新尝试。
 
-台账与运行期状态都由 `DailyTaskCompletionService` 保管，并通过自定义 action 接入 pipeline。运行期跳过使用内存集合（`MarkSkippedForCurrentRun` / `IsSkippedForCurrentRun` / `ClearRunSkips`），由 `DailyTaskStepSkipAction` 写入、`DailyTaskRunResetAction` 在日课入口 node 每次开始时清空，`DailyTaskStepRecognition` 先判断运行期跳过再判断游戏日记录。升级时需同时保留日志文件格式、检查/写入/跳过/重置 action 的注册，以及日课各项目的成功路径和跳过路径。
+完成台账由 `DailyTaskCompletionService` 保管，并通过自定义 action 接入 pipeline。本次运行跳过不再使用内存集合：日课入口 node 每次开始时初始化六个项目路由 `anchor`，跳过出口清空对应锚点，`DT_ProjectRouter` 因此略过该项目。`DailyTaskStepRecognition` 只判断游戏日完成次数。升级时需同时保留日志文件格式、完成检查/写入 action 的注册、日课入口锚点初始化，以及各项目的成功路径和跳过路径。
 
 日课任务的选项与子选项统一使用 `DT_` 前缀，项目开关只覆盖对应 `DT_Step<项目>.enabled`，旧 `D_` 前缀选项已全部删除。锻刀公式、刀解路径重接线、演练子选项、领取奖励子选项与邮件类别的覆盖，以及 `卡死等待时间`、`卡死重启` 中对应主枢纽的条目，随各自流程重写补齐。
 

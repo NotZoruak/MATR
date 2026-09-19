@@ -1,22 +1,26 @@
 {
   "DailyTask": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskRunResetAction"
+    "anchor": {
+      "DT_RouteSyncLogistics": "DT_StepSyncLogistics",
+      "DT_RouteMix": "DT_StepMix",
+      "DT_RouteForge": "DT_StepForge",
+      "DT_RouteDrill": "DT_StepDrill",
+      "DT_RouteReward": "DT_StepReward",
+      "DT_RouteMail": "DT_StepMail"
     },
     "next": ["DT_ProjectRouter"]
   },
   "DT_ProjectRouter": {
     "next": [
-      "DT_StepSyncLogistics",
+      "[Anchor]DT_RouteSyncLogistics",
       "DT_StepLoginReward",
       "DT_StepWarmGift",
-      "DT_StepMix",
+      "[Anchor]DT_RouteMix",
       "DT_StepDisassemble",
-      "DT_StepForge",
-      "DT_StepDrill",
-      "DT_StepReward",
-      "DT_StepMail",
+      "[Anchor]DT_RouteForge",
+      "[Anchor]DT_RouteDrill",
+      "[Anchor]DT_RouteReward",
+      "[Anchor]DT_RouteMail",
       "DT_Finish"
     ]
   },
@@ -165,14 +169,8 @@
     "on_error": ["DT_ProjectRouter"]
   },
   "DT_SyncLogisticsSkipCurrentRun": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskStepSkipAction",
-      "custom_action_param": {
-        "item": "SyncLogistics",
-        "reason": "本次运行已完成同步后勤"
-      }
-    },
+    "action": {"type": "DoNothing"},
+    "anchor": {"DT_RouteSyncLogistics": ""},
     "next": ["DT_ProjectRouter"]
   },
   "DT_LoginRewardEntry": {
@@ -279,17 +277,18 @@
     "action": {
       "type": "Custom",
       "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "LoginReward"}
+      "custom_action_param": {
+        "item": "LoginReward",
+        "required_count": 1
+      }
     },
-    "next": ["DT_LoginRewardCompletedLog"]
-  },
-  "DT_LoginRewardCompletedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 登录奖励 领取完成"}
-    },
-    "next": ["DT_ProjectRouter"]
+    "next": ["DT_ProjectRouter"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 登录奖励 领取完成",
+        "display": "log"
+      }
+    }
   },
   "DT_LoginRewardFallbackWait": {
     "action": {"type": "DoNothing"},
@@ -469,17 +468,18 @@
     "action": {
       "type": "Custom",
       "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "WarmGift"}
+      "custom_action_param": {
+        "item": "WarmGift",
+        "required_count": 1
+      }
     },
-    "next": ["DT_WarmGiftCompletedLog"]
-  },
-  "DT_WarmGiftCompletedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 暖心礼包 领取完成"}
-    },
-    "next": ["DT_ProjectRouter"]
+    "next": ["DT_ProjectRouter"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 暖心礼包 领取完成",
+        "display": "log"
+      }
+    }
   },
   "DT_WarmGiftFallbackWait": {
     "action": {"type": "DoNothing"},
@@ -608,35 +608,32 @@
     "action": {
       "type": "Custom",
       "custom_action": "DailyTaskCompletionMarkAction",
-      "custom_action_param": {"item": "Mix"}
-    },
-    "next": ["DT_MixCompletedLog"]
-  },
-  "DT_MixCompletedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 合成 完成"}
-    },
-    "next": ["DT_ProjectRouter"]
-  },
-  "DT_MixNoAllowedMaterial": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 合成 未找到可合成对象，或无可用素材"}
-    },
-    "next": ["DT_MixSkipCurrentRun"]
-  },
-  "DT_MixSkipCurrentRun": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskStepSkipAction",
       "custom_action_param": {
         "item": "Mix",
-        "reason": "未找到可合成对象，或无可用素材"
+        "required_count": 1
       }
     },
+    "next": ["DT_ProjectRouter"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 合成 完成",
+        "display": "log"
+      }
+    }
+  },
+  "DT_MixNoAllowedMaterial": {
+    "action": {"type": "DoNothing"},
+    "next": ["DT_MixSkipCurrentRun"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 合成 未找到可合成对象，或无可用素材",
+        "display": "log"
+      }
+    }
+  },
+  "DT_MixSkipCurrentRun": {
+    "action": {"type": "DoNothing"},
+    "anchor": {"DT_RouteMix": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_MixFallbackWait": {
@@ -817,21 +814,19 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Disassemble",
         "required_count": 1
       }
     },
-    "next": ["DT_ForgeDisassembleCompletedLog"]
-  },
-  "DT_ForgeDisassembleCompletedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 刀解 完成"}
-    },
-    "next": ["DT_ForgeClickBackToStatus"]
+    "next": ["DT_ForgeClickBackToStatus"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 刀解 完成",
+        "display": "log"
+      }
+    }
   },
   "DT_ForgeClickBackToStatus": {
     "action": {
@@ -843,30 +838,28 @@
     "next": ["DT_ForgeIsInStatus", "DT_ForgeEntry"]
   },
   "DT_ForgeSkipDisassemble": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "warn:日课 锻刀 待收取刀剑超过空余刀位，未开启刀解，跳过收刀与锻刀"}
-    },
-    "next": ["DT_ForgeSkipCurrentRun"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_ForgeSkipCurrentRun"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:日课 锻刀 待收取刀剑超过空余刀位，未开启刀解，跳过收刀与锻刀",
+        "display": "log"
+      }
+    }
   },
   "DT_ForgeSkipForge": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 未开启，跳过收刀与锻刀"}
-    },
-    "next": ["DT_ReturnHomeHub"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_ReturnHomeHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 锻刀 未开启，跳过收刀与锻刀",
+        "display": "log"
+      }
+    }
   },
   "DT_ForgeSkipCurrentRun": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskStepSkipAction",
-      "custom_action_param": {
-        "item": "Forge",
-        "reason": "刀位不足，或可刀解刀剑不足，或已无空闲锻冶所，或限锻未开启，或刀解许可名单为空"
-      }
-    },
+    "action": {"type": "DoNothing"},
+    "anchor": {"DT_RouteForge": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_ForgeClaimCompletedHub": {
@@ -972,20 +965,24 @@
     "on_error": ["DT_ForgeCompletedLog"]
   },
   "DT_ForgeCompletedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 已完成3次锻刀"}
-    },
-    "next": ["DT_ReturnHomeHub"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_ReturnHomeHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 锻刀 已完成3次锻刀",
+        "display": "log"
+      }
+    }
   },
   "DT_ForgeNoFreeSlot": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 锻刀 已无空闲锻刀位"}
-    },
-    "next": ["DT_ForgeSkipCurrentRun"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_ForgeSkipCurrentRun"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 锻刀 已无空闲锻刀位",
+        "display": "log"
+      }
+    }
   },
   "DT_ForgeFindFreeSlot": {
     "recognition": {
@@ -1210,7 +1207,7 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Forge",
         "required_count": 3
@@ -1432,12 +1429,14 @@
         "expected": "失败"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 战败了"}
-    },
-    "next": ["DT_DrillOpponentSelectCheck"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillOpponentSelectCheck"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:日课 演练 战败了",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillOpponentFailure2": {
     "max_hit": 1,
@@ -1448,12 +1447,14 @@
         "expected": "失败"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 战败了"}
-    },
-    "next": ["DT_DrillOpponentSelectCheck"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillOpponentSelectCheck"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:日课 演练 战败了",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillOpponentFailure3": {
     "max_hit": 1,
@@ -1464,12 +1465,14 @@
         "expected": "失败"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 战败了"}
-    },
-    "next": ["DT_DrillOpponentSelectCheck"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillOpponentSelectCheck"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:日课 演练 战败了",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillOpponentFailure4": {
     "max_hit": 1,
@@ -1480,12 +1483,14 @@
         "expected": "失败"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 战败了"}
-    },
-    "next": ["DT_DrillOpponentSelectCheck"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillOpponentSelectCheck"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:日课 演练 战败了",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillOpponentFailure5": {
     "max_hit": 1,
@@ -1496,12 +1501,14 @@
         "expected": "失败"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 战败了"}
-    },
-    "next": ["DT_DrillOpponentSelectCheck"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillOpponentSelectCheck"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:日课 演练 战败了",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillOpponentVictory1": {
     "max_hit": 1,
@@ -1514,7 +1521,7 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Drill",
         "required_count": 3
@@ -1533,7 +1540,7 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Drill",
         "required_count": 3
@@ -1552,7 +1559,7 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Drill",
         "required_count": 3
@@ -1571,7 +1578,7 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Drill",
         "required_count": 3
@@ -1590,7 +1597,7 @@
     },
     "action": {
       "type": "Custom",
-      "custom_action": "DailyTaskStepMarkAction",
+      "custom_action": "DailyTaskCompletionMarkAction",
       "custom_action_param": {
         "item": "Drill",
         "required_count": 3
@@ -1630,12 +1637,14 @@
     "on_error": ["DT_DrillEntry"]
   },
   "DT_DrillStrongLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 跳过强敌"}
-    },
-    "next": ["DT_DrillOpponentSelectCheck"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillOpponentSelectCheck"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 演练 跳过强敌",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillEnterTraining": {
     "recognition": {
@@ -1734,7 +1743,12 @@
         "expected": "战斗结果"
       }
     },
-    "action": {"type": "Click"},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [241, 45, 8, 6]
+      }
+    },
     "next": ["DT_DrillBattleHub"]
   },
   "DT_DrillVictoryLimit": {
@@ -1749,30 +1763,28 @@
       }
     },
     "inverse": true,
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 已完成 3 胜"}
-    },
-    "next": ["DT_ReturnHomeHub"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_ReturnHomeHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 演练 已完成 3 胜",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillFinishFive": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 演练 已完成 5 个位置"}
-    },
-    "next": ["DT_DrillSkipCurrentRun"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_DrillSkipCurrentRun"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 演练 已完成 5 个位置",
+        "display": "log"
+      }
+    }
   },
   "DT_DrillSkipCurrentRun": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskStepSkipAction",
-      "custom_action_param": {
-        "item": "Drill",
-        "reason": "本次运行内五个位置均已处理完"
-      }
-    },
+    "action": {"type": "DoNothing"},
+    "anchor": {"DT_RouteDrill": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_DrillFallbackWait": {
@@ -1908,22 +1920,18 @@
     "next": ["DT_RewardIsInTaskList", "DT_RewardEntry"]
   },
   "DT_RewardFinishedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 任务奖励领取完成"}
-    },
-    "next": ["DT_RewardSkipCurrentRun"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_RewardSkipCurrentRun"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 任务奖励领取完成",
+        "display": "log"
+      }
+    }
   },
   "DT_RewardSkipCurrentRun": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskStepSkipAction",
-      "custom_action_param": {
-        "item": "Reward",
-        "reason": "本次运行已完成领取奖励"
-      }
-    },
+    "action": {"type": "DoNothing"},
+    "anchor": {"DT_RouteReward": ""},
     "next": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardClosePopupHub": {
@@ -2154,22 +2162,18 @@
     "on_error": ["DT_MailCloseMailboxHub"]
   },
   "DT_MailFinishedLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "日课 邮件领取完成"}
-    },
-    "next": ["DT_MailSkipCurrentRun"]
+    "action": {"type": "DoNothing"},
+    "next": ["DT_MailSkipCurrentRun"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "日课 邮件领取完成",
+        "display": "log"
+      }
+    }
   },
   "DT_MailSkipCurrentRun": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "DailyTaskStepSkipAction",
-      "custom_action_param": {
-        "item": "Mail",
-        "reason": "本次运行已完成领取邮件"
-      }
-    },
+    "action": {"type": "DoNothing"},
+    "anchor": {"DT_RouteMail": ""},
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_MailFallbackWait": {

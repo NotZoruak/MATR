@@ -6,7 +6,7 @@ using System;
 
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
-/// <summary>将日课项目记录为当前游戏日已完成。</summary>
+/// <summary>记录一次日课项目完成进度，达到要求次数后不再重复写入。</summary>
 public sealed class DailyTaskCompletionMarkAction : IMaaCustomAction
 {
     public string Name { get; set; } = nameof(DailyTaskCompletionMarkAction);
@@ -16,19 +16,28 @@ public sealed class DailyTaskCompletionMarkAction : IMaaCustomAction
         try
         {
             ActionParamHelper.ThrowIfStopping(context);
-            var item = ActionParamHelper.Parse(args.ActionParam)["item"]?.ToObject<string>();
+            var param = ActionParamHelper.Parse(args.ActionParam);
+            var item = param["item"]?.ToObject<string>();
+            var requiredCount = param["required_count"]?.ToObject<int>() ?? 1;
             if (string.IsNullOrWhiteSpace(item))
             {
-                LoggerHelper.Error("[日课] 未提供当日完成记录的项目标识");
+                LoggerHelper.Error("[日课] 未提供进度记录的项目标识");
+                return false;
+            }
+
+            if (requiredCount <= 0)
+            {
+                LoggerHelper.Error($"[日课] 项目={item} 的完成次数要求必须大于零");
                 return false;
             }
 
             var instanceId = ActionParamHelper.ResolveOwnerInstanceId(context);
-            DailyTaskCompletionService.MarkCompleted(
+            var completedCount = DailyTaskCompletionService.RecordProgress(
                 instanceId,
                 item,
+                requiredCount,
                 DateTime.Now);
-            LoggerHelper.Info($"[日课] 实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)}，项目={item} 已记录为当前游戏日完成");
+            LoggerHelper.Info($"[日课] 记录进度：实例={DailyTaskCompletionService.NormalizeInstanceKey(instanceId)}，项目={item}，次数={completedCount}/{requiredCount}");
             return true;
         }
         catch (MaaStopException)
@@ -37,7 +46,7 @@ public sealed class DailyTaskCompletionMarkAction : IMaaCustomAction
         }
         catch (Exception exception)
         {
-            LoggerHelper.Error($"[日课] 记录当日完成状态失败：{exception.Message}");
+            LoggerHelper.Error($"[日课] 记录项目进度失败：{exception.Message}");
             return false;
         }
     }
