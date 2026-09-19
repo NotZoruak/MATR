@@ -249,7 +249,7 @@ public static class WorkRecordBuilder
             "远征计时" or "后勤" or "本丸后勤" => ["Expedition"],
             "地下城" => ["Underground"],
             "合战场" or "常驻作战" => ["Sortie"],
-            "联队战" or "海陆联队" => ["LRentaisen"],
+            "联队战" or "海陆联队" => ["RegimentBattle"],
             "秘宝之里" or "花牌" => ["Hanapai"],
             "战术强化" => ["TacticalTraining"],
             _ => [],

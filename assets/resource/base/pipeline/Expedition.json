@@ -1129,7 +1129,7 @@
       "type": "Custom",
       "custom_action": "ExpeditionTimerCheckAction"
     },
-    "next": ["LR_SelectDifficulty"],
+    "next": ["Expedition"],
     "on_error": ["E_GoHome"]
   },
   "E_RestartGame": {
@@ -2266,7 +2266,6 @@
     "on_error": ["E_RepairCooldownSkip"]
   },
   "E_RepairCooldownSkip": {
-    "action": {"type": "DoNothing"},
     "next": ["E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["Expedition"]
   },
