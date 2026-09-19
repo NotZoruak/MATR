@@ -24,9 +24,9 @@
 | 特殊情况写入链路 | 已完成 | `FocusHandler` 已把 `special:` 的识别结果传递给 `AddMarkdown(recordAsSpecial: true)`；该路径以 Info 级别写入 `[Record][Special]`，不借用 Warning。 |
 | 工作记录解析器 | 已完成 | `WorkRecordBuilder` 已识别 `[Record][Special]` 并归入特殊情况，同时保留 `WRN` → 特殊情况的既有规则；已覆盖正常特殊结果、真实 Warning、普通记录三类测试。 |
 | 一键日课重构 | 已完成 | 已完成 9 条完成日志、5 条跳过日志与 5 条演练战败日志迁移，及 6 个本次运行跳过出口的 `anchor` 迁移，`focus` 共 19 处。锻刀容量不足且未开启刀解、演练战败使用 `special:` Info 记录；本次运行跳过仅控制路由、不输出日志。anchor 机制已完成实机验证。剩余 16 处自定义动作引用与 13 处自定义识别引用全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。 |
-| 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在入口 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花子枢纽 `HF_` 链本次不纳入，后续会单独抽成一条任务中刷花的公用流程，详见下文「秘宝之里实施记录」。下一步接江户潜入与战术强化。 |
+| 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在主枢纽 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花子枢纽（`HPF_` 链）本次不纳入，后续会单独抽成一条任务中刷花的公用流程，详见下文「秘宝之里实施记录」。下一步接江户潜入与战术强化。 |
 | 海陆联队重构 | 进行中 | 已完成 `RB_SortieSuccess`、`RB_IsConfirmPurchase`、`RB_TerminateRound` 三条日志打点的 `focus` 迁移。剩余 9 处引用中，`RB_CheckCaptainDamage` 的 `CaptainDamageAction` 属于批次一候选，`RB_RetreatOnCaptainDamage` 的 `LogAction` 借 Warning 级别进入特殊情况、属于批次二，其余 7 处均在「明确保留」清单内。详见下文「海陆联队实施记录」。 |
-| 秘宝之里重构 | 已停止（等待刷花公用流程） | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；剩余 10 处自定义动作引用全部属于「明确保留」清单，唯一的候选是 `HF_Hub` 的刷花打点，随 `HF_` 链一并等待刷花公用流程。详见下文「秘宝之里实施记录」。 |
+| 秘宝之里重构 | 已停止（等待刷花公用流程） | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；剩余 10 处自定义动作引用全部属于「明确保留」清单，刷花打点已随本轮刷花流程重构移交 `FatigueCheckAction` 与 `WorkRecordBuilder` 处理。详见下文「秘宝之里实施记录」。 |
 | 后续任务重构 | 进行中 | 海陆联队已完成修刀与刀装补充的公共链拆分；接着处理本丸后勤与常驻作战。 |
 
 `special:` 只是 MATR 约定的内容前缀，不是 MaaFramework `focus` schema 的字段。当前实现会在实时展示前清理该前缀，并仅对日志文件写入 `[Record][Special]`；实时日志和文件日志均保持 Info 级别。该链路已经可以承载迁移后的正常特殊结果，但现有 Warning 词表仍须逐条评估，不能不分语义地全部替换为 `special:`。
@@ -73,7 +73,7 @@
 
 剩余项：`Hanapai.json` 还有 10 处自定义动作引用、7 个动作名，全部属于「明确保留」——`CompleteCurrentTaskAction` 两处、`RestartGameAction` 两处、`FatigueCheckAction` 两处，以及 `SwordDropLogAction`、`GoalPtCheckAction`、`DragCaptainAction`、`HF_Hub` 的 `LogAction` 各一处。其中 `HF_Hub` 属于刷花链，本轮不动。
 
-刷花公用流程（后续专门实施）：刷花状态机目前在三个任务里各存一份，`SF_`（合战场）、`UF_`（地下城）、`HF_`（秘宝之里），识别参数、动作参数、等待与超时基本一致，只有前缀、打点文案与回主枢纽的目标不同。后续会像修刀链与刀装补充链那样，专门抽成一条任务中刷花的公用流程：公共 node 不带任务前缀，出口由任务在入口 node 声明锚点，任务侧只保留「疲劳处理-刷花」选项对入口 node 的启用覆盖。`HF_Hub` 的 `[秘宝之里] 刷花` 是工作记录刷花次数的来源（非「后勤」前缀计入 `FlowerBrushCount`），抽链时不能写死在公共链里，要由挂载点或任务参数注入。
+刷花公用流程（后续专门实施）：刷花状态机目前在三个任务里各存一份，`SF_`（合战场）、`UF_`（地下城）、`HF_`（秘宝之里），识别参数、动作参数、等待与超时基本一致，只有前缀、打点文案与回主枢纽的目标不同。后续会像修刀链与刀装补充链那样，专门抽成一条任务中刷花的公用流程：公共 node 不带任务前缀，出口由任务侧声明锚点，并且要在任务主枢纽与刷花枢纽各声明一份：主枢纽每轮识别都会执行，从刷花回到任务主流程时会把锚点改回任务侧的值，任务侧只保留「疲劳处理-刷花」选项对挂载点的覆盖。刷花打点已改为由 `FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，再由 `WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录，公共链不再需要任务名参数。
 
 ## 判定标准
 
