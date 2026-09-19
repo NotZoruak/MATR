@@ -6745,9 +6745,28 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["联动本丸刀帐"],
+          "option": ["自动使用堆肥", "联动本丸刀帐"],
           "pipeline_override": {
             "E_NaibanHub": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "自动使用堆肥": {
+      "name": "自动使用堆肥",
+      "label": "自动使用堆肥",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "E_NaibanClickCompost": {"enabled": true}
           }
         }
       ]
@@ -6810,7 +6829,7 @@
           "pipeline_override": {
             "E_NaibanVerifyTodayTable": {"enabled": true},
             "E_NaibanClickEntry": {
-              "next": ["E_NaibanVerifyTodayTable", "E_NaibanClickEntry"]
+              "next": ["E_NaibanClickCompost", "E_NaibanVerifyTodayTable", "E_NaibanClickEntry"]
             }
           }
         }

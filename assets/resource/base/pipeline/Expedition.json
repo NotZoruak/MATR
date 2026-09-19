@@ -2512,7 +2512,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200},
-    "next": ["E_NaibanVerifyTable", "E_NaibanClickEntry"],
+    "next": ["E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanClickEntry"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_NaibanVerifyTodayTable": {
@@ -2838,8 +2838,57 @@
       "custom_action": "NaibanFindSwordAction",
       "custom_action_param": {"slot": 2}
     },
-    "next": ["E_NaibanVerifyTable", "E_NaibanFindSword2"],
+    "next": ["E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanFindSword2"],
     "on_error": ["E_NaibanFindSword2"]
+  },
+  "E_NaibanClickCompost": {
+    "enabled": false,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [513, 303, 34, 34],
+        "lower": [255, 255, 255],
+        "upper": [255, 255, 255],
+        "count": 1000
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [629, 308, 98, 25]
+      }
+    },
+    "next": ["E_NaibanVerifyCompostSelect", "E_NaibanClickCompost"],
+    "on_error": ["Expedition"]
+  },
+  "E_NaibanVerifyCompostSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [575, 55, 130, 32],
+        "expected": "肥料选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [317, 241, 23, 22]
+      }
+    },
+    "next": ["E_NaibanConfirmCompost", "E_NaibanVerifyCompostSelect"],
+    "on_error": ["Expedition"]
+  },
+  "E_NaibanConfirmCompost": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [598, 573, 82, 49],
+        "expected": "确定"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanConfirmCompost", "E_NaibanVerifyTable"],
+    "on_error": ["Expedition"]
   },
   "E_NaibanVerifyTable": {
     "recognition": {
