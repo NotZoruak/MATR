@@ -4,6 +4,13 @@
   },
   "TT_DetectWhereAmI": {
     "pre_delay": 0,
+    "anchor": {
+      "GrindDone": "TT_DetectWhereAmI",
+      "Hub": "TT_DetectWhereAmI",
+      "RepairDone": "TT_DetectWhereAmI",
+      "RepairAborted": "TT_DetectWhereAmI",
+      "SupplyDone": "TT_IsPreSortieConfirm"
+    },
     "timeout": 120000,
     "next": [
       "TT_IsEventPage",
@@ -737,6 +744,19 @@
     "next": ["TT_IsPreSortieConfirm"],
     "on_error": ["TT_DetectWhereAmI"]
   },
+  "TT_FatigueCheck": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "FatigueCheckAction",
+      "custom_action_param": {
+        "mode": "check_first",
+        "threshold": 30
+      }
+    },
+    "next": ["TT_IsPreSortieConfirm"],
+    "on_error": ["TF_Hub"]
+  },
   "TT_IsPreSortieConfirm": {
     "recognition": {
       "type": "OCR",
@@ -755,7 +775,7 @@
         "click": [1204, 629, 1, 1]
       }
     },
-    "next": ["TT_DetectWhereAmI"],
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "TT_DetectWhereAmI"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_CheckCaptainColor": {

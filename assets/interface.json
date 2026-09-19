@@ -134,6 +134,7 @@
         "RB_目标PT",
         "RB_选择部队",
         "RB_选择难度",
+        "RB_疲劳处理",
         "RB_更换队长",
         "RB_部队交替",
         "RB_购买门票",
@@ -163,7 +164,14 @@
       "default_check": false,
       "repeatable": true,
       "repeat_count": 1,
-      "option": ["EC_行动策略", "EC_选择部队", "EC_换队长", "EC_购买门票", "EC_同步后勤"],
+      "option": [
+        "EC_行动策略",
+        "EC_选择部队",
+        "EC_疲劳处理",
+        "EC_换队长",
+        "EC_购买门票",
+        "EC_同步后勤"
+      ],
       "label": "江户潜入",
       "description": "江户城潜入调查 活动自动化出阵。\n\n* **难度**：固定使用 E4（超难）。\n* **行动策略**：直奔王点：字面意思；保守：优先保证能进王点；均衡：比保守激进一点；激进：战至最后一刻，自刎归天！\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
@@ -173,7 +181,14 @@
       "default_check": false,
       "repeatable": true,
       "repeat_count": 1,
-      "option": ["TT_选择部队", "TT_选择难度", "TT_换队长", "TT_购买门票", "TT_同步远征"],
+      "option": [
+        "TT_选择部队",
+        "TT_选择难度",
+        "TT_疲劳处理",
+        "TT_换队长",
+        "TT_购买门票",
+        "TT_同步远征"
+      ],
       "label": "战术强化",
       "description": "战术强化训练/巧克力/南瓜 活动自动化出阵。\n\n* **选择部队**：当选择的部队不符合要求时，会自动依次尝试1-5队。\n* **更换队长**：仅支持队内拖拽方式。\n* **选择难度**：初级/中级/上级。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
@@ -2273,6 +2288,15 @@
             },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "1"}
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
             }
           }
         },
@@ -2290,6 +2314,15 @@
             },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "2"}
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
             }
           }
         },
@@ -2307,6 +2340,15 @@
             },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "3"}
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
             }
           }
         },
@@ -2324,6 +2366,15 @@
             },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "4"}
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
             }
           }
         },
@@ -2341,6 +2392,15 @@
             },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "5"}
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -2738,7 +2798,7 @@
         {
           "name": "部队一",
           "pipeline_override": {
-            "HPF_IsTeamSelect": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
@@ -2753,7 +2813,7 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "HPF_UseRecord_Step2": {
+            "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
             }
           }
@@ -2761,7 +2821,7 @@
         {
           "name": "部队二",
           "pipeline_override": {
-            "HPF_IsTeamSelect": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
@@ -2776,7 +2836,7 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "HPF_UseRecord_Step2": {
+            "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
             }
           }
@@ -2784,7 +2844,7 @@
         {
           "name": "部队三",
           "pipeline_override": {
-            "HPF_IsTeamSelect": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
@@ -2799,7 +2859,7 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "HPF_UseRecord_Step2": {
+            "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
             }
           }
@@ -2807,7 +2867,7 @@
         {
           "name": "部队四",
           "pipeline_override": {
-            "HPF_IsTeamSelect": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
@@ -2822,7 +2882,7 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "HPF_UseRecord_Step2": {
+            "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
             }
           }
@@ -2830,7 +2890,7 @@
         {
           "name": "部队五",
           "pipeline_override": {
-            "HPF_IsTeamSelect": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
@@ -2845,7 +2905,7 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "HPF_UseRecord_Step2": {
+            "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
             }
           }
@@ -2869,7 +2929,7 @@
               "next": ["HP_FatigueCheck"]
             },
             "HP_FatigueCheck": {"enabled": true},
-            "HPF_UseRecord_Step1": {"enabled": true}
+            "TF_UseRecord_Step1": {"enabled": true}
           }
         },
         {
@@ -3089,7 +3149,19 @@
         {
           "name": "部队一",
           "pipeline_override": {
-            "EC_ClickTeam": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
@@ -3100,7 +3172,19 @@
         {
           "name": "部队二",
           "pipeline_override": {
-            "EC_ClickTeam": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
@@ -3111,7 +3195,19 @@
         {
           "name": "部队三",
           "pipeline_override": {
-            "EC_ClickTeam": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
@@ -3122,7 +3218,19 @@
         {
           "name": "部队四",
           "pipeline_override": {
-            "EC_ClickTeam": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
@@ -3133,7 +3241,19 @@
         {
           "name": "部队五",
           "pipeline_override": {
-            "EC_ClickTeam": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
@@ -3270,7 +3390,7 @@
               "next": ["EC_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["EC_ClickTeam"],
+              "next": ["EC_IsTeamSelect"],
               "on_error": ["E_GoHome"]
             },
             "EC_WaitRefresh": {"enabled": true}
@@ -3323,6 +3443,18 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
             }
           }
         },
@@ -3334,6 +3466,18 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
             }
           }
         },
@@ -3345,6 +3489,18 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
             }
           }
         },
@@ -3356,6 +3512,18 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
             }
           }
         },
@@ -3367,6 +3535,18 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -3779,7 +3959,7 @@
           "name": "修刀并继续",
           "DisplayName": "修刀并继续",
           "pipeline_override": {
-            "U_IsPreDamage": {"enabled": true},
+            "IsPreDamage": {"enabled": true},
             "U_StopOnDamagePopup": {"enabled": false}
           }
         },
@@ -3787,10 +3967,10 @@
           "name": "修刀并停止",
           "DisplayName": "修刀并停止",
           "pipeline_override": {
-            "U_ConfirmSelectSlot": {
+            "IsPreDamage": {"enabled": true},
+            "ConfirmSelectSlot": {
               "next": ["U_ClickRepairandStop"]
             },
-            "U_IsPreDamage": {"enabled": true},
             "U_StopOnDamagePopup": {"enabled": false}
           }
         },
@@ -3798,8 +3978,7 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "U_NavigateToRepair": {"enabled": false},
-            "U_IsPreDamage": {"enabled": false},
+            "IsPreDamage": {"enabled": false},
             "U_StopOnDamagePopup": {"enabled": true}
           }
         }
@@ -3820,18 +3999,18 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "U_PreCheckUseRecord": {
-              "next": ["U_PreCheckClickRecord1"]
-            },
-            "U_PreCheckClickRecord1": {"enabled": true},
-            "UF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
             },
-            "UF_UseRecord_Step2_Rec1": {"enabled": true},
-            "UF_EqRefill_Step2_Rec1": {"enabled": true}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            }
           }
         },
         {
@@ -3844,18 +4023,18 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "U_PreCheckUseRecord": {
-              "next": ["U_PreCheckClickRecord2"]
-            },
-            "U_PreCheckClickRecord2": {"enabled": true},
-            "UF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
             },
-            "UF_UseRecord_Step2_Rec2": {"enabled": true},
-            "UF_EqRefill_Step2_Rec2": {"enabled": true}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            }
           }
         },
         {
@@ -3868,18 +4047,18 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "U_PreCheckUseRecord": {
-              "next": ["U_PreCheckClickRecord3"]
-            },
-            "U_PreCheckClickRecord3": {"enabled": true},
-            "UF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
             },
-            "UF_UseRecord_Step2_Rec3": {"enabled": true},
-            "UF_EqRefill_Step2_Rec3": {"enabled": true}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            }
           }
         },
         {
@@ -3892,18 +4071,18 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "U_PreCheckUseRecord": {
-              "next": ["U_PreCheckClickRecord4"]
-            },
-            "U_PreCheckClickRecord4": {"enabled": true},
-            "UF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
             },
-            "UF_UseRecord_Step2_Rec4": {"enabled": true},
-            "UF_EqRefill_Step2_Rec4": {"enabled": true}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            }
           }
         },
         {
@@ -3916,18 +4095,18 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "U_PreCheckUseRecord": {
-              "next": ["U_PreCheckClickRecord5"]
-            },
-            "U_PreCheckClickRecord5": {"enabled": true},
-            "UF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
             },
-            "UF_UseRecord_Step2_Rec5": {"enabled": true},
-            "UF_EqRefill_Step2_Rec5": {"enabled": true}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            }
           }
         }
       ]
@@ -4040,30 +4219,8 @@
       "cases": [
         {
           "name": "",
-          "option": ["U_记录不足时一键装备"],
           "pipeline_override": {
-            "U_CheckEquipmentPopup": {"enabled": true},
-            "U_PreCheckTroopRecord": {"enabled": true},
-            "U_PreCheckUseRecord": {"enabled": true},
-            "U_PreCheckUseRecordBtn": {"enabled": true},
-            "U_PreConfirmSupply": {"enabled": true},
-            "U_FallbackConfirmRecord": {"enabled": true}
-          }
-        }
-      ],
-      "default_case": []
-    },
-    "U_记录不足时一键装备": {
-      "name": "U_记录不足时一键装备",
-      "label": "部队记录未补满时，使用一键装备补充",
-      "type": "checkbox",
-      "cases": [
-        {
-          "name": "",
-          "pipeline_override": {
-            "U_FallbackConfirmRecordClick": {
-              "next": ["U_FallbackVerifyTeamSelect"]
-            }
+            "U_CheckEquipmentPopup": {"enabled": true}
           }
         }
       ],
@@ -4124,12 +4281,10 @@
           "DisplayName": "刷花",
           "pipeline_override": {
             "U_FatigueCheck": {"enabled": true},
-            "UF_Hub": {"enabled": true},
-            "UF_UseRecord_Step1": {"enabled": true},
-            "UF_EqRefill_Step1": {"enabled": true},
             "U_DragCaptain": {
               "next": ["U_FatigueCheck"]
-            }
+            },
+            "TF_UseRecord_Step1": {"enabled": true}
           }
         }
       ]
@@ -7456,6 +7611,105 @@
           "label": "景趣",
           "pipeline_override": {
             "DT_MailSelectFilter6": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "RB_疲劳处理": {
+      "name": "RB_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {
+          "name": "无",
+          "DisplayName": "无"
+        },
+        {
+          "name": "刷花",
+          "DisplayName": "刷花",
+          "pipeline_override": {
+            "RB_DragCaptain": {
+              "next": ["RB_FatigueCheck"]
+            },
+            "RB_FatigueCheck": {"enabled": true},
+            "TF_UseRecord_Step1": {"enabled": true}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "pipeline_override": {
+            "RB_DragCaptain": {
+              "next": ["RB_FatigueCheck"]
+            },
+            "RB_FatigueCheck": {
+              "enabled": true,
+              "on_error": []
+            }
+          }
+        }
+      ]
+    },
+    "TT_疲劳处理": {
+      "name": "TT_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {
+          "name": "无",
+          "DisplayName": "无"
+        },
+        {
+          "name": "刷花",
+          "DisplayName": "刷花",
+          "pipeline_override": {
+            "TT_DragCaptain": {
+              "next": ["TT_FatigueCheck"]
+            },
+            "TT_FatigueCheck": {"enabled": true},
+            "TF_UseRecord_Step1": {"enabled": true}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "pipeline_override": {
+            "TT_DragCaptain": {
+              "next": ["TT_FatigueCheck"]
+            },
+            "TT_FatigueCheck": {
+              "enabled": true,
+              "on_error": []
+            }
+          }
+        }
+      ]
+    },
+    "EC_疲劳处理": {
+      "name": "EC_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {
+          "name": "无",
+          "DisplayName": "无"
+        },
+        {
+          "name": "刷花",
+          "DisplayName": "刷花",
+          "pipeline_override": {
+            "EC_FatigueCheck": {"enabled": true},
+            "TF_UseRecord_Step1": {"enabled": true}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "pipeline_override": {
+            "EC_FatigueCheck": {
+              "enabled": true,
+              "on_error": []
+            }
           }
         }
       ]

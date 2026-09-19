@@ -8,7 +8,8 @@
       "Hub": "RB_DetectWhereAmI",
       "RepairDone": "RB_DetectWhereAmI",
       "RepairAborted": "RB_DetectWhereAmI",
-      "SupplyDone": "RB_CaptainHub"
+      "SupplyDone": "RB_CaptainHub",
+      "GrindDone": "RB_DetectWhereAmI"
     },
     "timeout": 120000,
     "next": [
@@ -175,6 +176,19 @@
     "next": ["RB_IsPreSortieConfirm"],
     "on_error": ["RB_DetectWhereAmI"]
   },
+  "RB_FatigueCheck": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "FatigueCheckAction",
+      "custom_action_param": {
+        "mode": "check_first",
+        "threshold": 30
+      }
+    },
+    "next": ["RB_IsPreSortieConfirm"],
+    "on_error": ["TF_Hub"]
+  },
   "RB_IsPreSortieConfirm": {
     "recognition": {
       "type": "OCR",
@@ -230,7 +244,7 @@
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 出阵",
-        "display": "log"
+        "display": "file"
       }
     }
   },
@@ -382,7 +396,7 @@
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 完成一圈",
-        "display": "log"
+        "display": "file"
       }
     }
   },
@@ -421,29 +435,21 @@
     },
     "pre_delay": 100,
     "action": {
-      "type": "Custom",
-      "custom_action": "CaptainDamageAction"
-    },
-    "next": ["RB_RetreatOnCaptainDamage"],
-    "on_error": ["RB_DetectWhereAmI"]
-  },
-  "RB_RetreatOnCaptainDamage": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[海陆联队] 队长重伤撤退",
-        "click": [1171, 447, 1, 1]
+      "type": "Click",
+      "param": {
+        "target": [1171, 447, 1, 1]
       }
     },
-    "post_delay": 100,
+    "post_delay": 500,
     "next": ["RB_ConfirmCaptainRetreat"],
-    "on_error": ["RB_DetectWhereAmI"]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[海陆联队] 队长重伤撤退",
+        "display": "log"
+      }
+    }
   },
   "RB_ConfirmCaptainRetreat": {
-    "pre_delay": 300,
     "action": {
       "type": "Click",
       "param": {
