@@ -4812,12 +4812,9 @@ public class MaaProcessor
                     token.ThrowIfCancellationRequested();
                     if (completion.IsCompleted) break;
                     var option = Interface?.GlobalSelectOptions?.FirstOrDefault(o => o.Name == "卡死重启");
-                    var timeout = 120;
-                    var timeoutOption = option?.SubOptions?.FirstOrDefault(o => o.Name == "卡死等待时间");
-                    if (timeoutOption?.Data?.TryGetValue("timeout_seconds", out var value) == true
-                        && int.TryParse(value, out var seconds) && seconds > 0)
-                        timeout = seconds;
-                    reason = _recoveryMonitor.GetReason(_recoveryClock.Elapsed, TimeSpan.FromSeconds(timeout),
+                    // 卡死等待时间固定 120 秒：与各枢纽 pipeline 里写死的 timeout 保持一致，不再提供自定义选项
+                    const int stallTimeoutSeconds = 120;
+                    reason = _recoveryMonitor.GetReason(_recoveryClock.Elapsed, TimeSpan.FromSeconds(stallTimeoutSeconds),
                         option?.Index == 0 && ViewModel?.CurrentController == MaaControllerTypes.Adb
                         && !PlatformControllerFactory.CanInitializeWithoutDevice
                         && !TaskQueueContinuationPolicy.SpecialActionNames.Contains(task),

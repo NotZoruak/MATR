@@ -6413,43 +6413,6 @@
         }
       ]
     },
-    "卡死等待时间": {
-      "name": "卡死等待时间",
-      "label": "卡死等待时间",
-      "type": "input",
-      "inputs": [
-        {
-          "name": "timeout_seconds",
-          "label": "卡死等待时间（秒）",
-          "default": "120",
-          "pipeline_type": "int"
-        }
-      ],
-      "pipeline_override": {
-        "S_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "EC_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "FB_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "D_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "U_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "G_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "SF_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "TT_DetectWhereAmI": {"timeout": "{timeout_seconds}000"},
-        "Expedition": {"timeout": "{timeout_seconds}000"},
-        "DT_LoginRewardEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_WarmGiftEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_MixEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_ForgeNavigateToDisassemble": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_MailEntry": {"timeout": "{timeout_seconds}000"},
-        "DT_ReturnHomeHub": {"timeout": "{timeout_seconds}000"},
-        "DT_WarmGiftFinishClaimHub": {"timeout": "{timeout_seconds}000"},
-        "DT_DrillBattleHub": {"timeout": "{timeout_seconds}000"},
-        "DT_RewardClosePopupHub": {"timeout": "{timeout_seconds}000"},
-        "DT_MailCloseMailboxHub": {"timeout": "{timeout_seconds}000"}
-      }
-    },
     "U_跳过位置": {
       "name": "U_跳过位置",
       "label": "跳过位置",
