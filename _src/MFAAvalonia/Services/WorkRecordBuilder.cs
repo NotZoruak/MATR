@@ -244,6 +244,10 @@ public static class WorkRecordBuilder
     /// <summary>按词条前缀寻找对应任务，支持地下城与后勤并行运行。</summary>
     private static WorkRecord? FindRecordForPrefix(string prefix, List<WorkRecord> records, WorkRecord current)
     {
+        // 出阵疲劳检测由刷花流程产生，打点本身不带任务名，归属到当前正在运行的任务记录。
+        if (prefix == "出阵疲劳检测")
+            return current;
+
         string[] taskEntries = prefix switch
         {
             "远征计时" or "后勤" or "本丸后勤" => ["Expedition"],
@@ -325,6 +329,15 @@ public static class WorkRecordBuilder
         {
             record.HasInterrupt = true;
             record.SpecialEvents.Add(new SpecialEvent(time, action));
+            return;
+        }
+
+        // 出阵疲劳检测：进入刷花计一次刷花次数，刷花结束只作为普通记录行。
+        // 文案形如「检测到首位疲劳低于30，进入刷花」，整句会成为词条，因此按包含关系判断。
+        if (prefix == "出阵疲劳检测")
+        {
+            if (action.Contains("进入刷花", StringComparison.Ordinal))
+                record.FlowerBrushCount++;
             return;
         }
 

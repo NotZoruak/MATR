@@ -144,8 +144,8 @@ public class FatigueCheckAction : IMaaCustomAction
                 if (!ok)
                 {
                     var msg = reversed
-                        ? $"[出阵疲劳处理] 疲劳值恢复完成"
-                        : $"[出阵疲劳处理] 首位疲劳低于30，进入刷花";
+                        ? $"[出阵疲劳检测] 检测到首位疲劳已恢复到{threshold}，刷花结束"
+                        : $"[出阵疲劳检测] 检测到首位疲劳低于{threshold}，进入刷花";
                     try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(msg); } catch { }
                 }
                 return ok;
