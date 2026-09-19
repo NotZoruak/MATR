@@ -1,30 +1,30 @@
 {
   "Hanapai": {
+    "next": ["HP_DetectWhereAmI"]
+  },
+  "HP_DetectWhereAmI": {
+    "pre_delay": 0,
     "anchor": {
       "Hub": "HP_DetectWhereAmI",
       "RepairDone": "HP_DetectWhereAmI",
       "RepairAborted": "HP_DetectWhereAmI",
       "SupplyDone": "HP_IsPreSortieConfirm"
     },
-    "next": ["HP_DetectWhereAmI"]
-  },
-  "HP_DetectWhereAmI": {
-    "pre_delay": 0,
     "timeout": 120000,
     "next": [
       "HP_IsMarching",
-      "[JumpBack]IsExpeditionReturn_Exp",
-      "[JumpBack]IsExpeditionReturn_Title",
-      "[JumpBack]IsInSortie",
-      "[JumpBack]IsInMenu",
       "HP_IsEventPage",
       "HP_CheckHomeBrightness",
       "HP_IsTeamStatusPanel",
       "HP_IsTeamSelect",
-      "[JumpBack]IsBattleResult_Exp",
-      "[JumpBack]IsBattleResult_Title",
       "HP_IsSwordDropColor",
       "HP_IsSpecialDrop1",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInSortie",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -140,45 +140,6 @@
     "repeat_delay": 300,
     "next": ["HP_EnableAutoMarch", "HP_CaptainHub"]
   },
-  "HP_OnSortieScreen": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [8, 299, 32, 89]
-      }
-    },
-    "next": ["HP_DetectWhereAmI"]
-  },
-  "HP_TryClickSortie": {
-    "next": ["HP_ClickSortieInMenu", "HP_DetectWhereAmI"]
-  },
-  "HP_ClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["HP_VerifyMenuClosed", "HP_DetectWhereAmI"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
-  "HP_VerifyMenuClosed": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["HP_TryClickSortie", "HP_DetectWhereAmI"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
   "HP_EnableAutoMarch": {
     "recognition": {
       "type": "ColorMatch",
@@ -230,33 +191,6 @@
       "target": [1024, 30, 35, 36]
     },
     "next": ["HP_IsTeamSelect"],
-    "on_error": ["HP_DetectWhereAmI"]
-  },
-  "HP_TryClickHome": {
-    "next": ["HP_ClickHomeInMenu", "HP_DetectWhereAmI"]
-  },
-  "HP_ClickHomeInMenu": {
-    "enabled": false,
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1037, 169, 110, 44]
-      }
-    },
-    "next": ["HP_VerifyHomeMenuClosed"]
-  },
-  "HP_VerifyHomeMenuClosed": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["HP_TryClickHome", "HP_DetectWhereAmI"],
     "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_IsEventPage": {
@@ -536,7 +470,7 @@
       }
     },
     "next": ["HP_IsPreSortieConfirm"],
-    "on_error": ["HF_Hub"]
+    "on_error": ["HPF_Hub"]
   },
   "HP_WaitRefresh": {
     "enabled": false,
@@ -557,47 +491,46 @@
   "HP_NavigateToActivity": {
     "next": ["HP_ClickMenu", "HP_DetectWhereAmI"]
   },
-  "HF_Hub": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[秘宝之里] 刷花"}
-    },
-    "next": ["HF_ClickMenu"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_DetectWhereAmI": {
+  "HPF_Hub": {
     "pre_delay": 0,
+    "anchor": {
+      "Hub": "HPF_Hub",
+      "RepairDone": "HPF_Hub",
+      "RepairAborted": "HPF_Hub",
+      "SupplyDone": "HPF_Hub"
+    },
     "timeout": 120000,
     "next": [
-      "HF_HasExpeditionReturn_Exp",
-      "HF_HasExpeditionReturn_Title",
-      "HF_CheckHomeBrightness",
-      "HF_IsEraSelect",
-      "HF_IsRegionSelect",
-      "HF_IsSortieActivity",
-      "HF_IsTeamSelect",
-      "HF_IsMarching",
-      "HF_IsFormationSelect",
-      "HF_IsBattleResult_Exp",
-      "HF_IsBattleResult_Title",
-      "HF_IsSwordDrop",
-      "HF_IsAnnouncementPopup",
-      "HF_IsTrainingLetter",
-      "HF_IsLoginReward",
-      "HF_IsAdvertisementPopup",
-      "HF_IsGameIcon",
-      "HF_IsLoginButton",
-      "HF_IsGameUpdatePopup",
-      "HF_IsInGameUpdatePopup",
-      "HF_IsInternalReport",
-      "HF_IsTrainingApplication",
+      "HPF_CheckHomeBrightness",
+      "HPF_IsEraSelect",
+      "HPF_IsRegionSelect",
+      "HPF_IsSortieActivity",
+      "HPF_IsTeamSelect",
+      "HPF_IsMarching",
+      "HPF_IsFormationSelect",
+      "HPF_IsSwordDrop",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
       "[JumpBack]FallbackWait"
     ],
-    "on_error": ["HF_RestartGame"]
+    "on_error": ["HPF_RestartGame"]
   },
-  "HF_ClickMenu": {
+  "HPF_ClickMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -607,40 +540,10 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 100},
-    "next": ["HF_PostClickMenuHub"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_PostClickMenuHub": {
-    "next": ["HF_IsMenuDirectory", "HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsMenuDirectory": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["HF_ClickSortieInMenu"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_ClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_Hub"]
-  },
-  "HF_IsEraSelect": {
+  "HPF_IsEraSelect": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -650,10 +553,6 @@
         "threshold": [0.98]
       }
     },
-    "next": ["HF_ClickFirstEra"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_ClickFirstEra": {
     "action": {
       "type": "Click",
       "param": {
@@ -661,10 +560,9 @@
       }
     },
     "post_delay": 200,
-    "next": ["HF_ConfirmEra"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_ConfirmEra"]
   },
-  "HF_ConfirmEra": {
+  "HPF_ConfirmEra": {
     "action": {
       "type": "Click",
       "param": {
@@ -672,10 +570,9 @@
       }
     },
     "post_wait_freezes": {"time": 100},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_IsRegionSelect": {
+  "HPF_IsRegionSelect": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -685,10 +582,9 @@
         "threshold": [0.98]
       }
     },
-    "next": ["HF_VerifyEra", "HF_ClickBackToEra"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_VerifyEra", "HPF_ClickBackToEra"]
   },
-  "HF_VerifyEra": {
+  "HPF_VerifyEra": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -696,20 +592,18 @@
         "expected": ["一", "l", "1"]
       }
     },
-    "next": ["HF_ClickRegion1_1", "HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_ClickRegion1_1", "HPF_Hub"]
   },
-  "HF_ClickBackToEra": {
+  "HPF_ClickBackToEra": {
     "action": {
       "type": "Click",
       "param": {
         "target": [127, 77, 26, 28]
       }
     },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_ClickRegion1_1": {
+  "HPF_ClickRegion1_1": {
     "action": {
       "type": "Click",
       "param": {
@@ -717,10 +611,9 @@
       }
     },
     "post_wait_freezes": {"time": 100},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_IsTeamSelect": {
+  "HPF_IsTeamSelect": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -728,24 +621,6 @@
         "expected": "部队选择"
       }
     },
-    "next": ["HF_CheckEquipmentPopup", "HF_ClickTeamN"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_CheckEquipmentPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["HF_EqRefill_Step1"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_ClickTeamN": {
     "action": {
       "type": "Click",
       "param": {
@@ -754,14 +629,13 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["HF_DissolveHub"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_DissolveHub"]
   },
-  "HF_DissolveHub": {
-    "next": ["HF_DissolveCheck", "HF_CheckFatigue"],
-    "on_error": ["HF_DetectWhereAmI"]
+  "HPF_DissolveHub": {
+    "next": ["HPF_DissolveCheck", "HPF_CheckFatigue"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_DissolveCheck": {
+  "HPF_DissolveCheck": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -771,10 +645,10 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["HF_DissolveHub"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_DissolveHub"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_CheckFatigue": {
+  "HPF_CheckFatigue": {
     "action": {
       "type": "Custom",
       "custom_action": "FatigueCheckAction",
@@ -784,10 +658,10 @@
         "reversed": true
       }
     },
-    "next": ["HF_ClickSortieNow"],
-    "on_error": ["HF_UseRecord_Step1"]
+    "next": ["HPF_ClickSortieNow"],
+    "on_error": ["HPF_UseRecord_Step1"]
   },
-  "HF_ClickSortieNow": {
+  "HPF_ClickSortieNow": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -795,16 +669,14 @@
         "expected": "即刻"
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1156, 584, 96, 47]
     },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_Hub"]
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HPF_Hub"]
   },
-  "HF_IsMarching": {
+  "HPF_IsMarching": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -815,10 +687,9 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_IsFormationSelect": {
+  "HPF_IsFormationSelect": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -834,44 +705,9 @@
         "target": [1017, 421, 1, 1]
       }
     },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsBattleResult_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsSwordDrop": {
+  "HPF_IsSwordDrop": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
@@ -886,10 +722,9 @@
         "target": [1067, 558, 120, 79]
       }
     },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_NavigateBack": {
+  "HPF_NavigateBack": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -899,74 +734,27 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 100},
-    "next": ["HP_DetectWhereAmI"],
-    "on_error": ["HF_Hub"]
+    "next": ["HPF_VerifyMenuOpened", "HPF_NavigateBack"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["HF_ClickTrainingApplication", "HF_CancelTrainingApplication"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["HF_CancelTrainingApplication", "HF_ClickTrainingApplication"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_CancelTrainingApplication": {
+  "HPF_VerifyMenuOpened": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["HF_CancelTrainingApplication", "HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HP_DetectWhereAmI"]
   },
-  "HF_RestartGame": {
+  "HPF_RestartGame": {
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   },
-  "HF_UseRecord_Step1": {
+  "HPF_UseRecord_Step1": {
     "enabled": false,
     "recognition": {
       "type": "TemplateMatch",
@@ -979,11 +767,10 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 100},
-    "next": ["HF_UseRecord_Step2_Rec1", "HF_UseRecord_Step2_Rec2", "HF_UseRecord_Step2_Rec3", "HF_UseRecord_Step2_Rec4", "HF_UseRecord_Step2_Rec5"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_UseRecord_Step2", "HPF_UseRecord_Step1"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_UseRecord_Step2_Rec1": {
-    "enabled": false,
+  "HPF_UseRecord_Step2": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -1003,11 +790,9 @@
       "time": 200,
       "target": [655, 121, 540, 562]
     },
-    "next": ["HF_UseRecord_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_UseRecord_Step3"]
   },
-  "HF_UseRecord_Step2_Rec2": {
-    "enabled": false,
+  "HPF_UseRecord_Step3": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -1017,106 +802,15 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_UseRecord_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_UseRecord_Step2_Rec3": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_UseRecord_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_UseRecord_Step2_Rec4": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_UseRecord_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_UseRecord_Step2_Rec5": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_UseRecord_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_UseRecord_Step3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
+    "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
       "target": [442, 253, 395, 125]
     },
-    "next": ["HF_UseRecord_Step4", "HF_UseRecord_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_UseRecord_Step4", "HPF_UseRecord_Step3"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_UseRecord_Step4": {
+  "HPF_UseRecord_Step4": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1131,349 +825,10 @@
       }
     },
     "post_wait_freezes": {"time": 100},
-    "next": ["HF_NavigateBack"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_NavigateBack", "HPF_UseRecord_Step4"],
+    "on_error": ["HPF_Hub"]
   },
-  "HF_EqRefill_Step1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["HF_EqRefill_Step2_Rec1", "HF_EqRefill_Step2_Rec2", "HF_EqRefill_Step2_Rec3", "HF_EqRefill_Step2_Rec4", "HF_EqRefill_Step2_Rec5"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step2_Rec1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_EqRefill_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step2_Rec2": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_EqRefill_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step2_Rec3": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_EqRefill_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step2_Rec4": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_EqRefill_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step2_Rec5": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["HF_EqRefill_Step3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["HF_EqRefill_Step4"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_EqRefill_Step4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [789, 512, 1, 4]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1056, 463, 63, 193]
-    },
-    "timeout": 3000,
-    "next": ["HF_IsAnnouncementPopup", "HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "next": ["HF_LoginRewardClick2"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "next": ["HF_LoginRewardClick3"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "timeout": 3000,
-    "next": ["HF_IsLoginReward"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsHome": {
+  "HPF_IsHome": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -1483,10 +838,9 @@
         "threshold": [0.98]
       }
     },
-    "next": ["HF_Hub"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_ClickMenu"]
   },
-  "HF_CheckHomeBrightness": {
+  "HPF_CheckHomeBrightness": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
@@ -1495,44 +849,9 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["HF_IsHome", "HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_IsHome", "HPF_Hub"]
   },
-  "HF_HasExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_IsSortieActivity": {
+  "HPF_IsSortieActivity": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -1542,7 +861,6 @@
         "threshold": [0.98]
       }
     },
-    "next": ["HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
+    "next": ["HPF_Hub"]
   }
 }

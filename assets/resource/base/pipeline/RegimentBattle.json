@@ -1,15 +1,15 @@
 {
   "RegimentBattle": {
+    "next": ["RB_DetectWhereAmI"]
+  },
+  "RB_DetectWhereAmI": {
+    "pre_delay": 0,
     "anchor": {
       "Hub": "RB_DetectWhereAmI",
       "RepairDone": "RB_DetectWhereAmI",
       "RepairAborted": "RB_DetectWhereAmI",
       "SupplyDone": "RB_CaptainHub"
     },
-    "next": ["RB_DetectWhereAmI"]
-  },
-  "RB_DetectWhereAmI": {
-    "pre_delay": 0,
     "timeout": 120000,
     "next": [
       "RB_IsActionSelect",
