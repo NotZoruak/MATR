@@ -17,7 +17,7 @@
       "Warehouse_IsNetworkRequestTimeout",
       "Warehouse_IsConnectionInterrupted",
       "Warehouse_ClickMenu",
-      "Warehouse_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["Warehouse_RestartGame"]
   },
@@ -268,10 +268,6 @@
         "target": [738, 449, 100, 39]
       }
     },
-    "next": ["Warehouse_Start"],
-    "on_error": ["Warehouse_Start"]
-  },
-  "Warehouse_FallbackWait": {
     "next": ["Warehouse_Start"],
     "on_error": ["Warehouse_Start"]
   },

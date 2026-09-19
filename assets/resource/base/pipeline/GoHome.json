@@ -26,7 +26,7 @@
       "G_IsTrainingApplication",
       "G_IsNetworkRequestTimeout",
       "G_IsConnectionInterrupted",
-      "G_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["G_RestartGame"]
   },
@@ -403,9 +403,6 @@
     },
     "next": ["G_CancelTrainingApplication", "G_DetectWhereAmI"],
     "on_error": ["G_DetectWhereAmI"]
-  },
-  "G_FallbackWait": {
-    "next": ["G_DetectWhereAmI"]
   },
   "G_RestartGame": {
     "action": {

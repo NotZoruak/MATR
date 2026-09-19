@@ -36,7 +36,7 @@
       "EC_IsTrainingApplication",
       "EC_IsNetworkRequestTimeout",
       "EC_IsConnectionInterrupted",
-      "EC_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["EC_RestartGame"]
   },
@@ -345,10 +345,6 @@
         "target": [599, 442, 93, 55]
       }
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_FallbackWait": {
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"]
   },

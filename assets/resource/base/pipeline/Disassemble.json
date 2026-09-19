@@ -28,7 +28,7 @@
       "D_IsInGameUpdatePopup",
       "D_IsNetworkRequestTimeout",
       "D_IsConnectionInterrupted",
-      "D_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["D_RestartGame"]
   },
@@ -472,9 +472,6 @@
       }
     },
     "post_delay": 1000,
-    "next": ["D_DetectWhereAmI"]
-  },
-  "D_FallbackWait": {
     "next": ["D_DetectWhereAmI"]
   },
   "D_IsTrainingApplication": {

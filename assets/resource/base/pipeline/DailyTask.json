@@ -192,7 +192,7 @@
       "[JumpBack]DT_EnterMenu",
       "DT_LoginRewardIsInMenu",
       "DT_LoginRewardSignIn",
-      "DT_LoginRewardFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_LoginRewardIsInMenu": {
@@ -287,9 +287,6 @@
       }
     }
   },
-  "DT_LoginRewardFallbackWait": {
-    "next": ["DT_LoginRewardEntry"]
-  },
   "DT_WarmGiftEntry": {
     "timeout": 120000,
     "next": [
@@ -310,7 +307,7 @@
       "DT_WarmGiftIsInMenu",
       "DT_WarmGiftIsInShop",
       "[JumpBack]DT_EnterMenu",
-      "DT_WarmGiftFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_WarmGiftIsInMenu": {
@@ -475,9 +472,6 @@
       }
     }
   },
-  "DT_WarmGiftFallbackWait": {
-    "next": ["DT_WarmGiftEntry"]
-  },
   "DT_MixEntry": {
     "timeout": 120000,
     "next": [
@@ -500,7 +494,7 @@
       "DT_MixMaterialPage",
       "DT_MixClickCombine",
       "[JumpBack]DT_EnterMenu",
-      "DT_MixFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_MixIsInMenu": {
@@ -625,9 +619,6 @@
     "anchor": {"DT_RouteMix": ""},
     "next": ["DT_ReturnHomeHub"]
   },
-  "DT_MixFallbackWait": {
-    "next": ["DT_MixEntry"]
-  },
   "DT_ForgeEntry": {
     "timeout": 120000,
     "next": [
@@ -649,7 +640,7 @@
       "DT_ForgeIsInStatus",
       "DT_ForgeDetectResourceInput",
       "[JumpBack]DT_EnterMenu",
-      "DT_ForgeFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_ForgeIsInMenu": {
@@ -1197,9 +1188,6 @@
     "next": ["DT_ForgeCheckQuota", "DT_ForgeCompletedLog"],
     "on_error": ["DT_ForgeEntry"]
   },
-  "DT_ForgeFallbackWait": {
-    "next": ["DT_ForgeEntry"]
-  },
   "DT_DrillEntry": {
     "timeout": 120000,
     "next": [
@@ -1221,7 +1209,7 @@
       "DT_DrillIsInOpponentSelect",
       "DT_DrillOpponentInfo",
       "[JumpBack]DT_EnterMenu",
-      "DT_DrillFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_DrillIsInMenu": {
@@ -1756,9 +1744,6 @@
     "anchor": {"DT_RouteDrill": ""},
     "next": ["DT_ReturnHomeHub"]
   },
-  "DT_DrillFallbackWait": {
-    "next": ["DT_DrillEntry"]
-  },
   "DT_RewardEntry": {
     "timeout": 120000,
     "next": [
@@ -1779,7 +1764,7 @@
       "DT_RewardIsInMenu",
       "DT_RewardIsInTaskList",
       "[JumpBack]DT_EnterMenu",
-      "DT_RewardFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_RewardIsInMenu": {
@@ -1916,9 +1901,6 @@
     },
     "next": ["DT_RewardClosePopupHub"]
   },
-  "DT_RewardFallbackWait": {
-    "next": ["DT_RewardEntry"]
-  },
   "DT_MailEntry": {
     "timeout": 120000,
     "next": [
@@ -1940,7 +1922,7 @@
       "DT_MailOpenFilter",
       "DT_MailIsInFilterSelect",
       "[JumpBack]DT_EnterMenu",
-      "DT_MailFallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_MailIsInMenu": {
@@ -2135,9 +2117,6 @@
     "anchor": {"DT_RouteMail": ""},
     "next": ["DT_ReturnHomeHub"]
   },
-  "DT_MailFallbackWait": {
-    "next": ["DT_MailEntry"]
-  },
   "DT_ReturnHomeHub": {
     "next": [
       "DT_ReturnHomeCheckHomeBrightness",
@@ -2157,7 +2136,7 @@
       "[JumpBack]DT_EnterMenu",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
-      "DT_FallbackWait"
+      "[JumpBack]FallbackWait"
     ]
   },
   "DT_ReturnHomeCheckHomeBrightness": {
@@ -2220,9 +2199,6 @@
       }
     },
     "action": {"type": "Click"}
-  },
-  "DT_FallbackWait": {
-    "next": ["DT_ProjectRouter"]
   },
   "DT_RestartGame": {
     "action": {

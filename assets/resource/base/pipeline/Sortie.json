@@ -38,7 +38,7 @@
       "S_IsInternalReport",
       "S_IsNetworkRequestTimeout",
       "S_IsConnectionInterrupted",
-      "S_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["S_RestartGame"]
   },
@@ -2603,9 +2603,6 @@
     },
     "next": ["S_CancelTrainingApplication", "S_DetectWhereAmI"]
   },
-  "S_FallbackWait": {
-    "next": ["S_DetectWhereAmI"]
-  },
   "S_Boss_E5_R3_2": {
     "enabled": false,
     "recognition": {
@@ -3321,7 +3318,7 @@
       "SF_IsInGameUpdatePopup",
       "SF_IsInternalReport",
       "SF_IsTrainingApplication",
-      "SF_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["SF_RestartGame"]
   },
@@ -4288,10 +4285,6 @@
       }
     },
     "next": ["SF_CancelTrainingApplication", "SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_FallbackWait": {
-    "next": ["SF_DetectWhereAmI"],
     "on_error": ["SF_DetectWhereAmI"]
   },
   "SF_RestartGame": {

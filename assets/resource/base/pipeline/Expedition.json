@@ -23,7 +23,7 @@
       "E_LeaveTroopRecord",
       "E_IsNetworkRequestTimeout",
       "E_IsConnectionInterrupted",
-      "E_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_RestartGame"]
   },
@@ -794,9 +794,6 @@
         "target": [947, 533, 67, 75]
       }
     },
-    "next": ["Expedition"]
-  },
-  "E_FallbackWait": {
     "next": ["Expedition"]
   },
   "E_IsTrainingApplication": {
@@ -1910,10 +1907,6 @@
     "next": ["E_FlowerNavigate"],
     "on_error": ["E_FlowerBattleHub"]
   },
-  "E_FlowerFallbackWait": {
-    "next": ["E_FlowerBattleHub"],
-    "on_error": ["E_FlowerBattleHub"]
-  },
   "E_FlowerIsTrainingApplication": {
     "recognition": {
       "type": "TemplateMatch",
@@ -1993,7 +1986,7 @@
       "E_FlowerIsInGameUpdatePopup",
       "E_FlowerIsInternalReport",
       "E_FlowerIsTrainingApplication",
-      "E_FlowerFallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_FlowerRestartGame"]
   },

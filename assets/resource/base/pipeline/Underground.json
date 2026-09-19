@@ -35,7 +35,7 @@
       "U_IsInternalReport",
       "U_IsNetworkRequestTimeout",
       "U_IsConnectionInterrupted",
-      "U_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["U_RestartGame"]
   },
@@ -1539,9 +1539,6 @@
     },
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_FallbackWait": {
-    "next": ["U_DetectWhereAmI"]
-  },
   "U_RestartGame": {
     "action": {
       "type": "Custom",
@@ -2124,7 +2121,7 @@
       "UF_IsInGameUpdatePopup",
       "UF_IsInternalReport",
       "UF_IsTrainingApplication",
-      "UF_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["UF_RestartGame"]
   },
@@ -2488,10 +2485,6 @@
       }
     },
     "next": ["UF_CancelTrainingApplication", "UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_FallbackWait": {
-    "next": ["UF_DetectWhereAmI"],
     "on_error": ["UF_DetectWhereAmI"]
   },
   "UF_RestartGame": {

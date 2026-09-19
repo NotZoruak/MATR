@@ -30,7 +30,7 @@
       "TT_IsInGameUpdatePopup",
       "TT_IsInternalReport",
       "TT_IsTrainingApplication",
-      "TT_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["TT_RestartGame"]
   },
@@ -245,9 +245,6 @@
     },
     "next": ["TT_CancelTrainingApplication", "TT_DetectWhereAmI"],
     "on_error": ["TT_DetectWhereAmI"]
-  },
-  "TT_FallbackWait": {
-    "next": ["TT_DetectWhereAmI"]
   },
   "TT_RestartGame": {
     "action": {

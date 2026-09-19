@@ -32,7 +32,7 @@
       "FC_IsSwordDropColor",
       "FC_RecoverFromEquip",
       "FC_LeaveSwordSelect",
-      "FC_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["FC_RestartGame"]
   },
@@ -377,9 +377,6 @@
     },
     "next": ["FC_CancelTrainingApplication", "FC_DetectWhereAmI"],
     "on_error": ["FC_DetectWhereAmI"]
-  },
-  "FC_FallbackWait": {
-    "next": ["FC_DetectWhereAmI"]
   },
   "FC_RestartGame": {
     "action": {

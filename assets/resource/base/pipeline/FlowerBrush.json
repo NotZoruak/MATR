@@ -31,7 +31,7 @@
       "FB_IsTrainingApplication",
       "FB_IsNetworkRequestTimeout",
       "FB_IsConnectionInterrupted",
-      "FB_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["FB_RestartGame"]
   },
@@ -530,7 +530,7 @@
       "FB_IsAdvertisementPopup",
       "FB_IsGameIcon",
       "FB_IsLoginButton",
-      "FB_PostFallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["FB_DetectWhereAmI"]
   },
@@ -672,10 +672,6 @@
         "threshold": [0.98]
       }
     },
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_PostFallbackWait": {
-    "next": ["FB_DetectAfterMarching"],
     "on_error": ["FB_DetectWhereAmI"]
   },
   "FB_VerifyMenuOpened": {
@@ -966,9 +962,6 @@
     "pre_delay": 100,
     "next": ["FB_ClickSortieInMenu"],
     "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_FallbackWait": {
-    "next": ["FB_DetectWhereAmI"]
   },
   "FB_RestartGame": {
     "action": {

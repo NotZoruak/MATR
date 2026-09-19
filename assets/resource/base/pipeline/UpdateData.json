@@ -37,7 +37,7 @@
       "UD_IsNetworkRequestTimeout",
       "UD_IsConnectionInterrupted",
       "UD_CheckHomeBrightness1",
-      "UD_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["UD_RestartGame"]
   },
@@ -330,7 +330,7 @@
       "UD_SB_IsTrainingApplication",
       "UD_SB_IsNetworkRequestTimeout",
       "UD_SB_IsConnectionInterrupted",
-      "UD_SB_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["UD_SB_RestartGame"]
   },
@@ -708,15 +708,6 @@
     "next": ["UD_SwordBookDetectWhereAmI"],
     "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
-  "UD_SB_FallbackWait": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "UpdateDataWaitAction",
-      "custom_action_param": {"milliseconds": 1000}
-    },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
   "UD_SB_IsTrainingApplication": {
     "recognition": {
       "type": "TemplateMatch",
@@ -837,15 +828,6 @@
       "param": {
         "target": [599, 442, 93, 55]
       }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_FallbackWait": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "UpdateDataWaitAction",
-      "custom_action_param": {"milliseconds": 1000}
     },
     "next": ["UD_DetectWhereAmI"],
     "on_error": ["UD_DetectWhereAmI"]

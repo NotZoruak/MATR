@@ -37,7 +37,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
-      "HP_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["HP_RestartGame"]
   },
@@ -509,9 +509,6 @@
       }
     }
   },
-  "HP_FallbackWait": {
-    "next": ["HP_DetectWhereAmI"]
-  },
   "HP_RestartGame": {
     "action": {
       "type": "Custom",
@@ -596,7 +593,7 @@
       "HF_IsInGameUpdatePopup",
       "HF_IsInternalReport",
       "HF_IsTrainingApplication",
-      "HF_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["HF_RestartGame"]
   },
@@ -960,10 +957,6 @@
       }
     },
     "next": ["HF_CancelTrainingApplication", "HF_DetectWhereAmI"],
-    "on_error": ["HF_DetectWhereAmI"]
-  },
-  "HF_FallbackWait": {
-    "next": ["HF_DetectWhereAmI"],
     "on_error": ["HF_DetectWhereAmI"]
   },
   "HF_RestartGame": {

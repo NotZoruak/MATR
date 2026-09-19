@@ -21,7 +21,7 @@ public class RegimentBattlePipelineTests
         Assert.Equal(0, hub["pre_delay"]!.GetValue<int>());
         Assert.Equal(120000, hub["timeout"]!.GetValue<int>());
         Assert.Equal("RB_RestartGame", hub["on_error"]![0]!.GetValue<string>());
-        Assert.Equal("RB_FallbackWait", hub["next"]!.AsArray()[^1]!.GetValue<string>());
+        Assert.Equal("[JumpBack]FallbackWait", hub["next"]!.AsArray()[^1]!.GetValue<string>());
 
         var expectedInterruptions = new[]
         {
@@ -45,7 +45,7 @@ public class RegimentBattlePipelineTests
         var next = hub["next"]!.AsArray().Select(item => item!.GetValue<string>());
         Assert.All(expectedInterruptions, interruption => Assert.Contains(interruption, next));
 
-        Assert.Equal("RB_DetectWhereAmI", pipeline["RB_FallbackWait"]!["next"]![0]!.GetValue<string>());
+        Assert.False(pipeline.ContainsKey("RB_FallbackWait"));
         Assert.Equal("RestartGameAction", pipeline["RB_RestartGame"]!["action"]!["custom_action"]!.GetValue<string>());
         Assert.Equal("RB_DetectWhereAmI", pipeline["RB_RestartGame"]!["next"]![0]!.GetValue<string>());
         Assert.False(pipeline.ContainsKey("RB_IsInSortie"));

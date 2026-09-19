@@ -35,7 +35,8 @@ public class InterruptionPipelineTests
             "ClickTrainingApplication",
             "CancelTrainingApplication",
             "IsNetworkRequestTimeout",
-            "IsConnectionInterrupted"
+            "IsConnectionInterrupted",
+            "FallbackWait"
         };
 
         Assert.Equal(expectedNodes.OrderBy(name => name), pipeline.Select(pair => pair.Key).OrderBy(name => name));
@@ -66,6 +67,8 @@ public class InterruptionPipelineTests
         Assert.Equal("ClickTrainingApplication", pipeline["IsTrainingApplication"]!["next"]![0]!.GetValue<string>());
         Assert.Equal("CancelTrainingApplication", pipeline["ClickTrainingApplication"]!["next"]![0]!.GetValue<string>());
         Assert.Null(pipeline["CancelTrainingApplication"]!["next"]);
+
+        Assert.Empty(pipeline["FallbackWait"]!.AsObject());
     }
 
     private static string FindPipelinePath()

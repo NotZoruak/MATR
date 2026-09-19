@@ -37,7 +37,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
-      "RB_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["RB_RestartGame"]
   },
@@ -496,9 +496,6 @@
     },
     "pre_delay": 100,
     "action": {"type": "Click"},
-    "next": ["RB_DetectWhereAmI"]
-  },
-  "RB_FallbackWait": {
     "next": ["RB_DetectWhereAmI"]
   },
   "RB_RestartGame": {

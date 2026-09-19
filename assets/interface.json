@@ -119,11 +119,10 @@
         "U_疲劳撤退",
         "U_换队长",
         "U_每轮回本丸",
-        "U_动画跳过",
         "U_同步远征"
       ],
       "label": "大阪挖地",
-      "description": "沉眠于地下的千两箱/地下城 活动自动化出阵。\n\n* **层数选择**：设定目标层数（1-99）。选择不启用时直接进入当前层数。\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑重疲劳状态时撤退。\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **每轮回程**：每轮战斗结束后返回本丸。\n* **动画跳过**：增加一些点击以实现跳过动画的功能。在全局设置中开启「卡死重启」功能时，该选项不生效。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。开启「智能远征调度」后，会在每圈结束时检查远征倒计时，若倒计时结束，会主动返回本丸。"
+      "description": "沉眠于地下的千两箱/地下城 活动自动化出阵。\n\n* **层数选择**：设定目标层数（1-99）。选择不启用时直接进入当前层数。\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑重疲劳状态时撤退。\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **每轮回程**：每轮战斗结束后返回本丸。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。开启「智能远征调度」后，会在每圈结束时检查远征倒计时，若倒计时结束，会主动返回本丸。"
     },
     {
       "name": "海陆联队",
@@ -5851,27 +5850,6 @@
         }
       ]
     },
-    "U_动画跳过": {
-      "name": "U_动画跳过",
-      "label": "动画跳过",
-      "type": "checkbox",
-      "cases": [
-        {
-          "name": "",
-          "pipeline_override": {
-            "U_FallbackWait": {
-              "action": {
-                "type": "Click",
-                "param": {
-                  "target": [180, 11, 25, 28]
-                }
-              }
-            }
-          }
-        }
-      ],
-      "default_case": []
-    },
     "U_同步远征": {
       "name": "U_同步远征",
       "label": "同步后勤",
@@ -6309,32 +6287,7 @@
           "name": "Yes",
           "label": "开启",
           "pipeline_override": {
-            "S_FallbackWait": {"enabled": false},
-            "HP_FallbackWait": {"enabled": false},
-            "EC_FallbackWait": {"enabled": false},
-            "FB_FallbackWait": {"enabled": false},
-            "D_FallbackWait": {"enabled": false},
-            "U_FallbackWait": {"enabled": false},
-            "G_FallbackWait": {"enabled": false},
-            "E_FallbackWait": {"enabled": false},
-            "E_FlowerFallbackWait": {"enabled": false},
-            "FB_PostFallbackWait": {"enabled": false},
-            "SF_FallbackWait": {"enabled": false},
-            "TT_FallbackWait": {"enabled": false},
-            "UD_FallbackWait": {"enabled": false},
-            "UD_SB_FallbackWait": {"enabled": false},
-            "Warehouse_FallbackWait": {"enabled": false},
-            "FC_FallbackWait": {"enabled": false},
-            "UF_FallbackWait": {"enabled": false},
-            "HF_FallbackWait": {"enabled": false},
-            "DT_FallbackWait": {"enabled": false},
-            "DT_LoginRewardFallbackWait": {"enabled": false},
-            "DT_WarmGiftFallbackWait": {"enabled": false},
-            "DT_MixFallbackWait": {"enabled": false},
-            "DT_ForgeFallbackWait": {"enabled": false},
-            "DT_DrillFallbackWait": {"enabled": false},
-            "DT_RewardFallbackWait": {"enabled": false},
-            "DT_MailFallbackWait": {"enabled": false},
+            "FallbackWait": {"enabled": false},
             "DT_LoginRewardEntry": {
               "on_error": ["DT_RestartGame"]
             },
