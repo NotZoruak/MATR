@@ -256,6 +256,7 @@ public static class WorkRecordBuilder
             "联队战" or "海陆联队" => ["RegimentBattle"],
             "秘宝之里" or "花牌" => ["Hanapai"],
             "战术强化" => ["TacticalTraining"],
+            "江户潜入" => ["EdoCastle"],
             _ => [],
         };
 
