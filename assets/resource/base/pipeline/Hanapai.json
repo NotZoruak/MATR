@@ -130,8 +130,15 @@
         "expected": "部队选择"
       }
     },
-    "next": ["HP_EnableAutoMarch", "HP_ClickTeam"],
-    "on_error": ["HP_DetectWhereAmI"]
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["HP_EnableAutoMarch", "HP_CaptainHub"]
   },
   "HP_OnSortieScreen": {
     "pre_delay": 100,
@@ -171,17 +178,6 @@
     },
     "next": ["HP_TryClickSortie", "HP_DetectWhereAmI"],
     "on_error": ["HP_DetectWhereAmI"]
-  },
-  "HP_ClickTeam": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["HP_CaptainHub"]
   },
   "HP_EnableAutoMarch": {
     "recognition": {
@@ -377,7 +373,7 @@
     "next": ["HP_PostSortieHub"]
   },
   "HP_CaptainHub": {
-    "next": ["HP_IsPreSortieConfirm"]
+    "next": ["HP_DragCaptain", "HP_IsPreSortieConfirm"]
   },
   "HP_TerminateRound": {
     "focus": {
@@ -529,7 +525,8 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["HP_IsPreSortieConfirm"]
+    "next": ["HP_IsPreSortieConfirm"],
+    "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_FatigueCheck": {
     "enabled": false,

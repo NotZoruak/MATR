@@ -22,7 +22,7 @@
     "next": ["NavigateToRepair"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "special:[重伤检测] 检测到刀剑男士重伤，准备进入修复流程",
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，进入修复流程",
         "display": "log"
       }
     }
@@ -56,7 +56,8 @@
       "time": 100,
       "target": [451, 379, 84, 40]
     },
-    "next": ["ClickRepairInMenu", "IsRepairScreen", "NavigateToRepair"]
+    "next": ["ClickRepairInMenu", "IsRepairScreen"],
+    "on_error": ["NavigateToRepair"]
   },
   "IsRepairScreen": {
     "recognition": {
@@ -172,13 +173,24 @@
         "target": [1183, 18, 87, 40]
       }
     },
-    "next": ["[Anchor]RepairDone"],
+    "next": ["LogRepairCost"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[重伤检测] 修复完成",
         "display": "log"
       }
     }
+  },
+  "LogRepairCost": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RepairStartLogAction",
+      "custom_action_param": {
+        "mode": "emit",
+        "gui": true
+      }
+    },
+    "next": ["[Anchor]RepairDone"]
   },
   "LogNoDamagedSword": {
     "recognition": {

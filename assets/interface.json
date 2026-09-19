@@ -142,7 +142,7 @@
       ]
     },
     {
-      "name": "花牌",
+      "name": "秘宝之里",
       "entry": "Hanapai",
       "default_check": false,
       "repeatable": true,
@@ -156,7 +156,6 @@
         "HP_购买门票",
         "HP_同步远征"
       ],
-      "label": "秘宝之里",
       "description": "秘宝之里/花牌 活动自动化出阵。\n\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」,并提前将队伍保存至对应的记录槽。\n* **更换队长**：点击右侧齿轮可配置跳过位置。\n* **购买门票**：勾选后通行令牌不足时自动购买门票，一次购买90+（活动结束后，游戏会自动退票）；不勾选时检测到通行令牌不足弹窗即停止任务。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
@@ -2740,12 +2739,6 @@
         {
           "name": "部队一",
           "pipeline_override": {
-            "HP_ClickTeam": {
-              "post_wait_freezes": {
-                "target": [108, 76, 106, 6]
-              },
-              "target": [154, 93, 1, 1]
-            },
             "HF_ClickTeamN": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
@@ -2756,18 +2749,18 @@
             "HF_EqRefill_Step2_Rec1": {"enabled": true},
             "SelectRecordSlot": {
               "target": [1209, 140, 30, 71]
+            },
+            "HP_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
             }
           }
         },
         {
           "name": "部队二",
           "pipeline_override": {
-            "HP_ClickTeam": {
-              "post_wait_freezes": {
-                "target": [229, 76, 105, 6]
-              },
-              "target": [282, 94, 1, 1]
-            },
             "HF_ClickTeamN": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
@@ -2778,18 +2771,18 @@
             "HF_EqRefill_Step2_Rec2": {"enabled": true},
             "SelectRecordSlot": {
               "target": [1209, 250, 30, 71]
+            },
+            "HP_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
             }
           }
         },
         {
           "name": "部队三",
           "pipeline_override": {
-            "HP_ClickTeam": {
-              "post_wait_freezes": {
-                "target": [351, 76, 106, 6]
-              },
-              "target": [398, 91, 1, 1]
-            },
             "HF_ClickTeamN": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
@@ -2800,18 +2793,18 @@
             "HF_EqRefill_Step2_Rec3": {"enabled": true},
             "SelectRecordSlot": {
               "target": [1209, 360, 30, 71]
+            },
+            "HP_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
             }
           }
         },
         {
           "name": "部队四",
           "pipeline_override": {
-            "HP_ClickTeam": {
-              "post_wait_freezes": {
-                "target": [471, 76, 106, 6]
-              },
-              "target": [519, 89, 1, 1]
-            },
             "HF_ClickTeamN": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
@@ -2822,18 +2815,18 @@
             "HF_EqRefill_Step2_Rec4": {"enabled": true},
             "SelectRecordSlot": {
               "target": [1209, 465, 30, 71]
+            },
+            "HP_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
             }
           }
         },
         {
           "name": "部队五",
           "pipeline_override": {
-            "HP_ClickTeam": {
-              "post_wait_freezes": {
-                "target": [594, 75, 106, 7]
-              },
-              "target": [635, 91, 1, 1]
-            },
             "HF_ClickTeamN": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
@@ -2844,6 +2837,12 @@
             "HF_EqRefill_Step2_Rec5": {"enabled": true},
             "SelectRecordSlot": {
               "target": [1209, 575, 30, 71]
+            },
+            "HP_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
             }
           }
         }
@@ -2896,9 +2895,6 @@
           "name": "",
           "option": ["HP_跳过位置"],
           "pipeline_override": {
-            "HP_CaptainHub": {
-              "next": ["HP_DragCaptain", "HP_IsPreSortieConfirm"]
-            },
             "HP_DragCaptain": {"enabled": true}
           }
         }
@@ -3024,7 +3020,7 @@
               "next": ["HP_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["HP_EnableAutoMarch", "HP_ClickTeam"],
+              "next": ["HP_EnableAutoMarch", "HP_CaptainHub"],
               "on_error": ["E_GoHome"]
             },
             "HP_WaitRefresh": {"enabled": true}

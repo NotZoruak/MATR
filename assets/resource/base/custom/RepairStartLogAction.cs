@@ -39,11 +39,18 @@ public class RepairStartLogAction : IMaaCustomAction
 
         if (mode == "emit")
         {
-            var prefix = (string?)json["prefix"] ?? "修复";
+            var prefix = (string?)json["prefix"];
+            if (string.IsNullOrWhiteSpace(prefix))
+                prefix = ResolveTaskPrefix();
             var action = (string?)json["action"] ?? "修复";
             var detail = string.IsNullOrWhiteSpace(_capturedDetail) ? "信息识别失败" : _capturedDetail;
             _lastMessage = $"[{prefix}] {action} {detail}";
             LoggerHelper.Warning(_lastMessage);
+
+            // 公共修刀链需要同时出现在实时日志面板，合战场与地下城保持只写文件词条
+            if ((bool?)json["gui"] == true)
+                ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(_lastMessage);
+
             return true;
         }
 
@@ -138,4 +145,20 @@ public class RepairStartLogAction : IMaaCustomAction
     }
 
     private static string Normalize(string text) => Regex.Replace(text ?? string.Empty, @"\s+", string.Empty);
+
+    /// <summary>
+    /// 词头缺省取当前任务的显示名（label），没有 label 时退回任务名（name）。
+    /// 花牌这类「任务名与活动名不同」的任务用 label，才能与它其它日志的词头保持一致。
+    /// </summary>
+    private static string ResolveTaskPrefix()
+    {
+        var task = MaaProcessor.Processors
+            .Select(processor => processor.GetActiveTaskDefinition())
+            .FirstOrDefault(definition => definition != null);
+
+        var prefix = task?.Label;
+        if (string.IsNullOrWhiteSpace(prefix))
+            prefix = task?.Name;
+        return string.IsNullOrWhiteSpace(prefix) ? "修复" : prefix;
+    }
 }
