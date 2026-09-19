@@ -24,9 +24,11 @@
 | 特殊情况写入链路 | 已完成 | `FocusHandler` 已把 `special:` 的识别结果传递给 `AddMarkdown(recordAsSpecial: true)`；该路径以 Info 级别写入 `[Record][Special]`，不借用 Warning。 |
 | 工作记录解析器 | 已完成 | `WorkRecordBuilder` 已识别 `[Record][Special]` 并归入特殊情况，同时保留 `WRN` → 特殊情况的既有规则；已覆盖正常特殊结果、真实 Warning、普通记录三类测试。 |
 | 一键日课重构 | 已完成 | 已完成 9 条完成日志、5 条跳过日志与 5 条演练战败日志迁移，及 6 个本次运行跳过出口的 `anchor` 迁移，`focus` 共 19 处。锻刀容量不足且未开启刀解、演练战败使用 `special:` Info 记录；本次运行跳过仅控制路由、不输出日志。anchor 机制已完成实机验证。剩余 16 处自定义动作引用与 13 处自定义识别引用全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。 |
-| 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在主枢纽 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花子枢纽（`HPF_` 链）本次不纳入，后续会单独抽成一条任务中刷花的公用流程，详见下文「秘宝之里实施记录」。下一步接江户潜入与战术强化。 |
-| 海陆联队重构 | 进行中 | 已完成 `RB_SortieSuccess`、`RB_IsConfirmPurchase`、`RB_TerminateRound` 三条日志打点的 `focus` 迁移。剩余 9 处引用中，`RB_CheckCaptainDamage` 的 `CaptainDamageAction` 属于批次一候选，`RB_RetreatOnCaptainDamage` 的 `LogAction` 借 Warning 级别进入特殊情况、属于批次二，其余 7 处均在「明确保留」清单内。详见下文「海陆联队实施记录」。 |
-| 秘宝之里重构 | 已停止（等待刷花公用流程） | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；剩余 10 处自定义动作引用全部属于「明确保留」清单，刷花打点已随本轮刷花流程重构移交 `FatigueCheckAction` 与 `WorkRecordBuilder` 处理。详见下文「秘宝之里实施记录」。 |
+| 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里、地下城、战术强化、江户潜入） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在主枢纽 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花链已按单主枢纽结构重写并抽成公共文件 `TaskFlowerBrush.json`（前缀 `TF_`），详见下文的「任务中刷花」小节。下一步接江户潜入与战术强化。 |
+| 海陆联队重构 | 已完成 | 已迁移 `RB_SortieSuccess`、`RB_IsConfirmPurchase`、`RB_TerminateRound` 三条打点，以及队长重伤链的两处：`RB_CheckCaptainDamage` 去掉 `CaptainDamageAction`、`RB_RetreatOnCaptainDamage` 改成 `Click` 加 `special:` focus，随后两节点合并为一个 `RB_CheckCaptainDamage`。剩余 8 处引用、7 个动作名全部属于「明确保留」清单，`LogAction` 与 `CaptainDamageAction` 已不再被本任务引用（后者脚本已删除）。详见下文「海陆联队实施记录」。 |
+| 秘宝之里重构 | 已完成 | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；刷花链已按单主枢纽结构重写并抽成公共文件 `TaskFlowerBrush.json`。剩余 7 处引用、6 个动作名全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。详见下文「秘宝之里实施记录」。 |
+| 任务中刷花公共链 | 已完成（秘宝之里、地下城、海陆联队、战术强化、江户潜入） | 刷花状态机抽成 `TaskFlowerBrush.json`（26 个 `TF_` 节点：单主枢纽、公共 `[JumpBack]` 中断、锚点出口），任务侧只保留 `X_FatigueCheck` 与「疲劳处理」选项（无／刷花／停止）。地下城删除自带 `UF_` 链 62 个节点；海陆联队、战术强化、江户潜入原本没有疲劳处理，本次补上检测节点与选项。合战场 `SF_` 链待接入。详见「任务中刷花」小节。 |
+| 江户潜入重构 | 进行中 | 主枢纽 18 项中断与页面处理改用公共 `[JumpBack]` 节点并按「非 jumpback 在前、jumpback 与兜底在后」重排；清除目录链残留 4 个节点；`EC_SelectDifficulty` 与 `EC_ClickDifficulty`、`EC_IsTeamSelect` 与 `EC_ClickTeam` 各合并一次；修刀与刀装补充改挂公共链并补 `Hub`/`RepairDone`/`RepairAborted`/`SupplyDone`/`GrindDone` 锚点；掉落识别改用 `SwordDropLogAction`；无票终止改用 `CompleteCurrentTaskAction`、撤退打点改 `special:`；疲劳检测显式挂在 `EC_CaptainHub.next`。详见「江户潜入实施记录」。 |
 | 后续任务重构 | 进行中 | 海陆联队已完成修刀与刀装补充的公共链拆分；接着处理本丸后勤与常驻作战。 |
 
 `special:` 只是 MATR 约定的内容前缀，不是 MaaFramework `focus` schema 的字段。当前实现会在实时展示前清理该前缀，并仅对日志文件写入 `[Record][Special]`；实时日志和文件日志均保持 Info 级别。该链路已经可以承载迁移后的正常特殊结果，但现有 Warning 词表仍须逐条评估，不能不分语义地全部替换为 `special:`。
@@ -59,7 +61,7 @@
 
 `RB_SortieSuccess` 原本用 `LogAction` 打点，现改为模板识别加上挂在 `Node.Action.Succeeded` 的 `focus`，文案 `[海陆联队] 出阵`，node 不再写 `action`。`RB_IsConfirmPurchase` 原本由 `LogAction` 同时承担点击与打点，现改为 `Click` 的 `target` 取原 `click` 矩形，`focus` 文案带 `special:` 前缀，写入工作记录的特殊情况。`RB_TerminateRound` 保留原有的 OCR 识别与 `inverse`，只把 `LogAction` 换成 `focus`，文案 `[海陆联队] 完成一圈`。三条文案逐字保留，工作记录的出阵计数与完成一圈计数不受影响。
 
-剩余 9 处引用中，`RB_CheckCaptainDamage` 的 `CaptainDamageAction` 只写一条不带词表前缀的 GUI 日志（`检测到队长重伤，撤退撤退`），属于批次一候选，改成识别 node 的 `focus` 即可；`RB_RetreatOnCaptainDamage` 的 `LogAction` 是 Warning 级别加点击（`[海陆联队] 队长重伤撤退`），须先在批次二判定它属于正常业务结果还是真正的 Warning。其余 `CompleteCurrentTaskAction` 两处、`GoalPtCheckAction`、`DragCaptainAction`、`SwordDropLogAction`、`TeamSwitchCheckAction`、`RestartGameAction` 均在「明确保留」清单内。
+队长重伤链的两处候选已在 2026-09-20 迁完：`RB_CheckCaptainDamage` 去掉 `CaptainDamageAction`（它只写一条不带词表前缀的 GUI 日志 `检测到队长重伤，撤退撤退`，现在不再输出），`RB_RetreatOnCaptainDamage` 的 `LogAction`（Warning 级加点击 `[1171,447,1,1]`）改成 `Click` 加 `special:[海陆联队] 队长重伤撤退` 的 focus，随后两节点合并为一个 `RB_CheckCaptainDamage`：OCR「重伤」+ 点击 + focus，`next` 直接接 `RB_ConfirmCaptainRetreat`。合并后少了中间节点的一次默认延迟与 rate_limit，检测到队长重伤后的撤退点击比原先早约半秒；工作记录仍按特殊情况归类。剩余 `CompleteCurrentTaskAction` 两处、`GoalPtCheckAction`、`DragCaptainAction`、`SwordDropLogAction`、`TeamSwitchCheckAction`、`RestartGameAction` 共 8 处均在「明确保留」清单内。
 
 ### 秘宝之里实施记录
 
@@ -71,9 +73,23 @@
 
 空操作表达：`focus` 只用于打点时，node 不再显式写 `"action": {"type": "DoNothing"}`。官方协议中 `action` 可选、默认即 `DoNothing`，省略后仍会发出动作阶段回调。已用运行日志核实：`84d52a63` 时期的 `FC_VerifySelectedTeam` 只写 `recognition` / `next` / `on_error`，日志里仍以 `"action":"DoNothing"` 正常输出 `Node.Action.Starting` 与 `Node.Action.Succeeded`，因此挂在 `Node.Action.Succeeded` 上的 `focus` 不会失效。
 
-剩余项：`Hanapai.json` 还有 10 处自定义动作引用、7 个动作名，全部属于「明确保留」——`CompleteCurrentTaskAction` 两处、`RestartGameAction` 两处、`FatigueCheckAction` 两处，以及 `SwordDropLogAction`、`GoalPtCheckAction`、`DragCaptainAction`、`HF_Hub` 的 `LogAction` 各一处。其中 `HF_Hub` 属于刷花链，本轮不动。
+剩余项：刷花链抽走后，`Hanapai.json` 还有 7 处自定义动作引用、6 个动作名，全部属于「明确保留」——`CompleteCurrentTaskAction` 两处，以及 `SwordDropLogAction`、`GoalPtCheckAction`、`RestartGameAction`、`DragCaptainAction`、`FatigueCheckAction` 各一处；刷花链的 2 处（`FatigueCheckAction`、`RestartGameAction`）随公共文件归到 `TaskFlowerBrush.json`。
 
-刷花公用流程（后续专门实施）：刷花状态机目前在三个任务里各存一份，`SF_`（合战场）、`UF_`（地下城）、`HF_`（秘宝之里），识别参数、动作参数、等待与超时基本一致，只有前缀、打点文案与回主枢纽的目标不同。后续会像修刀链与刀装补充链那样，专门抽成一条任务中刷花的公用流程：公共 node 不带任务前缀，出口由任务侧声明锚点，并且要在任务主枢纽与刷花枢纽各声明一份：主枢纽每轮识别都会执行，从刷花回到任务主流程时会把锚点改回任务侧的值，任务侧只保留「疲劳处理-刷花」选项对挂载点的覆盖。刷花打点已改为由 `FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，再由 `WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录，公共链不再需要任务名参数。
+任务中刷花（已实施，秘宝之里）：刷花状态机原本在三个任务里各存一份（`SF_` 合战场、`UF_` 地下城、`HF_` 秘宝之里），本轮先在秘宝之里按单主枢纽结构重写，再抽成公共文件 `TaskFlowerBrush.json`，节点统一用 `TF_` 前缀，以区别于独立任务「刷花」（`FlowerBrush.json`，前缀 `FB_`）。任务侧只保留 `X_FatigueCheck` 与挂载：`X_FatigueCheck.on_error → TF_Hub`，是否启用由「疲劳处理」选项决定。锚点分两处声明：任务主枢纽声明 `Hub`/`RepairDone`/`RepairAborted`/`SupplyDone` 与 `GrindDone`，刷花主枢纽 `TF_Hub` 自声明前四项都指向自己，于是刷花途中触发修刀或刀装不足会回刷花枢纽、离开刷花则由任务主枢纽把锚点改回任务侧。打点不在公共链里：`FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，`WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录。本轮已把地下城改挂公共链（删除自带的 `UF_` 链），并为海陆联队、战术强化、江户潜入补上 `X_FatigueCheck` 与「疲劳处理」选项；剩下合战场（`SF_` 链）待接入。
+
+### 江户潜入实施记录
+
+江户潜入（`EdoCastle.json`）是 2026-09-20 开始的迁移对象，目标是把它对齐到海陆联队与秘宝之里的形态。
+
+主枢纽：`EC_DetectWhereAmI` 原来把 18 项中断与页面处理写成任务内副本（且是「识别后回枢纽」的旧写法），现全部换成公共 `[JumpBack]` 节点，并按「任务自身识别在前、jumpback 与兜底在后」重排为 29 项候选（其中 `[JumpBack]FallbackWait` 收尾）。其中 `EC_IsSortie` 加 `EC_OnSortieScreen` 等价于公共 `IsInSortie`，`EC_IsMenuDirectory` 加 `EC_ClickActivityInMenu` 等价于公共 `IsInMenu`，连带删除这两组与登录奖励、修行申请链的副本共 24 个节点。
+
+导航链与节点合并：目录链残留（`EC_PostClickMenuHub`、`EC_CheckNavDirForRetry`、`EC_VerifyMenuSortie`、`EC_ClickSortieInMenu`）整体删除，导航改为「`EC_NavigateToActivity` → `EC_ClickMenu` 点目 → 回枢纽 → 公共 `[JumpBack]IsInMenu` 点出阵入口」。`EC_SelectDifficulty`（空壳）与 `EC_ClickDifficulty` 合并为 `EC_SelectDifficulty`；`EC_IsTeamSelect` 与 `EC_ClickTeam` 合并为 `EC_IsTeamSelect`（OCR 部队选择 + 点击部队，`repeat: 2`、`repeat_delay: 300`），`interface.json` 中「选择部队」五个 case 的覆盖键随之改名，`EC_同步后勤` 里 `E_CheckTimerExpired.next` 的落点也从 `EC_ClickTeam` 改为 `EC_IsTeamSelect`。
+
+修刀与刀装补充：改挂公共 `Repair.json` 与 `EquipSupply.json`，删除任务内修刀链 14 个节点，`EC_PostSortieHub.next` 变成 `[EC_IsTicketPopup, IsPreDamage, IsEquipmentShortagePopup, EC_ClickEnterBattle]`，主枢纽补上 `Hub`/`RepairDone`/`RepairAborted`/`SupplyDone`/`GrindDone` 五个锚点。
+
+任务中刷花：`EC_FatigueCheck` 显式挂在 `EC_CaptainHub.next`（同时 `EC_DragCaptain.next` 也带上它），「疲劳处理」选项只需覆盖 `EC_FatigueCheck.enabled`，「停止」case 再把 `on_error` 清空——比秘宝之里、海陆联队那套「选项重接拖拽节点 next」的写法更直接。
+
+打点与日志：`EC_IsSwordDropColor` 改用 `SwordDropLogAction`（`task` 为「江户潜入」、掉落刀名 OCR 区 `[52,509,282,34]`、关闭弹窗点击 `[947,533,67,75]`），刀剑掉落从此进工作记录；`EC_TerminateNoTicket` 从 Warning 级 `LogAction` 改成 `CompleteCurrentTaskAction`（复用秘宝之里的 `reason`），并删掉只被它引用的 `EC_CompleteCurrentTaskAfterNoTicket`；`EC_TerminateRetreat` 改成 `special:` focus；`EC_TerminateRound` 改成只写文件的 focus。`WorkRecordBuilder` 增加 `"江户潜入" => ["EdoCastle"]` 词头映射，日志按词头精确归到本任务记录。
 
 ## 判定标准
 
@@ -140,12 +156,12 @@
 | 字段 | 类型 | 作用 |
 |---|---|---|
 | `content` | string | Markdown 文本、以 `$` 开头的国际化 key、文件路径或 URL；可使用回调详情中的占位符，例如 `{task_id}`、`{node_id}`、`{action_id}`、`{elapsed}`、`{anchor}`。 |
-| `display` | string 或 string[] | 渠道标识，可用 `log`、`toast`、`notification`、`dialog`、`modal`；省略时默认为 `log`。它不定义具体输出路径。 |
+| `display` | string 或 string[] | 渠道标识，可用 `log`、`file`、`toast`、`notification`、`dialog`、`modal`；省略时默认为 `log`。它不定义具体输出路径。 |
 | `trace` | boolean | 是否将本次结果上传遥测；本项目禁用遥测，当前不需要配置。 |
 
 对 Pipeline 中的 `focus`，实际应使用 `Node.*` 消息键，例如 `Node.Action.Starting`、`Node.Action.Succeeded`、`Node.Action.Failed`、`Node.Recognition.*`、`Node.NextList.*`、`Node.WaitFreezes.*` 与 `Node.PipelineNode.*`。键必须与回调消息完全一致，拼写错误会静默失效。普通日志不使用 `Node.Recognition.*`，因为它们的触发频率远高于动作阶段。
 
-MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它会同时进入实时日志面板和实例日志文件，并以 Info 级别落盘。这是 MATR 的 Client 行为，不是 MaaFramework 协议保证。`focus` 没有 Warning 级别字段，不能自行编造 `display: "warning"`；需要归入工作记录「特殊情况」的正常业务结果，应依赖下文的工作记录分类优化，而不应伪装成 Warning。
+MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它会同时进入实时日志面板和实例日志文件，并以 Info 级别落盘；`display: "file"` 走 `MaaProcessor.AddMarkdownToFile`，只写实例日志文件、不进实时面板，用于「出阵」这类每轮都会重复、只需给工作记录解析的打点。这是 MATR 的 Client 行为，不是 MaaFramework 协议保证。`focus` 没有 Warning 级别字段，不能自行编造 `display: "warning"`；需要归入工作记录「特殊情况」的正常业务结果，应依赖下文的工作记录分类优化，而不应伪装成 Warning。
 
 本项目还兼容旧式 `start`、`succeeded`、`failed`、`toast`、`aborted` 字段，但它们不是官方当前推荐写法。新增或迁移内容一律使用消息键形式。完整回调族、历史兼容差异与性能细节见本文末尾的「focus 字段完整参考」。
 
@@ -159,7 +175,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 |---|---|---|---|
 | `GuiLogAction` | 48 | 把 `message` 写到 GUI 日志，`warn:` 前缀转警告 | node 的 `focus`，`display: log` |
 | `LogAction` | 125 | 写文件日志词表；59 处同时点击一个矩形 | `focus` 写 Info 词表，`Click` 承担点击 |
-| `CaptainDamageAction` | 1 | 检测到队长重伤后写一条日志 | 识别 node 的 `focus` |
+| `CaptainDamageAction` | 0（2026-09-20 已迁完，脚本已删除） | 检测到队长重伤后写一条日志 | 识别 node 的 `focus` |
 | `StopOnDamageAction` | 2 | 写日志、弹 toast、让本轮任务结束 | `focus` 的 `display` 用 `["log","toast"]`，任务结束由无后续分支表达 |
 
 `LogAction` 的 125 处里，70 处是 Info、55 处当前借用 Warning 级别让工作记录归入「特殊情况」；`GuiLogAction` 的 48 处里有 5 处带 `warn:` 前缀。这些业务结果不必然是程序 Warning，迁移前须先完成下文的工作记录分类优化；普通 Info 部分可以先动。
@@ -325,13 +341,20 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ### 近期实施范围与顺序
 
-本轮仅重构以下四个任务，严格按此顺序推进：一键日课（`DailyTask.json`）→ 联队战／海陆联队（`RegimentBattle.json`，旧 `LRentaisen.json` 已随重构移除）→ 本丸后勤（`Expedition.json`）→ 常驻作战（`Sortie.json`）。每个任务完成重构和验证后再进入下一个任务，其余任务暂不纳入本轮迁移。
+2026-09-20 起迁移策略调整：不再以任务为单位推进，改为以自定义动作为核心——一次把某个动作在所有任务里的用法统一梳理并替换掉，优先处理日志相关的两类动作 `LogAction` 与 `GuiLogAction`。理由是这两类动作职责单一（写日志、必要时顺带点击），替代方式已经验证（`focus` 的 `log` / `file` 渠道加上 `Click`），按动作批量处理可以避免同一个动作在不同任务里被反复改；任务是迁移的落点，不再是批次单位。
 
-秘宝之里（`Hanapai.json`）不在上述顺序内，按并行安排先行处理：能由 `Click` 与 `focus` 表达的日志打点已迁移完毕，刷花链 `HF_` 不在本轮范围内，等待后续专门的任务中刷花公用流程。
+已完成的部分：一键日课、海陆联队（含 `CaptainDamageAction`，脚本已删除）、秘宝之里，以及任务中刷花公共链覆盖的五个任务（刷花链里的 `LogAction` 已随公共链抽取消失）。截至 2026-09-20 收工时，两类动作的分布如下（`interface.json` 的覆盖值也计入）：
+
+| 动作 | 合计 | 分布 |
+| --- | --- | --- |
+| `LogAction` | 109 | 合战场 74（25 处 Warning、11 处带点击）、地下城 25（21 处 Warning、23 处带点击）、战术强化 5、本丸后勤 3、江户潜入 2 |
+| `GuiLogAction` | 19 | 合战场 10、地下城 4、`interface.json` 覆盖 4（`warn:` 前缀）、本丸后勤 1 |
+
+下一步按动作推进：先合战场（`Sortie.json`，两类动作合计 84 处，是剩余最集中的文件），再地下城（`Underground.json`，29 处），随后战术强化、本丸后勤与江户潜入的零散引用。逐条判断日志语义：普通业务打点改成 `focus` 的 `log` 渠道；每轮重复、只给工作记录解析的（出阵、点击行军、完成一圈）用 `file` 渠道；确实是异常结果的（撤退、无票、刀装不足等）用 `special:` 保持可见；带点击的用 `Click` 承担点击、`focus` 只负责打点。
 
 ### 批次一：Info 级日志
 
-范围：`LogAction` 中 52 处 Info 纯打点、`GuiLogAction` 中 43 处无警告前缀、`CaptainDamageAction` 的 1 处。
+范围：`LogAction` 中 52 处 Info 纯打点、`GuiLogAction` 中 43 处无警告前缀（`CaptainDamageAction` 的 1 处已于 2026-09-20 随海陆联队迁移完成）。
 
 做法：把插入式打点 node 的 `focus` 挂到上游业务 node，删除打点 node，恢复 `next` 链。
 
@@ -514,6 +537,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 | 值 | 官方语义 | 本仓库实现 |
 |---|---|---|
 | `log` | 运行日志，默认值 | `TaskQueueView.ConvertCustomMarkup` 后走 `AddMarkdown`，同时进实时日志面板与文件日志 |
+| `file` | 非官方值，MATR 扩展 | `MaaProcessor.AddMarkdownToFile`，只写实例日志文件，不进实时面板也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点 |
 | `toast` | 应用内轻提示，非阻塞 | `ToastHelper.CreateToastByType` |
 | `notification` | 系统级通知，后台可见 | `ToastNotification.Show` |
 | `dialog` | 非阻塞弹窗，任务继续 | 异步 `SukiMessageBox.ShowDialog` |
@@ -567,10 +591,10 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 正文「工作记录的特殊情况分类」一条已确认成立：`log` 渠道走 `AddMarkdown`，最终以 `LoggerHelper.Info` 落盘，`focus` 对象没有 Warning 或业务分类字段；带 `recordAsWarning` 的路径会写成 `[Record] ` 前缀加 Warning 级别。正常业务结果与真正 Warning 必须由 MATR 的 Client 和工作记录解析器分别归类，不能依赖 `focus` 协议本身。
 
-新增一条正文未记录的差异：`LogAction` 是刻意只写文件日志、不写 GUI 的，而 focus 的 `log` 渠道同时写文件与实时日志面板。日志组一次性迁移会让 125 处词表打点全部出现在实时面板里。这是观感变化而非技术障碍，需要在批次一开工前决定：接受它，或先给 focus 补一个只落文件的渠道。已迁移的一键日课、海陆联队与秘宝之里都直接用 focus 的 `log` 渠道，等于按前者处理；`LogAction` 仍然保留给尚未迁移的 Warning 与点击场景。
+正文记录的差异已给出结论并落地：`LogAction` 刻意只写文件日志、不写 GUI，而 focus 的 `log` 渠道同时写文件与实时面板。2026-09-20 给 `focus` 补了只落文件的渠道 `display: file`（`MaaProcessor.AddMarkdownToFile`，只走 `LoggerHelper.Info`，不写 `LogItemViewModels` 也不发布平台日志），并已用于海陆联队、秘宝之里、江户潜入的「出阵」「点击行军」「完成一圈」六处打点：这些每轮重复、只给工作记录解析的日志不再刷实时面板，特殊情况（购买门票、撤退）仍用 `log` 保持可见。`LogAction` 继续保留给尚未迁移的 Warning 与点击场景。
 
 工作记录解析链路已实现并通过自动化测试。`WorkRecordBuilder` 的解析正则会主动跳过行首的 `[cfg=...]`、`[src=...]` 上下文块以及可选的 `[Record][Special]` 标记，再捕获 `[前缀] 行为词 详情`；`[Special]` 会独立于 `WRN` 将词条归入特殊情况。解析器测试覆盖普通 Info、Info 特殊结果与 Warning 三种分类路径。
 
 ### 现状
 
-开工前 17 个 pipeline 文件与 `interface.json` 中共 372 处自定义动作引用、26 处自定义识别引用，`focus` 的使用数为 0；字段定义、序列化转换器与完整处理器均已具备，能力齐备但从未启用。迁移开工后这一节的前提已不成立：当前实测为 339 处自定义动作引用、25 处自定义识别引用，`focus` 已在 6 个文件中共启用 33 处，本节其余结论（回调放大、取图开销、消息键用法差异等）仍然有效。
+开工前 17 个 pipeline 文件与 `interface.json` 中共 372 处自定义动作引用、26 处自定义识别引用，`focus` 的使用数为 0；字段定义、序列化转换器与完整处理器均已具备，能力齐备但从未启用。截至 2026-09-20 实测：19 个 pipeline 文件与 `interface.json` 共 320 处自定义动作引用（50 个动作名）、25 处自定义识别引用（6 个识别名），`focus` 已在 6 个文件中共启用 33 处；新增的 `display: file` 渠道让「出阵」「点击行军」「完成一圈」六处打点只写日志文件、不进实时面板。本节其余结论（回调放大、取图开销、消息键用法差异等）仍然有效。

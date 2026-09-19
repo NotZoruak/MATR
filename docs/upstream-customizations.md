@@ -109,6 +109,12 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 
 该修复在 2026-08-16 已做过一次（提交 `7b30e339`，当时只改了 `AddLogByKey`），2026-09-04 的 MFAAvalonia v2.16.1 升级（提交 `b65c54ec`）把上游的 `Task.Run(() => DispatcherHelper.PostOnMainThread(...))` 写法带了回来，问题随之复发。升级时以本条目为准，不要恢复双层投递；日志创建、集合写入与裁剪仍全部在界面线程执行，不引入跨线程集合访问。
 
+### `focus.display-channels`
+
+`focus` 的分发渠道与内容前缀属于 MATR 扩展，升级时不能按上游实现直接覆盖。`FocusHandler.DispatchToChannels` 在官方 `log` / `toast` / `notification` / `dialog` / `modal` 之外必须保留 `file` 分支，它调用 `MaaProcessor.AddMarkdownToFile`——只走 `LoggerHelper.Info` 写实例日志文件，不写 `LogItemViewModels` 这个实时面板集合、也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点，避免实时面板被刷屏。`log` 渠道仍同时写实时面板与文件。
+
+`special:` 是 MATR 约定的内容前缀，不是 MaaFramework 的字段。`FocusHandler.TryExtractSpecialContent` 在实时展示前剥离它，`AddMarkdown` 以 `recordAsSpecial: true` 把词条写成 `[Record][Special]`，`WorkRecordBuilder` 再把它归入工作记录的「特殊情况」而不占用 Warning 级别。升级 focus 相关代码后，用「打点只进文件」「特殊情况仍归入工作记录」两条实机行为各验证一次。
+
 ### `task.sync-expedition-reuse`
 
 同步后勤是 MATR 对 MFAAvalonia 远征流程的定制扩展。合战场、地下城、陆联、战术强化、江户潜入与一键日课启用“同步后勤”时，`MaaProcessor.CreateNodeAndParam` 必须从当前实例的“后勤”任务读取“部队一”至“部队五”的选项，并将这些选项的 `pipeline_override` 合并到当前任务。

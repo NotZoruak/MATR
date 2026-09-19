@@ -127,6 +127,17 @@
       "notes": "外层 Task.Run 会让每条日志独自经线程池投递，投递顺序不再受调用顺序保证，表现为「任务完成（上一轮）」与「开始任务（下一轮）」倒序显示。该定制在 2026-08-16 提交 7b30e339 修复（当时只改 AddLogByKey），2026-09-04 提交 b65c54ec 升级 MFAAvalonia v2.16.1 时被上游写法覆盖并复发，本次恢复并一并修复 AddMarkdown。日志创建、集合写入与裁剪仍全部在界面线程执行，不引入跨线程集合访问。"
     },
     {
+      "id": "focus.display-channels",
+      "title": "focus 显示渠道扩展",
+      "purpose": "让 pipeline 打点既能只写日志文件、不进实时面板，也能用 special: 前缀把业务上的特殊情况写进工作记录而不占用 Warning 级别。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/FocusHandler.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 FocusHandler 的 special: 前缀识别与 DispatchToChannels 的 file 分支，以及 MaaProcessor.AddMarkdownToFile；上游若重构 focus 分发路径，按本条目把它们重新接回。",
+      "verification": ["display: file 的打点只进实例日志文件，不进实时面板也不发布平台日志", "display: log 仍同时写实时面板与文件", "special: 前缀在实时展示前被剥离，文件里写成 [Record][Special]", "WorkRecordBuilder 按词头归属词条，未知词头落到当前记录"],
+      "notes": "FocusHandler 原本只认 log/toast/notification/dialog/modal 五个渠道；MATR 追加了 file（MaaProcessor.AddMarkdownToFile，只走 LoggerHelper.Info），供「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点使用，避免刷屏。special: 是 MATR 约定的内容前缀、不是 MaaFramework 字段：FocusHandler.TryExtractSpecialContent 在分发前剥离它，AddMarkdown 带 recordAsSpecial 落到 [Record][Special]，WorkRecordBuilder 再归入特殊情况。"
+    },
+    {
       "id": "task.sync-expedition-reuse",
       "title": "同步后勤复用后勤任务配置",
       "purpose": "让出阵任务与一键日课复用「后勤」任务保存的远征队伍、修刀、内番与刷新间隔配置。",
@@ -141,7 +152,7 @@
       "id": "task.sync-logistics-instance-source",
       "title": "同步后勤按执行实例读取配置",
       "purpose": "多实例下后勤选图、派遣打点与日志都取执行任务那个实例的配置，避免读到其它实例的后勤设置造成休息部队被误派。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ActionParamHelper.cs", "assets/resource/base/custom/ExpeditionMapSelectAction.cs", "assets/resource/base/custom/DispatchLogAction.cs", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/custom/DamageLogAction.cs", "assets/resource/base/custom/CaptainDamageAction.cs", "assets/resource/base/custom/StopOnDamageAction.cs", "assets/resource/base/custom/RepairStartLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FatigueCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SmartWaitAction.cs"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ActionParamHelper.cs", "assets/resource/base/custom/ExpeditionMapSelectAction.cs", "assets/resource/base/custom/DispatchLogAction.cs", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/custom/DamageLogAction.cs", "assets/resource/base/custom/StopOnDamageAction.cs", "assets/resource/base/custom/RepairStartLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FatigueCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SmartWaitAction.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "自定义动作与识别器用 context.Tasker 经 MaaProcessor.ResolveByTasker 定位所属处理器，再用 GetLogisticsTeamMapIndex 读取该实例的后勤部队设置；AddLog 走 ActionParamHelper.ResolveOwnerProcessor，取不到时才回退当前激活实例。",
