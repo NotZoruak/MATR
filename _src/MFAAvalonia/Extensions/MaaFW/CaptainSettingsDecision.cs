@@ -14,7 +14,7 @@ public static class CaptainSettingsDecision
     {
         "Sortie" => "S_DragCaptain",
         "Underground" => "U_DragCaptain",
-        "LRentaisen" => "LR_DragCaptain",
+        "RegimentBattle" => "RB_DragCaptain",
         "Hanapai" => "HP_DragCaptain",
         "EdoCastle" => "EC_DragCaptain",
         "TacticalTraining" => "TT_DragCaptain",
@@ -28,7 +28,7 @@ public static class CaptainSettingsDecision
     {
         "Sortie" => "S_跳过位置",
         "Underground" => "U_跳过位置",
-        "LRentaisen" => "LR_跳过位置",
+        "RegimentBattle" => "RB_跳过位置",
         "Hanapai" => "HP_跳过位置",
         "EdoCastle" => "EC_跳过位置",
         _ => null

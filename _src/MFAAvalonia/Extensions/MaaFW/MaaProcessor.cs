@@ -4135,7 +4135,7 @@ public class MaaProcessor
         }
 
         // 5. 同步后勤任务复用当前实例的远征队伍、修刀、内番和刷新间隔配置
-        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")
+        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "RegimentBattle" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")
         {
             var syncExpEnabled = task.InterfaceItem.Option
                 ?.FirstOrDefault(o => (o.Name ?? string.Empty).EndsWith("同步远征")
@@ -4171,48 +4171,56 @@ public class MaaProcessor
                         var timerNext = task.InterfaceItem.Entry switch
                         {
                             "Sortie" => "S_NavigateToSortie",
-                            "Underground" => "U_NavigateToUnderground",
+                            "Underground" => "U_NavigateToActivity",
                             "Hanapai" => "HP_NavigateToActivity",
                             "TacticalTraining" => "TT_NavigateToActivity",
                             "EdoCastle" => "EC_NavigateToActivity",
                             "DailyTask" => "DT_ProjectRouter",
-                            _ => "LR_NavigateToActivity"
+                            "RegimentBattle" => "RB_NavigateToActivity",
+                            _ => null
                         };
-                        taskModels.Merge(new Dictionary<string, JToken>
+                        if (timerNext == null)
                         {
-                            ["E_TimerStart"] = new JObject
+                            LoggerHelper.Warning($"[同步后勤] 入口 {task.InterfaceItem.Entry} 没有配置返回活动页的导航节点，跳过刷新间隔注入");
+                        }
+                        else
+                        {
+                            taskModels.Merge(new Dictionary<string, JToken>
                             {
-                                ["action"] = new JObject
+                                ["E_TimerStart"] = new JObject
                                 {
-                                    ["type"] = "Custom",
-                                    ["custom_action"] = "ExpeditionTimerAction",
-                                    ["custom_action_param"] = new JObject
+                                    ["action"] = new JObject
                                     {
-                                        ["mode"] = "start",
-                                        ["interval"] = seconds
+                                        ["type"] = "Custom",
+                                        ["custom_action"] = "ExpeditionTimerAction",
+                                        ["custom_action_param"] = new JObject
+                                        {
+                                            ["mode"] = "start",
+                                            ["interval"] = seconds
+                                        }
+                                    },
+                                    ["next"] = new JArray(timerNext)
+                                },
+                                ["E_SmartWait"] = new JObject
+                                {
+                                    ["action"] = new JObject
+                                    {
+                                        ["type"] = "Custom",
+                                        ["custom_action"] = "SmartWaitAction",
+                                        ["custom_action_param"] = new JObject { ["interval"] = seconds }
                                     }
                                 },
-                                ["next"] = new JArray(timerNext)
-                            },
-                            ["E_SmartWait"] = new JObject
-                            {
-                                ["action"] = new JObject
+                                ["U_SmartWait"] = new JObject
                                 {
-                                    ["type"] = "Custom",
-                                    ["custom_action"] = "SmartWaitAction",
-                                    ["custom_action_param"] = new JObject { ["interval"] = seconds }
+                                    ["action"] = new JObject
+                                    {
+                                        ["type"] = "Custom",
+                                        ["custom_action"] = "SmartWaitAction",
+                                        ["custom_action_param"] = new JObject { ["interval"] = seconds }
+                                    }
                                 }
-                            },
-                            ["U_SmartWait"] = new JObject
-                            {
-                                ["action"] = new JObject
-                                {
-                                    ["type"] = "Custom",
-                                    ["custom_action"] = "SmartWaitAction",
-                                    ["custom_action_param"] = new JObject { ["interval"] = seconds }
-                                }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
