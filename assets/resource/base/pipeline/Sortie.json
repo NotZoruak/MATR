@@ -1203,7 +1203,7 @@
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[常驻作战] 返回本丸",
-        "display": "log"
+        "display": "file"
       }
     }
   },
