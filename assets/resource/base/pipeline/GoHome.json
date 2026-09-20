@@ -164,12 +164,10 @@
   },
   "G_VerifyMenuDir": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["G_ClickBackToHome", "G_DetectWhereAmI"]

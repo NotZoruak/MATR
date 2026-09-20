@@ -676,12 +676,10 @@
   },
   "FB_VerifyMenuOpened": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["FB_ClickSortieInMenu"],
@@ -689,12 +687,10 @@
   },
   "FB_VerifyLeftMenuSortie": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["FB_ClickSortieInMenu", "FB_DetectWhereAmI"]
@@ -772,12 +768,10 @@
   },
   "FB_VerifySortieMenuClosed": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["FB_TryClickSortie", "FB_DetectWhereAmI"]
@@ -951,12 +945,10 @@
   },
   "FB_IsMenuDirectory": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "pre_delay": 100,
