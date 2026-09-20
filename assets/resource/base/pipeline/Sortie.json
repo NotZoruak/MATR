@@ -32,6 +32,7 @@
       "S_IsKebiishi2",
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
@@ -213,16 +214,14 @@
         "upper": [178, 27, 27]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 出阵"
-      }
-    },
     "anchor": {"S_RoundDone": "S_CompleteRound"},
-    "next": ["S_DetectWhereAmI"]
+    "next": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 出阵",
+        "display": "file"
+      }
+    }
   },
   "S_IsIsekaiTicketConfirm": {
     "enabled": false,
@@ -275,15 +274,18 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 补充门票",
-        "click": [729, 581, 101, 43]
+      "type": "Click",
+      "param": {
+        "target": [729, 581, 101, 43]
       }
     },
-    "next": ["S_DetectWhereAmI"]
+    "next": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 补充门票",
+        "display": "file"
+      }
+    }
   },
   "S_IsTeamSelect": {
     "recognition": {
@@ -475,16 +477,14 @@
         "threshold": [0.8]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 完成一圈"
-      }
-    },
     "next": ["S_IsIsekaiRegionEnd"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 完成一圈",
+        "display": "file"
+      }
+    }
   },
   "S_IsIsekaiBattleEnd_5": {
     "recognition": {
@@ -496,15 +496,13 @@
         "threshold": [0.8]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 完成一圈"
+    "next": ["S_IsIsekaiRegionEnd"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 完成一圈",
+        "display": "file"
       }
-    },
-    "next": ["S_IsIsekaiRegionEnd"]
+    }
   },
   "S_IsIsekaiRegionEnd": {
     "recognition": {
@@ -588,8 +586,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_NavigateToSortie"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_NavigateToSortie"]
   },
   "S_NavigateToSortie": {
     "next": ["S_ClickMenu"],
@@ -605,35 +602,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 100},
-    "next": ["S_PostClickMenuHub"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_VerifyMenuClosed", "S_DetectWhereAmI"]
-  },
-  "S_VerifyMenuClosed": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_TryClickSortie", "S_DetectWhereAmI"]
-  },
-  "S_TryClickSortie": {
-    "next": ["S_ClickSortieInMenu", "S_DetectWhereAmI"]
+    "next": ["S_DetectWhereAmI"]
   },
   "S_CheckBoss": {
     "pre_delay": 0,
@@ -687,15 +656,18 @@
   },
   "S_PostClickMarching": {
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 点击行军",
-        "click": [1072, 563, 110, 69]
+      "type": "Click",
+      "param": {
+        "target": [1072, 563, 110, 69]
       }
     },
-    "next": ["S_DetectWhereAmI"]
+    "next": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 点击行军",
+        "display": "file"
+      }
+    }
   },
   "S_Boss_E4_R1": {
     "enabled": false,
@@ -707,15 +679,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E4_R2": {
     "enabled": false,
@@ -727,15 +697,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E4_R3": {
     "enabled": false,
@@ -747,15 +715,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E4_R4": {
     "enabled": false,
@@ -767,15 +733,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E5_R1": {
     "enabled": false,
@@ -787,15 +751,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E5_R2": {
     "enabled": false,
@@ -807,15 +769,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E5_R3": {
     "enabled": false,
@@ -827,15 +787,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E5_R4_1": {
     "enabled": false,
@@ -847,15 +805,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E5_R4_2": {
     "enabled": false,
@@ -867,15 +823,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_MidRetreat_E4_R1_1": {
     "enabled": false,
@@ -887,15 +841,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_MidRetreat_E4_R1_2": {
     "enabled": false,
@@ -907,15 +859,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_MidRetreat_E6_R1": {
     "enabled": false,
@@ -927,15 +877,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E6_R1": {
     "enabled": false,
@@ -947,15 +895,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E6_R1_2": {
     "enabled": false,
@@ -967,15 +913,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E6_R2": {
     "enabled": false,
@@ -987,15 +931,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E6_R3": {
     "enabled": false,
@@ -1007,15 +949,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E6_R4": {
     "enabled": false,
@@ -1027,15 +967,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E7_R1": {
     "enabled": false,
@@ -1048,15 +986,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E7_R2_1": {
     "enabled": false,
@@ -1069,15 +1005,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E7_R2_2": {
     "enabled": false,
@@ -1090,15 +1024,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E7_R3_1": {
     "enabled": false,
@@ -1111,15 +1043,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E7_R3_2": {
     "enabled": false,
@@ -1132,15 +1062,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E7_R4": {
     "enabled": false,
@@ -1153,15 +1081,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E8_R1": {
     "enabled": false,
@@ -1174,15 +1100,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E8_R2": {
     "enabled": false,
@@ -1195,15 +1119,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E8_R3": {
     "enabled": false,
@@ -1216,15 +1138,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E8_R4": {
     "enabled": false,
@@ -1237,15 +1157,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_ClickRetreat": {
     "enabled": true,
@@ -1275,11 +1193,9 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[常驻作战] 返回本丸",
-        "click": [490, 469, 1, 1]
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 1, 1]
       }
     },
     "post_wait_freezes": {
@@ -1287,7 +1203,13 @@
       "target": [480, 459, 20, 20]
     },
     "next": ["S_CheckHomeBrightness", "S_ConfirmRetreat"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 返回本丸",
+        "display": "log"
+      }
+    }
   },
   "S_IsMarchingDamage": {
     "recognition": {
@@ -1320,16 +1242,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 疲劳撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiFatigueLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 疲劳撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheck": {
     "enabled": false,
@@ -1369,16 +1294,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R0C0": {
     "recognition": {
@@ -1391,16 +1319,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R0C1": {
     "recognition": {
@@ -1413,16 +1344,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R0C2": {
     "recognition": {
@@ -1435,16 +1369,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R1C0": {
     "recognition": {
@@ -1457,16 +1394,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R1C1": {
     "recognition": {
@@ -1479,16 +1419,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R1C2": {
     "recognition": {
@@ -1501,16 +1444,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R2C0": {
     "recognition": {
@@ -1523,16 +1469,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R2C1": {
     "recognition": {
@@ -1545,16 +1494,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R2C2": {
     "recognition": {
@@ -1567,16 +1519,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R3C0": {
     "recognition": {
@@ -1589,16 +1544,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R3C1": {
     "recognition": {
@@ -1611,16 +1569,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R3C2": {
     "recognition": {
@@ -1633,16 +1594,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R4C0": {
     "recognition": {
@@ -1655,16 +1619,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R4C1": {
     "recognition": {
@@ -1677,16 +1644,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R4C2": {
     "recognition": {
@@ -1699,16 +1669,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R5C0": {
     "recognition": {
@@ -1721,16 +1694,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R5C1": {
     "recognition": {
@@ -1743,16 +1719,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_EqCheckC_R5C2": {
     "recognition": {
@@ -1765,43 +1744,49 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
     "next": ["S_GuiEqNearDamageLog"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "S_GuiFatigueLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[疲劳检测] 检测到刀剑疲劳，撤退"}
-    },
     "post_delay": 500,
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[疲劳检测] 检测到刀剑疲劳，撤退",
+        "display": "log"
+      }
+    }
   },
   "S_GuiEqDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装检测] 检测到刀装破坏，撤退"}
-    },
     "post_delay": 500,
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刀装检测] 检测到刀装破坏，撤退",
+        "display": "log"
+      }
+    }
   },
   "S_GuiEqNearDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装检测] 检测到刀装近破坏，撤退"}
-    },
     "post_delay": 500,
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刀装检测] 检测到刀装近破坏，撤退",
+        "display": "log"
+      }
+    }
   },
   "S_ConfirmReturnHome": {
     "recognition": {
@@ -1824,48 +1809,6 @@
       "target": [490, 469, 10, 10]
     },
     "next": ["S_DetectWhereAmI"]
-  },
-  "S_PostClickMenuHub": {
-    "next": ["S_VerifyMenuSortie", "S_CheckNavDirForRetry", "S_DetectWhereAmI"]
-  },
-  "S_VerifyMenuSortie": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_ClickSortieInMenu"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_CheckNavDirForRetry": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_PostClickMenuHub"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_VerifyLeftMenuSortie": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_ClickSortieInMenu"],
-    "on_error": ["S_DetectWhereAmI"]
   },
   "S_CaptainHub": {
     "next": ["S_DragCaptain", "S_IsPreSortieConfirm"],
@@ -1970,15 +1913,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R1": {
     "enabled": false,
@@ -1990,15 +1931,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R2_1": {
     "enabled": false,
@@ -2010,15 +1949,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R2_2": {
     "enabled": false,
@@ -2030,15 +1967,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R3_1": {
     "enabled": false,
@@ -2050,15 +1985,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R3_2": {
     "enabled": false,
@@ -2070,15 +2003,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R3_3": {
     "enabled": false,
@@ -2090,15 +2021,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E2_R4": {
     "enabled": false,
@@ -2110,15 +2039,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E3_R1": {
     "enabled": false,
@@ -2130,15 +2057,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E3_R2": {
     "enabled": false,
@@ -2150,15 +2075,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E3_R3": {
     "enabled": false,
@@ -2170,15 +2093,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_Boss_E3_R4": {
     "enabled": false,
@@ -2190,15 +2111,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 命中王点"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 命中王点",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_IsLoginReward": {
     "recognition": {
@@ -2254,15 +2173,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_MidRetreat_E8_R2": {
     "enabled": false,
@@ -2275,15 +2192,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_MidRetreat_E8_R3": {
     "enabled": false,
@@ -2296,15 +2211,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_MidRetreat_E8_R4": {
     "enabled": false,
@@ -2317,15 +2230,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 道中撤退"
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 道中撤退",
+        "display": "file"
       }
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    }
   },
   "S_CheckHomeBrightness": {
     "recognition": {
@@ -2392,20 +2303,22 @@
     "next": ["S_LogStopOnDamage"]
   },
   "S_LogMarchingDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，撤退撤退"}
-    },
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[重伤检测] 检测到刀剑男士重伤，撤退撤退",
+        "display": "log"
+      }
+    }
   },
   "S_LogStopOnDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "StopOnDamageAction"
-    },
     "next": ["S_CompleteCurrentTaskAfterDamage"],
-    "on_error": ["S_DetectWhereAmI"]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，停止任务",
+        "display": ["log", "notification"]
+      }
+    }
   },
   "S_CompleteCurrentTaskAfterDamageRepair": {
     "action": {
@@ -2476,14 +2389,12 @@
     "on_error": ["TF_Hub"]
   },
   "S_LogMarchingDamageWord": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[常驻作战] 重伤撤退"
+    "next": ["S_LogMarchingDamage"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[常驻作战] 重伤撤退",
+        "display": "log"
       }
-    },
-    "next": ["S_LogMarchingDamage"]
+    }
   }
 }

@@ -22,6 +22,7 @@ public class SortiePipelineTests
         {
             "[JumpBack]IsBattleResult_Exp",
             "[JumpBack]IsBattleResult_Title",
+            "[JumpBack]IsExpeditionReturn_Exp",
             "[JumpBack]IsExpeditionReturn_Title",
             "[JumpBack]IsInMenu",
             "[JumpBack]IsAnnouncementPopup",
@@ -66,6 +67,38 @@ public class SortiePipelineTests
         Assert.DoesNotContain("IsEquipmentShortagePopup", postSortieNext);
         Assert.True(stopEquipmentIndex >= 0);
         Assert.False(pipeline.ContainsKey("S_CheckEquipmentPopup"));
+
+        Assert.DoesNotContain(
+            pipeline,
+            pair => pair.Value?["action"]?["custom_action"]?.GetValue<string>() == "LogAction");
+        Assert.DoesNotContain(
+            pipeline,
+            pair => pair.Value?["action"]?["custom_action"]?.GetValue<string>() == "GuiLogAction");
+        Assert.Equal(
+            "file",
+            pipeline["S_SortieSuccess"]!["focus"]!["Node.Action.Succeeded"]!["display"]!.GetValue<string>());
+        Assert.Equal(
+            "[常驻作战] 道中撤退",
+            pipeline["S_MidRetreat_E4_R1_1"]!["focus"]!["Node.Action.Succeeded"]!["content"]!.GetValue<string>());
+        Assert.Equal(
+            "file",
+            pipeline["S_MidRetreat_E4_R1_1"]!["focus"]!["Node.Action.Succeeded"]!["display"]!.GetValue<string>());
+        Assert.Equal(
+            "file",
+            pipeline["S_Boss_E4_R1"]!["focus"]!["Node.Action.Succeeded"]!["display"]!.GetValue<string>());
+        Assert.Equal(
+            "file",
+            pipeline["S_IsIsekaiConfirmPurchase"]!["focus"]!["Node.Action.Succeeded"]!["display"]!.GetValue<string>());
+        Assert.Null(pipeline["S_LogStopOnDamage"]!["action"]);
+        Assert.Equal(
+            "special:[重伤检测] 检测到刀剑男士重伤，停止任务",
+            pipeline["S_LogStopOnDamage"]!["focus"]!["Node.Action.Succeeded"]!["content"]!.GetValue<string>());
+        var damageDisplays = pipeline["S_LogStopOnDamage"]!["focus"]!["Node.Action.Succeeded"]!["display"]!
+            .AsArray()
+            .Select(item => item!.GetValue<string>())
+            .ToArray();
+        Assert.Contains("log", damageDisplays);
+        Assert.Contains("notification", damageDisplays);
 
         var hubAnchors = pipeline["S_DetectWhereAmI"]!["anchor"]!.AsObject();
         Assert.Equal("S_DetectWhereAmI", hubAnchors["GrindDone"]!.GetValue<string>());
