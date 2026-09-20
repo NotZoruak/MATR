@@ -1,9 +1,12 @@
 using MFAAvalonia.Configuration;
 using MFAAvalonia.Extensions.MaaFW;
+using MFAAvalonia.Helper;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace MFAAvalonia.Services;
 
@@ -109,8 +112,16 @@ public static class UpdateDataScheduleService
     /// <summary>读取指定调度键上次成功完成的时间；默认识别范围兼容旧版的单键记录。</summary>
     public static DateTime? GetLastSucceeded(InstanceConfiguration configuration, string scheduleKey)
     {
+        // 更新数据可能由自定义动作使用独立配置对象写入；读取前刷新实例配置，
+        // 避免长期持有的内存快照覆盖或看不到刚刚落盘的成功时间。
+        if (configuration.ConfigFileExists())
+            configuration.ReloadFromDisk();
+
         var normalizedKey = NormalizeKey(scheduleKey);
-        var rawValue = configuration.GetValue(GetStorageKey(normalizedKey), string.Empty);
+        var storageKey = GetStorageKey(normalizedKey);
+        var rawValue = ReadPersistedValue(configuration, storageKey);
+        if (string.IsNullOrWhiteSpace(rawValue))
+            rawValue = configuration.GetValue(storageKey, string.Empty);
         if (string.IsNullOrWhiteSpace(rawValue)
             && string.Equals(normalizedKey, $"{ScopeKeyPrefix}{DefaultScope}", StringComparison.Ordinal))
         {
@@ -128,6 +139,25 @@ public static class UpdateDataScheduleService
             out var parsed)
             ? parsed
             : null;
+    }
+
+    /// <summary>直接读取实例文件中的值，避免配置对象内存快照落后于磁盘。</summary>
+    private static string ReadPersistedValue(InstanceConfiguration configuration, string key)
+    {
+        try
+        {
+            var path = configuration.GetConfigFilePath();
+            if (!File.Exists(path))
+                return string.Empty;
+
+            var root = JObject.Parse(File.ReadAllText(path));
+            return root[key]?.ToObject<string>() ?? string.Empty;
+        }
+        catch (Exception exception)
+        {
+            LoggerHelper.Warning($"[更新数据] 读取实例配置文件失败：{exception.Message}");
+            return string.Empty;
+        }
     }
 
     /// <summary>记录指定调度键本次成功完成的时间。</summary>

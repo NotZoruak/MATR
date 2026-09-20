@@ -4096,6 +4096,7 @@ public class MaaProcessor
                     {
                         ["interval"] = interval,
                         ["key"] = scheduleKey.StorageKey,
+                        ["instance_id"] = InstanceId,
                     },
                 },
             },
@@ -4106,7 +4107,11 @@ public class MaaProcessor
             {
                 ["type"] = "Custom",
                 ["custom_action"] = "UpdateDataMarkSuccessAction",
-                ["custom_action_param"] = new JObject { ["key"] = scheduleKey.StorageKey },
+                ["custom_action_param"] = new JObject
+                {
+                    ["key"] = scheduleKey.StorageKey,
+                    ["instance_id"] = InstanceId,
+                },
             },
         };
 

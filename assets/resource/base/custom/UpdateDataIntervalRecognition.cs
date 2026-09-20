@@ -5,6 +5,7 @@ using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Services;
 using System;
+using System.Linq;
 
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
@@ -30,9 +31,13 @@ public sealed class UpdateDataIntervalRecognition : IMaaCustomRecognition
             }
 
             var scheduleKey = UpdateDataScheduleService.NormalizeKey(param["key"]?.ToObject<string>());
-            // 多实例下按执行任务的实例读取与记录，避免用到当前激活实例的配置
-            var configuration = ActionParamHelper.ResolveOwnerProcessor(context)?.InstanceConfiguration
-                ?? ConfigurationManager.CurrentInstance;
+            var instanceId = param["instance_id"]?.ToObject<string>();
+            // 优先使用任务参数中的实例标识，避免重启后无法从 MaaFramework context 反推出执行实例。
+            var configuration = !string.IsNullOrWhiteSpace(instanceId)
+                ? MaaProcessor.Processors.FirstOrDefault(processor => processor.InstanceId == instanceId)?.InstanceConfiguration
+                    ?? new InstanceConfiguration(instanceId)
+                : ActionParamHelper.ResolveOwnerProcessor(context)?.InstanceConfiguration
+                    ?? ConfigurationManager.CurrentInstance;
             var lastSucceeded = UpdateDataScheduleService.GetLastSucceeded(configuration, scheduleKey);
             var lastSucceededText = lastSucceeded == null
                 ? "无"
