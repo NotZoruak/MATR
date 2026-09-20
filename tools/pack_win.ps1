@@ -61,10 +61,7 @@ if (Test-Path "$SourceDir\libs") {
 if (Test-Path "$SourceDir\runtimes\libs") {
     Copy-Item "$SourceDir\runtimes\libs\*" -Recurse -Destination "$TempDir\runtimes\libs" -Force
 }
-$AgentTarget = "$TempDir\runtimes\libs\MaaAgentBinary"
-if (Test-Path $AgentTarget) {
-    Remove-Item -Recurse -Force $AgentTarget
-}
+# 保留 MaaAgentBinary，其中包含 maatouch、minitouch 与 minicap 等设备代理。
 if (Test-Path "$SourceDir\plugins") {
     Copy-Item "$SourceDir\plugins" -Recurse -Destination "$TempDir\plugins"
 }
