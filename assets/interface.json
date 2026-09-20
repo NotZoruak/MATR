@@ -1716,9 +1716,6 @@
           "name": "",
           "option": ["S_跳过位置"],
           "pipeline_override": {
-            "S_CaptainHub": {
-              "next": ["S_DragCaptain", "S_IsPreSortieConfirm"]
-            },
             "S_DragCaptain": {"enabled": true}
           }
         }
@@ -1749,7 +1746,7 @@
           "name": "部队一",
           "DisplayName": "部队一",
           "pipeline_override": {
-            "S_ClickTeam": {
+            "S_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
@@ -1759,21 +1756,20 @@
               "next": ["S_PreCheckClickRecord1"]
             },
             "S_PreCheckClickRecord1": {"enabled": true},
-            "SF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
             },
-            "SF_UseRecord_Step2_Rec1": {"enabled": true},
-            "SF_EqRefill_Step2_Rec1": {"enabled": true}
+            "TF_UseRecord_Step2": {"target": [1209, 140, 30, 71]}
           }
         },
         {
           "name": "部队二",
           "DisplayName": "部队二",
           "pipeline_override": {
-            "S_ClickTeam": {
+            "S_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
@@ -1783,21 +1779,20 @@
               "next": ["S_PreCheckClickRecord2"]
             },
             "S_PreCheckClickRecord2": {"enabled": true},
-            "SF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
             },
-            "SF_UseRecord_Step2_Rec2": {"enabled": true},
-            "SF_EqRefill_Step2_Rec2": {"enabled": true}
+            "TF_UseRecord_Step2": {"target": [1209, 250, 30, 71]}
           }
         },
         {
           "name": "部队三",
           "DisplayName": "部队三",
           "pipeline_override": {
-            "S_ClickTeam": {
+            "S_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
@@ -1807,21 +1802,20 @@
               "next": ["S_PreCheckClickRecord3"]
             },
             "S_PreCheckClickRecord3": {"enabled": true},
-            "SF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
             },
-            "SF_UseRecord_Step2_Rec3": {"enabled": true},
-            "SF_EqRefill_Step2_Rec3": {"enabled": true}
+            "TF_UseRecord_Step2": {"target": [1209, 360, 30, 71]}
           }
         },
         {
           "name": "部队四",
           "DisplayName": "部队四",
           "pipeline_override": {
-            "S_ClickTeam": {
+            "S_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
@@ -1831,21 +1825,20 @@
               "next": ["S_PreCheckClickRecord4"]
             },
             "S_PreCheckClickRecord4": {"enabled": true},
-            "SF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
             },
-            "SF_UseRecord_Step2_Rec4": {"enabled": true},
-            "SF_EqRefill_Step2_Rec4": {"enabled": true}
+            "TF_UseRecord_Step2": {"target": [1209, 465, 30, 71]}
           }
         },
         {
           "name": "部队五",
           "DisplayName": "部队五",
           "pipeline_override": {
-            "S_ClickTeam": {
+            "S_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
@@ -1855,14 +1848,13 @@
               "next": ["S_PreCheckClickRecord5"]
             },
             "S_PreCheckClickRecord5": {"enabled": true},
-            "SF_ClickTeamN": {
+            "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
             },
-            "SF_UseRecord_Step2_Rec5": {"enabled": true},
-            "SF_EqRefill_Step2_Rec5": {"enabled": true}
+            "TF_UseRecord_Step2": {"target": [1209, 575, 30, 71]}
           }
         }
       ]
@@ -2099,10 +2091,7 @@
           "name": "鱼鳞阵",
           "DisplayName": "鱼鳞阵",
           "pipeline_override": {
-            "S_ClickFormation1": {
-              "target": [212, 234, 1, 1]
-            },
-            "S_ClickFormation2": {
+            "S_IsFormationSelect": {
               "target": [212, 234, 1, 1]
             }
           }
@@ -2111,10 +2100,7 @@
           "name": "横队阵",
           "DisplayName": "横队阵",
           "pipeline_override": {
-            "S_ClickFormation1": {
-              "target": [591, 234, 1, 1]
-            },
-            "S_ClickFormation2": {
+            "S_IsFormationSelect": {
               "target": [591, 234, 1, 1]
             }
           }
@@ -2123,10 +2109,7 @@
           "name": "雁行阵",
           "DisplayName": "雁行阵",
           "pipeline_override": {
-            "S_ClickFormation1": {
-              "target": [1037, 222, 1, 1]
-            },
-            "S_ClickFormation2": {
+            "S_IsFormationSelect": {
               "target": [1037, 222, 1, 1]
             }
           }
@@ -2135,10 +2118,7 @@
           "name": "鹤翼阵",
           "DisplayName": "鹤翼阵",
           "pipeline_override": {
-            "S_ClickFormation1": {
-              "target": [195, 431, 1, 1]
-            },
-            "S_ClickFormation2": {
+            "S_IsFormationSelect": {
               "target": [195, 431, 1, 1]
             }
           }
@@ -2147,10 +2127,7 @@
           "name": "方阵",
           "DisplayName": "方阵",
           "pipeline_override": {
-            "S_ClickFormation1": {
-              "target": [625, 407, 1, 1]
-            },
-            "S_ClickFormation2": {
+            "S_IsFormationSelect": {
               "target": [625, 407, 1, 1]
             }
           }
@@ -2159,7 +2136,7 @@
           "name": "逆行阵",
           "DisplayName": "逆行阵",
           "pipeline_override": {
-            "S_ClickFormation1": {
+            "S_IsFormationSelect": {
               "target": [1017, 421, 1, 1]
             }
           }
@@ -2928,8 +2905,7 @@
             "HP_DragCaptain": {
               "next": ["HP_FatigueCheck"]
             },
-            "HP_FatigueCheck": {"enabled": true},
-            "TF_UseRecord_Step1": {"enabled": true}
+            "HP_FatigueCheck": {"enabled": true}
           }
         },
         {
@@ -3635,10 +3611,7 @@
             "S_DragCaptain": {
               "next": ["S_FatigueCheck"]
             },
-            "S_FatigueCheck": {"enabled": true},
-            "SF_Hub": {"enabled": true},
-            "SF_UseRecord_Step1": {"enabled": true},
-            "SF_EqRefill_Step1": {"enabled": true}
+            "S_FatigueCheck": {"enabled": true}
           }
         },
         {
@@ -3651,8 +3624,7 @@
             "S_FatigueCheck": {
               "enabled": true,
               "on_error": []
-            },
-            "SF_Hub": {"enabled": false}
+            }
           }
         }
       ]
@@ -3841,7 +3813,7 @@
           "DisplayName": "过去",
           "pipeline_override": {
             "S_CheckHomeBrightness": {
-              "next": ["S_IsSortieRoundDone", "S_IsHome", "S_DetectWhereAmI"]
+              "next": ["[Anchor]S_RoundDone", "S_IsHome", "S_DetectWhereAmI"]
             }
           },
           "option": ["S_王点前撤退", "S_道中撤退", "S_避战检非"]
@@ -4283,8 +4255,7 @@
             "U_FatigueCheck": {"enabled": true},
             "U_DragCaptain": {
               "next": ["U_FatigueCheck"]
-            },
-            "TF_UseRecord_Step1": {"enabled": true}
+            }
           }
         }
       ]
@@ -7631,8 +7602,7 @@
             "RB_DragCaptain": {
               "next": ["RB_FatigueCheck"]
             },
-            "RB_FatigueCheck": {"enabled": true},
-            "TF_UseRecord_Step1": {"enabled": true}
+            "RB_FatigueCheck": {"enabled": true}
           }
         },
         {
@@ -7666,8 +7636,7 @@
             "TT_DragCaptain": {
               "next": ["TT_FatigueCheck"]
             },
-            "TT_FatigueCheck": {"enabled": true},
-            "TF_UseRecord_Step1": {"enabled": true}
+            "TT_FatigueCheck": {"enabled": true}
           }
         },
         {
@@ -7698,8 +7667,7 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "EC_FatigueCheck": {"enabled": true},
-            "TF_UseRecord_Step1": {"enabled": true}
+            "EC_FatigueCheck": {"enabled": true}
           }
         },
         {

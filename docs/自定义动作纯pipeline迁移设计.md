@@ -1,7 +1,7 @@
 # 自定义动作迁移纯 pipeline 设计
 
 > 状态：迁移分任务推进中；一键日课已完成迁移，海陆联队与秘宝之里已完成部分迁移
-> 最后更新：2026-09-19
+> 最后更新：2026-09-20
 > 范围：`assets/resource/base/pipeline/*.json` 与 `assets/interface.json` 中实际引用的自定义动作与自定义识别
 
 ## 背景
@@ -27,8 +27,10 @@
 | 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里、地下城、战术强化、江户潜入） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在主枢纽 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花链已按单主枢纽结构重写并抽成公共文件 `TaskFlowerBrush.json`（前缀 `TF_`），详见下文的「任务中刷花」小节。下一步接江户潜入与战术强化。 |
 | 海陆联队重构 | 已完成 | 已迁移 `RB_SortieSuccess`、`RB_IsConfirmPurchase`、`RB_TerminateRound` 三条打点，以及队长重伤链的两处：`RB_CheckCaptainDamage` 去掉 `CaptainDamageAction`、`RB_RetreatOnCaptainDamage` 改成 `Click` 加 `special:` focus，随后两节点合并为一个 `RB_CheckCaptainDamage`。剩余 8 处引用、7 个动作名全部属于「明确保留」清单，`LogAction` 与 `CaptainDamageAction` 已不再被本任务引用（后者脚本已删除）。详见下文「海陆联队实施记录」。 |
 | 秘宝之里重构 | 已完成 | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；刷花链已按单主枢纽结构重写并抽成公共文件 `TaskFlowerBrush.json`。剩余 7 处引用、6 个动作名全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。详见下文「秘宝之里实施记录」。 |
-| 任务中刷花公共链 | 已完成（秘宝之里、地下城、海陆联队、战术强化、江户潜入） | 刷花状态机抽成 `TaskFlowerBrush.json`（26 个 `TF_` 节点：单主枢纽、公共 `[JumpBack]` 中断、锚点出口），任务侧只保留 `X_FatigueCheck` 与「疲劳处理」选项（无／刷花／停止）。地下城删除自带 `UF_` 链 62 个节点；海陆联队、战术强化、江户潜入原本没有疲劳处理，本次补上检测节点与选项。合战场 `SF_` 链待接入。详见「任务中刷花」小节。 |
+| 任务中刷花公共链 | 已完成（常驻作战、秘宝之里、地下城、海陆联队、战术强化、江户潜入） | 刷花状态机抽成 `TaskFlowerBrush.json`（26 个 `TF_` 节点：单主枢纽、公共 `[JumpBack]` 中断、锚点出口），任务侧保留疲劳检测与「疲劳处理」选项（无／刷花／停止）。常驻作战已将 `S_FatigueCheck` 接入 `TF_Hub`，并删除旧 `SF_` 链；五个队伍 case 补齐 `TF_IsTeamSelect` 与 `TF_UseRecord_Step2` 坐标覆盖。地下城删除自带 `UF_` 链 62 个节点；海陆联队、战术强化、江户潜入原本没有疲劳处理，本次补上检测节点与选项。详见「任务中刷花」小节。 |
 | 江户潜入重构 | 进行中 | 主枢纽 18 项中断与页面处理改用公共 `[JumpBack]` 节点并按「非 jumpback 在前、jumpback 与兜底在后」重排；清除目录链残留 4 个节点；`EC_SelectDifficulty` 与 `EC_ClickDifficulty`、`EC_IsTeamSelect` 与 `EC_ClickTeam` 各合并一次；修刀与刀装补充改挂公共链并补 `Hub`/`RepairDone`/`RepairAborted`/`SupplyDone`/`GrindDone` 锚点；掉落识别改用 `SwordDropLogAction`；无票终止改用 `CompleteCurrentTaskAction`、撤退打点改 `special:`；疲劳检测显式挂在 `EC_CaptainHub.next`。详见「江户潜入实施记录」。 |
+| 合战场单圈结算 | 已完成 | `SortieRoundDoneRecognition` 已由 `S_RoundDone` anchor 路由替代：入口清空、成功出阵后指向完成 node、回本丸时优先解析、完成后清空并自然结束本轮；已删除旧识别和 `S_IsSortieRoundDone`。 |
+| 常驻作战主枢纽 | 已完成 | `S_DetectWhereAmI` 已将战斗结算、远征结果、菜单、公告、登录奖励、广告、登录、更新、内番报告、网络超时与连接中断改挂公共 `[JumpBack]` node；`S_IsInActivity` 与任务专属流程保留。 |
 | 后续任务重构 | 进行中 | 海陆联队已完成修刀与刀装补充的公共链拆分；接着处理本丸后勤与常驻作战。 |
 
 `special:` 只是 MATR 约定的内容前缀，不是 MaaFramework `focus` schema 的字段。当前实现会在实时展示前清理该前缀，并仅对日志文件写入 `[Record][Special]`；实时日志和文件日志均保持 Info 级别。该链路已经可以承载迁移后的正常特殊结果，但现有 Warning 词表仍须逐条评估，不能不分语义地全部替换为 `special:`。
@@ -75,7 +77,7 @@
 
 剩余项：刷花链抽走后，`Hanapai.json` 还有 7 处自定义动作引用、6 个动作名，全部属于「明确保留」——`CompleteCurrentTaskAction` 两处，以及 `SwordDropLogAction`、`GoalPtCheckAction`、`RestartGameAction`、`DragCaptainAction`、`FatigueCheckAction` 各一处；刷花链的 2 处（`FatigueCheckAction`、`RestartGameAction`）随公共文件归到 `TaskFlowerBrush.json`。
 
-任务中刷花（已实施，秘宝之里）：刷花状态机原本在三个任务里各存一份（`SF_` 合战场、`UF_` 地下城、`HF_` 秘宝之里），本轮先在秘宝之里按单主枢纽结构重写，再抽成公共文件 `TaskFlowerBrush.json`，节点统一用 `TF_` 前缀，以区别于独立任务「刷花」（`FlowerBrush.json`，前缀 `FB_`）。任务侧只保留 `X_FatigueCheck` 与挂载：`X_FatigueCheck.on_error → TF_Hub`，是否启用由「疲劳处理」选项决定。锚点分两处声明：任务主枢纽声明 `Hub`/`RepairDone`/`RepairAborted`/`SupplyDone` 与 `GrindDone`，刷花主枢纽 `TF_Hub` 自声明前四项都指向自己，于是刷花途中触发修刀或刀装不足会回刷花枢纽、离开刷花则由任务主枢纽把锚点改回任务侧。打点不在公共链里：`FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，`WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录。本轮已把地下城改挂公共链（删除自带的 `UF_` 链），并为海陆联队、战术强化、江户潜入补上 `X_FatigueCheck` 与「疲劳处理」选项；剩下合战场（`SF_` 链）待接入。
+任务中刷花（已实施）：刷花状态机统一为公共文件 `TaskFlowerBrush.json`，节点统一用 `TF_` 前缀，以区别于独立任务「刷花」（`FlowerBrush.json`，前缀 `FB_`）。任务侧保留疲劳检测与挂载：疲劳检测 node 的 `on_error → TF_Hub`，是否启用由「疲劳处理」选项决定。各任务主枢纽声明 `GrindDone` 等出口锚点，刷花主枢纽 `TF_Hub` 自声明 `Hub`、`RepairDone`、`RepairAborted`、`SupplyDone`，刷花途中触发公共修刀或刀装补充后回 `TF_Hub`，离开刷花则经 `GrindDone` 返回任务主枢纽。常驻作战已删除旧 `SF_` 链，并在五个「选择部队」case 中补齐 `TF_IsTeamSelect` 与 `TF_UseRecord_Step2` 坐标覆盖。打点不在公共链里：`FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，`WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录。
 
 ### 江户潜入实施记录
 
@@ -191,7 +193,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
   "action": {
     "type": "Custom",
     "custom_action": "LogAction",
-    "custom_action_param": {"message": "[合战场] 返回本丸", "click": [490, 469, 1, 1]}
+    "custom_action_param": {"message": "[常驻作战] 返回本丸", "click": [490, 469, 1, 1]}
   },
   "post_wait_freezes": {"time": 200, "target": [480, 459, 20, 20]},
   "next": ["S_CheckHomeBrightness", "S_ConfirmRetreat"],
@@ -212,7 +214,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
   "next": ["S_CheckHomeBrightness", "S_ConfirmRetreat"],
   "on_error": ["S_DetectWhereAmI"],
   "focus": {
-    "Node.Action.Succeeded": {"content": "[合战场] 返回本丸", "display": "log"}
+    "Node.Action.Succeeded": {"content": "[常驻作战] 返回本丸", "display": "log"}
   }
 }
 ```
@@ -271,7 +273,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 | 动作或识别 | 引用处数 | 当前职责 | 可迁移性 |
 |---|---|---|---|
-| `SortieRoundDoneRecognition` | 1 | 通过出阵 node 的命中计数判断这一圈是否已打完 | 可用 `max_hit` 加顺序分支表达，需要验证计数在每轮任务运行时是否从零开始 |
+| `SortieRoundDoneRecognition` | 0（已删除） | 原先通过出阵 node 的命中计数判断这一圈是否已打完 | 已由 `S_RoundDone` anchor 替代：任务入口清空、成功出阵时指向 `S_CompleteRound`、回本丸时优先解析、完成后清空并自然结束本轮。 |
 | `TeamSwitchCheckAction`（原 `TeamSwitchNeededRecognition` 加 `TeamSwitchAction` 合并） | 1（海陆联队） | OCR 剩余轮次，按配置决定换哪支部队并双击确认 | 需要跨轮次的当前部队状态，暂不具备纯 pipeline 表达条件 |
 | `DispatchLogAction` | 6 | 读取实例配置里的目的地，输出 GUI 日志与词表 | GUI 日志部分可用 `focus`；目的地文本需要由选项注入或保留读取配置 |
 | `RepairStartLogAction` | 8 | 读修复画面刀名与资源消耗，组合成一行词表，并在确认前点击 | `mode=gui` 的日志部分可用 `focus`；多 ROI OCR 拼接与刀名归一必须保留 |
@@ -331,7 +333,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ### 跨 node 状态机与台账
 
-`DailyTaskCompletionCheckAction`、`DailyTaskCompletionMarkAction`、`DailyTaskStepRecognition`、`TeamSwitchCheckAction`、`TeamSwitchDecision`、`FormationConfigAction`、`FormationEquipStateMachine`、`FormationEquipSelectAction`、`DragCaptainAction`、`ExpeditionTeamRestRecognition`、`NaibanOutfitSelectionAction`、`MixFindAllowedMaterialAction`、`ForgeDisassembleSelectAction`、`NewMixTargetSelectionRecognition`、`EdoLastActionRetreatRecognition`。
+`DailyTaskCompletionCheckAction`、`DailyTaskCompletionMarkAction`、`DailyTaskStepRecognition`、`TeamSwitchCheckAction`（旧联队战的 `TeamSwitchAction`、`TeamSwitchNeededRecognition` 与资源侧 `TeamSwitchDecision` 已于 2026-09-20 删除，应用侧的 `TeamSwitchDecision` 静态辅助类保留）、`FormationConfigAction`、`FormationEquipStateMachine`、`FormationEquipSelectAction`、`DragCaptainAction`、`ExpeditionTeamRestRecognition`、`NaibanOutfitSelectionAction`、`MixFindAllowedMaterialAction`、`ForgeDisassembleSelectAction`、`NewMixTargetSelectionRecognition`、`EdoLastActionRetreatRecognition`。
 
 ### 需要名单或目录联合校验的识别
 
@@ -394,9 +396,11 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ### 批次六：状态与次数判断
 
-范围：`SortieRoundDoneRecognition`、`DispatchLogAction` 的日志部分、`RepairStartLogAction` 的 GUI 日志部分。
+范围：`DispatchLogAction` 的日志部分、`RepairStartLogAction` 的 GUI 日志部分。
 
-前置：确认 `max_hit` 的计数在每轮任务运行时重置，以及 `focus` 在正常结束与提前结束两种路径上的触发次数。
+`SortieRoundDoneRecognition` 已完成 anchor 迁移，不再走 `max_hit` 计数：`Sortie` 入口清空 `S_RoundDone`，`S_SortieSuccess` 将其写为 `S_CompleteRound`，“过去”选项令 `S_CheckHomeBrightness.next` 首先解析 `[Anchor]S_RoundDone`，完成 node 清空 anchor 并通过空 `next` 自然结束本轮。`SortieRoundDoneRecognition.cs` 与 `S_IsSortieRoundDone` 已删除。
+
+剩余前置：确认 `focus` 在正常结束与提前结束两种路径上的触发次数。
 
 ## 附录：引用统计
 
@@ -465,7 +469,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ```jsonc
 "focus": {
-  "Node.Action.Succeeded": "[合战场] 返回本丸"
+  "Node.Action.Succeeded": "[常驻作战] 返回本丸"
 }
 ```
 
@@ -474,7 +478,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 ```jsonc
 "focus": {
   "Node.Action.Succeeded": {
-    "content": "[合战场] 返回本丸，任务 ID：{task_id}",
+    "content": "[常驻作战] 返回本丸，任务 ID：{task_id}",
     "display": ["log", "toast"],
     "trace": false
   }

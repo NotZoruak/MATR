@@ -58,4 +58,24 @@ public class WorkRecordBuilderSpecialContentTests
 
         Assert.Equal("队长重伤撤退", specialEvent.Description);
     }
+
+    [Fact]
+    public void Build_常驻作战前缀仍归入合战场任务记录()
+    {
+        var start = new DateTime(2026, 9, 20, 10, 0, 0);
+        var records = WorkRecordBuilder.Build(
+        [
+            new LogEntry(start, "INF", "名称=[合战场] 入口=[Sortie]"),
+            new LogEntry(start.AddSeconds(1), "INF", "开始任务：合战场"),
+            new LogEntry(start.AddSeconds(2), "INF", "[Record] [常驻作战] 出阵"),
+            new LogEntry(start.AddSeconds(3), "INF", "[Record] [常驻作战] 完成一圈"),
+            new LogEntry(start.AddSeconds(4), "INF", "停止前状态：SUCCEEDED"),
+        ]);
+
+        var record = Assert.Single(records);
+
+        Assert.Equal("Sortie", record.Entry);
+        Assert.Equal(1, record.SortieCount);
+        Assert.Equal(1, record.RoundCount);
+    }
 }

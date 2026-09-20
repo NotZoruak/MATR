@@ -208,6 +208,15 @@
   },
   "HP_CheckGoalPt": {
     "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "GoalPtCheckAction",
@@ -224,8 +233,7 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "目标 PT 已达成"}
-    },
-    "on_error": ["HP_DetectWhereAmI"]
+    }
   },
   "HP_SelectDifficulty": {
     "recognition": {

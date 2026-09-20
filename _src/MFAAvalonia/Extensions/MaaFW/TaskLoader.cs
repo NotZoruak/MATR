@@ -526,7 +526,7 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
             && SortieRepeatCountMigration.TryResolve(task.Entry, legacyValue, out var repeatCount))
         {
             task.RepeatCount = repeatCount;
-            LoggerHelper.Info($"[合战场] 轮数迁移：旧下级选项 {legacyValue} → 任务级重复次数 {repeatCount}");
+            LoggerHelper.Info($"[常驻作战] 轮数迁移：旧下级选项 {legacyValue} → 任务级重复次数 {repeatCount}");
         }
 
         modeOption.SubOptions.Remove(legacyOption);

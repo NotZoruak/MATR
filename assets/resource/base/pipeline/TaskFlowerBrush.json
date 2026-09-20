@@ -263,7 +263,7 @@
     "next": ["TF_Hub"]
   },
   "TF_UseRecord_Step1": {
-    "enabled": false,
+    "enabled": true,
     "recognition": {
       "type": "TemplateMatch",
       "param": {

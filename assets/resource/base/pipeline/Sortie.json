@@ -1,15 +1,14 @@
 {
   "Sortie": {
+    "anchor": {"S_RoundDone": ""},
     "next": ["S_DetectWhereAmI"]
   },
   "S_DetectWhereAmI": {
     "pre_delay": 0,
+    "anchor": {"GrindDone": "S_DetectWhereAmI"},
     "timeout": 120000,
     "next": [
       "S_IsMarching",
-      "S_IsBattleResult_Exp",
-      "S_IsBattleResult_Title",
-      "S_HasExpeditionReturn_Title",
       "S_IsSwordDropColor",
       "S_IsResourcePoint",
       "S_IsFormationSelect",
@@ -20,24 +19,26 @@
       "S_IsIsekaiRegionSelect",
       "S_IsIsekaiBattleEnd_1",
       "S_IsIsekaiBattleEnd_5",
-      "S_IsSortieActivity",
-      "S_IsMenuDirectory",
+      "S_IsInActivity",
       "S_IsTeamStatusPanel",
       "S_CheckHomeBrightness",
       "S_IsKebiishi1",
       "S_IsKebiishi2",
-      "S_LeaveTroopRecord",
-      "S_IsAnnouncementPopup",
-      "S_IsTrainingLetter",
-      "S_IsLoginReward",
-      "S_IsAdvertisementPopup",
-      "S_IsGameIcon",
-      "S_IsLoginButton",
-      "S_IsGameUpdatePopup",
-      "S_IsInGameUpdatePopup",
-      "S_IsInternalReport",
-      "S_IsNetworkRequestTimeout",
-      "S_IsConnectionInterrupted",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["S_RestartGame"]
@@ -52,10 +53,7 @@
         "threshold": [0.98]
       }
     },
-    "pre_delay": 0,
-    "post_delay": 0,
     "timeout": 2500,
-    "rate_limit": 250,
     "next": ["S_RecognizeResourcePoint"],
     "on_error": ["S_IsTrainingApplication"]
   },
@@ -71,44 +69,9 @@
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
-      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":10000,\"poll_interval\":200,\"task\":\"合战场\"}"
-    },
-    "next": ["S_DetectWhereAmI"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_LeaveTroopRecord": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [63, 28, 17, 17]
-      }
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":10000,\"poll_interval\":200,\"task\":\"常驻作战\"}"
     },
     "next": ["S_DetectWhereAmI"]
-  },
-  "S_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["S_IsMarching", "S_DetectWhereAmI"]
   },
   "S_IsMarching": {
     "recognition": {
@@ -120,40 +83,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_IsMarchingDamage", "S_FatigueDetect", "S_EqCheck", "S_CheckBoss", "S_PostClickMarching"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["S_IsMarching", "S_DetectWhereAmI"]
-  },
-  "S_IsBattleResult_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["S_IsMarching", "S_DetectWhereAmI"]
+    "next": ["S_IsMarchingDamage", "S_FatigueDetect", "S_EqCheck", "S_CheckBoss", "S_PostClickMarching"]
   },
   "S_IsSwordDropColor": {
     "recognition": {
@@ -168,7 +98,7 @@
       "type": "Custom",
       "custom_action": "SwordDropLogAction",
       "custom_action_param": {
-        "task": "合战场",
+        "task": "常驻作战",
         "roi": [52, 509, 282, 34],
         "click": [947, 533, 67, 75]
       }
@@ -185,26 +115,14 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_ClickFormation1"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickFormation1": {
     "action": {
       "type": "Click",
       "param": {
         "target": [1017, 421, 1, 1]
       }
     },
-    "next": ["S_ClickFormation2"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickFormation2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
+    "repeat": 2,
+    "repeat_delay": 500,
     "next": ["S_DetectWhereAmI"]
   },
   "S_IsPreSortieConfirm": {
@@ -215,18 +133,12 @@
         "expected": "即刻"
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
+    "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 200,
       "target": [1156, 584, 96, 47]
     },
-    "next": ["S_PostSortieHub"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_PostSortieHub"]
   },
   "S_PostSortieHub": {
     "timeout": 30000,
@@ -234,13 +146,13 @@
       "S_IsPreDamage",
       "S_StopOnDamagePopup",
       "S_CheckEquipmentPopup",
+      "S_StopOnEquipmentPopup",
       "S_IsIsekaiTicketConfirm",
       "S_PostKebiishi1",
       "S_PostKebiishi2",
-      "S_IsTeamSelect",
+      "S_IsPreSortieConfirm",
       "S_SortieSuccess"
-    ],
-    "on_error": ["S_DetectWhereAmI"]
+    ]
   },
   "S_PostKebiishi1": {
     "recognition": {
@@ -301,9 +213,10 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 出阵"
+        "message": "[常驻作战] 出阵"
       }
     },
+    "anchor": {"S_RoundDone": "S_CompleteRound"},
     "next": ["S_DetectWhereAmI"]
   },
   "S_IsIsekaiTicketConfirm": {
@@ -346,8 +259,7 @@
       "time": 100,
       "target": [1028, 38, 25, 26]
     },
-    "next": ["S_CompleteCurrentTaskAfterIsekaiNoTicket"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_CompleteCurrentTaskAfterIsekaiNoTicket"]
   },
   "S_IsIsekaiConfirmPurchase": {
     "recognition": {
@@ -362,7 +274,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 补充门票",
+        "message": "[常驻作战] 补充门票",
         "click": [729, 581, 101, 43]
       }
     },
@@ -384,8 +296,7 @@
       "time": 100,
       "target": [423, 484, 145, 56]
     },
-    "next": ["S_PreCheckTroopRecord"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_PreCheckTroopRecord"]
   },
   "S_IsTeamSelect": {
     "recognition": {
@@ -395,15 +306,15 @@
         "expected": "部队选择"
       }
     },
-    "next": [
-      "S_CheckEquipmentPopup",
-      "S_StopOnEquipmentPopup",
-      "S_DisableAutoMarch",
-      "S_EnableAutoMarch",
-      "S_ClickAutoMarchNoOrYesDelegate",
-      "S_ClickTeam"
-    ],
-    "on_error": ["S_DetectWhereAmI"]
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["S_DisableAutoMarch", "S_EnableAutoMarch", "S_ClickAutoMarchNoOrYesDelegate", "S_CaptainHub"]
   },
   "S_DisableAutoMarch": {
     "enabled": true,
@@ -457,7 +368,7 @@
       "type": "OCR",
       "param": {
         "roi": [440, 584, 110, 38],
-        "expected": ["不委托", "委托"]
+        "expected": ["委托"]
       }
     },
     "action": {"type": "Click"},
@@ -465,8 +376,7 @@
       "time": 100,
       "target": [440, 584, 110, 38]
     },
-    "next": ["S_ReturnFromAutoMarch"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_ReturnFromAutoMarch"]
   },
   "S_ReturnFromAutoMarch": {
     "action": {
@@ -480,18 +390,6 @@
       "target": [1024, 30, 35, 36]
     },
     "next": ["S_IsTeamSelect"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickTeam": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["S_CaptainHub"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_PreCheckTroopRecord": {
@@ -720,7 +618,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 完成一圈"
+        "message": "[常驻作战] 完成一圈"
       }
     },
     "next": ["S_IsIsekaiRegionEnd"],
@@ -741,11 +639,10 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 完成一圈"
+        "message": "[常驻作战] 完成一圈"
       }
     },
-    "next": ["S_IsIsekaiRegionEnd"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_IsIsekaiRegionEnd"]
   },
   "S_IsIsekaiRegionEnd": {
     "recognition": {
@@ -756,23 +653,16 @@
         "green_mask": true,
         "threshold": [0.98]
       }
-    },
-    "on_error": ["S_DetectWhereAmI"]
+    }
   },
-  "S_IsSortieRoundDone": {
-    "recognition": {
-      "type": "Custom",
-      "param": {"custom_recognition": "SortieRoundDoneRecognition"}
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[合战场] 完成一圈"
+  "S_CompleteRound": {
+    "anchor": {"S_RoundDone": ""},
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[常驻作战] 完成一圈",
+        "display": "file"
       }
-    },
-    "next": []
+    }
   },
   "S_VerifyEra": {
     "recognition": {
@@ -803,7 +693,7 @@
     "post_wait_freezes": {"time": 100},
     "next": ["S_IsTeamSelect", "S_DetectWhereAmI"]
   },
-  "S_IsSortieActivity": {
+  "S_IsInActivity": {
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -939,7 +829,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 点击行军",
+        "message": "[常驻作战] 点击行军",
         "click": [1072, 563, 110, 69]
       }
     },
@@ -960,7 +850,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -980,7 +870,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1000,7 +890,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1020,7 +910,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1040,7 +930,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1060,7 +950,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1080,7 +970,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1100,7 +990,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1120,7 +1010,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1140,7 +1030,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1160,7 +1050,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1180,7 +1070,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1200,7 +1090,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1220,7 +1110,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1240,7 +1130,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1260,7 +1150,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1280,7 +1170,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1301,7 +1191,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1322,7 +1212,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1343,7 +1233,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1364,7 +1254,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1385,7 +1275,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1406,7 +1296,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1427,7 +1317,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1448,7 +1338,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1469,7 +1359,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1490,7 +1380,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -1526,7 +1416,7 @@
       "type": "Custom",
       "custom_action": "LogAction",
       "custom_action_param": {
-        "message": "[合战场] 返回本丸",
+        "message": "[常驻作战] 返回本丸",
         "click": [490, 469, 1, 1]
       }
     },
@@ -1596,7 +1486,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 疲劳撤退",
+        "message": "[常驻作战] 疲劳撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1645,7 +1535,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装破坏撤退",
+        "message": "[常驻作战] 刀装破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1667,7 +1557,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1689,7 +1579,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1711,7 +1601,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1733,7 +1623,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1755,7 +1645,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1777,7 +1667,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1799,7 +1689,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1821,7 +1711,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1843,7 +1733,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1865,7 +1755,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1887,7 +1777,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1909,7 +1799,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1931,7 +1821,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1953,7 +1843,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1975,7 +1865,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -1997,7 +1887,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -2019,7 +1909,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -2041,7 +1931,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 刀装近破坏撤退",
+        "message": "[常驻作战] 刀装近破坏撤退",
         "click": [763, 446, 48, 44]
       }
     },
@@ -2377,7 +2267,7 @@
     "on_error": ["S_SelectDamagedSword"]
   },
   "S_CaptainHub": {
-    "next": ["S_IsPreSortieConfirm"],
+    "next": ["S_DragCaptain", "S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_PreConfirmSupply": {
@@ -2394,7 +2284,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 补充刀装",
+        "message": "[常驻作战] 补充刀装",
         "click": [789, 512, 1, 4]
       }
     },
@@ -2543,19 +2433,6 @@
     "repeat_delay": 500,
     "next": ["S_DetectWhereAmI"]
   },
-  "S_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["S_DetectWhereAmI"]
-  },
   "S_IsTrainingApplication": {
     "action": {
       "type": "Click",
@@ -2618,7 +2495,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2640,79 +2517,6 @@
     "next": ["S_ClickRepairInMenu", "S_SelectDamagedSword"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["S_DetectWhereAmI"]
-  },
-  "S_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["S_DetectWhereAmI"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["S_DetectWhereAmI"]
-  },
-  "S_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["S_DetectWhereAmI"]
-  },
-  "S_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["S_DetectWhereAmI"]
-  },
   "S_Boss_E2_R1": {
     "enabled": false,
     "recognition": {
@@ -2728,7 +2532,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2748,7 +2552,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2768,7 +2572,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2788,7 +2592,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2808,7 +2612,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2828,7 +2632,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2848,7 +2652,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2868,7 +2672,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2888,7 +2692,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2908,7 +2712,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -2928,24 +2732,10 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Info",
-        "message": "[合战场] 命中王点"
+        "message": "[常驻作战] 命中王点"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
-  },
-  "S_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["S_IsAnnouncementPopup", "S_DetectWhereAmI"]
   },
   "S_IsLoginReward": {
     "recognition": {
@@ -3006,7 +2796,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -3027,7 +2817,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -3048,7 +2838,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -3069,7 +2859,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 道中撤退"
+        "message": "[常驻作战] 道中撤退"
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
@@ -3098,19 +2888,6 @@
     "next": ["E_ExpSubHub1"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_IsMenuDirectory": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_ClickSortieInMenu"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
   "S_StopOnEquipmentPopup": {
     "recognition": {
       "type": "TemplateMatch",
@@ -3126,8 +2903,7 @@
       "time": 200,
       "target": [427, 269, 426, 130]
     },
-    "next": ["S_CompleteCurrentTaskAfterEquipmentDamage"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_CompleteCurrentTaskAfterEquipmentDamage"]
   },
   "S_StopOnDamagePopup": {
     "enabled": false,
@@ -3183,8 +2959,7 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "重伤修刀后停止"}
-    },
-    "on_error": ["S_DetectWhereAmI"]
+    }
   },
   "S_CompleteCurrentTaskAfterEquipmentRecordShortage": {
     "action": {
@@ -3248,8 +3023,7 @@
       "custom_action": "RestartGameAction",
       "custom_action_param": {"log_auto_recovery": false}
     },
-    "next": ["S_DetectWhereAmI"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_DetectWhereAmI"]
   },
   "S_DragCaptain": {
     "enabled": false,
@@ -3259,19 +3033,6 @@
     },
     "next": ["S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["S_DetectWhereAmI"]
   },
   "S_FatigueCheck": {
     "enabled": false,
@@ -3284,1048 +3045,7 @@
       }
     },
     "next": ["S_IsPreSortieConfirm"],
-    "on_error": ["SF_Hub"]
-  },
-  "SF_Hub": {
-    "enabled": false,
-    "next": ["SF_ClickMenu"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_DetectWhereAmI": {
-    "pre_delay": 0,
-    "timeout": 120000,
-    "next": [
-      "SF_HasExpeditionReturn_Exp",
-      "SF_HasExpeditionReturn_Title",
-      "SF_CheckHomeBrightness",
-      "SF_IsMenuDirectory",
-      "SF_IsEraSelect",
-      "SF_IsRegionSelect",
-      "SF_IsSortieActivity",
-      "SF_IsTeamSelect",
-      "SF_IsMarching",
-      "SF_IsFormationSelect",
-      "SF_IsBattleResult_Exp",
-      "SF_IsBattleResult_Title",
-      "SF_IsSwordDrop",
-      "SF_IsAnnouncementPopup",
-      "SF_IsTrainingLetter",
-      "SF_IsLoginReward",
-      "SF_IsAdvertisementPopup",
-      "SF_IsGameIcon",
-      "SF_IsLoginButton",
-      "SF_IsGameUpdatePopup",
-      "SF_IsInGameUpdatePopup",
-      "SF_IsInternalReport",
-      "SF_IsTrainingApplication",
-      "[JumpBack]FallbackWait"
-    ],
-    "on_error": ["SF_RestartGame"]
-  },
-  "SF_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1056, 463, 63, 193]
-    },
-    "timeout": 3000,
-    "next": ["SF_IsAnnouncementPopup", "SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "next": ["SF_LoginRewardClick2"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "next": ["SF_LoginRewardClick3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "timeout": 3000,
-    "next": ["SF_IsLoginReward"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_HasExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_CheckHomeBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["SF_IsHome", "SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsHome": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["SF_Hub"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1183, 18, 87, 40]
-    },
-    "next": ["SF_PostClickMenuHub", "SF_ClickMenu", "SF_DetectWhereAmI"]
-  },
-  "SF_PostClickMenuHub": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["SF_IsMenuDirectory", "SF_DetectWhereAmI"]
-  },
-  "SF_IsMenuDirectory": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["SF_ClickSortieInMenu", "SF_DetectWhereAmI"]
-  },
-  "SF_ClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [160, 158, 97, 62]
-    },
-    "next": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsEraSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [104, 331, 49, 235],
-        "template": "Common/时代选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["SF_ClickFirstEra"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ClickFirstEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [246, 389, 1, 1]
-      }
-    },
-    "post_delay": 200,
-    "next": ["SF_ConfirmEra"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ConfirmEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1199, 633, 3, 1]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsRegionSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [848, 607, 257, 63],
-        "template": "Common/地域选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["SF_VerifyEra", "SF_ClickBackToEra"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_VerifyEra": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [831, 80, 26, 26],
-        "expected": ["一", "l", "1"]
-      }
-    },
-    "next": ["SF_ClickRegion1_1", "SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ClickBackToEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [127, 77, 26, 28]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ClickRegion1_1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [194, 213, 8, 1]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsSortieActivity": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 302, 49, 86],
-        "template": "Common/活动选中.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsTeamSelect": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["SF_CheckEquipmentPopup", "SF_ClickTeamN"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_CheckEquipmentPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_EqRefill_Step1"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ClickTeamN": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["SF_DissolveHub"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_DissolveHub": {
-    "next": ["SF_DissolveCheck", "SF_CheckFatigue"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_DissolveCheck": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1074, 211, 37, 421],
-        "template": "Common/移除队员.png",
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DissolveHub"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_CheckFatigue": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 100,
-        "reversed": true
-      }
-    },
-    "next": ["SF_ClickSortieNow", "SF_DetectWhereAmI"],
-    "on_error": ["SF_UseRecord_Step1"]
-  },
-  "SF_ClickSortieNow": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "即刻"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[合战场] 刷花",
-        "click": [1156, 584, 96, 47]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1156, 584, 96, 47]
-    },
-    "next": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsMarching": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1067, 558, 120, 79],
-        "template": "Common/合战场_行军.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsFormationSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsBattleResult_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_IsSwordDrop": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [598, 543, 66, 1],
-        "lower": [88, 48, 2],
-        "upper": [96, 56, 10]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1067, 558, 120, 79]
-      }
-    },
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step2_Rec1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_UseRecord_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step2_Rec2": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_UseRecord_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step2_Rec3": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_UseRecord_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step2_Rec4": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_UseRecord_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step2_Rec5": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_UseRecord_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": [
-      "SF_UseRecord_Step2_Rec1",
-      "SF_UseRecord_Step2_Rec2",
-      "SF_UseRecord_Step2_Rec3",
-      "SF_UseRecord_Step2_Rec4",
-      "SF_UseRecord_Step2_Rec5",
-      "SF_UseRecord_Step1"
-    ],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["SF_UseRecord_Step4", "SF_UseRecord_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_UseRecord_Step4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [789, 512, 1, 4]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["SF_NavigateBack"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["SF_EqRefill_Step2_Rec1", "SF_EqRefill_Step2_Rec2", "SF_EqRefill_Step2_Rec3", "SF_EqRefill_Step2_Rec4", "SF_EqRefill_Step2_Rec5"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step2_Rec1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_EqRefill_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step2_Rec2": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_EqRefill_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step2_Rec3": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_EqRefill_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step2_Rec4": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_EqRefill_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step2_Rec5": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["SF_EqRefill_Step3"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["SF_EqRefill_Step4"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_EqRefill_Step4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [789, 512, 1, 4]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_NavigateBack": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1183, 18, 87, 40]
-    },
-    "next": ["SF_NavigateBack", "S_DetectWhereAmI"]
-  },
-  "SF_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["SF_ClickTrainingApplication", "SF_CancelTrainingApplication"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["SF_CancelTrainingApplication", "SF_ClickTrainingApplication"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_CancelTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["SF_CancelTrainingApplication", "SF_DetectWhereAmI"],
-    "on_error": ["SF_DetectWhereAmI"]
-  },
-  "SF_RestartGame": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["SF_DetectWhereAmI"]
-  },
-  "S_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["S_DetectWhereAmI"]
-  },
-  "S_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["S_DetectWhereAmI"],
-    "on_error": ["S_DetectWhereAmI"]
+    "on_error": ["TF_Hub"]
   },
   "S_LogMarchingDamageWord": {
     "action": {
@@ -4333,7 +3053,7 @@
       "custom_action": "LogAction",
       "custom_action_param": {
         "level": "Warning",
-        "message": "[合战场] 重伤撤退"
+        "message": "[常驻作战] 重伤撤退"
       }
     },
     "next": ["S_LogMarchingDamage"],
@@ -4345,7 +3065,7 @@
       "custom_action": "RepairStartLogAction",
       "custom_action_param": {
         "mode": "emit",
-        "prefix": "合战场",
+        "prefix": "常驻作战",
         "action": "修复"
       }
     },

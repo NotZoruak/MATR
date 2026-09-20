@@ -93,9 +93,9 @@
 
 合战场任务的轮数与其它任务完全一致：`repeatable` 为 `true`，次数取自任务级 `repeat_count`，「过去」与「异去」共用同一份设置。`MaaProcessor.CreateNodeAndParam` 直接使用 `InterfaceItem.RepeatCount`，不得恢复历史上「从 `过去/异去` 下级选项 `异去_重复次数` 读取轮数」或「给过去写死三轮」的定制逻辑（该逻辑曾两次被上游升级覆盖）。
 
-「异去」每圈流程自身停在 `S_IsIsekaiRegionEnd`（无 `next`）即一圈结束，无需额外定制。「过去」每一圈打完回到本丸后同样要把控制权交回队列，因此由资源侧自定义识别 `SortieRoundDoneRecognition` 判断「本次任务运行是否已经出阵过」（判定依据为 `S_SortieSuccess` 的命中计数配合 `TaskJob.Id` 与基线），命中时走 `S_IsSortieRoundDone`（打点「[合战场] 完成一圈」＋`"next": []`）结束本轮运行。判定必须走 `next` 正常分支，不得改用「动作返回 false 走 `on_error`」：MaaFW 的 `SaveOnError` 全局选项会在 on_error 触发时写入 `debug/on_error/` 截图，按圈数刷屏。
+「异去」每圈流程自身停在 `S_IsIsekaiRegionEnd`（无 `next`）即一圈结束，无需额外定制。「过去」每圈打完回到本丸后同样要把控制权交回队列：`Sortie` 入口先清空 `S_RoundDone` anchor，`S_SortieSuccess` 确认出阵后把它指向 `S_CompleteRound`；“过去”选项让 `S_CheckHomeBrightness` 优先尝试 `[Anchor]S_RoundDone`，该完成 node 记录「[常驻作战] 完成一圈」、清空 anchor 且无 `next`，从而正常结束本轮。未曾成功出阵时 anchor 候选会被跳过，仍按 `S_IsHome` 导航出阵。不得改用动作返回 false 走 `on_error`：MaaFW 的 `SaveOnError` 全局选项会在 on_error 触发时写入 `debug/on_error/` 截图，按圈数刷屏。
 
-引擎运行标识在每次 `post_task` 变化，命中计数的生命周期以基线比较兜底；刷花链（`SF_ClickSortieNow` / `SF_IsHome`）不参与轮次判定，回到主链后继续。
+刷花链（`SF_ClickSortieNow` / `SF_IsHome`）不写 `S_RoundDone`，回到主链后继续。
 
 ### `live-view.pipelined-screencap-recovery`
 
