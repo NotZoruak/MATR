@@ -33,9 +33,20 @@
                             <TextBlock FontSize="14" VerticalAlignment="Center" Text="识别屏幕" />
                         </StackPanel>
                     </Button>
-                    <TextBlock Text="?" FontSize="13" VerticalAlignment="Center"
-                               Foreground="{DynamicResource SukiLowText}"
-                               ToolTip.Tip="请使游戏位于[锻刀资源投入]页面" />
+                    <Button Command="{Binding LoadWarehouseDataCommand}"
+                            Padding="16,8"
+                            Background="#D9E6FF"
+                            Foreground="#165DFF">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <fluent:FluentIcon Icon="Database" IconSize="Size16" IconVariant="Regular" />
+                            <TextBlock FontSize="14" VerticalAlignment="Center" Text="读取仓库数据" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Text="使用屏幕识别时，请保证游戏位于锻刀资源投入页面"
+                               FontSize="13"
+                               Foreground="#7B8798"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0" />
                 </StackPanel>
 
                 <!-- 锻刀公式 -->
@@ -150,14 +161,12 @@
                             Padding="24,10"
                             Classes="Accent">
                         <StackPanel Orientation="Horizontal" Spacing="6">
-                            <fluent:FluentIcon Icon="EqualCircle" IconSize="Size16" IconVariant="Regular" />
                             <TextBlock Text="计算" FontSize="15" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ResetCommand}"
                             Padding="24,10">
                         <StackPanel Orientation="Horizontal" Spacing="6">
-                            <fluent:FluentIcon Icon="ArrowReset" IconSize="Size16" IconVariant="Regular" />
                             <TextBlock Text="重置" FontSize="15" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>

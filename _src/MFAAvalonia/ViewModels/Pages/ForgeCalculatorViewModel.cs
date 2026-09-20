@@ -3,8 +3,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaaFramework.Binding;
 using MaaFramework.Binding.Buffers;
+using MFAAvalonia.Configuration;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
+using MFAAvalonia.Models;
+using MFAAvalonia.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -111,6 +114,34 @@ public partial class ForgeCalculatorViewModel : ViewModelBase
         CurrentPermits = 0;
         CurrentSpeedups = 0;
         ClearResults();
+    }
+
+    [RelayCommand]
+    private void LoadWarehouseData()
+    {
+        try
+        {
+            var data = ConfigurationManager.Current.GetValue(ConfigurationKeys.WarehouseData, new WarehouseData());
+            var values = ForgeCalculatorWarehouseDataMapper.Read(data);
+
+            CurrentCharcoal = values.Charcoal;
+            CurrentSteel = values.Steel;
+            CurrentCoolant = values.Coolant;
+            CurrentWhetstone = values.Whetstone;
+            CurrentPlum = values.Plum;
+            CurrentBamboo = values.Bamboo;
+            CurrentPine = values.Pine;
+            CurrentFuji = values.Fuji;
+            CurrentPermits = values.Permits;
+            CurrentSpeedups = values.Speedups;
+
+            ToastHelper.Success("限锻计算", "已读取仓库数据并填入现有资源、御札和道具。");
+        }
+        catch (Exception ex)
+        {
+            LoggerHelper.Error($"[ForgeCalculator] 读取仓库数据异常：{ex}", ex);
+            ShowError($"读取仓库数据失败：{ex.Message}");
+        }
     }
 
     [RelayCommand]
