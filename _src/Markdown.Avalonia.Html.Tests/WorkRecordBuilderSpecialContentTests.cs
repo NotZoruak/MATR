@@ -78,4 +78,26 @@ public class WorkRecordBuilderSpecialContentTests
         Assert.Equal(1, record.SortieCount);
         Assert.Equal(1, record.RoundCount);
     }
+
+    [Fact]
+    public void Build_大阪挖地前缀归入地下城任务记录()
+    {
+        var start = new DateTime(2026, 9, 20, 10, 0, 0);
+        var records = WorkRecordBuilder.Build(
+        [
+            new LogEntry(start, "INF", "名称=[地下城] 入口=[Underground]"),
+            new LogEntry(start.AddSeconds(1), "INF", "开始任务：地下城"),
+            new LogEntry(start.AddSeconds(2), "INF", "[Record] [大阪挖地] 出阵"),
+            new LogEntry(start.AddSeconds(3), "INF", "[Record] [大阪挖地] 点击行军"),
+            new LogEntry(start.AddSeconds(4), "INF", "[Record] [大阪挖地] 完成一圈"),
+            new LogEntry(start.AddSeconds(5), "INF", "停止前状态：SUCCEEDED"),
+        ]);
+
+        var record = Assert.Single(records);
+
+        Assert.Equal("Underground", record.Entry);
+        Assert.Equal(1, record.SortieCount);
+        Assert.Equal(1, record.MarchCount);
+        Assert.Equal(1, record.RoundCount);
+    }
 }

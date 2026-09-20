@@ -217,13 +217,22 @@
         "threshold": [0.8]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "KobanChestLogAction",
-      "custom_action_param": "{\"roi\":[414,285,38,37],\"template\":\"Activity/小判箱掉落.png\",\"threshold\":0.8,\"green_mask\":true,\"timeout\":15000,\"poll_interval\":200,\"settle_ms\":4000,\"task\":\"地下城\"}"
+    "next": ["U_IsKobanChestGone"]
+  },
+  "U_IsKobanChestGone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [414, 285, 38, 37],
+        "template": "Activity/小判箱掉落.png",
+        "green_mask": true,
+        "threshold": [0.8]
+      }
     },
+    "inverse": true,
+    "timeout": 15000,
     "next": ["U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
+    "focus": {"Node.Action.Succeeded": {"content": "[大阪挖地] 小判箱掉落", "display": "file"}}
   },
   "U_IsSpecialDrop": {
     "recognition": {
@@ -495,14 +504,18 @@
   },
   "U_ClickMarching": {
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 点击行军",
-        "click": [1067, 558, 120, 79]
+      "type": "Click",
+      "param": {
+        "target": [1067, 558, 120, 79]
       }
     },
-    "next": ["U_DetectWhereAmI"]
+    "next": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 点击行军",
+        "display": "file"
+      }
+    }
   },
   "U_CheckBeforeMarch": {
     "pre_delay": 0,
@@ -517,13 +530,14 @@
         "expected": "传送凭证"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[地下城] 完成一圈"}
-    },
     "next": ["U_GoHomeAfterRound", "U_ContinueNextRound"],
-    "on_error": ["U_DetectWhereAmI"]
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 完成一圈",
+        "display": "file"
+      }
+    }
   },
   "U_ContinueNextRound": {
     "enabled": true,
@@ -729,14 +743,18 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 出阵",
-        "click": [706, 582, 154, 42]
+      "type": "Click",
+      "param": {
+        "target": [706, 582, 154, 42]
       }
     },
-    "next": ["U_PostSortieHub"]
+    "next": ["U_PostSortieHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 出阵",
+        "display": "file"
+      }
+    }
   },
   "U_IsHome": {
     "recognition": {
@@ -907,16 +925,20 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 返回本丸",
-        "click": [490, 469, 10, 10]
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 10, 10]
       }
     },
     "post_wait_freezes": {
       "time": 500,
       "target": [490, 469, 10, 10]
+    },
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 返回本丸",
+        "display": "file"
+      }
     }
   },
   "U_VerifyMenuSortie": {
@@ -974,25 +996,14 @@
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_LogMarchingDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，撤退撤退"}
-    },
-    "next": ["U_LogMarchingDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LogMarchingDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 重伤撤退"
-      }
-    },
     "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 重伤撤退",
+        "display": "log"
+      }
+    }
   },
   "U_LogStopOnDamage": {
     "action": {
@@ -1055,16 +1066,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 疲劳撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiFatigueLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 疲劳撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheck": {
     "enabled": false,
@@ -1104,16 +1118,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R0C0": {
     "recognition": {
@@ -1126,16 +1143,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R0C1": {
     "recognition": {
@@ -1148,16 +1168,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R0C2": {
     "recognition": {
@@ -1170,16 +1193,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R1C0": {
     "recognition": {
@@ -1192,16 +1218,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R1C1": {
     "recognition": {
@@ -1214,16 +1243,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R1C2": {
     "recognition": {
@@ -1236,16 +1268,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R2C0": {
     "recognition": {
@@ -1258,16 +1293,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R2C1": {
     "recognition": {
@@ -1280,16 +1318,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R2C2": {
     "recognition": {
@@ -1302,16 +1343,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R3C0": {
     "recognition": {
@@ -1324,16 +1368,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R3C1": {
     "recognition": {
@@ -1346,16 +1393,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R3C2": {
     "recognition": {
@@ -1368,16 +1418,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R4C0": {
     "recognition": {
@@ -1390,16 +1443,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R4C1": {
     "recognition": {
@@ -1412,16 +1468,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R4C2": {
     "recognition": {
@@ -1434,16 +1493,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R5C0": {
     "recognition": {
@@ -1456,16 +1518,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R5C1": {
     "recognition": {
@@ -1478,16 +1543,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R5C2": {
     "recognition": {
@@ -1500,42 +1568,18 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiFatigueLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[疲劳检测] 检测到刀剑疲劳，撤退"}
-    },
     "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiEqDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装检测] 检测到刀装破坏，撤退"}
-    },
-    "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiEqNearDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装检测] 检测到刀装近破坏，撤退"}
-    },
-    "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   }
 }

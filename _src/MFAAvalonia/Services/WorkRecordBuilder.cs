@@ -251,7 +251,7 @@ public static class WorkRecordBuilder
         string[] taskEntries = prefix switch
         {
             "远征计时" or "后勤" or "本丸后勤" => ["Expedition"],
-            "地下城" => ["Underground"],
+            "地下城" or "大阪挖地" => ["Underground"],
             "合战场" or "常驻作战" => ["Sortie"],
             "联队战" or "海陆联队" => ["RegimentBattle"],
             "秘宝之里" or "花牌" => ["Hanapai"],

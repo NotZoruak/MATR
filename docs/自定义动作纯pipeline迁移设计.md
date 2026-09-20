@@ -242,12 +242,12 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 | 动作 | 引用处数 | 当前职责 | 纯 pipeline 替代 |
 |---|---|---|---|
 | `EquipmentFallbackAction` | 2 | 在部队选择页扫描缺装标记，点击同一行的一键装备按钮 | 颜色或模板识别 + `Click` + `target_offset` 横向偏移到按钮 |
-| `KobanChestLogAction` | 1 | 模板命中后打点一次，再等图标消失 | 模板识别 node + `focus` + `max_hit: 1`；消失等待交给 `inverse` 识别或 `post_wait_freezes` |
+| `KobanChestLogAction` | 0（2026-09-20 已迁完，脚本已删除） | 模板命中后打点一次，再等图标消失 | `U_IsKobanChest` 后接同模板的 `inverse` 识别 node，图标消失后用 `focus` 的 `display: file` 写入 `[大阪挖地] 小判箱掉落` |
 | `ResourcePointLogAction` | 2 | OCR 奖励文本并打点，弹窗期间轮询取最完整读数 | 基础打点可用 OCR node + `focus`；轮询取最优读数无法用纯 pipeline 表达 |
 | `NaibanFindSwordAction` | 2 | 内番选刀列表滚动找目标，找不到时选第一把可用刀剑 | OCR node + `Click` + 上滑 node + `[JumpBack]` 循环，兜底 node 点固定第一行 |
 | `FormationFindSwordAction` | 6 | 编队选刀列表滚动找目标，命中后点行右侧按钮 | 同上，`target_offset` 写行内按钮偏移 |
 
-`KobanChestLogAction` 的「一次掉落只打点一次」语义要注意：`max_hit` 限制的是成功识别次数，打点 node 被打点一次后不会再命中，正好可以用来去重；但动画期间模板反复命中属于识别层面的抖动，迁移后要把轮询间隔的容错换成 `post_wait_freezes` 的 `target` 限定，否则可能回到「重启识别仍命中、重复打点」的老问题。
+小判箱迁移后由 `U_IsKobanChest` 负责命中掉落画面，再由 `U_IsKobanChestGone` 使用同一模板的 `inverse` 等待图标消失，成功后只写入一次 `[大阪挖地] 小判箱掉落` 文件日志并回到主枢纽。该方案不再使用自定义动作内部的轮询与停止检查，后续需实机确认动画间隙不会导致过早判定消失。
 
 列表滚动找刀的两个动作在迁移时要明确保留的行为差异：`ListOcrScan` 里的「与上一屏 OCR 结果相同即判定到底」需要比较两次文本，纯 pipeline 无法表达。迁移后可以改成「滚动到固定次数上限后进入兜底 node」，或者在保留动作的前提下只迁移命中后的点击部分。
 
@@ -372,11 +372,11 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 
 ### 批次三：固定坐标与等待
 
-范围：`UpdateDataWaitAction`、`PageScrollAndHoldAction`、`KobanChestLogAction`。
+范围：`UpdateDataWaitAction`、`PageScrollAndHoldAction`。`KobanChestLogAction` 已于 2026-09-20 迁移完成。
 
 前置：完成延迟可中断性与 `Swipe` 末端保持的实机验证。
 
-验证：停止按钮响应时间不变；小判箱一次掉落只打点一次；翻页后页面停留位置不变。
+验证：停止按钮响应时间不变；翻页后页面停留位置不变。小判箱迁移后的图标消失等待需单独实机验证。
 
 ### 批次四：选项驱动的坐标点击
 
