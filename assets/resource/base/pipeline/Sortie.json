@@ -5,7 +5,13 @@
   },
   "S_DetectWhereAmI": {
     "pre_delay": 0,
-    "anchor": {"GrindDone": "S_DetectWhereAmI"},
+    "anchor": {
+      "Hub": "S_DetectWhereAmI",
+      "RepairDone": "S_DetectWhereAmI",
+      "RepairAborted": "S_DetectWhereAmI",
+      "SupplyDone": "S_IsPreSortieConfirm",
+      "GrindDone": "S_DetectWhereAmI"
+    },
     "timeout": 120000,
     "next": [
       "S_IsMarching",
@@ -143,9 +149,8 @@
   "S_PostSortieHub": {
     "timeout": 30000,
     "next": [
-      "S_IsPreDamage",
+      "IsPreDamage",
       "S_StopOnDamagePopup",
-      "S_CheckEquipmentPopup",
       "S_StopOnEquipmentPopup",
       "S_IsIsekaiTicketConfirm",
       "S_PostKebiishi1",
@@ -280,24 +285,6 @@
     },
     "next": ["S_DetectWhereAmI"]
   },
-  "S_CheckEquipmentPopup": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [423, 484, 145, 56]
-    },
-    "next": ["S_PreCheckTroopRecord"]
-  },
   "S_IsTeamSelect": {
     "recognition": {
       "type": "OCR",
@@ -392,126 +379,6 @@
     "next": ["S_IsTeamSelect"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_PreCheckTroopRecord": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_PreCheckUseRecord"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckUseRecord": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_PreCheckClickRecord1"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckClickRecord1": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["S_PreCheckUseRecordBtn"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckClickRecord2": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["S_PreCheckUseRecordBtn"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckClickRecord3": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["S_PreCheckUseRecordBtn"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckClickRecord4": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["S_PreCheckUseRecordBtn"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckClickRecord5": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["S_PreCheckUseRecordBtn"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreCheckUseRecordBtn": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["S_PreConfirmSupply"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
   "S_IsPastEraSelect": {
     "recognition": {
       "type": "TemplateMatch",
@@ -522,8 +389,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_ClickEra"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_ClickEra"]
   },
   "S_IsIsekaiEraSelect": {
     "recognition": {
@@ -535,8 +401,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_ClickPastTab"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_ClickPastTab"]
   },
   "S_ClickPastTab": {
     "action": {
@@ -564,8 +429,7 @@
       }
     },
     "post_delay": 200,
-    "next": ["S_ConfirmEra"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_ConfirmEra"]
   },
   "S_ConfirmEra": {
     "action": {
@@ -587,8 +451,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_VerifyEra", "S_ClickBackToEra"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_VerifyEra", "S_ClickBackToEra"]
   },
   "S_IsIsekaiRegionSelect": {
     "recognition": {
@@ -600,8 +463,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_ClickBackToEra"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_ClickBackToEra"]
   },
   "S_IsIsekaiBattleEnd_1": {
     "recognition": {
@@ -1427,30 +1289,6 @@
     "next": ["S_CheckHomeBrightness", "S_ConfirmRetreat"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_IsPreDamage": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [233, 128, 71, 549],
-        "template": "Common/重伤.png",
-        "green_mask": true,
-        "threshold": [0.9]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [788, 465, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [368, 464, 539, 90]
-    },
-    "next": ["S_LogPreDamage"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
   "S_IsMarchingDamage": {
     "recognition": {
       "type": "TemplateMatch",
@@ -1938,22 +1776,6 @@
     "next": ["S_GuiEqNearDamageLog"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_GuiSupplyLog": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [563, 4, 153, 45],
-        "expected": "部队选择"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装补充] 补充刀装"}
-    },
-    "next": ["S_IsPreSortieConfirm"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
   "S_GuiFatigueLog": {
     "action": {
       "type": "Custom",
@@ -1980,214 +1802,6 @@
     },
     "post_delay": 500,
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
-  },
-  "S_NavigateToRepair": {
-    "next": ["S_ClickMenuForRepair", "S_DetectWhereAmI"]
-  },
-  "S_ClickMenuForRepair": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_ClickRepairInMenu", "S_ClickMenuForRepair"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickRepairInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [451, 379, 84, 40],
-        "expected": "修复"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_VerifyRepairMenuClosed", "S_SelectDamagedSword", "S_DetectWhereAmI"]
-  },
-  "S_SelectDamagedSword": {
-    "next": ["S_SelectRepairSlot1", "S_SelectRepairSlot2", "S_SelectRepairSlot3", "S_SelectRepairSlot4"],
-    "on_error": ["S_CheckRepairScreen"]
-  },
-  "S_CheckRepairScreen": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [554, 56, 175, 49],
-        "expected": "修复"
-      }
-    },
-    "next": ["S_SelectDamagedSword"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_SelectRepairSlot1": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [307, 163, 255, 89],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_ConfirmSelectSlot"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_SelectRepairSlot2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [303, 300, 255, 90],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_ConfirmSelectSlot"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_SelectRepairSlot3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [304, 432, 255, 90],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_ConfirmSelectSlot"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_SelectRepairSlot4": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [304, 565, 255, 90],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["S_ConfirmSelectSlot"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_DecideDamage_Pre": {
-    "next": ["S_NavigateToRepair", "S_LogStopOnDamageRepair"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ConfirmSelectSlot": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1052, 138, 32, 31],
-        "expected": "选"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [262, 307, 147, 46]
-    },
-    "next": ["S_CheckAccel", "S_ClickAccel"],
-    "on_error": ["S_LogNoDamagedSword"]
-  },
-  "S_CaptureRepairInfo": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RepairStartLogAction",
-      "custom_action_param": {
-        "mode": "capture",
-        "name_roi": [195, 242, 150, 32],
-        "cost_rois": [
-          [301, 409, 66, 22],
-          [301, 479, 66, 23],
-          [299, 549, 70, 26],
-          [300, 620, 67, 25]
-        ]
-      }
-    },
-    "next": ["S_CheckAccel"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_LogNoDamagedSword": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "未检测到可修复刀剑"}
-    },
-    "next": ["S_DetectWhereAmI"]
-  },
-  "S_CheckAccel": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1162, 258, 6, 4],
-        "lower": [172, 21, 21],
-        "upper": [178, 27, 27]
-      }
-    },
-    "next": ["S_ClickRepairDone"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickAccel": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1156, 241, 27, 25]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 241, 27, 25]
-    },
-    "next": ["S_CaptureRepairInfo"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickRepairDone": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1159, 588, 83, 44],
-        "expected": "修复"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1159, 588, 83, 44]
-    },
-    "next": ["S_LogRepairDone"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickRepairandStop": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1159, 588, 83, 44],
-        "expected": "修复"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["S_CompleteCurrentTaskAfterDamageRepair"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_LogRepairDone": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 修复完成"}
-    },
-    "next": ["S_LogRepairDoneWord"],
-    "on_error": ["S_DetectWhereAmI"]
   },
   "S_ConfirmReturnHome": {
     "recognition": {
@@ -2253,142 +1867,8 @@
     "next": ["S_ClickSortieInMenu"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_VerifyLeftMenuRepair": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_ClickRepairInMenu"],
-    "on_error": ["S_SelectDamagedSword"]
-  },
   "S_CaptainHub": {
     "next": ["S_DragCaptain", "S_IsPreSortieConfirm"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_PreConfirmSupply": {
-    "enabled": false,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "[常驻作战] 补充刀装",
-        "click": [789, 512, 1, 4]
-      }
-    },
-    "post_delay": 500,
-    "next": ["S_FallbackConfirmRecord", "S_GuiSupplyLog", "S_PreConfirmSupply"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_FallbackConfirmRecord": {
-    "enabled": false,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [567, 37, 138, 35],
-        "expected": "记录确认"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "记录中刀装不足"}
-    },
-    "next": ["S_FallbackConfirmRecordLog"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_FallbackConfirmRecordLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "记录中刀装不足"
-      }
-    },
-    "next": ["S_FallbackConfirmRecordClick"]
-  },
-  "S_FallbackConfirmRecordClick": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1024, 519, 99, 48]
-      }
-    },
-    "next": ["S_CompleteCurrentTaskAfterEquipmentRecordShortage"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_FallbackVerifyTeamSelect": {
-    "enabled": true,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1050, 80, 27, 28]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1050, 80, 27, 28]
-    },
-    "next": ["S_FallbackFindMissingEquipment"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_FallbackFindMissingEquipment": {
-    "enabled": true,
-    "action": {
-      "type": "Custom",
-      "custom_action": "EquipmentFallbackAction"
-    },
-    "next": ["S_FallbackConfirmOneClickEquip"],
-    "on_error": ["S_IsPreSortieConfirm"]
-  },
-  "S_FallbackConfirmOneClickEquip": {
-    "enabled": true,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [574, 9, 135, 38],
-        "expected": "更换装备"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [564, 84, 108, 20]
-      }
-    },
-    "post_delay": 500,
-    "next": ["S_FallbackReturnFromEquip"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_FallbackReturnFromEquip": {
-    "enabled": true,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [136, 10, 31, 29]
-      }
-    },
-    "next": ["S_FallbackFindMissingEquipment"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_WaitRefresh": {
@@ -2499,23 +1979,6 @@
       }
     },
     "next": ["S_ClickRetreat", "S_DetectWhereAmI"]
-  },
-  "S_VerifyRepairMenuClosed": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["S_TryClickRepair"],
-    "on_error": ["S_SelectDamagedSword"]
-  },
-  "S_TryClickRepair": {
-    "next": ["S_ClickRepairInMenu", "S_SelectDamagedSword"],
-    "on_error": ["S_DetectWhereAmI"]
   },
   "S_Boss_E2_R1": {
     "enabled": false,
@@ -2926,17 +2389,7 @@
       "time": 100,
       "target": [368, 464, 539, 90]
     },
-    "next": ["S_LogStopOnDamage"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_LogPreDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，准备进入修复流程"}
-    },
-    "next": ["S_DecideDamage_Pre"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_LogStopOnDamage"]
   },
   "S_LogMarchingDamage": {
     "action": {
@@ -2961,14 +2414,6 @@
       "custom_action_param": {"reason": "重伤修刀后停止"}
     }
   },
-  "S_CompleteCurrentTaskAfterEquipmentRecordShortage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "部队记录刀装不足"}
-    },
-    "on_error": ["S_DetectWhereAmI"]
-  },
   "S_CompleteCurrentTaskAfterEquipmentDamage": {
     "action": {
       "type": "Custom",
@@ -2990,23 +2435,6 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "通行令牌不足"}
-    },
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_LogStopOnDamageRepair": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，任务终止"}
-    },
-    "next": ["S_CompleteCurrentTaskAfterDamageRepairFallback"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_CompleteCurrentTaskAfterDamageRepairFallback": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "重伤停止（修刀流程兜底）"}
     },
     "on_error": ["S_DetectWhereAmI"]
   },
@@ -3056,20 +2484,6 @@
         "message": "[常驻作战] 重伤撤退"
       }
     },
-    "next": ["S_LogMarchingDamage"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_LogRepairDoneWord": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RepairStartLogAction",
-      "custom_action_param": {
-        "mode": "emit",
-        "prefix": "常驻作战",
-        "action": "修复"
-      }
-    },
-    "next": ["S_NavigateToSortie"],
-    "on_error": ["S_DetectWhereAmI"]
+    "next": ["S_LogMarchingDamage"]
   }
 }

@@ -62,9 +62,10 @@ public class SortiePipelineTests
         Assert.DoesNotContain("S_StopOnEquipmentPopup", teamNext);
 
         var postSortieNext = pipeline["S_PostSortieHub"]!["next"]!.AsArray().Select(item => item!.GetValue<string>()).ToArray();
-        var equipmentIndex = Array.IndexOf(postSortieNext, "S_CheckEquipmentPopup");
         var stopEquipmentIndex = Array.IndexOf(postSortieNext, "S_StopOnEquipmentPopup");
-        Assert.True(equipmentIndex >= 0 && stopEquipmentIndex > equipmentIndex);
+        Assert.DoesNotContain("IsEquipmentShortagePopup", postSortieNext);
+        Assert.True(stopEquipmentIndex >= 0);
+        Assert.False(pipeline.ContainsKey("S_CheckEquipmentPopup"));
 
         var hubAnchors = pipeline["S_DetectWhereAmI"]!["anchor"]!.AsObject();
         Assert.Equal("S_DetectWhereAmI", hubAnchors["GrindDone"]!.GetValue<string>());

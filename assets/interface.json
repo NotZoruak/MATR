@@ -1752,10 +1752,7 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "S_PreCheckUseRecord": {
-              "next": ["S_PreCheckClickRecord1"]
-            },
-            "S_PreCheckClickRecord1": {"enabled": true},
+            "SelectRecordSlot": {"target": [1209, 140, 30, 71]},
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
@@ -1775,10 +1772,7 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "S_PreCheckUseRecord": {
-              "next": ["S_PreCheckClickRecord2"]
-            },
-            "S_PreCheckClickRecord2": {"enabled": true},
+            "SelectRecordSlot": {"target": [1209, 250, 30, 71]},
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
@@ -1798,10 +1792,7 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "S_PreCheckUseRecord": {
-              "next": ["S_PreCheckClickRecord3"]
-            },
-            "S_PreCheckClickRecord3": {"enabled": true},
+            "SelectRecordSlot": {"target": [1209, 360, 30, 71]},
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
@@ -1821,10 +1812,7 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "S_PreCheckUseRecord": {
-              "next": ["S_PreCheckClickRecord4"]
-            },
-            "S_PreCheckClickRecord4": {"enabled": true},
+            "SelectRecordSlot": {"target": [1209, 465, 30, 71]},
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
@@ -1844,10 +1832,7 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "S_PreCheckUseRecord": {
-              "next": ["S_PreCheckClickRecord5"]
-            },
-            "S_PreCheckClickRecord5": {"enabled": true},
+            "SelectRecordSlot": {"target": [1209, 575, 30, 71]},
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
@@ -2150,29 +2135,19 @@
       "cases": [
         {
           "name": "",
-          "option": ["S_记录不足时一键装备"],
           "pipeline_override": {
-            "S_CheckEquipmentPopup": {"enabled": true},
-            "S_PreCheckTroopRecord": {"enabled": true},
-            "S_PreCheckUseRecord": {"enabled": true},
-            "S_PreCheckUseRecordBtn": {"enabled": true},
-            "S_PreConfirmSupply": {"enabled": true},
-            "S_FallbackConfirmRecord": {"enabled": true}
-          }
-        }
-      ],
-      "default_case": []
-    },
-    "S_记录不足时一键装备": {
-      "name": "S_记录不足时一键装备",
-      "label": "部队记录未补满时，使用一键装备补充",
-      "type": "checkbox",
-      "cases": [
-        {
-          "name": "",
-          "pipeline_override": {
-            "S_FallbackConfirmRecordClick": {
-              "next": ["S_FallbackVerifyTeamSelect"]
+            "S_PostSortieHub": {
+              "next": [
+                "IsPreDamage",
+                "S_StopOnDamagePopup",
+                "IsEquipmentShortagePopup",
+                "S_StopOnEquipmentPopup",
+                "S_IsIsekaiTicketConfirm",
+                "S_PostKebiishi1",
+                "S_PostKebiishi2",
+                "S_IsPreSortieConfirm",
+                "S_SortieSuccess"
+              ]
             }
           }
         }
@@ -3569,7 +3544,7 @@
           "name": "修刀并继续",
           "DisplayName": "修刀并继续",
           "pipeline_override": {
-            "S_IsPreDamage": {"enabled": true},
+            "IsPreDamage": {"enabled": true},
             "S_StopOnDamagePopup": {"enabled": false}
           }
         },
@@ -3577,19 +3552,31 @@
           "name": "修刀并停止",
           "DisplayName": "修刀并停止",
           "pipeline_override": {
-            "S_ConfirmSelectSlot": {
-              "next": ["S_ClickRepairandStop"]
+            "ConfirmSelectSlot": {
+              "next": ["CaptureRepairInfo"]
             },
-            "S_IsPreDamage": {"enabled": true},
-            "S_StopOnDamagePopup": {"enabled": false}
+            "IsPreDamage": {"enabled": true},
+            "S_StopOnDamagePopup": {"enabled": false},
+            "S_DetectWhereAmI": {
+              "anchor": {
+                "RepairDone": "S_CompleteCurrentTaskAfterDamageRepair"
+              }
+            },
+            "LogRepairDone": {
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重伤检测] 修刀后停止任务",
+                  "display": "log"
+                }
+              }
+            }
           }
         },
         {
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "S_NavigateToRepair": {"enabled": false},
-            "S_IsPreDamage": {"enabled": false},
+            "IsPreDamage": {"enabled": false},
             "S_StopOnDamagePopup": {"enabled": true}
           }
         }
