@@ -20,13 +20,16 @@
                     Foreground="Gray"
                     Text="供日课合成、锻刀前刀解等消耗刀剑功能共同使用的全局名单。名称只允许来自刀剑名册，上锁刀剑始终排除，普通与极化形态按名称共享许可状态。"
                     TextWrapping="Wrap" />
-                <TextBox
-                    Text="{Binding SearchText}"
-                    Watermark="输入刀剑名称搜索…" />
-                <ListBox
-                    MaxHeight="220"
-                    IsVisible="{calcBinding:Binding 'SearchText.Length > 0'}"
-                    ItemsSource="{Binding Candidates}">
+                <StackPanel x:Name="SwordSearchPanel" Spacing="4">
+                    <TextBox
+                        x:Name="SwordSearchBox"
+                        Text="{Binding SearchText}"
+                        GotFocus="SearchBox_OnGotFocus"
+                        Watermark="输入刀剑名称或刀种搜索…" />
+                    <ListBox
+                        MaxHeight="220"
+                        IsVisible="{calcBinding:Binding 'Candidates.Count > 0'}"
+                        ItemsSource="{Binding Candidates}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Button
@@ -35,8 +38,7 @@
                                 HorizontalContentAlignment="Stretch"
                                 Background="Transparent"
                                 BorderThickness="0"
-                                Command="{Binding AddCommand}"
-                                IsEnabled="{calcBinding:Binding '!IsSelected'}">
+                                Command="{Binding AddCommand}">
                                 <Grid ColumnDefinitions="*,Auto,Auto">
                                     <TextBlock
                                         Text="{Binding DisplayName}"
@@ -60,7 +62,8 @@
                             </Button>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-                </ListBox>
+                    </ListBox>
+                </StackPanel>
                 <TextBlock
                     FontSize="13"
                     FontWeight="SemiBold"
