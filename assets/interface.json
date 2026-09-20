@@ -3845,36 +3845,24 @@
           "name": "",
           "pipeline_override": {
             "S_IsKebiishi1": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "GuiLogAction",
-                "custom_action_param": {"message": "warn:[重启游戏] 遭遇检非"}
-              },
+              "action": {},
+              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
               "next": ["S_AvoidKebiRestart"]
             },
             "S_IsKebiishi2": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "GuiLogAction",
-                "custom_action_param": {"message": "warn:[重启游戏] 遭遇检非"}
-              },
+              "action": {},
+              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
               "repeat": 1,
               "next": ["S_AvoidKebiRestart"]
             },
             "S_PostKebiishi1": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "GuiLogAction",
-                "custom_action_param": {"message": "warn:[重启游戏] 遭遇检非"}
-              },
+              "action": {},
+              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
               "next": ["S_AvoidKebiRestart"]
             },
             "S_PostKebiishi2": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "GuiLogAction",
-                "custom_action_param": {"message": "warn:[重启游戏] 遭遇检非"}
-              },
+              "action": {},
+              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
               "repeat": 1,
               "next": ["S_AvoidKebiRestart"]
             }

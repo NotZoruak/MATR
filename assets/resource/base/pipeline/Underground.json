@@ -4,14 +4,16 @@
   },
   "U_DetectWhereAmI": {
     "pre_delay": 0,
-    "anchor": {"GrindDone": "U_DetectWhereAmI"},
+    "anchor": {
+      "Hub": "U_DetectWhereAmI",
+      "RepairDone": "U_DetectWhereAmI",
+      "RepairAborted": "U_DetectWhereAmI",
+      "SupplyDone": "U_IsPreSortieConfirm",
+      "GrindDone": "U_DetectWhereAmI"
+    },
     "timeout": 120000,
     "next": [
       "U_IsMarching",
-      "U_IsBattleResult_Exp",
-      "U_IsBattleResult_Title",
-      "U_HasExpeditionReturn_Exp",
-      "U_HasExpeditionReturn_Title",
       "U_IsSwordDropColor",
       "U_IsKobanChest",
       "U_IsResourcePoint",
@@ -24,78 +26,25 @@
       "U_IsMenuDirectory",
       "U_IsTeamStatusPanel",
       "U_LeaveTroopRecord",
-      "U_IsAnnouncementPopup",
-      "U_IsTrainingLetter",
-      "U_IsLoginReward",
       "U_IsTutorial",
-      "U_IsAdvertisementPopup",
-      "U_IsGameIcon",
-      "U_IsLoginButton",
-      "U_IsGameUpdatePopup",
-      "U_IsInGameUpdatePopup",
-      "U_IsInternalReport",
-      "U_IsNetworkRequestTimeout",
-      "U_IsConnectionInterrupted",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["U_RestartGame"]
-  },
-  "U_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["U_IsAnnouncementPopup", "U_DetectWhereAmI"]
-  },
-  "U_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98],
-        "target": [816, 577, 182, 59]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["U_LoginRewardClick2"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["U_LoginRewardClick3"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["U_IsLoginReward"],
-    "on_error": ["U_DetectWhereAmI"]
   },
   "U_IsTutorial": {
     "recognition": {
@@ -110,38 +59,6 @@
     "action": {"type": "Click"},
     "next": ["U_DetectWhereAmI"]
   },
-  "U_HasExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
   "U_IsMarching": {
     "recognition": {
       "type": "TemplateMatch",
@@ -154,38 +71,6 @@
     },
     "next": ["U_CheckBeforeMarch"],
     "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_IsMarching", "U_DetectWhereAmI"]
-  },
-  "U_IsBattleResult_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_IsMarching", "U_DetectWhereAmI"]
   },
   "U_IsSwordDropColor": {
     "recognition": {
@@ -232,7 +117,12 @@
     "inverse": true,
     "timeout": 15000,
     "next": ["U_DetectWhereAmI"],
-    "focus": {"Node.Action.Succeeded": {"content": "[大阪挖地] 小判箱掉落", "display": "file"}}
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 小判箱掉落",
+        "display": "file"
+      }
+    }
   },
   "U_IsSpecialDrop": {
     "recognition": {
@@ -427,79 +317,6 @@
     },
     "next": ["U_IsHome", "U_DetectWhereAmI"]
   },
-  "U_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
   "U_ClickMarching": {
     "action": {
       "type": "Click",
@@ -568,52 +385,6 @@
       "target": [369, 287, 546, 238]
     },
     "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["U_DetectWhereAmI"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_LeaveTroopRecord": {
@@ -1034,19 +805,6 @@
     },
     "next": ["U_IsPreSortieConfirm"],
     "on_error": ["TF_Hub"]
-  },
-  "U_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
   },
   "U_FatigueDetect": {
     "enabled": false,
