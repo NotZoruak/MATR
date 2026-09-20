@@ -323,6 +323,17 @@
       "migration_strategy": "任务列表顶部按钮的教程步骤必须按 MATR 合并后的顺序取目标（0=全选/全不选、1=添加任务、2=重置、3=开始/停止）；需要同时高亮多个控件时用 TutorialStep.FindTargets 并取矩形并集，不得用 CutoutPadding 的写死像素补相邻按钮。",
       "verification": ["全选步骤只高亮合并后的全选/全不选按钮", "添加/重置步骤高亮添加任务与重置两个按钮的并集", "文案与合并后的单按钮一致（四个语言资源同步）", "目标解析失败时清掉高亮而不是保留上一次的框", "只露出一部分的目标会被 BringIntoView 滚入可视区", "教学提示按步骤输出一次目标与坐标诊断日志"],
       "notes": "上游教程按 5 个按钮布局写死：index 0 往右补 50 像素覆盖「全不选」、index 2 往右补 50 像素覆盖「重置」。MATR 把「全选/全不选」合并为一个按钮后索引整体左移，原来的补偿会圈到相邻按钮。诊断日志 [教学提示] 步骤#N 记录目标控件、目标矩形、高亮矩形与遮罩尺寸，用于核对高亮位置，确认稳定后可降级为 Debug。"
+    },
+    {
+      "id": "resource.sword-drop-notification-gui-log",
+      "title": "刀剑掉落播报同步实时日志",
+      "purpose": "命中刀剑掉落播报名单时，同时输出系统通知与执行实例的实时 GUI 日志，但不新增工作记录文件日志。",
+      "files": ["assets/resource/base/custom/SwordDropLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwordDropNotificationMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留原有刀剑掉落文件词条与工作记录解析格式；播报命中后复用通知文本写入执行任务所属实例的 GUI 面板，并关闭该次 AddLog 的文件日志写入。",
+      "verification": ["命中播报名单时同时出现系统通知与 GUI 日志", "未命中播报名单时不新增 GUI 播报日志", "刀剑掉落文件词条格式与数量不变", "多实例运行时 GUI 日志进入执行任务所属实例"],
+      "notes": "MaaProcessor.AddLog 的 writeToFileLog=false 只跳过文件日志，不跳过 GUI 面板集合与平台日志发布；不得改用普通 AddLog，否则会额外生成 [Record] 行并干扰 WorkRecordBuilder 的刀剑掉落统计。"
     }
   ]
 }
