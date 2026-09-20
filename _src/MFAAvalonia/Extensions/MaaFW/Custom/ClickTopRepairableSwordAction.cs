@@ -39,6 +39,21 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
     /// <summary>最多滑动次数(可经 action_param 覆盖)</summary>
     public const int DefaultMaxSwipes = 8;
 
+    /// <summary>点击刀剑后用于确认可修复状态的按钮颜色区域。</summary>
+    private static readonly int[] RepairConfirmColorRoi = [1189, 583, 14, 9];
+
+    /// <summary>修复确认按钮的蓝色下限。</summary>
+    private static readonly byte[] RepairConfirmColorLower = [20, 81, 177];
+
+    /// <summary>修复确认按钮的蓝色上限。</summary>
+    private static readonly byte[] RepairConfirmColorUpper = [26, 87, 183];
+
+    /// <summary>点击刀剑后等待按钮颜色出现的最大检查次数。</summary>
+    private const int RepairConfirmColorAttempts = 10;
+
+    /// <summary>点击刀剑后两次按钮颜色检查之间的间隔。</summary>
+    private const int RepairConfirmColorIntervalMilliseconds = 150;
+
     /// <summary>长按滑动参数(可经 action_param 覆盖):按住起点 0.5s → 800ms 滑动到终点 → 再按住 1s</summary>
     public static readonly int[] DefaultSwipeFrom = [732, 638];
     public static readonly int[] DefaultSwipeTo = [732, 131];
@@ -110,7 +125,14 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
             {
                 LoggerHelper.Info($"[修刀选刀] 找到可修复刀剑(第 {attempt} 屏),点击 ({hit.Value.X},{hit.Value.Y})");
                 context.Click(hit.Value.X, hit.Value.Y);
-                return true;
+
+                if (WaitForRepairConfirmColor(context))
+                    return true;
+
+                LoggerHelper.Warning("[修刀选刀] 点击刀剑后未检测到可修复确认颜色，判定无可修复刀剑");
+                RepairCooldownState.Start(DateTime.UtcNow);
+                LoggerHelper.Info("[后勤修刀] 确认颜色未命中，开始 30 分钟冷却");
+                return false;
             }
 
             if (attempt >= maxSwipes)
@@ -234,6 +256,100 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
         context.Click(x, y);
         Thread.Sleep(500);
         LoggerHelper.Info($"[修刀选刀] 已选择筛选条件：{name}");
+    }
+
+    /// <summary>等待点击后的修复确认按钮变为可用蓝色。</summary>
+    private static bool WaitForRepairConfirmColor<T>(T context) where T : IMaaContext
+    {
+        for (var attempt = 0; attempt < RepairConfirmColorAttempts; attempt++)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+
+            if (ContainsColorInRoi(
+                context,
+                RepairConfirmColorRoi,
+                RepairConfirmColorLower,
+                RepairConfirmColorUpper))
+            {
+                LoggerHelper.Info($"[修刀选刀] 修复确认颜色命中({attempt + 1}/{RepairConfirmColorAttempts})");
+                return true;
+            }
+
+            if (attempt + 1 < RepairConfirmColorAttempts)
+                ActionParamHelper.SleepWithStopCheck(context, RepairConfirmColorIntervalMilliseconds);
+        }
+
+        return false;
+    }
+
+    /// <summary>从当前截图中检查指定 ROI 是否存在符合颜色范围的像素。</summary>
+    private static bool ContainsColorInRoi<T>(
+        T context,
+        int[] roi,
+        byte[] lower,
+        byte[] upper) where T : IMaaContext
+    {
+        using var image = context.GetImage();
+        if (image is not MaaImageBuffer imageBuffer)
+            return false;
+
+        using var bitmap = imageBuffer.ToBitmap();
+        if (bitmap == null)
+            return false;
+
+        var x = roi[0];
+        var y = roi[1];
+        var width = roi[2];
+        var height = roi[3];
+        if (width <= 0 || height <= 0 || x < 0 || y < 0
+            || x + width > bitmap.PixelSize.Width || y + height > bitmap.PixelSize.Height)
+            return false;
+
+        var pixelBytes = new byte[width * height * 4];
+        var handle = System.Runtime.InteropServices.GCHandle.Alloc(
+            pixelBytes,
+            System.Runtime.InteropServices.GCHandleType.Pinned);
+        try
+        {
+            bitmap.CopyPixels(
+                new PixelRect(x, y, width, height),
+                handle.AddrOfPinnedObject(),
+                pixelBytes.Length,
+                width * 4);
+        }
+        finally
+        {
+            handle.Free();
+        }
+
+        return ContainsColorInRoi(pixelBytes, width, height, lower, upper);
+    }
+
+    /// <summary>检查 BGRA 像素数组中是否存在符合 RGB 范围的像素。</summary>
+    public static bool ContainsColorInRoi(
+        byte[] pixelBytes,
+        int width,
+        int height,
+        byte[] lower,
+        byte[] upper)
+    {
+        if (width <= 0 || height <= 0
+            || pixelBytes.Length < width * height * 4
+            || lower.Length < 3 || upper.Length < 3)
+            return false;
+
+        for (var index = 0; index < width * height * 4; index += 4)
+        {
+            var b = pixelBytes[index];
+            var g = pixelBytes[index + 1];
+            var r = pixelBytes[index + 2];
+            if (r >= lower[0] && r <= upper[0]
+                && g >= lower[1] && g <= upper[1]
+                && b >= lower[2] && b <= upper[2])
+                return true;
+        }
+
+        return false;
     }
 
     /// <summary>

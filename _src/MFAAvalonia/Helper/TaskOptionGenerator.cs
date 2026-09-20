@@ -62,6 +62,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             AppendDailyTaskCompletionSummary(panel, viewModel.Processor.InstanceId);
         }
 
+        if (entry == "UpdateData")
+        {
+            AppendUpdateDataLastSucceededSummary(panel, viewModel.Processor, dragItem);
+        }
+
         if (dragItem.InterfaceItem?.Advanced != null)
         {
             foreach (var option in dragItem.InterfaceItem.Advanced.ToList())
@@ -91,6 +96,11 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         if (entry == "DailyTask")
         {
             AppendDailyTaskCompletionSummary(panel, viewModel.Processor.InstanceId);
+        }
+
+        if (entry == "UpdateData")
+        {
+            AppendUpdateDataLastSucceededSummary(panel, viewModel.Processor, dragItem);
         }
     }
 
@@ -203,6 +213,54 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         };
         summary.DetachedFromVisualTree += (_, _) =>
             DailyTaskCompletionService.CompletionChanged -= completionChangedHandler;
+
+        RefreshSummary();
+        panel.Children.Add(summary);
+    }
+
+    /// <summary>在更新数据复选项后显示该实例当前识别范围上次成功完成的时间。</summary>
+    private static void AppendUpdateDataLastSucceededSummary(
+        StackPanel panel,
+        MaaProcessor processor,
+        DragItemViewModel dragItem)
+    {
+        var configuration = processor.InstanceConfiguration;
+        var instanceId = processor.InstanceId;
+        var scheduleKey = UpdateDataScheduleService.ResolveKey(dragItem.InterfaceItem);
+        var summary = new TextBlock
+        {
+            FontSize = 12,
+            Foreground = Brushes.Gray,
+            Margin = new Thickness(10, 8, 10, 3),
+            TextWrapping = TextWrapping.Wrap,
+        };
+
+        void RefreshSummary()
+        {
+            var lastSucceeded = UpdateDataScheduleService.GetLastSucceeded(configuration, scheduleKey.StorageKey);
+            summary.Text = lastSucceeded == null
+                ? $"上次更新时间（{scheduleKey.DisplayName}）：暂无"
+                : $"上次更新时间（{scheduleKey.DisplayName}）：{UpdateDataScheduleService.FormatLocalTime(lastSucceeded.Value)}";
+        }
+
+        Action<string, string> lastSucceededChangedHandler = (changedInstanceId, changedKey) =>
+        {
+            // 只刷新本实例、本调度键的面板，其它实例与任务的成功时间不影响当前显示
+            if (!string.Equals(changedInstanceId, instanceId, StringComparison.Ordinal)
+                || !string.Equals(changedKey, scheduleKey.StorageKey, StringComparison.Ordinal))
+                return;
+
+            Dispatcher.UIThread.Post(RefreshSummary);
+        };
+        summary.AttachedToVisualTree += (_, _) =>
+        {
+            UpdateDataScheduleService.LastSucceededChanged += lastSucceededChangedHandler;
+            RefreshSummary();
+        };
+        summary.DetachedFromVisualTree += (_, _) =>
+        {
+            UpdateDataScheduleService.LastSucceededChanged -= lastSucceededChangedHandler;
+        };
 
         RefreshSummary();
         panel.Children.Add(summary);

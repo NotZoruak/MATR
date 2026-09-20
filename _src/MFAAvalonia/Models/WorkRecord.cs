@@ -136,7 +136,7 @@ public sealed class WorkRecord
     /// <summary>内番服识别明细（时间/刀剑名）</summary>
     public List<LogisticsNaibanOutfit> LogisticsNaibanOutfits { get; } = [];
 
-    /// <summary>特殊情况：Warning 词条与中断事件（时间/描述）</summary>
+    /// <summary>特殊情况：[Special] 词条、Warning 词条与中断事件（时间/描述）</summary>
     public List<SpecialEvent> SpecialEvents { get; } = [];
 }
 
@@ -152,5 +152,5 @@ public sealed record LogisticsRepair(DateTime Time, string SwordName, int Wood, 
 /// <summary>内番服识别明细：SwordName 为空表示本次安排内番时没有识别到内番服立绘</summary>
 public sealed record LogisticsNaibanOutfit(DateTime Time, string SwordName);
 
-/// <summary>特殊事件（Warning 词条或中断事件）</summary>
+/// <summary>特殊事件（[Special] 词条、Warning 词条或中断事件）</summary>
 public sealed record SpecialEvent(DateTime Time, string Description);

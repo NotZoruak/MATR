@@ -26,7 +26,7 @@
       "G_IsTrainingApplication",
       "G_IsNetworkRequestTimeout",
       "G_IsConnectionInterrupted",
-      "G_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["G_RestartGame"]
   },
@@ -164,12 +164,10 @@
   },
   "G_VerifyMenuDir": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["G_ClickBackToHome", "G_DetectWhereAmI"]
@@ -403,9 +401,6 @@
     },
     "next": ["G_CancelTrainingApplication", "G_DetectWhereAmI"],
     "on_error": ["G_DetectWhereAmI"]
-  },
-  "G_FallbackWait": {
-    "next": ["G_DetectWhereAmI"]
   },
   "G_RestartGame": {
     "action": {

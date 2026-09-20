@@ -1,0 +1,404 @@
+{
+  "TF_Hub": {
+    "pre_delay": 0,
+    "anchor": {
+      "Hub": "TF_Hub",
+      "RepairDone": "TF_Hub",
+      "RepairAborted": "TF_Hub",
+      "SupplyDone": "TF_Hub"
+    },
+    "timeout": 120000,
+    "next": [
+      "TF_CheckHomeBrightness",
+      "TF_IsEraSelect",
+      "TF_IsRegionSelect",
+      "TF_IsSortieActivity",
+      "TF_IsTeamSelect",
+      "TF_IsMarching",
+      "TF_IsFormationSelect",
+      "TF_IsSwordDrop",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]FallbackWait"
+    ],
+    "on_error": ["TF_RestartGame"]
+  },
+  "TF_ClickMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_Hub"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_EnterFromTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_VerifyMenuOpenedForEntry", "TF_EnterFromTeamSelect"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_VerifyMenuOpenedForEntry": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
+      }
+    },
+    "next": ["TF_Hub"]
+  },
+  "TF_IsEraSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [104, 331, 49, 235],
+        "template": "Common/时代选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [246, 389, 1, 1]
+      }
+    },
+    "post_delay": 200,
+    "next": ["TF_ConfirmEra"]
+  },
+  "TF_ConfirmEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1199, 633, 3, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_Hub"]
+  },
+  "TF_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["TF_VerifyEra", "TF_ClickBackToEra"]
+  },
+  "TF_VerifyEra": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["一", "l", "1"]
+      }
+    },
+    "next": ["TF_ClickRegion1_1", "TF_Hub"]
+  },
+  "TF_ClickBackToEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "next": ["TF_Hub"]
+  },
+  "TF_ClickRegion1_1": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [194, 213, 8, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_Hub"]
+  },
+  "TF_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["TF_DissolveHub"]
+  },
+  "TF_DissolveHub": {
+    "next": ["TF_DissolveCheck", "TF_CheckFatigue"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_DissolveCheck": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1074, 211, 37, 421],
+        "template": "Common/移除队员.png",
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["TF_DissolveHub"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_CheckFatigue": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "FatigueCheckAction",
+      "custom_action_param": {
+        "mode": "check_first",
+        "threshold": 100,
+        "reversed": true
+      }
+    },
+    "next": ["TF_ClickSortieNow"],
+    "on_error": ["TF_UseRecord_Step1"]
+  },
+  "TF_ClickSortieNow": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1156, 584, 96, 47],
+        "expected": "即刻"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1156, 584, 96, 47]
+    },
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "TF_Hub"]
+  },
+  "TF_IsMarching": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1067, 558, 120, 79],
+        "template": "Common/合战场_行军.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["TF_Hub"]
+  },
+  "TF_IsFormationSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [570, 1, 139, 45],
+        "template": "Common/阵形选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1017, 421, 1, 1]
+      }
+    },
+    "next": ["TF_Hub"]
+  },
+  "TF_IsSwordDrop": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1067, 558, 120, 79]
+      }
+    },
+    "next": ["TF_Hub"]
+  },
+  "TF_NavigateBack": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_VerifyMenuOpened", "TF_NavigateBack"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_VerifyMenuOpened": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
+      }
+    },
+    "next": ["[Anchor]GrindDone"]
+  },
+  "TF_RestartGame": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction"
+    },
+    "next": ["TF_Hub"]
+  },
+  "TF_UseRecord_Step1": {
+    "enabled": true,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_UseRecord_Step2", "TF_UseRecord_Step1"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_UseRecord_Step2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 140, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["TF_UseRecord_Step3"]
+  },
+  "TF_UseRecord_Step3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [442, 253, 395, 125]
+    },
+    "next": ["TF_UseRecord_Step4", "TF_UseRecord_Step3"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_UseRecord_Step4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 151, 126, 34],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [789, 512, 1, 4]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_NavigateBack", "TF_UseRecord_Step4"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_IsHome": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["TF_ClickMenu"]
+  },
+  "TF_CheckHomeBrightness": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [66, 58, 11, 13],
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
+      }
+    },
+    "next": ["TF_IsHome", "TF_Hub"]
+  },
+  "TF_IsSortieActivity": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [0, 302, 49, 86],
+        "template": "Common/活动选中.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [23, 202, 1, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_Hub"]
+  }
+}

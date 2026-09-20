@@ -63,24 +63,24 @@
     {
       "id": "services.update-data-scheduling",
       "title": "更新数据调度与持久化",
-      "purpose": "按用户设置的间隔执行更新数据任务，并在实例配置中持久化状态。",
-      "files": ["_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia/Services/UpdateDataScheduleService.cs", "_src/MFAAvalonia/Configuration/ConfigurationKeys.cs"],
+      "purpose": "按用户设置的间隔执行更新数据任务，状态按任务（备注/显示名称，未写备注时按识别内容）持久化到实例配置。",
+      "files": ["_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia/Services/UpdateDataScheduleService.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Configuration/ConfigurationKeys.cs", "assets/resource/base/pipeline/UpdateData.json", "assets/resource/base/custom/UpdateDataIntervalRecognition.cs", "assets/resource/base/custom/UpdateDataMarkSuccessAction.cs", "assets/interface.json"],
       "baseline_upstream": "2.13.0",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "适配 2.16.1 的配置和实例生命周期，不保留旧模型的并行路径。",
-      "verification": ["间隔未到时跳过", "重新加载实例后状态保持"],
-      "notes": "与任务队列统计共同验证。"
+      "migration_strategy": "适配 2.16.1 的配置和实例生命周期；成功时间按调度键（备注/显示名称优先，未写备注时按识别内容）分别记录，调度键与触发间隔必须由 MaaProcessor 合成一次注入，不得改回两个选项各自覆盖同一个 node。",
+      "verification": ["间隔未到时在入口跳过且不操作游戏", "写了备注的仓库与刀帐两个更新数据任务可用不同间隔独立执行", "未写备注时按识别内容区分", "重新加载实例后状态保持", "设置页显示当前调度键的上次成功时间"],
+      "notes": "旧版单键 UpdateData.LastSucceededAt 保留为默认识别范围的兼容读取来源；改名或改备注会另起一条记录；与任务队列统计共同验证。"
     },
     {
       "id": "daily-task.per-game-day-completion",
       "title": "一键日课游戏日完成台账",
       "purpose": "记录登录奖励、暖心礼包、合成、刀解和锻刀在当前游戏日是否已实际完成；首次刀解与收刀腾位刀解共用当天刀解完成记录。",
-      "files": ["assets/interface.json", "assets/resource/base/pipeline/DailyTask.json", "_src/MFAAvalonia/Helper/AppPaths.cs", "_src/MFAAvalonia/Services/DailyTaskCompletionService.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionMarkAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskStepRecognition.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskStepMarkAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskStepSkipAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskRunResetAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ForgeDisassembleSelectAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs"],
+      "files": ["assets/interface.json", "assets/resource/base/pipeline/DailyTask.json", "_src/MFAAvalonia/Helper/AppPaths.cs", "_src/MFAAvalonia/Services/DailyTaskCompletionService.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskStepRecognition.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/DailyTaskCompletionMarkAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ForgeDisassembleSelectAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留 debug/logs/daily-task-completion.log 的完成日期记录，以每日 5:00 计算游戏日；保留检查与写入自定义 action、运行期跳过与入口重置 action 的注册，并按日课项目的实际成功路径重放 pipeline 覆盖。",
-      "verification": ["同一游戏日重复运行时跳过已完成项目", "每日 5:00 后允许再次执行", "日志文件可被重新读取并恢复完成状态", "首次刀解至少一把，收刀腾位时按刀位缺口选择", "当天已刀解但收刀缺位时仍按缺口刀解", "当天锻刀已完成时仍收取已有完成刀剑且不新建锻刀", "无合成素材时不写入合成完成记录", "无合成素材时本次运行跳过合成且下次运行仍会重试", "刀解素材不足时不写入刀解完成记录", "未完成 3 次锻刀时不写入锻刀完成记录", "登录奖励和暖心礼包的已领取完成路径会写入记录"],
-      "notes": "日课任务与选项已重新注册；选项与子选项统一使用 DT_ 前缀，项目开关只覆盖对应 DT_Step<项目>.enabled，旧 D_ 前缀选项已删除。锻刀公式、刀解路径重接线、演练子选项、领取奖励子选项、邮件类别的覆盖，以及卡死等待时间与卡死重启中对应主枢纽的条目，随各自流程重写补齐。完成记录不是临时内存状态；由 DailyTaskCompletionService 持久化到 debug/logs/daily-task-completion.log。游戏日按本地时间每日 5:00 切换。首次刀解与收刀腾位刀解均调用同一写入 action；当天已完成仅跳过额外的首次刀解，收刀所需刀位不足时仍进入按缺口腾位的刀解路径。ForgeDisassembleSelectAction 必须在每页点击前读取已选数量，并只选择剩余所需数量，不能一次选择当前页全部许可刀剑。锻刀完成记录只阻止新建锻刀，收取完成刀剑结束后才检查是否允许开始新的锻刀。只有输出完成结果的实际成功路径才能调用写入 action，跳过、素材不足和锻刀未完成路径不得标记。运行期跳过是另一层状态：DailyTaskCompletionService 用内存集合保存本次运行跳过的项目（MarkSkippedForCurrentRun / IsSkippedForCurrentRun / ClearRunSkips），不落盘、不影响设置页与完成台账；DailyTaskStepSkipAction 写入该状态，DailyTask 入口 node 的 DailyTaskRunResetAction 在每次运行开始时清空，DailyTaskStepRecognition 先判断运行期跳过再判断游戏日记录。"
+      "migration_strategy": "保留 debug/logs/daily-task-completion.log 的完成日期记录，以每日 5:00 计算游戏日；保留完成检查与写入自定义 action 的注册，在日课入口初始化本次运行的路由 anchor，并按日课项目的实际成功路径重放 pipeline 覆盖。",
+      "verification": ["同一游戏日重复运行时跳过已完成项目", "每日 5:00 后允许再次执行", "日志文件可被重新读取并恢复完成状态", "首次刀解至少一把，收刀腾位时按刀位缺口选择", "当天已刀解但收刀缺位时仍按缺口刀解", "当天锻刀已完成时仍收取已有完成刀剑且不新建锻刀", "无合成素材时不写入合成完成记录", "无合成素材时本次运行跳过合成且下次运行仍会重试", "本次运行跳过的路由 anchor 在多实例并行时互不影响", "刀解素材不足时不写入刀解完成记录", "未完成 3 次锻刀时不写入锻刀完成记录", "登录奖励和暖心礼包的已领取完成路径会写入记录"],
+      "notes": "日课任务与选项已重新注册；选项与子选项统一使用 DT_ 前缀，项目开关只覆盖对应 DT_Step<项目>.enabled，旧 D_ 前缀选项已删除。锻刀公式、刀解路径重接线、演练子选项、领取奖励子选项、邮件类别的覆盖，以及卡死等待时间与卡死重启中对应主枢纽的条目，随各自流程重写补齐。完成记录不是临时内存状态；由 DailyTaskCompletionService 持久化到 debug/logs/daily-task-completion.log。游戏日按本地时间每日 5:00 切换。首次刀解与收刀腾位刀解均调用同一写入 action；当天已完成仅跳过额外的首次刀解，收刀所需刀位不足时仍进入按缺口腾位的刀解路径。ForgeDisassembleSelectAction 必须在每页点击前读取已选数量，并只选择剩余所需数量，不能一次选择当前页全部许可刀剑。锻刀完成记录只阻止新建锻刀，收取完成刀剑结束后才检查是否允许开始新的锻刀。只有输出完成结果的实际成功路径才能调用写入 action，跳过、素材不足和锻刀未完成路径不得标记。本次运行跳过由 DailyTask 入口 node 初始化的六个路由 anchor 表示；跳过出口清空对应 anchor，DT_ProjectRouter 随后略过该项目。该状态不落盘、不影响设置页与完成台账；DailyTaskStepRecognition 只判断游戏日完成次数。"
     },
     {
       "id": "work-records.name-dialog-registration",
@@ -97,12 +97,12 @@
       "id": "queue.resume-and-continue-on-error",
       "title": "任务队列断点续跑与失败继续",
       "purpose": "保留任务轮次统计、成功后的恢复索引、失败继续开关、用户停止语义和任务结束后操作边界。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/ValueType/MFATask.cs", "_src/MFAAvalonia/Helper/TaskEarlyCompletionRequest.cs", "_src/MFAAvalonia/Helper/TaskIterationDecision.cs", "_src/MFAAvalonia/Helper/TaskQueueContinuationPolicy.cs", "_src/MFAAvalonia/Helper/MaaLogRotator.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia/ViewModels/UsersControls/AddTaskDialogViewModel.cs", "assets/resource/base/custom/CompleteCurrentTaskAction.cs", "assets/resource/base/custom/SortieRoundDoneRecognition.cs", "_src/MFAAvalonia/Extensions/MaaFW/SortieRepeatCountMigration.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Helper/ValueType/MFATask.cs", "_src/MFAAvalonia/Helper/TaskEarlyCompletionRequest.cs", "_src/MFAAvalonia/Helper/TaskIterationDecision.cs", "_src/MFAAvalonia/Helper/TaskQueueContinuationPolicy.cs", "_src/MFAAvalonia/Helper/MaaLogRotator.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia/ViewModels/UsersControls/AddTaskDialogViewModel.cs", "assets/resource/base/custom/CompleteCurrentTaskAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/SortieRepeatCountMigration.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs"],
       "baseline_upstream": "2.13.0",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "以 2.16.1 RunResult 和取消模型为基础重放，不复制旧队列主循环。",
-      "verification": ["失败且关闭继续时停止", "失败且开启继续时继续", "用户停止不触发后续操作", "失败队列也执行用户配置的任务结束后操作", "恢复索引仅在成功后推进", "异步任务队列完整结束后才进入停止流程", "正常完成的任务不被记录为手动停止", "普通任务之间自动插入回本丸", "最后一个任务后不插入回本丸", "MFAA 特殊任务前不插入回本丸", "任务添加界面与队列插入逻辑共用特殊任务 Entry 集合", "任务失败时发送系统通知", "合战场轮数取自任务级 repeat_count（repeatable 为 true），过去与异去共用，不再读取旧的下级选项", "过去模式在回本丸路径上用自定义识别判定单圈结束，达标后停在本丸，异去保持自身单圈结束方式", "有限重复任务每轮成功后在 GUI 日志输出任务完成与 X/Y 进度", "提前结束请求只消费一次，且不计入当前轮", "提前结束当前队列项后继续后续队列项", "提前结束原因以 Warning 词表写入工作记录特殊情况"],
-      "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知；同步 MFAAvalonia 19a8416 后，失败队列同样执行任务结束后操作，用户手动停止除外。合战场的轮数与其它任务一致，取自任务级 repeat_count，过去与异去共用；CreateNodeAndParam 直接使用 InterfaceItem.RepeatCount，不得恢复历史上读取过去/异去下级异去_重复次数或给过去写死三轮的定制逻辑。过去的单圈结束由资源侧自定义识别 SortieRoundDoneRecognition 判定：读取 S_SortieSuccess 命中计数，配合 TaskJob.Id 与本次运行基线判断本轮是否已出阵，命中时经 S_IsSortieRoundDone（打点完成一圈＋空 next）结束本轮任务运行。该判定必须走 next 正常分支，不得改用动作失败走 on_error，否则 MaaFW 的 SaveOnError 会按圈数往 debug/on_error 写截图；刷花链不参与轮次判定。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
+      "verification": ["失败且关闭继续时停止", "失败且开启继续时继续", "用户停止不触发后续操作", "失败队列也执行用户配置的任务结束后操作", "恢复索引仅在成功后推进", "异步任务队列完整结束后才进入停止流程", "正常完成的任务不被记录为手动停止", "普通任务之间自动插入回本丸", "最后一个任务后不插入回本丸", "MFAA 特殊任务前不插入回本丸", "任务添加界面与队列插入逻辑共用特殊任务 Entry 集合", "任务失败时发送系统通知", "合战场轮数取自任务级 repeat_count（repeatable 为 true），过去与异去共用，不再读取旧的下级选项", "过去模式在回本丸路径上通过 S_RoundDone anchor 判定单圈结束，达标后停在本丸，异去保持自身单圈结束方式", "有限重复任务每轮成功后在 GUI 日志输出任务完成与 X/Y 进度", "提前结束请求只消费一次，且不计入当前轮", "提前结束当前队列项后继续后续队列项", "提前结束原因以 Warning 词表写入工作记录特殊情况"],
+      "notes": "当前分支未提交改动属于该项快照的一部分。任务队列外层必须使用 Func<Task> 重载等待 ExecuteTasks 完整返回，不能将异步 lambda 绑定到 Action 重载。普通任务之间通过 GoHome 确保从本丸开始；MFAA 提供的特殊任务通过 Entry 标识识别，特殊任务前跳过 GoHome，不得恢复为无条件插入。任务失败时除保留界面内提示和外部通知外，必须调用 ToastNotification.Show 发送系统通知；同步 MFAAvalonia 19a8416 后，失败队列同样执行任务结束后操作，用户手动停止除外。合战场的轮数与其它任务一致，取自任务级 repeat_count，过去与异去共用；CreateNodeAndParam 直接使用 InterfaceItem.RepeatCount，不得恢复历史上读取过去/异去下级异去_重复次数或给过去写死三轮的定制逻辑。过去的单圈结束由 S_RoundDone anchor 判定：Sortie 入口清空 anchor，S_SortieSuccess 确认出阵后将其指向 S_CompleteRound，回本丸时优先解析，完成 node 清空 anchor 并以空 next 结束本轮。该判定必须走 next 正常分支，不得改用动作失败走 on_error，否则 MaaFW 的 SaveOnError 会按圈数往 debug/on_error 写截图；刷花链不参与轮次判定。有限重复的 MAAFW 任务在 MaaAction 成功后必须输出 TaskRoundComplete；无限重复和单次任务不输出。资源侧 CompleteCurrentTaskAction 只能请求当前队列项提前结束，不能调用全局 Stop、清空队列或取消令牌；请求按当前队列项隔离并在当前 MaaFW 流程返回后消费，当前轮不计数，后续队列项保持可执行。提前结束日志必须由 TaskQueueViewModel 透传 Warning 记录级别，按 [任务名] 任务结束 原因：原因 写入，供 WorkRecordBuilder 显示为特殊情况。"
     },
     {
       "id": "live-view.pipelined-screencap-recovery",
@@ -127,6 +127,17 @@
       "notes": "外层 Task.Run 会让每条日志独自经线程池投递，投递顺序不再受调用顺序保证，表现为「任务完成（上一轮）」与「开始任务（下一轮）」倒序显示。该定制在 2026-08-16 提交 7b30e339 修复（当时只改 AddLogByKey），2026-09-04 提交 b65c54ec 升级 MFAAvalonia v2.16.1 时被上游写法覆盖并复发，本次恢复并一并修复 AddMarkdown。日志创建、集合写入与裁剪仍全部在界面线程执行，不引入跨线程集合访问。"
     },
     {
+      "id": "focus.display-channels",
+      "title": "focus 显示渠道扩展",
+      "purpose": "让 pipeline 打点既能只写日志文件、不进实时面板，也能用 special: 前缀把业务上的特殊情况写进工作记录而不占用 Warning 级别。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/FocusHandler.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 FocusHandler 的 special: 前缀识别与 DispatchToChannels 的 file 分支，以及 MaaProcessor.AddMarkdownToFile；上游若重构 focus 分发路径，按本条目把它们重新接回。",
+      "verification": ["display: file 的打点只进实例日志文件，不进实时面板也不发布平台日志", "display: log 仍同时写实时面板与文件", "special: 前缀在实时展示前被剥离，文件里写成 [Record][Special]", "WorkRecordBuilder 按词头归属词条，未知词头落到当前记录"],
+      "notes": "FocusHandler 原本只认 log/toast/notification/dialog/modal 五个渠道；MATR 追加了 file（MaaProcessor.AddMarkdownToFile，只走 LoggerHelper.Info），供「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点使用，避免刷屏。special: 是 MATR 约定的内容前缀、不是 MaaFramework 字段：FocusHandler.TryExtractSpecialContent 在分发前剥离它，AddMarkdown 带 recordAsSpecial 落到 [Record][Special]，WorkRecordBuilder 再归入特殊情况。"
+    },
+    {
       "id": "task.sync-expedition-reuse",
       "title": "同步后勤复用后勤任务配置",
       "purpose": "让出阵任务与一键日课复用「后勤」任务保存的远征队伍、修刀、内番与刷新间隔配置。",
@@ -141,7 +152,7 @@
       "id": "task.sync-logistics-instance-source",
       "title": "同步后勤按执行实例读取配置",
       "purpose": "多实例下后勤选图、派遣打点与日志都取执行任务那个实例的配置，避免读到其它实例的后勤设置造成休息部队被误派。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ActionParamHelper.cs", "assets/resource/base/custom/ExpeditionMapSelectAction.cs", "assets/resource/base/custom/DispatchLogAction.cs", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/custom/DamageLogAction.cs", "assets/resource/base/custom/CaptainDamageAction.cs", "assets/resource/base/custom/StopOnDamageAction.cs", "assets/resource/base/custom/RepairStartLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FatigueCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SmartWaitAction.cs"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ActionParamHelper.cs", "assets/resource/base/custom/ExpeditionMapSelectAction.cs", "assets/resource/base/custom/DispatchLogAction.cs", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/custom/DamageLogAction.cs", "assets/resource/base/custom/StopOnDamageAction.cs", "assets/resource/base/custom/RepairStartLogAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ExpeditionTimerCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FatigueCheckAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SmartWaitAction.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "自定义动作与识别器用 context.Tasker 经 MaaProcessor.ResolveByTasker 定位所属处理器，再用 GetLogisticsTeamMapIndex 读取该实例的后勤部队设置；AddLog 走 ActionParamHelper.ResolveOwnerProcessor，取不到时才回退当前激活实例。",
@@ -167,8 +178,8 @@
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。",
-      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节"],
-      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。"
+      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）「卡死等待时间」选项已于 2026-09-19 移除，应用层与 pipeline 的卡死判定统一写死 120 秒。", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节"],
+      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。「卡死等待时间」全局选项已于 2026-09-19 移除：各枢纽在 pipeline 中写死 timeout 120000，MaaProcessor 的静默阈值固定 120 秒，不再读取保存值。"
     },
     {
       "id": "adb.mumu-emulator-extras-input",

@@ -9,6 +9,7 @@ using MFAAvalonia.Configuration;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.ValueType;
 using MFAAvalonia.Helper.Converters;
+using MFAAvalonia.Services;
 using MFAAvalonia.ViewModels.Other;
 using MFAAvalonia.ViewModels.Pages;
 using MFAAvalonia.Views.Windows;
@@ -53,6 +54,10 @@ public class MaaProcessor
     private static readonly int[][] FormationTeamVerifyRois =
     [
         [172, 81, 17, 9], [284, 77, 18, 9], [431, 80, 16, 8], [555, 78, 16, 8], [675, 79, 16, 8],
+    ];
+    private static readonly int[][] FormationRecordSlotClickCoords =
+    [
+        [1210, 144, 29, 70], [1211, 255, 30, 71], [1212, 361, 30, 71], [1211, 470, 30, 71], [1210, 577, 30, 71],
     ];
     private int _isTaskRunActive;
     private readonly BlockingCollection<Func<Task>> _commandQueue = new();
@@ -455,7 +460,8 @@ public class MaaProcessor
         AddLogByKey(key, brush, changeColor, transformKey, formatArgsKeys);
     }
 
-    public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true, params string[] formatArgsKeys)
+    public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true,
+        bool recordAsSpecial = false, params string[] formatArgsKeys)
     {
         brush ??= Brushes.Black;
         // 与 AddLogByKey 一致：直接投递，避免线程池乱序导致 GUI 日志顺序错乱。
@@ -468,8 +474,22 @@ public class MaaProcessor
             LogItemViewModels.Add(log);
             PublishPlatformLog(log);
             using var logScope = BeginInstanceLogScope("MonitorMarkdown", "Monitor");
-            LoggerHelper.Info(log.Content);
+            LoggerHelper.Info(recordAsSpecial ? $"[Record][Special] {log.Content}" : log.Content);
             TrimExcessLogs();
+        });
+    }
+
+    /// <summary>
+    /// 只把 focus 日志写入日志文件，不进入 GUI 日志面板，也不发布平台日志。
+    /// 用于「出阵」这类每轮都会产生、只给工作记录解析用的打点。
+    /// </summary>
+    public void AddMarkdownToFile(string content, bool recordAsSpecial = false)
+    {
+        // 与 AddMarkdown 一样投递到主线程，保持与其它日志相同的写入顺序
+        DispatcherHelper.PostOnMainThread(() =>
+        {
+            using var logScope = BeginInstanceLogScope("MonitorMarkdown", "Monitor");
+            LoggerHelper.Info(recordAsSpecial ? $"[Record][Special] {content}" : content);
         });
     }
 
@@ -4058,6 +4078,56 @@ public class MaaProcessor
         }));
     }
 
+    /// <summary>
+    /// 把更新数据任务的「识别内容」与「触发间隔」合成一次 pipeline 注入：
+    /// 判断 node 同时拿到触发间隔与识别范围，成功 node 只带识别范围。
+    /// MaaFramework 对同一 node 的多层覆盖只保留最后一层，两个选项不能各自覆盖同一个 node。
+    /// </summary>
+    private void ApplyUpdateDataScheduleParams(ref MaaToken taskModels, MaaInterface.MaaInterfaceTask interfaceItem)
+    {
+        var scheduleKey = UpdateDataScheduleService.ResolveKey(interfaceItem);
+        var interval = UpdateDataScheduleService.ResolveInterval(interfaceItem.Option);
+
+        var checkNode = new JObject
+        {
+            ["recognition"] = new JObject
+            {
+                ["type"] = "Custom",
+                ["param"] = new JObject
+                {
+                    ["custom_recognition"] = "UpdateDataIntervalRecognition",
+                    ["custom_recognition_param"] = new JObject
+                    {
+                        ["interval"] = interval,
+                        ["key"] = scheduleKey.StorageKey,
+                        ["instance_id"] = InstanceId,
+                    },
+                },
+            },
+        };
+        var markNode = new JObject
+        {
+            ["action"] = new JObject
+            {
+                ["type"] = "Custom",
+                ["custom_action"] = "UpdateDataMarkSuccessAction",
+                ["custom_action_param"] = new JObject
+                {
+                    ["key"] = scheduleKey.StorageKey,
+                    ["instance_id"] = InstanceId,
+                },
+            },
+        };
+
+        taskModels.Merge(new Dictionary<string, JToken>
+        {
+            ["UD_IsIntervalDue"] = checkNode,
+            ["UD_MarkSuccess"] = markNode,
+        });
+
+        LoggerHelper.Info($"[更新数据] 实例={InstanceId}，调度键={scheduleKey.StorageKey}，触发间隔={interval}");
+    }
+
     private NodeAndParam CreateNodeAndParam(DragItemViewModel task, int index, long runId, int? formationPresetId)
     {
         var taskModels = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(JsonConvert.SerializeObject(task.InterfaceItem?.PipelineOverride ?? new Dictionary<string, JToken>(), new JsonSerializerSettings()
@@ -4080,8 +4150,15 @@ public class MaaProcessor
         // 4. 合并任务自身的 option（task.option，最高优先级）
         UpdateTaskDictionary(ref taskModels, task.InterfaceItem?.Option, task.InterfaceItem?.Advanced);
 
+        // 更新数据任务的识别范围与触发间隔分属两个选项，各自生成同名 node 覆盖时后者会丢掉前者，
+        // 因此在合并完选项后，把两者合成一次注入。
+        if (task.InterfaceItem?.Entry == "UpdateData")
+        {
+            ApplyUpdateDataScheduleParams(ref taskModels, task.InterfaceItem);
+        }
+
         // 5. 同步后勤任务复用当前实例的远征队伍、修刀、内番和刷新间隔配置
-        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "LRentaisen" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")
+        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "RegimentBattle" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")
         {
             var syncExpEnabled = task.InterfaceItem.Option
                 ?.FirstOrDefault(o => (o.Name ?? string.Empty).EndsWith("同步远征")
@@ -4117,48 +4194,56 @@ public class MaaProcessor
                         var timerNext = task.InterfaceItem.Entry switch
                         {
                             "Sortie" => "S_NavigateToSortie",
-                            "Underground" => "U_NavigateToUnderground",
+                            "Underground" => "U_NavigateToActivity",
                             "Hanapai" => "HP_NavigateToActivity",
                             "TacticalTraining" => "TT_NavigateToActivity",
                             "EdoCastle" => "EC_NavigateToActivity",
                             "DailyTask" => "DT_ProjectRouter",
-                            _ => "LR_NavigateToActivity"
+                            "RegimentBattle" => "RB_NavigateToActivity",
+                            _ => null
                         };
-                        taskModels.Merge(new Dictionary<string, JToken>
+                        if (timerNext == null)
                         {
-                            ["E_TimerStart"] = new JObject
+                            LoggerHelper.Warning($"[同步后勤] 入口 {task.InterfaceItem.Entry} 没有配置返回活动页的导航节点，跳过刷新间隔注入");
+                        }
+                        else
+                        {
+                            taskModels.Merge(new Dictionary<string, JToken>
                             {
-                                ["action"] = new JObject
+                                ["E_TimerStart"] = new JObject
                                 {
-                                    ["type"] = "Custom",
-                                    ["custom_action"] = "ExpeditionTimerAction",
-                                    ["custom_action_param"] = new JObject
+                                    ["action"] = new JObject
                                     {
-                                        ["mode"] = "start",
-                                        ["interval"] = seconds
+                                        ["type"] = "Custom",
+                                        ["custom_action"] = "ExpeditionTimerAction",
+                                        ["custom_action_param"] = new JObject
+                                        {
+                                            ["mode"] = "start",
+                                            ["interval"] = seconds
+                                        }
+                                    },
+                                    ["next"] = new JArray(timerNext)
+                                },
+                                ["E_SmartWait"] = new JObject
+                                {
+                                    ["action"] = new JObject
+                                    {
+                                        ["type"] = "Custom",
+                                        ["custom_action"] = "SmartWaitAction",
+                                        ["custom_action_param"] = new JObject { ["interval"] = seconds }
                                     }
                                 },
-                                ["next"] = new JArray(timerNext)
-                            },
-                            ["E_SmartWait"] = new JObject
-                            {
-                                ["action"] = new JObject
+                                ["U_SmartWait"] = new JObject
                                 {
-                                    ["type"] = "Custom",
-                                    ["custom_action"] = "SmartWaitAction",
-                                    ["custom_action_param"] = new JObject { ["interval"] = seconds }
+                                    ["action"] = new JObject
+                                    {
+                                        ["type"] = "Custom",
+                                        ["custom_action"] = "SmartWaitAction",
+                                        ["custom_action_param"] = new JObject { ["interval"] = seconds }
+                                    }
                                 }
-                            },
-                            ["U_SmartWait"] = new JObject
-                            {
-                                ["action"] = new JObject
-                                {
-                                    ["type"] = "Custom",
-                                    ["custom_action"] = "SmartWaitAction",
-                                    ["custom_action_param"] = new JObject { ["interval"] = seconds }
-                                }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
@@ -4272,7 +4357,17 @@ public class MaaProcessor
             },
             ["FC_ClickRecordSlot"] = new JObject
             {
-                ["action"] = new JObject { ["custom_action_param"] = new JObject { ["team"] = team } },
+                ["action"] = new JObject
+                {
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                },
+            },
+            ["FC_UseRecord_Step2_SelectRecord"] = new JObject
+            {
+                ["action"] = new JObject
+                {
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                },
             },
         };
 
@@ -4750,12 +4845,9 @@ public class MaaProcessor
                     token.ThrowIfCancellationRequested();
                     if (completion.IsCompleted) break;
                     var option = Interface?.GlobalSelectOptions?.FirstOrDefault(o => o.Name == "卡死重启");
-                    var timeout = 120;
-                    var timeoutOption = option?.SubOptions?.FirstOrDefault(o => o.Name == "卡死等待时间");
-                    if (timeoutOption?.Data?.TryGetValue("timeout_seconds", out var value) == true
-                        && int.TryParse(value, out var seconds) && seconds > 0)
-                        timeout = seconds;
-                    reason = _recoveryMonitor.GetReason(_recoveryClock.Elapsed, TimeSpan.FromSeconds(timeout),
+                    // 卡死等待时间固定 120 秒：与各枢纽 pipeline 里写死的 timeout 保持一致，不再提供自定义选项
+                    const int stallTimeoutSeconds = 120;
+                    reason = _recoveryMonitor.GetReason(_recoveryClock.Elapsed, TimeSpan.FromSeconds(stallTimeoutSeconds),
                         option?.Index == 0 && ViewModel?.CurrentController == MaaControllerTypes.Adb
                         && !PlatformControllerFactory.CanInitializeWithoutDevice
                         && !TaskQueueContinuationPolicy.SpecialActionNames.Contains(task),
@@ -5501,11 +5593,8 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.ClickTopRepairableSwordAction());
             tasker.Resource.Register(new Custom.RepairCooldownCheckAction());
             tasker.Resource.Register(new Custom.DailyTaskCompletionCheckAction());
-            tasker.Resource.Register(new Custom.DailyTaskCompletionMarkAction());
             tasker.Resource.Register(new Custom.DailyTaskStepRecognition());
-            tasker.Resource.Register(new Custom.DailyTaskStepMarkAction());
-            tasker.Resource.Register(new Custom.DailyTaskStepSkipAction());
-            tasker.Resource.Register(new Custom.DailyTaskRunResetAction());
+            tasker.Resource.Register(new Custom.DailyTaskCompletionMarkAction());
             tasker.Resource.Register(new Custom.ForgeCapacityCheckAction());
             tasker.Resource.Register(new Custom.ForgeDisassembleSelectAction());
             tasker.Resource.Register(new Custom.DrillDangerCheckAction());
@@ -5519,7 +5608,6 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.FormationFindSwordAction());
             tasker.Resource.Register(new Custom.FormationFilterClickAction());
             tasker.Resource.Register(new Custom.FormationEquipTeamClickAction());
-            tasker.Resource.Register(new Custom.FormationRecordSlotClickAction());
             tasker.Resource.Register(new Custom.FormationEquipSelectAction());
             tasker.Resource.Register(new Custom.FormationHorseSelectAction());
             tasker.Resource.Register(new Custom.FormationEquipStateMachine());

@@ -4,13 +4,16 @@
   },
   "U_DetectWhereAmI": {
     "pre_delay": 0,
+    "anchor": {
+      "Hub": "U_DetectWhereAmI",
+      "RepairDone": "U_DetectWhereAmI",
+      "RepairAborted": "U_DetectWhereAmI",
+      "SupplyDone": "U_IsPreSortieConfirm",
+      "GrindDone": "U_DetectWhereAmI"
+    },
     "timeout": 120000,
     "next": [
       "U_IsMarching",
-      "U_IsBattleResult_Exp",
-      "U_IsBattleResult_Title",
-      "U_HasExpeditionReturn_Exp",
-      "U_HasExpeditionReturn_Title",
       "U_IsSwordDropColor",
       "U_IsKobanChest",
       "U_IsResourcePoint",
@@ -23,78 +26,25 @@
       "U_IsMenuDirectory",
       "U_IsTeamStatusPanel",
       "U_LeaveTroopRecord",
-      "U_IsAnnouncementPopup",
-      "U_IsTrainingLetter",
-      "U_IsLoginReward",
       "U_IsTutorial",
-      "U_IsAdvertisementPopup",
-      "U_IsGameIcon",
-      "U_IsLoginButton",
-      "U_IsGameUpdatePopup",
-      "U_IsInGameUpdatePopup",
-      "U_IsInternalReport",
-      "U_IsNetworkRequestTimeout",
-      "U_IsConnectionInterrupted",
-      "U_FallbackWait"
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["U_RestartGame"]
-  },
-  "U_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["U_IsAnnouncementPopup", "U_DetectWhereAmI"]
-  },
-  "U_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98],
-        "target": [816, 577, 182, 59]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["U_LoginRewardClick2"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["U_LoginRewardClick3"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["U_IsLoginReward"],
-    "on_error": ["U_DetectWhereAmI"]
   },
   "U_IsTutorial": {
     "recognition": {
@@ -109,38 +59,6 @@
     "action": {"type": "Click"},
     "next": ["U_DetectWhereAmI"]
   },
-  "U_HasExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
   "U_IsMarching": {
     "recognition": {
       "type": "TemplateMatch",
@@ -153,38 +71,6 @@
     },
     "next": ["U_CheckBeforeMarch"],
     "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_IsMarching", "U_DetectWhereAmI"]
-  },
-  "U_IsBattleResult_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["U_IsMarching", "U_DetectWhereAmI"]
   },
   "U_IsSwordDropColor": {
     "recognition": {
@@ -216,13 +102,27 @@
         "threshold": [0.8]
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "KobanChestLogAction",
-      "custom_action_param": "{\"roi\":[414,285,38,37],\"template\":\"Activity/小判箱掉落.png\",\"threshold\":0.8,\"green_mask\":true,\"timeout\":15000,\"poll_interval\":200,\"settle_ms\":4000,\"task\":\"地下城\"}"
+    "next": ["U_IsKobanChestGone"]
+  },
+  "U_IsKobanChestGone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [414, 285, 38, 37],
+        "template": "Activity/小判箱掉落.png",
+        "green_mask": true,
+        "threshold": [0.8]
+      }
     },
+    "inverse": true,
+    "timeout": 15000,
     "next": ["U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 小判箱掉落",
+        "display": "file"
+      }
+    }
   },
   "U_IsSpecialDrop": {
     "recognition": {
@@ -386,12 +286,10 @@
   },
   "U_IsMenuDirectory": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["U_ClickUndergroundInMenu"],
@@ -419,89 +317,20 @@
     },
     "next": ["U_IsHome", "U_DetectWhereAmI"]
   },
-  "U_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
+  "U_ClickMarching": {
     "action": {
       "type": "Click",
       "param": {
-        "target": [1095, 103, 14, 15]
+        "target": [1067, 558, 120, 79]
       }
     },
     "next": ["U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 点击行军",
+        "display": "file"
       }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_ClickMarching": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 点击行军",
-        "click": [1067, 558, 120, 79]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
+    }
   },
   "U_CheckBeforeMarch": {
     "pre_delay": 0,
@@ -516,13 +345,14 @@
         "expected": "传送凭证"
       }
     },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[地下城] 完成一圈"}
-    },
     "next": ["U_GoHomeAfterRound", "U_ContinueNextRound"],
-    "on_error": ["U_DetectWhereAmI"]
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 完成一圈",
+        "display": "file"
+      }
+    }
   },
   "U_ContinueNextRound": {
     "enabled": true,
@@ -555,52 +385,6 @@
       "target": [369, 287, 546, 238]
     },
     "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["U_DetectWhereAmI"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_LeaveTroopRecord": {
@@ -684,65 +468,12 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 100,
       "target": [423, 484, 145, 56]
     },
-    "next": ["U_PreCheckTroopRecord"],
+    "next": ["IsEquipmentShortagePopup"],
     "on_error": ["U_ClickTeam"]
-  },
-  "U_CheckAccel": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1162, 258, 6, 4],
-        "lower": [172, 21, 21],
-        "upper": [178, 27, 27]
-      }
-    },
-    "next": ["U_ClickRepairDone"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_ClickAccel": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1156, 241, 27, 25]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1156, 241, 27, 25]
-    },
-    "next": ["U_CaptureRepairInfo"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_ClickMenuForRepair": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["U_ClickRepairInMenu", "U_ClickMenuForRepair"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_ClickRepairInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [451, 379, 84, 40],
-        "expected": "修复"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_SelectDamagedSword", "U_ClickRepairInMenu"],
-    "on_error": ["U_DetectWhereAmI"]
   },
   "U_ClickSortieInMenu": {
     "recognition": {
@@ -781,72 +512,18 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 出阵",
-        "click": [706, 582, 154, 42]
-      }
-    },
-    "next": ["U_PostSortieHub"]
-  },
-  "U_ConfirmSelectSlot": {
-    "recognition": {
-      "type": "OCR",
+      "type": "Click",
       "param": {
-        "roi": [1052, 138, 32, 31],
-        "expected": "选"
+        "target": [706, 582, 154, 42]
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [262, 307, 147, 46]
-    },
-    "next": ["U_CheckAccel", "U_ClickAccel"],
-    "on_error": ["U_LogNoDamagedSword"]
-  },
-  "U_CaptureRepairInfo": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RepairStartLogAction",
-      "custom_action_param": {
-        "mode": "capture",
-        "name_roi": [195, 242, 150, 32],
-        "cost_rois": [
-          [301, 409, 66, 22],
-          [301, 479, 66, 23],
-          [299, 549, 70, 26],
-          [300, 620, 67, 25]
-        ]
+    "next": ["U_PostSortieHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 出阵",
+        "display": "file"
       }
-    },
-    "next": ["U_CheckAccel"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LogNoDamagedSword": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "未检测到可修复刀剑"}
-    },
-    "next": ["U_DetectWhereAmI"]
-  },
-  "U_DecideDamage_Pre": {
-    "next": ["U_NavigateToRepair", "U_LogStopOnDamageRepair"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_DirAfterRepair": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_VerifyMenuAfterRepair"],
-    "on_error": ["U_DetectWhereAmI"]
+    }
   },
   "U_IsHome": {
     "recognition": {
@@ -893,30 +570,6 @@
     "next": ["U_LogMarchingDamage"],
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_IsPreDamage": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [233, 128, 71, 549],
-        "template": "Common/重伤.png",
-        "green_mask": true,
-        "threshold": [0.9]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [772, 448, 32, 40]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [368, 464, 539, 90]
-    },
-    "next": ["U_LogPreDamage"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
   "U_IsPreSortieConfirm": {
     "recognition": {
       "type": "OCR",
@@ -927,252 +580,12 @@
     },
     "next": ["U_ClickSortieNow"]
   },
-  "U_NavigateToRepair": {
-    "next": ["U_ClickMenuForRepair", "U_DetectWhereAmI"]
-  },
   "U_PostClickMenuHub": {
     "next": ["U_VerifyMenuSortie", "U_CheckNavDirForRetry", "U_DetectWhereAmI"]
   },
   "U_PostSortieHub": {
     "pre_delay": 0,
-    "next": ["U_ConfirmEnterUnderground", "U_IsPreDamage", "U_StopOnDamagePopup", "U_CheckEquipmentPopup", "U_DetectWhereAmI"]
-  },
-  "U_PreCheckTroopRecord": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_PreCheckUseRecord"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckUseRecord": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["U_PreCheckClickRecord1"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckClickRecord1": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["U_PreCheckUseRecordBtn"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckClickRecord2": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["U_PreCheckUseRecordBtn"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckClickRecord3": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["U_PreCheckUseRecordBtn"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckClickRecord4": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["U_PreCheckUseRecordBtn"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckClickRecord5": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["U_PreCheckUseRecordBtn"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreCheckUseRecordBtn": {
-    "enabled": false,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["U_PreConfirmSupply"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_PreConfirmSupply": {
-    "enabled": false,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 补充刀装",
-        "click": [789, 512, 1, 4]
-      }
-    },
-    "post_delay": 500,
-    "next": ["U_FallbackConfirmRecord", "U_GuiSupplyLog"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_FallbackConfirmRecord": {
-    "enabled": false,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [567, 37, 138, 35],
-        "expected": "记录确认"
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "记录中刀装不足"}
-    },
-    "next": ["U_FallbackConfirmRecordLog"],
-    "on_error": ["U_GuiSupplyLog"]
-  },
-  "U_FallbackConfirmRecordLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Info",
-        "message": "记录中刀装不足"
-      }
-    },
-    "next": ["U_FallbackConfirmRecordClick"],
-    "on_error": ["U_GuiSupplyLog"]
-  },
-  "U_FallbackConfirmRecordClick": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1024, 519, 99, 48]
-      }
-    },
-    "next": [],
-    "on_error": ["U_GuiSupplyLog"]
-  },
-  "U_FallbackVerifyTeamSelect": {
-    "enabled": true,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1050, 80, 27, 28]
-      }
-    },
-    "next": ["U_FallbackFindMissingEquipment"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_FallbackFindMissingEquipment": {
-    "enabled": true,
-    "action": {
-      "type": "Custom",
-      "custom_action": "EquipmentFallbackAction"
-    },
-    "next": ["U_FallbackConfirmOneClickEquip"],
-    "on_error": ["U_IsPreSortieConfirm"]
-  },
-  "U_FallbackConfirmOneClickEquip": {
-    "enabled": true,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [574, 9, 135, 38],
-        "expected": "更换装备"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [564, 84, 108, 20]
-      }
-    },
-    "post_delay": 500,
-    "next": ["U_FallbackReturnFromEquip"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_FallbackReturnFromEquip": {
-    "enabled": true,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [136, 10, 31, 29]
-      }
-    },
-    "next": ["U_FallbackFindMissingEquipment"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ConfirmEnterUnderground", "IsPreDamage", "U_StopOnDamagePopup", "U_CheckEquipmentPopup", "U_DetectWhereAmI"]
   },
   "U_ReturnHomeAfterMarch": {
     "recognition": {
@@ -1195,120 +608,15 @@
     "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "U_DetectWhereAmI"],
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_SelectDamagedSword": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [553, 62, 172, 38],
-        "expected": "修复状况"
-      }
-    },
-    "next": ["U_SelectRepairSlot1", "U_SelectRepairSlot2", "U_SelectRepairSlot3", "U_SelectRepairSlot4"],
-    "on_error": ["U_CheckRepairScreen"]
-  },
-  "U_SelectRepairSlot1": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [307, 163, 255, 89],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_ConfirmSelectSlot"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_SelectRepairSlot2": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [303, 300, 255, 90],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_ConfirmSelectSlot"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_SelectRepairSlot3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [304, 432, 255, 90],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_ConfirmSelectSlot"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_SelectRepairSlot4": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [304, 565, 255, 90],
-        "template": "Common/未使用修刀槽.png",
-        "threshold": [0.9]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_ConfirmSelectSlot"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_CheckRepairScreen": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [554, 56, 175, 49],
-        "expected": "修复"
-      }
-    },
-    "next": ["U_SelectDamagedSword"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_SortieAfterRepair": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [165, 163, 87, 52],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_VerifyAfterRepairMenuClosed"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
   "U_TryClickSortie": {
     "next": ["U_ClickSortieInMenu", "U_DetectWhereAmI"]
   },
-  "U_VerifyMenuAfterRepair": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["U_SortieAfterRepair"],
-    "on_error": ["U_DirAfterRepair"]
-  },
   "U_VerifyMenuClosed": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["U_TryClickSortie", "U_DetectWhereAmI"]
@@ -1355,22 +663,6 @@
     "next": ["U_PostClickMenuHub"],
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_ClickRepairDone": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1159, 588, 83, 44],
-        "expected": "修复"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1159, 588, 83, 44]
-    },
-    "next": ["U_LogRepairDone"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
   "U_ClickRepairandStop": {
     "recognition": {
       "type": "OCR",
@@ -1380,28 +672,15 @@
       }
     },
     "action": {"type": "Click"},
+    "next": ["U_CompleteCurrentTaskAfterDamageRepair"],
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_LogRepairDone": {
+  "U_CompleteCurrentTaskAfterDamageRepair": {
     "action": {
       "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 修复完成"}
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤无刀装停止"}
     },
-    "next": ["U_LogRepairDoneLog"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LogRepairDoneLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RepairStartLogAction",
-      "custom_action_param": {
-        "mode": "emit",
-        "prefix": "地下城",
-        "action": "修复"
-      }
-    },
-    "next": ["U_DirAfterRepair"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_ConfirmReturnHome": {
@@ -1413,45 +692,32 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "message": "[地下城] 返回本丸",
-        "click": [490, 469, 10, 10]
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 10, 10]
       }
     },
     "post_wait_freezes": {
       "time": 500,
       "target": [490, 469, 10, 10]
-    }
-  },
-  "U_VerifyAfterRepairMenuClosed": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
     },
-    "next": ["U_TryClickAfterRepair", "U_DetectWhereAmI"]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 返回本丸",
+        "display": "file"
+      }
+    }
   },
   "U_VerifyMenuSortie": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["U_ClickSortieInMenu"],
     "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_TryClickAfterRepair": {
-    "next": ["U_SortieAfterRepair", "U_DetectWhereAmI"]
   },
   "U_StopOnEquipmentPopup": {
     "recognition": {
@@ -1494,53 +760,23 @@
     "next": ["U_LogStopOnDamage"],
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_LogPreDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，准备进入修复流程"}
-    },
-    "next": ["U_DecideDamage_Pre"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
   "U_LogMarchingDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，撤退撤退"}
-    },
-    "next": ["U_LogMarchingDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LogMarchingDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 重伤撤退"
-      }
-    },
     "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 重伤撤退",
+        "display": "log"
+      }
+    }
   },
   "U_LogStopOnDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "StopOnDamageAction"
-    },
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_LogStopOnDamageRepair": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[重伤检测] 检测到刀剑男士重伤，任务终止"}
-    },
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_FallbackWait": {
-    "next": ["U_DetectWhereAmI"]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，停止任务",
+        "display": ["log", "notification"]
+      }
+    }
   },
   "U_RestartGame": {
     "action": {
@@ -1569,20 +805,7 @@
       }
     },
     "next": ["U_IsPreSortieConfirm"],
-    "on_error": ["UF_Hub"]
-  },
-  "U_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_DetectWhereAmI"]
+    "on_error": ["TF_EnterFromTeamSelect"]
   },
   "U_FatigueDetect": {
     "enabled": false,
@@ -1596,16 +819,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 疲劳撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiFatigueLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 疲劳撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheck": {
     "enabled": false,
@@ -1645,16 +871,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R0C0": {
     "recognition": {
@@ -1667,16 +896,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R0C1": {
     "recognition": {
@@ -1689,16 +921,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R0C2": {
     "recognition": {
@@ -1711,16 +946,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R1C0": {
     "recognition": {
@@ -1733,16 +971,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R1C1": {
     "recognition": {
@@ -1755,16 +996,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R1C2": {
     "recognition": {
@@ -1777,16 +1021,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R2C0": {
     "recognition": {
@@ -1799,16 +1046,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R2C1": {
     "recognition": {
@@ -1821,16 +1071,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R2C2": {
     "recognition": {
@@ -1843,16 +1096,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R3C0": {
     "recognition": {
@@ -1865,16 +1121,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R3C1": {
     "recognition": {
@@ -1887,16 +1146,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R3C2": {
     "recognition": {
@@ -1909,16 +1171,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R4C0": {
     "recognition": {
@@ -1931,16 +1196,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R4C1": {
     "recognition": {
@@ -1953,16 +1221,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R4C2": {
     "recognition": {
@@ -1975,16 +1246,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R5C0": {
     "recognition": {
@@ -1997,16 +1271,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R5C1": {
     "recognition": {
@@ -2019,16 +1296,19 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
     },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ReturnHomeAfterMarch"],
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   },
   "U_EqCheckC_R5C2": {
     "recognition": {
@@ -2041,1043 +1321,18 @@
       }
     },
     "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {
-        "level": "Warning",
-        "message": "[地下城] 刀装近破坏撤退",
-        "click": [763, 446, 48, 44]
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
       }
-    },
-    "next": ["U_GuiEqNearDamageLog"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiSupplyLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装补充] 补充刀装"}
-    },
-    "next": ["U_IsPreSortieConfirm", "U_PreConfirmSupply"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiFatigueLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[疲劳检测] 检测到刀剑疲劳，撤退"}
     },
     "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiEqDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装检测] 检测到刀装破坏，撤退"}
-    },
-    "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_GuiEqNearDamageLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[刀装检测] 检测到刀装近破坏，撤退"}
-    },
-    "next": ["U_ReturnHomeAfterMarch"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "UF_Hub": {
-    "enabled": false,
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[地下城] 刷花"}
-    },
-    "next": ["UF_ClickMenu"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_DetectWhereAmI": {
-    "pre_delay": 0,
-    "timeout": 120000,
-    "next": [
-      "UF_HasExpeditionReturn_Exp",
-      "UF_HasExpeditionReturn_Title",
-      "UF_CheckHomeBrightness",
-      "UF_IsEraSelect",
-      "UF_IsRegionSelect",
-      "UF_IsSortieActivity",
-      "UF_IsTeamSelect",
-      "UF_IsMarching",
-      "UF_IsFormationSelect",
-      "UF_IsBattleResult_Exp",
-      "UF_IsBattleResult_Title",
-      "UF_IsSwordDrop",
-      "UF_IsAnnouncementPopup",
-      "UF_IsTrainingLetter",
-      "UF_IsLoginReward",
-      "UF_IsAdvertisementPopup",
-      "UF_IsGameIcon",
-      "UF_IsLoginButton",
-      "UF_IsGameUpdatePopup",
-      "UF_IsInGameUpdatePopup",
-      "UF_IsInternalReport",
-      "UF_IsTrainingApplication",
-      "UF_FallbackWait"
-    ],
-    "on_error": ["UF_RestartGame"]
-  },
-  "UF_ClickMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_PostClickMenuHub"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_PostClickMenuHub": {
-    "next": ["UF_IsMenuDirectory", "UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsMenuDirectory": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["UF_ClickSortieInMenu"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_Hub"]
-  },
-  "UF_IsEraSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [104, 331, 49, 235],
-        "template": "Common/时代选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["UF_ClickFirstEra"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ClickFirstEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [246, 389, 1, 1]
-      }
-    },
-    "post_delay": 200,
-    "next": ["UF_ConfirmEra"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ConfirmEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1199, 633, 3, 1]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsRegionSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [848, 607, 257, 63],
-        "template": "Common/地域选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["UF_VerifyEra", "UF_ClickBackToEra"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_VerifyEra": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [831, 80, 26, 26],
-        "expected": ["一", "l", "1"]
-      }
-    },
-    "next": ["UF_ClickRegion1_1", "UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ClickBackToEra": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [127, 77, 26, 28]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ClickRegion1_1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [194, 213, 8, 1]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsTeamSelect": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
-      }
-    },
-    "next": ["UF_CheckEquipmentPopup", "UF_ClickTeamN"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_CheckEquipmentPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_EqRefill_Step1"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ClickTeamN": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [154, 93, 1, 1]
-      }
-    },
-    "repeat": 2,
-    "repeat_delay": 300,
-    "next": ["UF_DissolveHub"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_DissolveHub": {
-    "next": ["UF_DissolveCheck", "UF_CheckFatigue"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_DissolveCheck": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1074, 211, 37, 421],
-        "template": "Common/移除队员.png",
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DissolveHub"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_CheckFatigue": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 100,
-        "reversed": true
-      }
-    },
-    "next": ["UF_ClickSortieNow"],
-    "on_error": ["UF_UseRecord_Step1"]
-  },
-  "UF_ClickSortieNow": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "即刻"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_Hub"]
-  },
-  "UF_IsMarching": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1067, 558, 120, 79],
-        "template": "Common/合战场_行军.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsFormationSelect": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1017, 421, 1, 1]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsBattleResult_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsSwordDrop": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [598, 543, 66, 1],
-        "lower": [88, 48, 2],
-        "upper": [96, 56, 10]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1067, 558, 120, 79]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_NavigateBack": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_DetectWhereAmI"],
-    "on_error": ["UF_Hub"]
-  },
-  "UF_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["UF_ClickTrainingApplication", "UF_CancelTrainingApplication"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["UF_CancelTrainingApplication", "UF_ClickTrainingApplication"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_CancelTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["UF_CancelTrainingApplication", "UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_FallbackWait": {
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_RestartGame": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "RestartGameAction"
-    },
-    "next": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_UseRecord_Step2_Rec1", "UF_UseRecord_Step2_Rec2", "UF_UseRecord_Step2_Rec3", "UF_UseRecord_Step2_Rec4", "UF_UseRecord_Step2_Rec5"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step2_Rec1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_UseRecord_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step2_Rec2": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_UseRecord_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step2_Rec3": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_UseRecord_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step2_Rec4": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_UseRecord_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step2_Rec5": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_UseRecord_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["UF_UseRecord_Step4", "UF_UseRecord_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_UseRecord_Step4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [789, 512, 1, 4]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_NavigateBack"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_EqRefill_Step2_Rec1", "UF_EqRefill_Step2_Rec2", "UF_EqRefill_Step2_Rec3", "UF_EqRefill_Step2_Rec4", "UF_EqRefill_Step2_Rec5"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step2_Rec1": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 140, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_EqRefill_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step2_Rec2": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 250, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_EqRefill_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step2_Rec3": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 360, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_EqRefill_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step2_Rec4": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 465, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_EqRefill_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step2_Rec5": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1209, 575, 30, 71]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [655, 121, 540, 562]
-    },
-    "next": ["UF_EqRefill_Step3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [707, 53, 72, 64]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [442, 253, 395, 125]
-    },
-    "next": ["UF_EqRefill_Step4"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_EqRefill_Step4": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [576, 151, 126, 34],
-        "expected": "部队记录"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [789, 512, 1, 4]
-      }
-    },
-    "post_wait_freezes": {"time": 100},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1056, 463, 63, 193]
-    },
-    "timeout": 3000,
-    "next": ["UF_IsAnnouncementPopup", "UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "next": ["UF_LoginRewardClick2"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "next": ["UF_LoginRewardClick3"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 500,
-      "target": [232, 99, 817, 568]
-    },
-    "timeout": 3000,
-    "next": ["UF_IsLoginReward"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsHome": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["UF_Hub"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_CheckHomeBrightness": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["UF_IsHome", "UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_HasExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
-  },
-  "UF_IsSortieActivity": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 302, 49, 86],
-        "template": "Common/活动选中.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["UF_DetectWhereAmI"],
-    "on_error": ["UF_DetectWhereAmI"]
+    "on_error": ["U_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[大阪挖地] 刀装近破坏撤退",
+        "display": "log"
+      }
+    }
   }
 }

@@ -22,6 +22,9 @@ public sealed class InstanceConfiguration
         _config = LoadInstanceConfig();
     }
 
+    /// <summary>当前配置所属的实例标识。</summary>
+    public string InstanceId => _instanceId;
+
     /// <summary>
     /// 获取实例配置文件路径：config/instances/{id}.json
     /// </summary>

@@ -8,8 +8,8 @@ using System.Linq;
 namespace MFAAvalonia.Services;
 
 /// <summary>
-/// 管理日课项目按游戏日完成一次的持久化台账，以及本次运行期间的临时跳过状态。
-/// 台账与运行期状态都按实例分别保存，多实例并行时互不影响。
+/// 管理日课项目按游戏日完成次数的持久化台账。
+/// 台账按实例分别保存，多实例并行时互不影响。
 /// </summary>
 public static class DailyTaskCompletionService
 {
@@ -44,13 +44,10 @@ public static class DailyTaskCompletionService
             ["sync_logistics"] = "SyncLogistics",
         };
 
-    private static readonly object RunStateLock = new();
-    private static readonly Dictionary<string, HashSet<string>> RunSkippedItems = new(StringComparer.Ordinal);
-
     /// <summary>当前游戏日完成记录发生变化时通知界面刷新；事件参数为发生变化的实例键。</summary>
     public static event EventHandler<string>? CompletionChanged;
 
-    /// <summary>把实例标识规范化为台账与运行期状态共用的实例键。</summary>
+    /// <summary>把实例标识规范化为台账使用的实例键。</summary>
     public static string NormalizeInstanceKey(string? instanceId)
     {
         return string.IsNullOrWhiteSpace(instanceId)
@@ -134,70 +131,6 @@ public static class DailyTaskCompletionService
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
         }
-    }
-
-    /// <summary>将指定实例的日课项目记录为当前游戏日已完成。</summary>
-    public static void MarkCompleted(string? instanceId, string item, DateTime now)
-    {
-        if (string.IsNullOrWhiteSpace(item))
-            throw new ArgumentException("日课项目标识不能为空。", nameof(item));
-
-        var instanceKey = NormalizeInstanceKey(instanceId);
-        var canonicalItem = NormalizeItem(item);
-        var gameDay = GetGameDay(now);
-        lock (SyncRoot)
-        {
-            if (CountRecords(ReadRecords(), instanceKey, canonicalItem, gameDay) > 0)
-                return;
-
-            AppendRecord(gameDay, instanceKey, canonicalItem);
-        }
-
-        CompletionChanged?.Invoke(null, instanceKey);
-    }
-
-    /// <summary>
-    /// 把指定实例的日课项目标记为本次运行跳过。
-    /// 只影响该实例当前这一次任务运行，不写入完成记录，设置页与下次运行都不受影响。
-    /// </summary>
-    public static void MarkSkippedForCurrentRun(string? instanceId, string item)
-    {
-        if (string.IsNullOrWhiteSpace(item))
-            throw new ArgumentException("日课项目标识不能为空。", nameof(item));
-
-        var instanceKey = NormalizeInstanceKey(instanceId);
-        lock (RunStateLock)
-        {
-            if (!RunSkippedItems.TryGetValue(instanceKey, out var skippedItems))
-            {
-                skippedItems = new HashSet<string>(StringComparer.Ordinal);
-                RunSkippedItems[instanceKey] = skippedItems;
-            }
-
-            skippedItems.Add(NormalizeItem(item));
-        }
-    }
-
-    /// <summary>判断指定实例的日课项目是否已在本次运行中被跳过。</summary>
-    public static bool IsSkippedForCurrentRun(string? instanceId, string item)
-    {
-        if (string.IsNullOrWhiteSpace(item))
-            return false;
-
-        var instanceKey = NormalizeInstanceKey(instanceId);
-        lock (RunStateLock)
-        {
-            return RunSkippedItems.TryGetValue(instanceKey, out var skippedItems)
-                && skippedItems.Contains(NormalizeItem(item));
-        }
-    }
-
-    /// <summary>清空指定实例本次运行的跳过状态，由该实例日课入口的动作调用。</summary>
-    public static void ClearRunSkips(string? instanceId)
-    {
-        var instanceKey = NormalizeInstanceKey(instanceId);
-        lock (RunStateLock)
-            RunSkippedItems.Remove(instanceKey);
     }
 
     private static string GetLogPath()

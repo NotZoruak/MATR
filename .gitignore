@@ -13,6 +13,10 @@ __pycache__/
 /temp/
 /appsettings.json
 
+# 应用内更新检查写入的变更日志副本（运行时生成，不提交到 Git）
+/assets/resource/Changelog.md
+/assets/resource/Release.md
+
 # 刀帐个人数据（由运行时写入 config/，不提交到 Git）
 /config/config.json
 /config/mfa_*.json
@@ -59,6 +63,9 @@ desktop.ini
 # 本地项目文档(仅 docs/分支流程.md 随仓库分发)
 /docs/*
 !/docs/分支流程.md
+
+# 本地参考仓库（仅供开发时查阅）
+/_reference/
 
 # 打包产物
 /MATR-*.zip

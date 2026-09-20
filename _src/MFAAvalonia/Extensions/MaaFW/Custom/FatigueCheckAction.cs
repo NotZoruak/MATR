@@ -118,7 +118,7 @@ public class FatigueCheckAction : IMaaCustomAction
                 }
                 for (int retry = 0; retry < 10 && !firstValue.HasValue; retry++)
                 {
-                    LoggerHelper.Info($"[疲劳检测-合战场] 首位 OCR 失败，重试 {retry + 1}/10");
+                    LoggerHelper.Info($"[疲劳检测-出阵] 首位 OCR 失败，重试 {retry + 1}/10");
                     Thread.Sleep(200);
                     using var retryImage = context.GetImage();
                     if (retryImage == null) continue;
@@ -134,18 +134,18 @@ public class FatigueCheckAction : IMaaCustomAction
                 }
                 if (!firstValue.HasValue)
                 {
-                    LoggerHelper.Warning("[疲劳检测-合战场] 首位疲劳值识别失败，继续出阵");
+                    LoggerHelper.Warning("[疲劳检测-出阵] 首位疲劳值识别失败，继续出阵");
                     return FatigueCheckDecision.ShouldContinueWhenFirstValueUnreadable(firstValue);
                 }
                 var reversed = (bool?)json["reversed"] ?? false;
                 var ok = reversed ? firstValue.Value < threshold : firstValue.Value >= threshold;
-                LoggerHelper.Info($"[疲劳检测-合战场] 首位={firstValue}, 阈值={threshold}, reversed={reversed}, 结果={ok}");
+                LoggerHelper.Info($"[疲劳检测-出阵] 首位={firstValue}, 阈值={threshold}, reversed={reversed}, 结果={ok}");
                 FlowerStateTracker.CurrentFatigueLowest = firstValue.Value;
                 if (!ok)
                 {
                     var msg = reversed
-                        ? $"[合战场疲劳处理] 疲劳值恢复完成"
-                        : $"[合战场疲劳处理] 首位疲劳低于30，进入刷花";
+                        ? $"[出阵疲劳检测] 检测到首位疲劳已恢复到{threshold}，刷花结束"
+                        : $"[出阵疲劳检测] 检测到首位疲劳低于{threshold}，进入刷花";
                     try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(msg); } catch { }
                 }
                 return ok;

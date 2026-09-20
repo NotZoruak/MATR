@@ -28,7 +28,7 @@
       "D_IsInGameUpdatePopup",
       "D_IsNetworkRequestTimeout",
       "D_IsConnectionInterrupted",
-      "D_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["D_RestartGame"]
   },
@@ -126,12 +126,10 @@
   },
   "D_DetectMenu": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "action": {
@@ -419,12 +417,10 @@
   },
   "D_DisassembleVerifyMenu": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "pre_delay": 300,
@@ -472,9 +468,6 @@
       }
     },
     "post_delay": 1000,
-    "next": ["D_DetectWhereAmI"]
-  },
-  "D_FallbackWait": {
     "next": ["D_DetectWhereAmI"]
   },
   "D_IsTrainingApplication": {

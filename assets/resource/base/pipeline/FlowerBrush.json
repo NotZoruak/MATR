@@ -6,10 +6,10 @@
     "pre_delay": 0,
     "timeout": 120000,
     "next": [
-      "FB_HasExpeditionReturn_Exp",
-      "FB_HasExpeditionReturn_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
       "FB_IsMarching",
-      "FB_IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Exp",
       "FB_IsSwordDropColor",
       "FB_IsFormationSelect",
       "FB_IsSwordSelect",
@@ -19,72 +19,21 @@
       "FB_IsSortieActivity",
       "FB_IsMenuDirectory",
       "FB_CheckHomeBrightness",
-      "FB_IsAnnouncementPopup",
-      "FB_IsTrainingLetter",
-      "FB_IsLoginReward",
-      "FB_IsAdvertisementPopup",
-      "FB_IsGameIcon",
-      "FB_IsLoginButton",
-      "FB_IsGameUpdatePopup",
-      "FB_IsInGameUpdatePopup",
-      "FB_IsInternalReport",
-      "FB_IsTrainingApplication",
-      "FB_IsNetworkRequestTimeout",
-      "FB_IsConnectionInterrupted",
-      "FB_FallbackWait"
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["FB_RestartGame"]
-  },
-  "FB_HasExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [388, 59, 54, 25]
-      }
-    },
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_HasExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [388, 59, 54, 25]
-      }
-    },
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsBattleResult_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [388, 59, 54, 25]
-      }
-    },
-    "next": ["FB_DetectWhereAmI"]
   },
   "FB_IsSwordDropColor": {
     "recognition": {
@@ -527,10 +476,10 @@
       "FB_PostSwordDropColor",
       "FB_PostFormationSelect",
       "FB_CheckPostHomeBright",
-      "FB_IsAdvertisementPopup",
-      "FB_IsGameIcon",
-      "FB_IsLoginButton",
-      "FB_PostFallbackWait"
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["FB_DetectWhereAmI"]
   },
@@ -674,18 +623,12 @@
     },
     "on_error": ["FB_DetectWhereAmI"]
   },
-  "FB_PostFallbackWait": {
-    "next": ["FB_DetectAfterMarching"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
   "FB_VerifyMenuOpened": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["FB_ClickSortieInMenu"],
@@ -693,242 +636,26 @@
   },
   "FB_VerifyLeftMenuSortie": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["FB_ClickSortieInMenu", "FB_DetectWhereAmI"]
   },
-  "FB_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["FB_ClickTrainingApplication", "FB_CancelTrainingApplication"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["FB_CancelTrainingApplication", "FB_ClickTrainingApplication"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_CancelTrainingApplication": {
+  "FB_VerifySortieMenuClosed": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["FB_CancelTrainingApplication", "FB_DetectWhereAmI"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_VerifySortieMenuClosed": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["FB_TryClickSortie", "FB_DetectWhereAmI"]
   },
   "FB_TryClickSortie": {
     "next": ["FB_ClickSortieInMenu", "FB_DetectWhereAmI"]
-  },
-  "FB_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "post_delay": 3000,
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["FB_DetectWhereAmI"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "post_delay": 3000,
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "post_delay": 2000,
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "post_delay": 2000,
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["FB_IsAnnouncementPopup", "FB_DetectWhereAmI"]
-  },
-  "FB_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["FB_LoginRewardClick2"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_LoginRewardClick2": {
-    "pre_delay": 1000,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["FB_LoginRewardClick3"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_LoginRewardClick3": {
-    "pre_delay": 1000,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["FB_IsLoginReward"],
-    "on_error": ["FB_DetectWhereAmI"]
   },
   "FB_CheckHomeBrightness": {
     "recognition": {
@@ -955,20 +682,15 @@
   },
   "FB_IsMenuDirectory": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "pre_delay": 100,
     "next": ["FB_ClickSortieInMenu"],
     "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_FallbackWait": {
-    "next": ["FB_DetectWhereAmI"]
   },
   "FB_RestartGame": {
     "action": {
@@ -976,52 +698,5 @@
       "custom_action": "RestartGameAction"
     },
     "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["FB_DetectWhereAmI"]
-  },
-  "FB_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["FB_DetectWhereAmI"],
-    "on_error": ["FB_DetectWhereAmI"]
   }
 }

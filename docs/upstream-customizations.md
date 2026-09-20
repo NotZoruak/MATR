@@ -57,15 +57,17 @@
 
 ### `services.update-data-scheduling`
 
-更新数据任务按间隔执行，状态存入实例配置。需验证间隔跳过与实例重新加载。
+更新数据任务的触发间隔按任务分别记录成功时间：优先用任务备注与显示名称，未写备注时按「识别内容」区分（实例配置键 `UpdateData.LastSucceededAt.<任务:备注 | 范围:识别内容>`，默认识别范围兼容旧版的单键记录），因此同一队列里的两个更新数据任务可以设置不同频率而不会互相顶掉。间隔判断由自定义识别 `UpdateDataIntervalRecognition` 在入口 node `UD_IsIntervalDue` 完成，未到间隔时识别失败，由 `UD_IntervalSkipped` 结束本次任务，不操作游戏；成功时间由 `UpdateDataMarkSuccessAction` 在任务末尾按同一调度键写入。
+
+「识别内容」与「触发间隔」是两个独立选项，如果分别生成同一个 node 的 `pipeline_override`，MaaFramework 只保留最后一层。因此 `MaaProcessor.ApplyUpdateDataScheduleParams` 在合并完任务选项后，把调度键与触发间隔合成一次注入，并写明 `UD_IsIntervalDue.recognition` 与 `UD_MarkSuccess.action` 的完整结构。升级时必须保留该注入：删掉它会让间隔退化为 pipeline 里的默认值（每天 + 范围:仓库+刀帐），成功时间也会全部记到默认调度键上。
 
 ### `daily-task.per-game-day-completion`
 
 一键日课的登录奖励、暖心礼包、合成、刀解和锻刀使用 MATR 自定义的游戏日完成台账。完成日期按每日 5:00 切换；状态写入 `debug/logs/daily-task-completion.log`。开启刀解时，首次刀解至少一把；若收取完成锻刀所需刀位不足，则按缺口刀解腾位。两种刀解均写入同一当天完成记录：已经完成当天刀解后，仍会在收刀缺位时继续按缺口刀解。每页选择许可名单中的刀剑前，必须读取当前已选数量，并且只选择剩余所需数量，不能因同页存在多把许可刀剑而超选。当天锻刀完成记录只阻止新建锻刀，仍必须进入锻刀状况页收取已完成刀剑。无合成素材、刀解素材不足或未完成 3 次锻刀均不得标记为完成；其中无合成素材走「本次运行跳过」，只写运行期状态，台账与设置页保持不变，下一次运行仍会重新尝试。
 
-台账与运行期状态都由 `DailyTaskCompletionService` 保管，并通过自定义 action 接入 pipeline。运行期跳过使用内存集合（`MarkSkippedForCurrentRun` / `IsSkippedForCurrentRun` / `ClearRunSkips`），由 `DailyTaskStepSkipAction` 写入、`DailyTaskRunResetAction` 在日课入口 node 每次开始时清空，`DailyTaskStepRecognition` 先判断运行期跳过再判断游戏日记录。升级时需同时保留日志文件格式、检查/写入/跳过/重置 action 的注册，以及日课各项目的成功路径和跳过路径。
+完成台账由 `DailyTaskCompletionService` 保管，并通过自定义 action 接入 pipeline。本次运行跳过不再使用内存集合：日课入口 node 每次开始时初始化六个项目路由 `anchor`，跳过出口清空对应锚点，`DT_ProjectRouter` 因此略过该项目。`DailyTaskStepRecognition` 只判断游戏日完成次数。升级时需同时保留日志文件格式、完成检查/写入 action 的注册、日课入口锚点初始化，以及各项目的成功路径和跳过路径。
 
-日课任务的选项与子选项统一使用 `DT_` 前缀，项目开关只覆盖对应 `DT_Step<项目>.enabled`，旧 `D_` 前缀选项已全部删除。锻刀公式、刀解路径重接线、演练子选项、领取奖励子选项与邮件类别的覆盖，以及 `卡死等待时间`、`卡死重启` 中对应主枢纽的条目，随各自流程重写补齐。
+日课任务的选项与子选项统一使用 `DT_` 前缀，项目开关只覆盖对应 `DT_Step<项目>.enabled`，旧 `D_` 前缀选项已全部删除。锻刀公式、刀解路径重接线、演练子选项、领取奖励子选项与邮件类别的覆盖，以及 `卡死重启` 中对应主枢纽的条目，随各自流程重写补齐（`卡死等待时间` 选项已于 2026-09-19 移除，超时统一写死 120000）。
 
 ### `work-records.name-dialog-registration`
 
@@ -91,9 +93,9 @@
 
 合战场任务的轮数与其它任务完全一致：`repeatable` 为 `true`，次数取自任务级 `repeat_count`，「过去」与「异去」共用同一份设置。`MaaProcessor.CreateNodeAndParam` 直接使用 `InterfaceItem.RepeatCount`，不得恢复历史上「从 `过去/异去` 下级选项 `异去_重复次数` 读取轮数」或「给过去写死三轮」的定制逻辑（该逻辑曾两次被上游升级覆盖）。
 
-「异去」每圈流程自身停在 `S_IsIsekaiRegionEnd`（无 `next`）即一圈结束，无需额外定制。「过去」每一圈打完回到本丸后同样要把控制权交回队列，因此由资源侧自定义识别 `SortieRoundDoneRecognition` 判断「本次任务运行是否已经出阵过」（判定依据为 `S_SortieSuccess` 的命中计数配合 `TaskJob.Id` 与基线），命中时走 `S_IsSortieRoundDone`（打点「[合战场] 完成一圈」＋`"next": []`）结束本轮运行。判定必须走 `next` 正常分支，不得改用「动作返回 false 走 `on_error`」：MaaFW 的 `SaveOnError` 全局选项会在 on_error 触发时写入 `debug/on_error/` 截图，按圈数刷屏。
+「异去」每圈流程自身停在 `S_IsIsekaiRegionEnd`（无 `next`）即一圈结束，无需额外定制。「过去」每圈打完回到本丸后同样要把控制权交回队列：`Sortie` 入口先清空 `S_RoundDone` anchor，`S_SortieSuccess` 确认出阵后把它指向 `S_CompleteRound`；“过去”选项让 `S_CheckHomeBrightness` 优先尝试 `[Anchor]S_RoundDone`，该完成 node 记录「[常驻作战] 完成一圈」、清空 anchor 且无 `next`，从而正常结束本轮。未曾成功出阵时 anchor 候选会被跳过，仍按 `S_IsHome` 导航出阵。不得改用动作返回 false 走 `on_error`：MaaFW 的 `SaveOnError` 全局选项会在 on_error 触发时写入 `debug/on_error/` 截图，按圈数刷屏。
 
-引擎运行标识在每次 `post_task` 变化，命中计数的生命周期以基线比较兜底；刷花链（`SF_ClickSortieNow` / `SF_IsHome`）不参与轮次判定，回到主链后继续。
+刷花链（`SF_ClickSortieNow` / `SF_IsHome`）不写 `S_RoundDone`，回到主链后继续。
 
 ### `live-view.pipelined-screencap-recovery`
 
@@ -106,6 +108,12 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 有限重复任务在每轮收尾时会连续输出两条日志：「任务完成：任务名 进度 X/Y」（刚结束的一轮）与「开始任务：任务名」（下一轮），两者仅相隔数毫秒。顺序颠倒时，日志面板上会出现连续两条「开始任务」，而上一轮的「任务完成」被挤到后面，视觉上无法按轮次一一对应；战斗过程日志由 `LogAction` 只写文件、不写 GUI，所以面板里这两条本来就是相邻显示的，任何一次乱序都会直接暴露。
 
 该修复在 2026-08-16 已做过一次（提交 `7b30e339`，当时只改了 `AddLogByKey`），2026-09-04 的 MFAAvalonia v2.16.1 升级（提交 `b65c54ec`）把上游的 `Task.Run(() => DispatcherHelper.PostOnMainThread(...))` 写法带了回来，问题随之复发。升级时以本条目为准，不要恢复双层投递；日志创建、集合写入与裁剪仍全部在界面线程执行，不引入跨线程集合访问。
+
+### `focus.display-channels`
+
+`focus` 的分发渠道与内容前缀属于 MATR 扩展，升级时不能按上游实现直接覆盖。`FocusHandler.DispatchToChannels` 在官方 `log` / `toast` / `notification` / `dialog` / `modal` 之外必须保留 `file` 分支，它调用 `MaaProcessor.AddMarkdownToFile`——只走 `LoggerHelper.Info` 写实例日志文件，不写 `LogItemViewModels` 这个实时面板集合、也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点，避免实时面板被刷屏。`log` 渠道仍同时写实时面板与文件。
+
+`special:` 是 MATR 约定的内容前缀，不是 MaaFramework 的字段。`FocusHandler.TryExtractSpecialContent` 在实时展示前剥离它，`AddMarkdown` 以 `recordAsSpecial: true` 把词条写成 `[Record][Special]`，`WorkRecordBuilder` 再把它归入工作记录的「特殊情况」而不占用 Warning 级别。升级 focus 相关代码后，用「打点只进文件」「特殊情况仍归入工作记录」两条实机行为各验证一次。
 
 ### `task.sync-expedition-reuse`
 
@@ -137,9 +145,9 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 
 ### `recovery.game-and-emulator-restart`
 
-MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调检测接入。必须保留 `TaskRecoveryMonitor`、任务回调记录和 `TryRunTasksAsync` 中独立于底层 `Wait` 的检查循环。检测只在 ADB 普通任务且开启「卡死重启」时启用，静默阈值沿用「卡死等待时间」（默认 120 秒），排除智能等待、人工弹窗及已经开始的游戏恢复。停止和完成任务时撤销检测。
+MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调检测接入。必须保留 `TaskRecoveryMonitor`、任务回调记录和 `TryRunTasksAsync` 中独立于底层 `Wait` 的检查循环。检测只在 ADB 普通任务且开启「卡死重启」时启用，静默阈值固定 120 秒（原「卡死等待时间」选项已于 2026-09-19 移除，不再读取保存值），排除智能等待、人工弹窗及已经开始的游戏恢复。停止和完成任务时撤销检测。
 
-日课的画面检测枢纽、各业务枢纽与各阶段 Gate 在 `DailyTask.json` 中写死 `timeout: 120000`（共 49 个 node），不再依赖「卡死重启」选项覆盖等待时间；该开关对日课只切换 `on_error` 指向的恢复枢纽（`DT_RestartGame` 与 `DT_RestartGameReturn*`）。
+日课的画面检测枢纽、各业务枢纽与各阶段 Gate 在 `DailyTask.json` 中写死 `timeout: 120000`（共 49 个 node）；2026-09-19 起所有任务的枢纽超时统一写死 `120000`，「卡死等待时间」选项已移除；该开关对日课只切换 `on_error` 指向的恢复枢纽（`DT_RestartGame` 与 `DT_RestartGameReturn*`）。
 
 恢复时先异步请求底层停止，再执行外部游戏与模拟器恢复，不能先等待挂起的底层停止；底层退出确认有 30 秒上限。恢复后重连并重新执行当前中断任务，保留外层队列及已完成轮次；恢复失败必须停止队列，不能继续向未退出的执行器追加任务。恢复动作应显式接收所属处理器和取消令牌，避免切换实例后操作错误设备，手动停止后不得继续启动任务。MuMu 的 Windows 命令不得在其他平台执行。
 

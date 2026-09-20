@@ -1,63 +1,44 @@
 {
   "UpdateData": {
-    "next": ["UD_DetectWhereAmI"],
+    "next": ["UD_IsIntervalDue", "UD_IntervalSkipped"],
     "on_error": ["UD_DetectWhereAmI"]
   },
+  "UD_IsIntervalDue": {
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "UpdateDataIntervalRecognition",
+        "custom_recognition_param": {
+          "interval": "每天",
+          "key": "范围:仓库+刀帐"
+        }
+      }
+    },
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["UD_DetectWhereAmI"]
+  },
+  "UD_IntervalSkipped": {},
   "UD_DetectWhereAmI": {
     "timeout": 120000,
     "next": [
-      "UD_ClickExpeditionReturn_Exp",
-      "UD_ClickExpeditionReturn_Title",
-      "UD_LeaveTroopRecord",
-      "UD_IsAnnouncementPopup",
-      "UD_IsAdvertisementPopup",
-      "UD_IsTrainingLetter",
-      "UD_IsLoginReward",
-      "UD_IsGameIcon",
-      "UD_IsLoginButton",
-      "UD_IsGameUpdatePopup",
-      "UD_IsInGameUpdatePopup",
-      "UD_IsInternalReport",
-      "UD_IsNetworkRequestTimeout",
-      "UD_IsConnectionInterrupted",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
       "UD_CheckHomeBrightness1",
-      "UD_FallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["UD_RestartGame"]
-  },
-  "UD_ClickExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_ClickExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
   },
   "UD_CheckHomeBrightness1": {
     "recognition": {
@@ -68,8 +49,7 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["UD_IsHome1", "UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
+    "next": ["UD_IsHome1", "UD_DetectWhereAmI"]
   },
   "UD_IsHome1": {
     "recognition": {
@@ -86,8 +66,7 @@
       "custom_action": "UpdateDataWaitAction",
       "custom_action_param": {"milliseconds": 1000}
     },
-    "next": ["UD_CheckHomeBrightness2"],
-    "on_error": ["UD_DetectWhereAmI"]
+    "next": ["UD_CheckHomeBrightness2", "UD_DetectWhereAmI"]
   },
   "UD_CheckHomeBrightness2": {
     "recognition": {
@@ -98,8 +77,7 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["UD_IsHome2", "UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
+    "next": ["UD_IsHome2", "UD_DetectWhereAmI"]
   },
   "UD_IsHome2": {
     "recognition": {
@@ -116,38 +94,7 @@
       "custom_action": "UpdateDataWaitAction",
       "custom_action_param": {"milliseconds": 1000}
     },
-    "next": ["UD_RunWarehouse", "UD_RunSwordBook"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_CheckHomeBrightness3": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [66, 58, 11, 13],
-        "lower": [23, 95, 15],
-        "upper": [40, 155, 30]
-      }
-    },
-    "next": ["UD_IsHome3", "UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsHome3": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "UpdateDataWaitAction",
-      "custom_action_param": {"milliseconds": 1000}
-    },
-    "next": ["UD_RunWarehouse", "UD_RunSwordBook"],
-    "on_error": ["UD_DetectWhereAmI"]
+    "next": ["UD_RunWarehouse", "UD_RunSwordBook"]
   },
   "UD_RunWarehouse": {
     "action": {
@@ -155,8 +102,7 @@
       "custom_action": "UpdateDataPrepareAction",
       "custom_action_param": {"stage": "warehouse"}
     },
-    "next": ["Warehouse_Start"],
-    "on_error": []
+    "next": ["Warehouse_Start"]
   },
   "UD_SaveWarehouse": {
     "action": {
@@ -164,8 +110,7 @@
       "custom_action": "UpdateDataSaveAction",
       "custom_action_param": {"stage": "warehouse"}
     },
-    "next": ["UD_ReturnHome"],
-    "on_error": []
+    "next": ["UD_ReturnHome"]
   },
   "UD_ReturnHome": {
     "next": ["UD_ReturnHomeX", "UD_ReturnHomeLowerX", "UD_ReturnHomeUpperX", "UD_ReturnHomeDone"],
@@ -252,12 +197,10 @@
   },
   "UD_VerifyMenuDirectory": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "action": {
@@ -291,8 +234,7 @@
       "custom_action": "UpdateDataPrepareAction",
       "custom_action_param": {"stage": "swordbook"}
     },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": []
+    "next": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SwordBookDetectWhereAmI": {
     "timeout": 120000,
@@ -302,19 +244,19 @@
       "UD_SB_IsSwordBook",
       "UD_SB_IsSerial",
       "UD_SB_LeaveTroopRecord",
-      "UD_SB_IsAnnouncementPopup",
-      "UD_SB_IsAdvertisementPopup",
-      "UD_SB_IsTrainingLetter",
-      "UD_SB_IsLoginReward",
-      "UD_SB_IsGameIcon",
-      "UD_SB_IsLoginButton",
-      "UD_SB_IsGameUpdatePopup",
-      "UD_SB_IsInGameUpdatePopup",
-      "UD_SB_IsInternalReport",
-      "UD_SB_IsTrainingApplication",
-      "UD_SB_IsNetworkRequestTimeout",
-      "UD_SB_IsConnectionInterrupted",
-      "UD_SB_FallbackWait"
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["UD_SB_RestartGame"]
   },
@@ -471,8 +413,7 @@
   "UD_MarkSuccess": {
     "action": {
       "type": "Custom",
-      "custom_action": "UpdateDataMarkSuccessAction",
-      "custom_action_param": {"interval": "每天"}
+      "custom_action": "UpdateDataMarkSuccessAction"
     },
     "next": [],
     "on_error": []
@@ -495,494 +436,6 @@
     },
     "next": ["UD_SwordBookDetectWhereAmI"],
     "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["UD_SB_IsAnnouncementPopup", "UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98],
-        "target": [816, 577, 182, 59]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["UD_SB_LoginRewardClick2"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["UD_SB_LoginRewardClick3"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["UD_SB_IsLoginReward"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1280, 720],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_FallbackWait": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "UpdateDataWaitAction",
-      "custom_action_param": {"milliseconds": 1000}
-    },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["UD_SB_ClickTrainingApplication", "UD_SB_CancelTrainingApplication"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["UD_SB_CancelTrainingApplication", "UD_SB_ClickTrainingApplication"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_SB_CancelTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["UD_SB_CancelTrainingApplication", "UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
-  },
-  "UD_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["UD_IsAnnouncementPopup", "UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_FallbackWait": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "UpdateDataWaitAction",
-      "custom_action_param": {"milliseconds": 1000}
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_LeaveTroopRecord": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [63, 28, 17, 17]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98],
-        "target": [816, 577, 182, 59]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["UD_LoginRewardClick2"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_LoginRewardClick2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [240, 104, 803, 561]
-    },
-    "next": ["UD_LoginRewardClick3"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_LoginRewardClick3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["UD_IsLoginReward"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1280, 720],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["UD_DetectWhereAmI"],
-    "on_error": ["UD_DetectWhereAmI"]
   },
   "UD_RestartGame": {
     "action": {

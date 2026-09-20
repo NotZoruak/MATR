@@ -25,10 +25,10 @@ public static class WorkRecordBuilder
         @"停止前状态：([A-Z_]+)", RegexOptions.Compiled);
 
     // 词表行：[地下城] 出阵 / [后勤] 派遣远征 部队3已派遣至 4-3
-    // 内容行开头可能有 [cfg=Default][src=Monitor] 等上下文块和 [Record] 记录标记，先跳过后再捕获 [前缀] 行为词。
+    // 内容行开头可能有 [cfg=Default][src=Monitor] 等上下文块和 [Record][Special] 记录标记，先跳过后再捕获 [前缀] 行为词。
     // 前缀排除 = 与空白，避免 [cfg=Default] 等上下文块被误捕获为前缀。
     private static readonly Regex WordRegex = new(
-        @"^(?:\[[a-zA-Z]+\s*=[^\]]*\]\s*)*(?:\[Record\]\s*)?\[([^\]\s=]+)\]\s+(\S+)(?:\s+(.*))?$", RegexOptions.Compiled);
+        @"^(?:\[[a-zA-Z]+\s*=[^\]]*\]\s*)*(?:\[Record\]\s*)?(?:(?<special>\[Special\])\s*)?\[(?<prefix>[^\]\s=]+)\]\s+(?<action>\S+)(?:\s+(?<detail>.*))?$", RegexOptions.Compiled);
 
     /// <summary>状态码 → 中文（NOT_STARTED 语义见 Build 中按是否执行过区分）</summary>
     public static readonly Dictionary<string, string> StatusMap = new()
@@ -214,7 +214,7 @@ public static class WorkRecordBuilder
             {
                 var word = WordRegex.Match(entry.Content);
                 var target = word.Success
-                    ? FindRecordForPrefix(word.Groups[1].Value, records, current)
+                    ? FindRecordForPrefix(word.Groups["prefix"].Value, records, current)
                     : current;
                 if (target != null)
                     Accumulate(target, entry.Timestamp.Value, entry.Content, entry.Level, lastSeen, lastAcceptedKey, lastReturnHomeTime);
@@ -244,14 +244,19 @@ public static class WorkRecordBuilder
     /// <summary>按词条前缀寻找对应任务，支持地下城与后勤并行运行。</summary>
     private static WorkRecord? FindRecordForPrefix(string prefix, List<WorkRecord> records, WorkRecord current)
     {
+        // 出阵疲劳检测由刷花流程产生，打点本身不带任务名，归属到当前正在运行的任务记录。
+        if (prefix == "出阵疲劳检测")
+            return current;
+
         string[] taskEntries = prefix switch
         {
             "远征计时" or "后勤" or "本丸后勤" => ["Expedition"],
-            "地下城" => ["Underground"],
+            "地下城" or "大阪挖地" => ["Underground"],
             "合战场" or "常驻作战" => ["Sortie"],
-            "联队战" or "海陆联队" => ["LRentaisen"],
+            "联队战" or "海陆联队" => ["RegimentBattle"],
             "秘宝之里" or "花牌" => ["Hanapai"],
             "战术强化" => ["TacticalTraining"],
+            "江户潜入" => ["EdoCastle"],
             _ => [],
         };
 
@@ -286,9 +291,9 @@ public static class WorkRecordBuilder
         Dictionary<WorkRecord, DateTime> lastReturnHomeTime)
     {
         var match = WordRegex.Match(content);
-        var action = match.Success ? match.Groups[2].Value : "";
+        var action = match.Success ? match.Groups["action"].Value : "";
         var filterKey = match.Success
-            ? $"{match.Groups[1].Value}\u001F{action}\u001F{match.Groups[3].Value}"
+            ? $"{match.Groups["prefix"].Value}\u001F{action}\u001F{match.Groups["detail"].Value}"
             : content;
         var filterWindow = IsRetreatAction(action) ? RetreatFilterSeconds : RepeatFilterSeconds;
 
@@ -309,8 +314,9 @@ public static class WorkRecordBuilder
 
         if (!match.Success)
             return;
-        var prefix = match.Groups[1].Value;
-        var detail = match.Groups[3].Value;
+        var prefix = match.Groups["prefix"].Value;
+        var detail = match.Groups["detail"].Value;
+        var isSpecial = match.Groups["special"].Success;
 
         // 换队长拖拽的 OCR 保护日志仅用于排查，不作为用户可见的特殊情况。
         if (prefix == "DragCaptain" && action.StartsWith("无可用位置", StringComparison.Ordinal))
@@ -324,6 +330,15 @@ public static class WorkRecordBuilder
         {
             record.HasInterrupt = true;
             record.SpecialEvents.Add(new SpecialEvent(time, action));
+            return;
+        }
+
+        // 出阵疲劳检测：进入刷花计一次刷花次数，刷花结束只作为普通记录行。
+        // 文案形如「检测到首位疲劳低于30，进入刷花」，整句会成为词条，因此按包含关系判断。
+        if (prefix == "出阵疲劳检测")
+        {
+            if (action.Contains("进入刷花", StringComparison.Ordinal))
+                record.FlowerBrushCount++;
             return;
         }
 
@@ -403,18 +418,19 @@ public static class WorkRecordBuilder
             case "补充刀装":
                 if (prefix == "后勤")
                     record.LogisticsCounts[action] = record.LogisticsCounts.GetValueOrDefault(action) + 1;
-                else
+                else if (!isSpecial)
                     record.SpecialEvents.Add(new SpecialEvent(time, action));
                 break;
             case "修复":
-                if (level == "WRN")
+                if (level == "WRN" && !isSpecial)
                 {
                     var repairDetail = string.IsNullOrWhiteSpace(detail) ? action : $"{action} {detail}";
                     record.SpecialEvents.Add(new SpecialEvent(time, repairDetail));
                 }
                 break;
             case "遭遇检非" when prefix == "重启游戏":
-                record.SpecialEvents.Add(new SpecialEvent(time, "遭遇检非违使，重启游戏"));
+                if (!isSpecial)
+                    record.SpecialEvents.Add(new SpecialEvent(time, "遭遇检非违使，重启游戏"));
                 break;
             default:
                 if (prefix == "远征计时" && action == "倒计时结束")
@@ -425,16 +441,22 @@ public static class WorkRecordBuilder
                 {
                     record.LogisticsCounts[action] = record.LogisticsCounts.GetValueOrDefault(action) + 1;
                 }
-        else if (level == "WRN")
+        else if (level == "WRN" && !isSpecial)
         {
             if (prefix == "RestartGameAction" && action == "ADB")
                 return;
 
-            // 特殊情况只收 Warning 档词条（词表约定），Info 词条如命中王点/刷花不展示
+            // 未标记的特殊情况只收 Warning 档词条；普通 Info 词条如命中王点/刷花不展示。
             var warningDescription = string.IsNullOrWhiteSpace(detail) ? action : $"{action} {detail}";
             record.SpecialEvents.Add(new SpecialEvent(time, warningDescription));
         }
                 break;
+        }
+
+        if (isSpecial)
+        {
+            var specialDescription = string.IsNullOrWhiteSpace(detail) ? action : $"{action} {detail}";
+            record.SpecialEvents.Add(new SpecialEvent(time, specialDescription));
         }
     }
 

@@ -3,27 +3,27 @@
     "pre_delay": 0,
     "timeout": 120000,
     "next": [
-      "E_ClickExpeditionReturn_Exp",
-      "E_ClickExpeditionReturn_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
       "E_DetectExpeditionScreen",
       "E_IsMenuDirectory",
       "E_IsTeamStatusPanel",
       "E_CheckHomeBrightness",
       "E_IsSwordDropColor",
-      "E_IsAnnouncementPopup",
-      "E_IsTrainingLetter",
-      "E_IsLoginReward",
-      "E_IsAdvertisementPopup",
-      "E_IsGameIcon",
-      "E_IsLoginButton",
-      "E_IsGameUpdatePopup",
-      "E_IsInGameUpdatePopup",
-      "E_IsInternalReport",
-      "E_IsTrainingApplication",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
       "E_LeaveTroopRecord",
-      "E_IsNetworkRequestTimeout",
-      "E_IsConnectionInterrupted",
-      "E_FallbackWait"
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_RestartGame"]
   },
@@ -600,12 +600,10 @@
   },
   "E_VerifyMenuDir": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["E_ClickBackToHome"]
@@ -619,38 +617,6 @@
       }
     },
     "next": ["E_WaitRefresh"]
-  },
-  "E_ClickExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["Expedition"]
-  },
-  "E_ClickExpeditionReturn_Title": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [947, 533, 67, 75]
-      }
-    },
-    "next": ["Expedition"]
   },
   "E_WaitRefresh": {
     "post_delay": 60000,
@@ -680,12 +646,10 @@
   },
   "E_VerifyLeftMenu": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["E_ClickBackToHome"],
@@ -766,19 +730,6 @@
     "next": ["E_WorkshopHub", "E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["E_AllTeamsBusy"]
   },
-  "E_IsInternalReport": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["Expedition"]
-  },
   "E_IsSwordDropColor": {
     "recognition": {
       "type": "ColorMatch",
@@ -796,66 +747,6 @@
     },
     "next": ["Expedition"]
   },
-  "E_FallbackWait": {
-    "next": ["Expedition"]
-  },
-  "E_IsTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["E_ClickTrainingApplication", "E_CancelTrainingApplication"],
-    "on_error": ["Expedition"]
-  },
-  "E_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["E_CancelTrainingApplication", "E_ClickTrainingApplication"],
-    "on_error": ["Expedition"]
-  },
-  "E_CancelTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["E_CancelTrainingApplication", "Expedition"],
-    "on_error": ["Expedition"]
-  },
   "E_VerifyTeamSelect": {
     "recognition": {
       "type": "OCR",
@@ -866,131 +757,6 @@
     },
     "next": ["E_StartExpedition"],
     "on_error": ["E_DetectExpeditionScreen"]
-  },
-  "E_IsGameIcon": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [0, 0, 1600, 900],
-        "template": "Common/游戏图标.png",
-        "green_mask": true,
-        "threshold": [0.8]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["Expedition"]
-  },
-  "E_IsAdvertisementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
-        "threshold": [0.8]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1095, 103, 14, 15]
-      }
-    },
-    "next": ["Expedition"],
-    "on_error": ["Expedition"]
-  },
-  "E_IsLoginButton": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["Expedition"]
-  },
-  "E_IsGameUpdatePopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["Expedition"]
-  },
-  "E_IsInGameUpdatePopup": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [498, 291, 77, 50],
-        "expected": "更新"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [578, 440, 130, 55]
-      }
-    },
-    "next": ["Expedition"]
-  },
-  "E_IsAnnouncementPopup": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["E_IsAnnouncementPopup", "Expedition"]
-  },
-  "E_IsLoginReward": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 200},
-    "next": ["E_LoginRewardClick2"],
-    "on_error": ["Expedition"]
-  },
-  "E_LoginRewardClick2": {
-    "pre_delay": 1000,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "next": ["E_LoginRewardClick3"],
-    "on_error": ["Expedition"]
-  },
-  "E_LoginRewardClick3": {
-    "pre_delay": 1000,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1092, 318, 1, 1]
-      }
-    },
-    "timeout": 3000,
-    "next": ["E_IsLoginReward"],
-    "on_error": ["Expedition"]
   },
   "E_CheckHomeBrightness": {
     "recognition": {
@@ -1017,22 +783,21 @@
     "on_error": ["Expedition"]
   },
   "E_IsTeamStatusPanelLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[后勤] 检查队伍状况"}
-    },
     "next": ["E_ExpSubHub1"],
-    "on_error": ["E_ExpSubHub1"]
+    "on_error": ["E_ExpSubHub1"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[后勤] 检查队伍状况",
+        "display": "file"
+      }
+    }
   },
   "E_IsMenuDirectory": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [581, 28, 112, 57],
-        "template": "Common/菜单目录.png",
-        "green_mask": true,
-        "threshold": [0.98]
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "next": ["E_ClickBackToHome"],
@@ -1129,7 +894,7 @@
       "type": "Custom",
       "custom_action": "ExpeditionTimerCheckAction"
     },
-    "next": ["LR_SelectDifficulty"],
+    "next": ["Expedition"],
     "on_error": ["E_GoHome"]
   },
   "E_RestartGame": {
@@ -1588,13 +1353,14 @@
     "on_error": ["E_FlowerBattleHub"]
   },
   "E_FlowerSortieLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[后勤] 刷花"}
-    },
     "next": ["E_FlowerBattleHub"],
-    "on_error": ["E_FlowerBattleHub"]
+    "on_error": ["E_FlowerBattleHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[后勤] 刷花",
+        "display": "file"
+      }
+    }
   },
   "E_FlowerClickFirstEra": {
     "recognition": {
@@ -1910,10 +1676,6 @@
     "next": ["E_FlowerNavigate"],
     "on_error": ["E_FlowerBattleHub"]
   },
-  "E_FlowerFallbackWait": {
-    "next": ["E_FlowerBattleHub"],
-    "on_error": ["E_FlowerBattleHub"]
-  },
   "E_FlowerIsTrainingApplication": {
     "recognition": {
       "type": "TemplateMatch",
@@ -1983,9 +1745,9 @@
       "E_FlowerIsRegionSelect",
       "E_FlowerTeamSelect",
       "E_FlowerHomeBrightness",
-      "E_IsAnnouncementPopup",
+      "[JumpBack]IsAnnouncementPopup",
       "E_FlowerIsTrainingLetter",
-      "E_IsLoginReward",
+      "[JumpBack]IsLoginReward",
       "E_FlowerIsAdvertisementPopup",
       "E_FlowerIsGameIcon",
       "E_FlowerIsLoginButton",
@@ -1993,7 +1755,7 @@
       "E_FlowerIsInGameUpdatePopup",
       "E_FlowerIsInternalReport",
       "E_FlowerIsTrainingApplication",
-      "E_FlowerFallbackWait"
+      "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_FlowerRestartGame"]
   },
@@ -2243,19 +2005,6 @@
     "next": ["E_FlowerBattleHub"],
     "on_error": ["E_FlowerBattleHub"]
   },
-  "E_IsTrainingLetter": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
-        "green_mask": true,
-        "threshold": [0.95]
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["Expedition"]
-  },
   "E_WorkshopHub": {
     "enabled": false,
     "action": {
@@ -2266,7 +2015,6 @@
     "on_error": ["E_RepairCooldownSkip"]
   },
   "E_RepairCooldownSkip": {
-    "action": {"type": "DoNothing"},
     "next": ["E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["Expedition"]
   },
@@ -2512,7 +2260,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200},
-    "next": ["E_NaibanVerifyTable", "E_NaibanClickEntry"],
+    "next": ["E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanClickEntry"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_NaibanVerifyTodayTable": {
@@ -2838,8 +2586,57 @@
       "custom_action": "NaibanFindSwordAction",
       "custom_action_param": {"slot": 2}
     },
-    "next": ["E_NaibanVerifyTable", "E_NaibanFindSword2"],
+    "next": ["E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanFindSword2"],
     "on_error": ["E_NaibanFindSword2"]
+  },
+  "E_NaibanClickCompost": {
+    "enabled": false,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [513, 303, 34, 34],
+        "lower": [255, 255, 255],
+        "upper": [255, 255, 255],
+        "count": 1000
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [629, 308, 98, 25]
+      }
+    },
+    "next": ["E_NaibanVerifyCompostSelect", "E_NaibanClickCompost"],
+    "on_error": ["Expedition"]
+  },
+  "E_NaibanVerifyCompostSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [575, 55, 130, 32],
+        "expected": "肥料选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [317, 241, 23, 22]
+      }
+    },
+    "next": ["E_NaibanConfirmCompost", "E_NaibanVerifyCompostSelect"],
+    "on_error": ["Expedition"]
+  },
+  "E_NaibanConfirmCompost": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [598, 573, 82, 49],
+        "expected": "确定"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_NaibanConfirmCompost", "E_NaibanVerifyTable"],
+    "on_error": ["Expedition"]
   },
   "E_NaibanVerifyTable": {
     "recognition": {
@@ -2878,22 +2675,14 @@
     "on_error": ["E_GoHome"]
   },
   "E_NaibanVerifyConfirmLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "LogAction",
-      "custom_action_param": {"message": "[后勤] 安排内番"}
-    },
-    "next": ["E_NaibanGuiLog"],
-    "on_error": ["E_GoHome"]
-  },
-  "E_NaibanGuiLog": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "GuiLogAction",
-      "custom_action_param": {"message": "[后勤] 安排内番"}
-    },
     "next": ["E_NaibanOutfitBegin", "E_NaibanVerifyConfirm"],
-    "on_error": ["E_GoHome"]
+    "on_error": ["E_GoHome"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[后勤] 安排内番",
+        "display": "log"
+      }
+    }
   },
   "E_NaibanOutfitBegin": {
     "action": {
@@ -2935,38 +2724,5 @@
     },
     "next": ["E_GoHome"],
     "on_error": ["E_GoHome"]
-  },
-  "E_IsConnectionInterrupted": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [588, 274, 96, 25],
-        "expected": "连接中断"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [738, 449, 100, 39]
-      }
-    },
-    "next": ["Expedition"]
-  },
-  "E_IsNetworkRequestTimeout": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 304, 56, 35],
-        "expected": "网络"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 442, 93, 55]
-      }
-    },
-    "next": ["Expedition"],
-    "on_error": ["Expedition"]
   }
 }

@@ -1,0 +1,112 @@
+{
+  "IsEquipmentShortagePopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 484, 145, 56],
+        "template": "Common/整备刀装.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [423, 484, 145, 56]
+    },
+    "next": ["EnterTroopRecord", "IsEquipmentShortagePopup"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "EnterTroopRecord": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["SelectRecordSlot", "EnterTroopRecord"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "SelectRecordSlot": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 140, 30, 71]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["UseTroopRecord"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "UseTroopRecord": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [442, 253, 395, 125]
+    },
+    "next": ["ConfirmEquipmentSupply", "UseTroopRecord"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "ConfirmEquipmentSupply": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 151, 126, 34],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [789, 512, 1, 4]
+      }
+    },
+    "post_delay": 500,
+    "next": ["LogSupplyDone", "ConfirmEquipmentSupply"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "LogSupplyDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [563, 4, 153, 45],
+        "expected": "部队选择"
+      }
+    },
+    "next": ["[Anchor]SupplyDone"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刀装补充] 补充刀装完成",
+        "display": "log"
+      }
+    }
+  }
+}

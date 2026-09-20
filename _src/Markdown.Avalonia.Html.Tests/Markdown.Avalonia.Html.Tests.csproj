@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Markdown.Avalonia.Html\Markdown.Avalonia.Html.csproj" />
     <ProjectReference Include="..\Markdown.Avalonia\Markdown.Avalonia.csproj" />
+    <ProjectReference Include="..\MFAAvalonia\MFAAvalonia.csproj" />
   </ItemGroup>
 </Project>

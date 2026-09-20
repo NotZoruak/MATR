@@ -1,0 +1,309 @@
+{
+  "IsAnnouncementPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1056, 463, 63, 193],
+        "template": "Common/公告弹窗.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200}
+  },
+  "IsTrainingLetter": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1037, 438, 206, 76],
+        "template": "Common/修行书信.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "IsLoginReward": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [816, 577, 182, 59],
+        "template": "Common/登录奖励.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    },
+    "next": ["LoginRewardClick"]
+  },
+  "LoginRewardClick": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 800
+  },
+  "IsExpeditionReturn_Exp": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [388, 59, 54, 25],
+        "expected": "经验"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [947, 533, 67, 75]
+      }
+    }
+  },
+  "IsExpeditionReturn_Title": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [558, 1, 162, 52],
+        "expected": "远征结果"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [947, 533, 67, 75]
+      }
+    }
+  },
+  "IsBattleResult_Exp": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [388, 59, 54, 25],
+        "expected": "经验"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [947, 533, 67, 75]
+      }
+    }
+  },
+  "IsBattleResult_Title": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [558, 1, 162, 52],
+        "expected": "战斗结果"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [947, 533, 67, 75]
+      }
+    }
+  },
+  "IsAdvertisementPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1017, 101, 62, 21],
+        "template": "Common/广告.png",
+        "threshold": [0.8]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1095, 103, 14, 15]
+      }
+    }
+  },
+  "IsGameIcon": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [0, 0, 1600, 900],
+        "template": "Common/游戏图标.png",
+        "green_mask": true,
+        "threshold": [0.8]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "IsLoginButton": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [665, 529, 124, 78],
+        "template": "Common/登录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "IsGameUpdatePopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [443, 431, 120, 46],
+        "template": "Common/游戏更新.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "IsInGameUpdatePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [498, 291, 77, 50],
+        "expected": "更新"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [578, 440, 130, 55]
+      }
+    }
+  },
+  "IsInSortie": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [3, 164, 43, 92],
+        "template": "Common/合战场选中.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [8, 299, 32, 89]
+      }
+    }
+  },
+  "IsInMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [160, 158, 97, 62]
+      }
+    }
+  },
+  "IsInternalReport": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [569, 322, 138, 31],
+        "template": "Common/内番报告.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"}
+  },
+  "IsTrainingApplication": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1125, 577, 33, 26],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [197, 600, 52, 26]
+      }
+    },
+    "repeat": 10,
+    "repeat_delay": 500,
+    "next": ["ClickTrainingApplication", "CancelTrainingApplication"]
+  },
+  "ClickTrainingApplication": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [96, 558, 54, 38],
+        "template": "Common/修行申请_狐之助.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [96, 558, 54, 38]
+      }
+    },
+    "next": ["CancelTrainingApplication", "ClickTrainingApplication"]
+  },
+  "CancelTrainingApplication": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [460, 587, 69, 37],
+        "expected": "取消"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [460, 587, 69, 37]
+      }
+    }
+  },
+  "IsNetworkRequestTimeout": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [524, 304, 56, 35],
+        "expected": "网络"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [599, 442, 93, 55]
+      }
+    }
+  },
+  "IsConnectionInterrupted": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [588, 274, 96, 25],
+        "expected": "连接中断"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [738, 449, 100, 39]
+      }
+    }
+  },
+  "FallbackWait": {}
+}

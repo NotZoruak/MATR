@@ -81,7 +81,7 @@ public class GoalPtCheckAction : IMaaCustomAction
     }
 
     /// <summary>
-    /// 从当前任务定义解析目标 PT 配置。
+    /// 从当前任务定义解析目标 PT 配置。选项名按后缀匹配，兼容各任务自己的前缀。
     /// </summary>
     private static ActivityGoalPtSettings ReadSettings()
     {
@@ -91,19 +91,27 @@ public class GoalPtCheckAction : IMaaCustomAction
         if (task == null)
             return ActivityGoalPtSettings.Parse(null, null, null, null, null);
 
-        var goalOption = task.Option?.FirstOrDefault(option => option.Name == "HP_目标PT");
+        var goalOption = FindBySuffix(task.Option, "目标PT");
         var subOptions = goalOption?.SubOptions;
-        var totalGoalOption = subOptions?.FirstOrDefault(option => option.Name == "HP_目标总PT");
-        var datePlanOption = subOptions?.FirstOrDefault(option => option.Name == "HP_日期计划");
+        var totalGoalOption = FindBySuffix(subOptions, "目标总PT");
+        var datePlanOption = FindBySuffix(subOptions, "日期计划");
         var dateSubOptions = datePlanOption?.SubOptions;
 
         return ActivityGoalPtSettings.Parse(
             IsSwitchEnabled(goalOption) ? ["Yes"] : null,
             ReadData(totalGoalOption, "total_goal"),
             IsSwitchEnabled(datePlanOption) ? ["Yes"] : null,
-            ReadData(dateSubOptions?.FirstOrDefault(option => option.Name == "HP_计划开始日期"), "start_date"),
-            ReadData(dateSubOptions?.FirstOrDefault(option => option.Name == "HP_计划截至日期"), "end_date"));
+            ReadData(FindBySuffix(dateSubOptions, "计划开始日期"), "start_date"),
+            ReadData(FindBySuffix(dateSubOptions, "计划截至日期"), "end_date"));
     }
+
+    /// <summary>
+    /// 按名称后缀查找选项，兼容各任务自己的选项前缀。
+    /// </summary>
+    private static MaaInterface.MaaInterfaceSelectOption? FindBySuffix(
+        IEnumerable<MaaInterface.MaaInterfaceSelectOption>? options, string suffix)
+        => options?.FirstOrDefault(option =>
+            (option.Name ?? string.Empty).EndsWith(suffix, StringComparison.Ordinal));
 
     private static string? ReadData(MaaInterface.MaaInterfaceSelectOption? option, string key) =>
         option?.Data?.TryGetValue(key, out var value) == true ? value : null;

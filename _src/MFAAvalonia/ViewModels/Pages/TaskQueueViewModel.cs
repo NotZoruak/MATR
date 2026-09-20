@@ -1323,9 +1323,10 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         Processor.AddLogByKey(key, color, changeColor, transformKey, formatArgsKeys);
     }
 
-    public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true, params string[] formatArgsKeys)
+    public void AddMarkdown(string key, IBrush? brush = null, bool changeColor = true, bool transformKey = true,
+        bool recordAsSpecial = false, params string[] formatArgsKeys)
     {
-        Processor.AddMarkdown(key, brush, changeColor, transformKey, formatArgsKeys);
+        Processor.AddMarkdown(key, brush, changeColor, transformKey, recordAsSpecial, formatArgsKeys);
     }
 
     #endregion
