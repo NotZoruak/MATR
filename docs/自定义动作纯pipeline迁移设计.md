@@ -1,6 +1,6 @@
 # 自定义动作迁移纯 pipeline 设计
 
-> 状态：迁移分任务推进中；一键日课已完成迁移，海陆联队与秘宝之里已完成部分迁移
+> 状态：首轮纯 pipeline 迁移已完成；本丸后勤相关自定义动作暂缓优化
 > 最后更新：2026-09-20
 > 范围：`assets/resource/base/pipeline/*.json` 与 `assets/interface.json` 中实际引用的自定义动作与自定义识别
 
@@ -8,13 +8,13 @@
 
 项目规范要求「能用纯 pipeline 表达的逻辑一律用纯 pipeline 实现，不新增 custom action」。但代码库里已经积累了 60 多个自定义动作，其中有相当一部分的行为本质上等价于 pipeline 内建能力：写一条 GUI 日志、点一个固定坐标、按矩形随机点击、等一段固定时间。这些实现放在 C# 里，迁移成本随版本累积，也把本该由 pipeline 承载的业务语义藏进了代码。
 
-本文档把这些「本可以纯 pipeline 实现」的项列出来，给出替代方案、迁移前置条件和批次建议，供后续逐批迁移使用。迁移不采用按同类型 node 集中替换的方式；实施时应依次重构现有任务，在任务重构过程中以协议能力替代非必要 custom action。本文档只做设计，不包含代码或 pipeline 改动。
+本文档把这些「本可以纯 pipeline 实现」的项列出来，给出替代方案、迁移前置条件和批次建议，并记录已完成的迁移结果。迁移不采用按同类型 node 集中替换的方式；实施时应依次重构现有任务，在任务重构过程中以协议能力替代非必要 custom action。本轮首轮迁移已收尾，后续仅在明确规划时继续处理，不能把本丸后勤相关动作混入本轮范围。
 
-统计口径：扫描 `assets/resource/base/pipeline/*.json` 与 `assets/interface.json` 里的 `custom_action` 与 `custom_recognition` 字段。开工前首次扫描统计到 372 处自定义动作引用、26 处自定义识别引用，涉及 54 个动作名与 7 个识别名，完整数据见文末附录。随迁移推进的当前实测为 339 处自定义动作引用（51 个动作名）、25 处自定义识别引用（6 个识别名），`focus` 已在 6 个文件中共启用 33 处。
+统计口径：扫描 `assets/resource/base/pipeline/*.json` 与 `assets/interface.json` 里的 `custom_action` 与 `custom_recognition` 字段。开工前首次扫描统计到 372 处自定义动作引用、26 处自定义识别引用，涉及 54 个动作名与 7 个识别名，完整数据见文末附录。当前保留的自定义动作均属于外部状态、运行期计算、图像分析、任务队列控制或本丸后勤范围；可由 `Click`、`focus`、`anchor` 等纯 pipeline 能力表达的首轮候选已经迁移完成。
 
 ## 已完成改动与当前进度
 
-迁移已经开工。前置条件（`special:` 标记、工作记录「特殊情况」链路、`anchor` 路由）已落地并有实机验证；一键日课、海陆联队与秘宝之里均已迁移完能由 `Click` 与 `focus` 表达的部分，三者剩余项分别记录在对应的小节里。后续改动必须按本节状态继续推进，不能把尚未实现的分类能力当作已可用。
+迁移已完成首轮收尾。前置条件（`special:` 标记、工作记录「特殊情况」链路、`anchor` 路由）已落地；一键日课、海陆联队、秘宝之里、地下城、战术强化、江户潜入与常驻作战中可由 `Click`、`focus`、`anchor` 表达的部分均已迁移。剩余动作按本文档的保留规则继续留在 C#，本丸后勤相关动作暂不纳入后续迁移。
 
 | 项目 | 状态 | 已完成内容或下一步 |
 |---|---|---|
@@ -24,14 +24,14 @@
 | 特殊情况写入链路 | 已完成 | `FocusHandler` 已把 `special:` 的识别结果传递给 `AddMarkdown(recordAsSpecial: true)`；该路径以 Info 级别写入 `[Record][Special]`，不借用 Warning。 |
 | 工作记录解析器 | 已完成 | `WorkRecordBuilder` 已识别 `[Record][Special]` 并归入特殊情况，同时保留 `WRN` → 特殊情况的既有规则；已覆盖正常特殊结果、真实 Warning、普通记录三类测试。 |
 | 一键日课重构 | 已完成 | 已完成 9 条完成日志、5 条跳过日志与 5 条演练战败日志迁移，及 6 个本次运行跳过出口的 `anchor` 迁移，`focus` 共 19 处。锻刀容量不足且未开启刀解、演练战败使用 `special:` Info 记录；本次运行跳过仅控制路由、不输出日志。anchor 机制已完成实机验证。剩余 16 处自定义动作引用与 13 处自定义识别引用全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。 |
-| 修刀与刀装补充公共链 | 已完成（海陆联队、秘宝之里、地下城、战术强化、江户潜入） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，任务在主枢纽 node 声明锚点；海陆联队与秘宝之里均已改为引用公共链并删除各自任务内的同名节点，已登记到 `docs/复用节点清单.md`。秘宝之里的刷花链已按单主枢纽结构重写并抽成公共文件 `TaskFlowerBrush.json`（前缀 `TF_`），详见下文的「任务中刷花」小节。下一步接江户潜入与战术强化。 |
+| 修刀与刀装补充公共链 | 已完成（常驻作战、海陆联队、秘宝之里、地下城、战术强化、江户潜入） | 已把修刀链与刀装补充链抽到 `Repair.json` 与 `EquipSupply.json`，公共 node 不带任务前缀，出口统一改用 `[Anchor]Hub` / `RepairDone` / `RepairAborted` / `SupplyDone`，六个出阵类任务均已声明锚点并接入公共链。刀装补充仍保留自动补充分支，但已移除“部队记录未补满时，使用一键装备补充”子选项。 |
 | 海陆联队重构 | 已完成 | 已迁移 `RB_SortieSuccess`、`RB_IsConfirmPurchase`、`RB_TerminateRound` 三条打点，以及队长重伤链的两处：`RB_CheckCaptainDamage` 去掉 `CaptainDamageAction`、`RB_RetreatOnCaptainDamage` 改成 `Click` 加 `special:` focus，随后两节点合并为一个 `RB_CheckCaptainDamage`。剩余 8 处引用、7 个动作名全部属于「明确保留」清单，`LogAction` 与 `CaptainDamageAction` 已不再被本任务引用（后者脚本已删除）。详见下文「海陆联队实施记录」。 |
 | 秘宝之里重构 | 已完成 | 已完成难度选择 node 合并，以及 `HP_IsMarching`、`HP_IsConfirmPurchase`、`HP_SortieSuccess`、`HP_TerminateRound` 四处日志打点的 `focus` 迁移；刷花链已按单主枢纽结构重写并抽成公共文件 `TaskFlowerBrush.json`。剩余 7 处引用、6 个动作名全部属于「明确保留」清单，`LogAction` 与 `GuiLogAction` 已不再被本任务引用。详见下文「秘宝之里实施记录」。 |
-| 任务中刷花公共链 | 已完成（常驻作战、秘宝之里、地下城、海陆联队、战术强化、江户潜入） | 刷花状态机抽成 `TaskFlowerBrush.json`（26 个 `TF_` 节点：单主枢纽、公共 `[JumpBack]` 中断、锚点出口），任务侧保留疲劳检测与「疲劳处理」选项（无／刷花／停止）。常驻作战已将 `S_FatigueCheck` 接入 `TF_Hub`，并删除旧 `SF_` 链；五个队伍 case 补齐 `TF_IsTeamSelect` 与 `TF_UseRecord_Step2` 坐标覆盖。地下城删除自带 `UF_` 链 62 个节点；海陆联队、战术强化、江户潜入原本没有疲劳处理，本次补上检测节点与选项。详见「任务中刷花」小节。 |
-| 江户潜入重构 | 进行中 | 主枢纽 18 项中断与页面处理改用公共 `[JumpBack]` 节点并按「非 jumpback 在前、jumpback 与兜底在后」重排；清除目录链残留 4 个节点；`EC_SelectDifficulty` 与 `EC_ClickDifficulty`、`EC_IsTeamSelect` 与 `EC_ClickTeam` 各合并一次；修刀与刀装补充改挂公共链并补 `Hub`/`RepairDone`/`RepairAborted`/`SupplyDone`/`GrindDone` 锚点；掉落识别改用 `SwordDropLogAction`；无票终止改用 `CompleteCurrentTaskAction`、撤退打点改 `special:`；疲劳检测显式挂在 `EC_CaptainHub.next`。详见「江户潜入实施记录」。 |
+| 任务中刷花公共链 | 已完成（常驻作战、秘宝之里、地下城、海陆联队、战术强化、江户潜入） | 刷花状态机抽成 `TaskFlowerBrush.json`（统一 `TF_` 前缀、单主枢纽、公共 `[JumpBack]` 中断、锚点出口）。六个任务均接入疲劳检测与「疲劳处理」选项；从部队选择页进入时先点击右上角“目”并 OCR 确认“目录”，再进入 `TF_Hub`。 |
+| 江户潜入重构 | 已完成 | 主枢纽公共 `[JumpBack]` 迁移、目录链清理、难度与部队选择合并、修刀与刀装补充公共链挂载、掉落记录与疲劳检测改造均已完成。 |
 | 合战场单圈结算 | 已完成 | `SortieRoundDoneRecognition` 已由 `S_RoundDone` anchor 路由替代：入口清空、成功出阵后指向完成 node、回本丸时优先解析、完成后清空并自然结束本轮；已删除旧识别和 `S_IsSortieRoundDone`。 |
 | 常驻作战主枢纽 | 已完成 | `S_DetectWhereAmI` 已将战斗结算、远征结果、菜单、公告、登录奖励、广告、登录、更新、内番报告、网络超时与连接中断改挂公共 `[JumpBack]` node；`S_IsInActivity` 与任务专属流程保留。 |
-| 后续任务重构 | 进行中 | 海陆联队已完成修刀与刀装补充的公共链拆分；接着处理本丸后勤与常驻作战。 |
+| 自定义动作迁移收尾 | 已完成 | 常驻作战与地下城剩余可迁移的日志/提示动作已改为 `focus`；地下城 `StopOnDamageAction` 已删除，重伤停止使用 `focus` 的日志与系统通知；常驻作战、地下城及其它出阵任务中剩余自定义动作均按保留规则继续使用。 |
 
 `special:` 只是 MATR 约定的内容前缀，不是 MaaFramework `focus` schema 的字段。当前实现会在实时展示前清理该前缀，并仅对日志文件写入 `[Record][Special]`；实时日志和文件日志均保持 Info 级别。该链路已经可以承载迁移后的正常特殊结果，但现有 Warning 词表仍须逐条评估，不能不分语义地全部替换为 `special:`。
 
@@ -77,7 +77,7 @@
 
 剩余项：刷花链抽走后，`Hanapai.json` 还有 7 处自定义动作引用、6 个动作名，全部属于「明确保留」——`CompleteCurrentTaskAction` 两处，以及 `SwordDropLogAction`、`GoalPtCheckAction`、`RestartGameAction`、`DragCaptainAction`、`FatigueCheckAction` 各一处；刷花链的 2 处（`FatigueCheckAction`、`RestartGameAction`）随公共文件归到 `TaskFlowerBrush.json`。
 
-任务中刷花（已实施）：刷花状态机统一为公共文件 `TaskFlowerBrush.json`，节点统一用 `TF_` 前缀，以区别于独立任务「刷花」（`FlowerBrush.json`，前缀 `FB_`）。任务侧保留疲劳检测与挂载：疲劳检测 node 的 `on_error → TF_Hub`，是否启用由「疲劳处理」选项决定。各任务主枢纽声明 `GrindDone` 等出口锚点，刷花主枢纽 `TF_Hub` 自声明 `Hub`、`RepairDone`、`RepairAborted`、`SupplyDone`，刷花途中触发公共修刀或刀装补充后回 `TF_Hub`，离开刷花则经 `GrindDone` 返回任务主枢纽。常驻作战已删除旧 `SF_` 链，并在五个「选择部队」case 中补齐 `TF_IsTeamSelect` 与 `TF_UseRecord_Step2` 坐标覆盖。打点不在公共链里：`FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，`WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录。
+任务中刷花（已实施）：刷花状态机统一为公共文件 `TaskFlowerBrush.json`，节点统一用 `TF_` 前缀，以区别于独立任务「刷花」（`FlowerBrush.json`，前缀 `FB_`）。任务侧保留疲劳检测与挂载：疲劳检测 node 的 `on_error → TF_EnterFromTeamSelect`，先点击右上角“目”并 OCR 确认「目录」后再进入 `TF_Hub`，是否启用由「疲劳处理」选项决定。各任务主枢纽声明 `GrindDone` 等出口锚点，刷花主枢纽 `TF_Hub` 自声明 `Hub`、`RepairDone`、`RepairAborted`、`SupplyDone`，刷花途中触发公共修刀或刀装补充后回 `TF_Hub`，离开刷花则经 `GrindDone` 返回任务主枢纽。常驻作战已删除旧 `SF_` 链，并在五个「选择部队」case 中补齐 `TF_IsTeamSelect` 与 `TF_UseRecord_Step2` 坐标覆盖。`TF_IsSortieActivity` 命中活动页签后点击左侧合战场页签。打点不在公共链里：`FatigueCheckAction` 写「[出阵疲劳检测] 检测到…进入刷花 / …刷花结束」，`WorkRecordBuilder` 把这些词条归属到当前运行中的任务记录。
 
 ### 江户潜入实施记录
 
@@ -178,7 +178,7 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 | `GuiLogAction` | 48 | 把 `message` 写到 GUI 日志，`warn:` 前缀转警告 | node 的 `focus`，`display: log` |
 | `LogAction` | 125 | 写文件日志词表；59 处同时点击一个矩形 | `focus` 写 Info 词表，`Click` 承担点击 |
 | `CaptainDamageAction` | 0（2026-09-20 已迁完，脚本已删除） | 检测到队长重伤后写一条日志 | 识别 node 的 `focus` |
-| `StopOnDamageAction` | 2 | 写日志、弹 toast、让本轮任务结束 | `focus` 的 `display` 用 `["log","toast"]`，任务结束由无后续分支表达 |
+| `StopOnDamageAction` | 0（2026-09-20 已迁完，脚本已删除） | 写日志、弹通知、让本轮任务结束 | `focus` 的 `display` 用 `["log","notification"]`，任务结束由无后续分支表达 |
 
 `LogAction` 的 125 处里，70 处是 Info、55 处当前借用 Warning 级别让工作记录归入「特殊情况」；`GuiLogAction` 的 48 处里有 5 处带 `warn:` 前缀。这些业务结果不必然是程序 Warning，迁移前须先完成下文的工作记录分类优化；普通 Info 部分可以先动。
 
@@ -401,6 +401,16 @@ MATR 当前将 `display: "log"` 分发到 `FocusHandler` 的 `AddMarkdown`：它
 `SortieRoundDoneRecognition` 已完成 anchor 迁移，不再走 `max_hit` 计数：`Sortie` 入口清空 `S_RoundDone`，`S_SortieSuccess` 将其写为 `S_CompleteRound`，“过去”选项令 `S_CheckHomeBrightness.next` 首先解析 `[Anchor]S_RoundDone`，完成 node 清空 anchor 并通过空 `next` 自然结束本轮。`SortieRoundDoneRecognition.cs` 与 `S_IsSortieRoundDone` 已删除。
 
 剩余前置：确认 `focus` 在正常结束与提前结束两种路径上的触发次数。
+
+### 首轮迁移收尾（2026-09-20）
+
+本轮首轮迁移已完成。常驻作战完成主枢纽公共处理、单圈结算 anchor、任务中刷花以及修刀与刀装补充公共链挂载；地下城补齐公共刷花、修刀与刀装补充流程，并将 `U_LogStopOnDamage` 从 `StopOnDamageAction` 改为 `focus`。该 focus 同时使用 `log` 与 `notification` 渠道，保留重伤停止的可见提示；旧 `StopOnDamageAction.cs` 已删除。
+
+任务中刷花从部队选择页进入时，先通过 `TF_EnterFromTeamSelect` 点击右上角“目”，再由 `TF_VerifyMenuOpenedForEntry` OCR 确认“目录”后进入 `TF_Hub`，避免移除队员后直接点击出阵。`TF_IsSortieActivity` 识别活动页签后点击左侧合战场页签，恢复到常驻作战页面。
+
+本轮迁移后，仍保留的自定义动作均有明确原因：运行期状态与台账、数值比较、跨 node 状态机、逐像素分析、宿主能力调用，以及本丸后勤流程。后续如继续迁移，须另行规划后勤范围，不在本轮结论中承诺。
+
+验证：所有受影响 JSON 已通过严格解析与 `git diff --check`；地下城重伤停止结构测试已补充。完整 .NET 测试运行受本机 Avalonia BuildServices 日志目录权限阻塞，未据此宣称测试全绿。
 
 ## 附录：引用统计
 
