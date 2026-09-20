@@ -30,7 +30,23 @@ public class UndergroundPipelineTests
         Assert.Contains("IsPreDamage", postSortieNext);
         Assert.Contains("U_CheckEquipmentPopup", postSortieNext);
         Assert.Equal("IsEquipmentShortagePopup", pipeline["U_CheckEquipmentPopup"]!["next"]![0]!.GetValue<string>());
-        Assert.Equal("TF_Hub", pipeline["U_FatigueCheck"]!["on_error"]![0]!.GetValue<string>());
+        Assert.Equal("TF_EnterFromTeamSelect", pipeline["U_FatigueCheck"]!["on_error"]![0]!.GetValue<string>());
+    }
+
+    [Fact]
+    public void 地下城重伤停止使用日志与系统通知焦点()
+    {
+        var pipelinePath = FindPipelinePath();
+        var pipeline = JsonNode.Parse(File.ReadAllText(pipelinePath))!.AsObject();
+        var node = pipeline["U_LogStopOnDamage"]!.AsObject();
+
+        Assert.Null(node["action"]);
+        var focus = node["focus"]!["Node.Action.Succeeded"]!.AsObject();
+        Assert.Equal("special:[重伤检测] 检测到刀剑男士重伤，任务终止", focus["content"]!.GetValue<string>());
+        var display = focus["display"]!.AsArray().Select(item => item!.GetValue<string>()).ToArray();
+        Assert.Contains("log", display);
+        Assert.Contains("notification", display);
+        Assert.Null(node["on_error"]);
     }
 
     private static string FindPipelinePath()

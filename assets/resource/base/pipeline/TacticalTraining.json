@@ -430,7 +430,7 @@
       }
     },
     "next": ["TT_IsPreSortieConfirm"],
-    "on_error": ["TF_Hub"]
+    "on_error": ["TF_EnterFromTeamSelect"]
   },
   "TT_IsPreSortieConfirm": {
     "recognition": {

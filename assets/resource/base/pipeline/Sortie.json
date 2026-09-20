@@ -563,10 +563,6 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_ClickBattlefieldTab"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickBattlefieldTab": {
     "action": {
       "type": "Click",
       "param": {
@@ -2386,7 +2382,7 @@
       }
     },
     "next": ["S_IsPreSortieConfirm"],
-    "on_error": ["TF_Hub"]
+    "on_error": ["TF_EnterFromTeamSelect"]
   },
   "S_LogMarchingDamageWord": {
     "next": ["S_LogMarchingDamage"],

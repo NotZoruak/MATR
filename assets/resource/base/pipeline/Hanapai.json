@@ -479,7 +479,7 @@
       }
     },
     "next": ["HP_IsPreSortieConfirm"],
-    "on_error": ["TF_Hub"]
+    "on_error": ["TF_EnterFromTeamSelect"]
   },
   "HP_WaitRefresh": {
     "enabled": false,

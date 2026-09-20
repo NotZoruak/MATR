@@ -51,6 +51,29 @@
     "next": ["TF_Hub"],
     "on_error": ["TF_Hub"]
   },
+  "TF_EnterFromTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["TF_VerifyMenuOpenedForEntry", "TF_EnterFromTeamSelect"],
+    "on_error": ["TF_Hub"]
+  },
+  "TF_VerifyMenuOpenedForEntry": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
+      }
+    },
+    "next": ["TF_Hub"]
+  },
   "TF_IsEraSelect": {
     "recognition": {
       "type": "TemplateMatch",
@@ -369,6 +392,13 @@
         "threshold": [0.98]
       }
     },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [23, 202, 1, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
     "next": ["TF_Hub"]
   }
 }

@@ -55,6 +55,10 @@ public class MaaProcessor
     [
         [172, 81, 17, 9], [284, 77, 18, 9], [431, 80, 16, 8], [555, 78, 16, 8], [675, 79, 16, 8],
     ];
+    private static readonly int[][] FormationRecordSlotClickCoords =
+    [
+        [1210, 144, 29, 70], [1211, 255, 30, 71], [1212, 361, 30, 71], [1211, 470, 30, 71], [1210, 577, 30, 71],
+    ];
     private int _isTaskRunActive;
     private readonly BlockingCollection<Func<Task>> _commandQueue = new();
     private readonly object _commandThreadLock = new();
@@ -4353,7 +4357,17 @@ public class MaaProcessor
             },
             ["FC_ClickRecordSlot"] = new JObject
             {
-                ["action"] = new JObject { ["custom_action_param"] = new JObject { ["team"] = team } },
+                ["action"] = new JObject
+                {
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                },
+            },
+            ["FC_UseRecord_Step2_SelectRecord"] = new JObject
+            {
+                ["action"] = new JObject
+                {
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                },
             },
         };
 
@@ -5594,7 +5608,6 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.FormationFindSwordAction());
             tasker.Resource.Register(new Custom.FormationFilterClickAction());
             tasker.Resource.Register(new Custom.FormationEquipTeamClickAction());
-            tasker.Resource.Register(new Custom.FormationRecordSlotClickAction());
             tasker.Resource.Register(new Custom.FormationEquipSelectAction());
             tasker.Resource.Register(new Custom.FormationHorseSelectAction());
             tasker.Resource.Register(new Custom.FormationEquipStateMachine());

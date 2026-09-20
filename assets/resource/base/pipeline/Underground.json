@@ -771,11 +771,12 @@
     }
   },
   "U_LogStopOnDamage": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "StopOnDamageAction"
-    },
-    "on_error": ["U_DetectWhereAmI"]
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，停止任务",
+        "display": ["log", "notification"]
+      }
+    }
   },
   "U_RestartGame": {
     "action": {
@@ -804,7 +805,7 @@
       }
     },
     "next": ["U_IsPreSortieConfirm"],
-    "on_error": ["TF_Hub"]
+    "on_error": ["TF_EnterFromTeamSelect"]
   },
   "U_FatigueDetect": {
     "enabled": false,

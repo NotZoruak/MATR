@@ -503,7 +503,7 @@
       }
     },
     "next": ["EC_IsPreSortieConfirm"],
-    "on_error": ["TF_Hub"]
+    "on_error": ["TF_EnterFromTeamSelect"]
   },
   "EC_WaitRefresh": {
     "enabled": false,

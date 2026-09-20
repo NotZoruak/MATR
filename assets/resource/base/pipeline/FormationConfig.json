@@ -185,7 +185,7 @@
         "count": 1
       }
     },
-    "next": ["FC_ConfigureSwordSlot1"],
+    "next": ["FC_ConfigureSwordSlot1", "FC_IsSwordSelect1"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_RemoveEquip": {
@@ -1322,8 +1322,10 @@
   },
   "FC_UseRecord_Step2_SelectRecord": {
     "action": {
-      "type": "Custom",
-      "custom_action": "FormationRecordSlotClickAction"
+      "type": "Click",
+      "param": {
+        "target": [1210, 144, 29, 70]
+      }
     },
     "post_wait_freezes": {
       "time": 200,
@@ -1521,9 +1523,10 @@
   },
   "FC_ClickRecordSlot": {
     "action": {
-      "type": "Custom",
-      "custom_action": "FormationRecordSlotClickAction",
-      "custom_action_param": {"team": 1}
+      "type": "Click",
+      "param": {
+        "target": [1210, 144, 29, 70]
+      }
     },
     "post_delay": 500,
     "next": ["FC_ClickProceed"],
