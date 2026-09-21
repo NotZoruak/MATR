@@ -253,7 +253,8 @@
         "threshold": [0.98]
       }
     },
-    "next": ["RB_DetectWhereAmI"],
+    "next": ["RB_IsActionSelect"],
+    "on_error": ["RB_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 出阵",

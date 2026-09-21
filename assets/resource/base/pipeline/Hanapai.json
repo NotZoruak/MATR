@@ -253,8 +253,7 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["HP_IsTeamSelect"],
-    "on_error": ["HP_DetectWhereAmI"]
+    "next": ["HP_IsTeamSelect","HP_DetectWhereAmI"]
   },
   "HP_IsSpecialDrop1": {
     "recognition": {
@@ -447,7 +446,8 @@
         "threshold": [0.98]
       }
     },
-    "next": ["HP_DetectWhereAmI"],
+    "next": ["HP_IsMarching"],
+    "on_error": ["HP_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[秘宝之里] 出阵",
