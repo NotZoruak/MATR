@@ -199,6 +199,8 @@
       "UD_SB_IsSwordBook",
       "UD_SB_IsSerial",
       "UD_SB_LeaveTroopRecord",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsAnnouncementPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsAdvertisementPopup",
@@ -346,7 +348,7 @@
       "time": 300,
       "target": [134, 5, 36, 38]
     },
-    "next": ["UD_CloseSwordBook", "UD_MarkSuccess"],
+    "next": ["UD_MarkSuccess", "UD_CloseSwordBook"],
     "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_MarkSuccess": {
