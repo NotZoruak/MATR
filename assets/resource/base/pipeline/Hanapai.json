@@ -253,7 +253,7 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["HP_IsTeamSelect","HP_DetectWhereAmI"]
+    "next": ["HP_IsTeamSelect", "HP_DetectWhereAmI"]
   },
   "HP_IsSpecialDrop1": {
     "recognition": {
@@ -446,8 +446,21 @@
         "threshold": [0.98]
       }
     },
-    "next": ["HP_IsMarching"],
-    "on_error": ["HP_DetectWhereAmI"],
+    "next": ["HP_SortieSuccessDone"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_SortieSuccessDone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "inverse": true,
+    "next": ["HP_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[秘宝之里] 出阵",

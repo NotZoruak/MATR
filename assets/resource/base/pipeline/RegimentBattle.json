@@ -55,6 +55,7 @@
     "next": ["RB_CheckGoalPt", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
   },
   "RB_CheckGoalPt": {
+    "enabled": false,
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -64,7 +65,6 @@
         "threshold": [0.98]
       }
     },
-    "enabled": false,
     "action": {
       "type": "Custom",
       "custom_action": "GoalPtCheckAction",
@@ -253,8 +253,21 @@
         "threshold": [0.98]
       }
     },
-    "next": ["RB_IsActionSelect"],
-    "on_error": ["RB_DetectWhereAmI"],
+    "next": ["RB_SortieSuccessDone"],
+    "on_error": ["RB_DetectWhereAmI"]
+  },
+  "RB_SortieSuccessDone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/联队战.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "inverse": true,
+    "next": ["RB_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 出阵",

@@ -122,8 +122,7 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["EC_CaptainHub"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_CaptainHub"]
   },
   "EC_IsEventPage": {
     "recognition": {
@@ -138,6 +137,15 @@
     "next": ["EC_SelectDifficulty", "EC_DetectWhereAmI"]
   },
   "EC_SelectDifficulty": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/江户城.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
