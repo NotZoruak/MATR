@@ -114,68 +114,22 @@
     "next": ["UD_ReturnHome"]
   },
   "UD_ReturnHome": {
-    "next": ["UD_ReturnHomeX", "UD_ReturnHomeLowerX", "UD_ReturnHomeUpperX", "UD_ReturnHomeDone"],
-    "on_error": ["UD_DetectWhereAmI"]
-  },
-  "UD_ReturnHomeX": {
     "recognition": {
       "type": "OCR",
       "param": {
         "roi": [1234, 9, 37, 38],
-        "expected": "×"
+        "expected": "×|x|X"
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {"target": true}
-    },
+    "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 300,
       "target": [1234, 9, 37, 38]
     },
-    "next": ["UD_ReturnHome"],
-    "on_error": ["UD_ReturnHomeLowerX"]
-  },
-  "UD_ReturnHomeLowerX": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1234, 9, 37, 38],
-        "expected": "x"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {"target": true}
-    },
-    "post_wait_freezes": {
-      "time": 300,
-      "target": [1234, 9, 37, 38]
-    },
-    "next": ["UD_ReturnHome"],
-    "on_error": ["UD_ReturnHomeUpperX"]
-  },
-  "UD_ReturnHomeUpperX": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1234, 9, 37, 38],
-        "expected": "X"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {"target": true}
-    },
-    "post_wait_freezes": {
-      "time": 300,
-      "target": [1234, 9, 37, 38]
-    },
-    "next": ["UD_ReturnHome"],
-    "on_error": ["UD_ReturnHomeDone"]
+    "next": ["UD_ReturnHomeDone"]
   },
   "UD_ReturnHomeDone": {
-    "next": ["UD_IsHomeAfterDirectory", "UD_ClickDirectoryTop", "UD_VerifyMenuDirectory"],
+    "next": ["UD_IsHomeAfterDirectory", "UD_ClickDirectoryTop", "UD_VerifyMenuDirectory", "UD_ReturnHome"],
     "on_error": ["UD_DetectWhereAmI"]
   },
   "UD_ClickDirectoryTop": {
@@ -271,8 +225,7 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["UD_SB_IsHome", "UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SB_IsHome", "UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_IsHome": {
     "recognition": {
@@ -299,8 +252,7 @@
       "type": "Click",
       "param": {"target": true}
     },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_IsSwordBookList": {
     "recognition": {
@@ -316,8 +268,7 @@
         "target": [10, 571, 26, 80]
       }
     },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_IsSwordBook": {
     "recognition": {
@@ -327,8 +278,7 @@
         "expected": "刀帐"
       }
     },
-    "next": ["UD_SB_SwordBookColor", "UD_SB_ClickBookArrow"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SB_SwordBookColor", "UD_SB_ClickBookArrow"]
   },
   "UD_SB_SwordBookColor": {
     "recognition": {
@@ -339,8 +289,7 @@
         "upper": [178, 33, 32]
       }
     },
-    "next": ["UD_SB_ClickSwordBook"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SB_ClickSwordBook"]
   },
   "UD_SB_ClickSwordBook": {
     "action": {
@@ -349,8 +298,7 @@
         "target": [154, 161, 106, 206]
       }
     },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_ClickBookArrow": {
     "action": {
@@ -363,8 +311,7 @@
       "time": 300,
       "target": [140, 98, 4, 5]
     },
-    "next": ["UD_SwordBookDetectWhereAmI"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_SB_IsSerial": {
     "recognition": {
@@ -378,8 +325,7 @@
       "type": "Custom",
       "custom_action": "SwordBookScanAction"
     },
-    "next": ["UD_SaveSwordBook"],
-    "on_error": ["UD_SwordBookDetectWhereAmI"]
+    "next": ["UD_SaveSwordBook"]
   },
   "UD_SaveSwordBook": {
     "action": {
@@ -387,8 +333,7 @@
       "custom_action": "UpdateDataSaveAction",
       "custom_action_param": {"stage": "swordbook"}
     },
-    "next": ["UD_CloseSwordBook"],
-    "on_error": []
+    "next": ["UD_CloseSwordBook"]
   },
   "UD_CloseSwordBook": {
     "action": {
@@ -401,24 +346,23 @@
       "time": 300,
       "target": [134, 5, 36, 38]
     },
-    "next": ["UD_CloseSwordBook2"]
-  },
-  "UD_CloseSwordBook2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [134, 5, 36, 38]
-      }
-    },
-    "next": ["UD_MarkSuccess"]
+    "next": ["UD_CloseSwordBook", "UD_MarkSuccess"],
+    "on_error": ["UD_SwordBookDetectWhereAmI"]
   },
   "UD_MarkSuccess": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "UpdateDataMarkSuccessAction"
-    },
-    "next": [],
-    "on_error": []
+    }
   },
   "UD_SB_LeaveTroopRecord": {
     "recognition": {

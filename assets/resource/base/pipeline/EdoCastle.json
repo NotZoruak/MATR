@@ -344,8 +344,7 @@
       "custom_action": "EdoActionSelectAction",
       "custom_action_param": {"strategy": "balanced"}
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_WaitForEventPage": {
     "recognition": {
@@ -431,8 +430,7 @@
         "target": [599, 582, 81, 41]
       }
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_ClickEnterBattle": {
     "recognition": {
@@ -478,8 +476,7 @@
         "target": [623, 459, 32, 15]
       }
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_RestartGame": {
     "action": {
@@ -523,8 +520,7 @@
     },
     "pre_delay": 500,
     "post_delay": 500,
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_NavigateToActivity": {
     "next": ["EC_ClickMenu", "EC_DetectWhereAmI"]
