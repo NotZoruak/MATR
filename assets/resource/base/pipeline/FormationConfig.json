@@ -16,6 +16,7 @@
       "FC_OpenFormation",
       "FC_LeaveTroopRecord",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",

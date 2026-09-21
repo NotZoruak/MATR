@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.2-beta.2",
+  "version": "v0.14.2",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.2-beta.2 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.2 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -138,8 +138,10 @@
         "RB_更换队长",
         "RB_部队交替",
         "RB_购买门票",
+        "RB_攒彩虹贝",
         "RB_同步后勤"
-      ]
+      ],
+      "description": "⚠暂时未适配海联，请等待活动上线后新版本发布。\n\n联队战/冬联/陆联 活动自动化出阵。\n\n* **达到目标PT后跳过任务**：启用后，达到设定的目标总 PT 时跳过本次任务；可选用日期计划，让目标随活动进度逐日放宽。\n* **疲劳处理**：检测到队伍疲劳时，可选择刷花或停止任务。该功能较脆弱，建议在有人值守时使用，并同时开启「更换队长」。\n* **更换队长**：出阵前自动调整队长，可点击右侧齿轮配置需要跳过的位置。\n* **部队交替**：按设置的队伍序列在不同轮次之间自动切换部队。队伍序列为 9 位数字，每位填写 1-5，分别表示第 2-10 轮使用的部队，例如 121212121。\n* **购买门票**：通行令牌不足时自动购买门票；未启用时，检测到令牌不足会停止任务。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "秘宝之里",
@@ -1752,14 +1754,18 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "SelectRecordSlot": {"target": [1209, 140, 30, 71]},
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
             },
-            "TF_UseRecord_Step2": {"target": [1209, 140, 30, 71]}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
           }
         },
         {
@@ -1772,14 +1778,18 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "SelectRecordSlot": {"target": [1209, 250, 30, 71]},
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
             },
-            "TF_UseRecord_Step2": {"target": [1209, 250, 30, 71]}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
           }
         },
         {
@@ -1792,14 +1802,18 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "SelectRecordSlot": {"target": [1209, 360, 30, 71]},
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {"target": [1209, 360, 30, 71]}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
           }
         },
         {
@@ -1812,14 +1826,18 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "SelectRecordSlot": {"target": [1209, 465, 30, 71]},
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
             },
-            "TF_UseRecord_Step2": {"target": [1209, 465, 30, 71]}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
           }
         },
         {
@@ -1832,14 +1850,18 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "SelectRecordSlot": {"target": [1209, 575, 30, 71]},
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {"target": [1209, 575, 30, 71]}
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            }
           }
         }
       ]
@@ -2598,6 +2620,20 @@
         }
       ]
     },
+  "RB_攒彩虹贝": {
+    "name": "RB_攒彩虹贝",
+    "label": "攒彩虹贝",
+    "type": "checkbox",
+    "pipeline_override": {
+      "RB_IsRainbowBattle": {
+        "enabled": true
+      }
+    },
+    "cases": [
+        {"name": ""}
+      ],
+      "default_case": []
+    },
     "RB_计划开始日期": {
       "name": "RB_计划开始日期",
       "label": "开始日期",
@@ -2877,9 +2913,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "HP_DragCaptain": {
-              "next": ["HP_FatigueCheck"]
-            },
             "HP_FatigueCheck": {"enabled": true}
           }
         },
@@ -2887,9 +2920,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "HP_DragCaptain": {
-              "next": ["HP_FatigueCheck"]
-            },
             "HP_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -3223,9 +3253,6 @@
           "name": "",
           "option": ["EC_跳过位置"],
           "pipeline_override": {
-            "EC_CaptainHub": {
-              "next": ["EC_DragCaptain", "EC_IsPreSortieConfirm"]
-            },
             "EC_DragCaptain": {"enabled": true}
           }
         }
@@ -3511,9 +3538,7 @@
         {
           "name": "",
           "pipeline_override": {
-            "TT_CaptainHub": {
-              "next": ["TT_DragCaptain", "TT_IsPreSortieConfirm"]
-            }
+            "TT_DragCaptain": {"enabled": true}
           }
         }
       ],
@@ -3558,9 +3583,7 @@
             "IsPreDamage": {"enabled": true},
             "S_StopOnDamagePopup": {"enabled": false},
             "S_DetectWhereAmI": {
-              "anchor": {
-                "RepairDone": "S_CompleteCurrentTaskAfterDamageRepair"
-              }
+              "anchor": {"RepairDone": "S_CompleteCurrentTaskAfterDamageRepair"}
             },
             "LogRepairDone": {
               "focus": {
@@ -3595,9 +3618,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "S_DragCaptain": {
-              "next": ["S_FatigueCheck"]
-            },
             "S_FatigueCheck": {"enabled": true}
           }
         },
@@ -3605,9 +3625,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "S_DragCaptain": {
-              "next": ["S_FatigueCheck"]
-            },
             "S_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -3846,25 +3863,45 @@
           "pipeline_override": {
             "S_IsKebiishi1": {
               "action": {},
-              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
-              "next": ["S_AvoidKebiRestart"]
+              "next": ["S_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
             },
             "S_IsKebiishi2": {
               "action": {},
-              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
               "repeat": 1,
-              "next": ["S_AvoidKebiRestart"]
+              "next": ["S_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
             },
             "S_PostKebiishi1": {
               "action": {},
-              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
-              "next": ["S_AvoidKebiRestart"]
+              "next": ["S_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
             },
             "S_PostKebiishi2": {
               "action": {},
-              "focus": {"Node.Action.Succeeded": {"content": "[重启游戏] 遭遇检非", "display": "log"}},
               "repeat": 1,
-              "next": ["S_AvoidKebiRestart"]
+              "next": ["S_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
             }
           }
         }
@@ -4150,9 +4187,6 @@
           "name": "",
           "option": ["U_跳过位置"],
           "pipeline_override": {
-            "U_CaptainHub": {
-              "next": ["U_DragCaptain", "U_IsPreSortieConfirm"]
-            },
             "U_DragCaptain": {"enabled": true}
           }
         }
@@ -4214,9 +4248,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "U_DragCaptain": {
-              "next": ["U_FatigueCheck"]
-            },
             "U_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -4227,10 +4258,7 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "U_FatigueCheck": {"enabled": true},
-            "U_DragCaptain": {
-              "next": ["U_FatigueCheck"]
-            }
+            "U_FatigueCheck": {"enabled": true}
           }
         }
       ]
@@ -6442,7 +6470,7 @@
       "name": "远征智能调度",
       "label": "远征智能调度",
       "type": "switch",
-      "description": "开启后，按远征刷新间隔与最近远征剩余时间中更短者来检查远征状态并补派开启后，按远征刷新间隔与最近远征剩余时间中较短的时间检查并补派远征。对启用了「同步后勤」的其他任务同样适用；若任务长时间停留在活动页面、不会主动返回本丸，远征倒计时结束后会主动返回本丸检查远征状态。",
+      "description": "伪无缝远征！开启后，按远征刷新间隔与最近远征剩余时间中更短者来检查远征状态并补派，对启用了「同步后勤」的其他任务同样适用。",
       "default_case": "Yes",
       "cases": [
         {
@@ -7574,9 +7602,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "RB_DragCaptain": {
-              "next": ["RB_FatigueCheck"]
-            },
             "RB_FatigueCheck": {"enabled": true}
           }
         },
@@ -7584,9 +7609,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "RB_DragCaptain": {
-              "next": ["RB_FatigueCheck"]
-            },
             "RB_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -7608,9 +7630,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "TT_DragCaptain": {
-              "next": ["TT_FatigueCheck"]
-            },
             "TT_FatigueCheck": {"enabled": true}
           }
         },
@@ -7618,9 +7637,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "TT_DragCaptain": {
-              "next": ["TT_FatigueCheck"]
-            },
             "TT_FatigueCheck": {
               "enabled": true,
               "on_error": []

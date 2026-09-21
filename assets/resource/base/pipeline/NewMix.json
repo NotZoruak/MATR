@@ -303,8 +303,7 @@
         "custom_recognition": "NewMixTargetSelectionRecognition",
         "custom_recognition_param": {"outcome": "Completed"}
       }
-    },
-    "next": []
+    }
   },
   "NM_IsFirstMixTargetEmpty": {
     "recognition": {
@@ -585,8 +584,7 @@
         "green_mask": true,
         "threshold": [0.98]
       }
-    },
-    "next": []
+    }
   },
   "NM_ClickHomeAfterEmptyMailbox": {
     "recognition": {
@@ -601,8 +599,7 @@
       "time": 100,
       "target": [1040, 165, 94, 48]
     },
-    "next": ["NM_EmptyMailboxHub"],
-    "on_error": ["NM_DetectWhereAmI"]
+    "next": ["NM_EmptyMailboxHub"]
   },
   "NM_OpenMenuAfterEmptyMailbox": {
     "recognition": {
@@ -617,8 +614,7 @@
       "time": 100,
       "target": [1179, 8, 95, 56]
     },
-    "next": ["NM_EmptyMailboxHub"],
-    "on_error": ["NM_DetectWhereAmI"]
+    "next": ["NM_EmptyMailboxHub"]
   },
   "NM_CloseEmptyMailbox": {
     "recognition": {
@@ -634,8 +630,7 @@
       "time": 100,
       "target": [1248, 11, 5, 6]
     },
-    "next": ["NM_EmptyMailboxHub"],
-    "on_error": ["NM_DetectWhereAmI"]
+    "next": ["NM_EmptyMailboxHub"]
   },
   "NM_IsMixMaterialSelection": {
     "recognition": {

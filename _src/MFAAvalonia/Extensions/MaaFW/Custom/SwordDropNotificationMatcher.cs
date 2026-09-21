@@ -47,6 +47,10 @@ public static class SwordDropNotificationMatcher
     public static string FormatMessage(string swordType, string swordName) =>
         $"获得 {swordType}「{swordName}」";
 
+    /// <summary>生成系统通知与实时日志共用的刀剑掉落文本。</summary>
+    public static string BuildNotificationMessage(string swordType, string swordName) =>
+        FormatMessage(swordType, swordName);
+
     public static bool ShouldNotify(bool enabled, IEnumerable<string>? swords, string? swordName)
     {
         if (!enabled || string.IsNullOrWhiteSpace(swordName) || swords == null)

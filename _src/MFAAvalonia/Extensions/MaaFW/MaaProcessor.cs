@@ -315,7 +315,8 @@ public class MaaProcessor
         bool changeColor = true,
         bool showTime = true,
         bool useMarkdown = false,
-        bool recordAsWarning = false)
+        bool recordAsWarning = false,
+        bool writeToFileLog = true)
     {
         brush ??= Brushes.Black;
 
@@ -392,11 +393,14 @@ public class MaaProcessor
             };
             LogItemViewModels.Add(log);
             PublishPlatformLog(log);
-            using var logScope = BeginInstanceLogScope("MonitorLog", "Monitor");
-            if (recordAsWarning)
-                LoggerHelper.Warning($"[Record] {content}");
-            else
-                LoggerHelper.Info($"[Record] {content}");
+            if (writeToFileLog)
+            {
+                using var logScope = BeginInstanceLogScope("MonitorLog", "Monitor");
+                if (recordAsWarning)
+                    LoggerHelper.Warning($"[Record] {content}");
+                else
+                    LoggerHelper.Info($"[Record] {content}");
+            }
 
             TrimExcessLogs();
         });
@@ -408,10 +412,11 @@ public class MaaProcessor
         bool changeColor = true,
         bool showTime = true,
         bool useMarkdown = false,
-        bool recordAsWarning = false)
+        bool recordAsWarning = false,
+        bool writeToFileLog = true)
     {
         var brush = BrushHelper.ConvertToBrush(color, Brushes.Black);
-        AddLog(content, brush, weight, changeColor, showTime, useMarkdown, recordAsWarning);
+        AddLog(content, brush, weight, changeColor, showTime, useMarkdown, recordAsWarning, writeToFileLog);
     }
 
     /// <summary>记录卡死恢复事件，同时写入文件日志和实时日志面板。</summary>

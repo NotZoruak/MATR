@@ -18,6 +18,7 @@
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]WH_IsSwordDrop",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsInternalReport",

@@ -24,7 +24,6 @@
       "U_IsEventPage",
       "U_CheckHomeBrightness",
       "U_IsMenuDirectory",
-      "U_IsTeamStatusPanel",
       "U_LeaveTroopRecord",
       "U_IsTutorial",
       "[JumpBack]IsBattleResult_Exp",
@@ -32,6 +31,7 @@
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -454,7 +454,7 @@
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_CaptainHub": {
-    "next": ["U_IsPreSortieConfirm"],
+    "next": ["U_DragCaptain", "U_IsPreSortieConfirm"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_CheckEquipmentPopup": {
@@ -536,19 +536,6 @@
       }
     },
     "next": ["U_NavigateToActivity"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_IsTeamStatusPanel": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["E_ExpSubHub1"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_IsMarchingDamage": {
@@ -791,7 +778,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["U_IsPreSortieConfirm"],
+    "next": ["U_FatigueCheck", "U_IsPreSortieConfirm"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_FatigueCheck": {

@@ -16,13 +16,13 @@
       "RB_IsActionSelect",
       "RB_IsEventPage",
       "RB_CheckHomeBrightness",
-      "RB_IsTeamStatusPanel",
       "RB_IsTeamSelect",
       "RB_IsSwordDropColor",
-      "RB_IsSpecialDrop",
+      "RB_TerminateRound",
       "[JumpBack]IsInSortie",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsExpeditionReturn_Exp",
@@ -52,10 +52,29 @@
         "threshold": [0.98]
       }
     },
-    "next": ["RB_CheckGoalPt", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
+    "next": ["RB_CheckGoalPt", "RB_IsRainbowBattle", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
+  },
+  "RB_IsRainbowBattle": {
+    "enabled": false,
+    "next": ["RB_CheckRainbowShell", "RB_CloseRainbowBattle"]
+  },
+  "RB_CheckRainbowShell": {
+    "next": ["RB_SelectDifficulty"]
+  },
+  "RB_CloseRainbowBattle": {
+    "next": ["RB_SelectDifficulty"]
   },
   "RB_CheckGoalPt": {
     "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/联队战.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
     "action": {
       "type": "Custom",
       "custom_action": "GoalPtCheckAction",
@@ -64,7 +83,7 @@
       }
     },
     "post_delay": 300,
-    "next": ["RB_SelectDifficulty"],
+    "next": ["RB_IsRainbowBattle", "RB_SelectDifficulty"],
     "on_error": ["RB_CompleteCurrentTaskAfterGoalPt"]
   },
   "RB_CompleteCurrentTaskAfterGoalPt": {
@@ -72,8 +91,7 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "目标 PT 已达成"}
-    },
-    "on_error": ["RB_DetectWhereAmI"]
+    }
   },
   "RB_SelectDifficulty": {
     "action": {
@@ -93,6 +111,10 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1144, 617, 118, 42]
+    },
     "next": ["RB_IsTeamSelect", "RB_DetectWhereAmI"]
   },
   "RB_IsTeamSelect": {
@@ -173,7 +195,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["RB_IsPreSortieConfirm"],
+    "next": ["RB_FatigueCheck", "RB_IsPreSortieConfirm"],
     "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_FatigueCheck": {
@@ -240,6 +262,20 @@
         "threshold": [0.98]
       }
     },
+    "next": ["RB_SortieSuccessDone"],
+    "on_error": ["RB_DetectWhereAmI"]
+  },
+  "RB_SortieSuccessDone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/联队战.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "inverse": true,
     "next": ["RB_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -305,7 +341,8 @@
       "time": 100,
       "target": [604, 588, 66, 42]
     },
-    "next": ["RB_IsConfirmPurchase"]
+    "next": ["RB_IsConfirmPurchase", "RB_ReplenishTicket"],
+    "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_IsConfirmPurchase": {
     "recognition": {
@@ -340,19 +377,6 @@
     },
     "next": ["RB_IsHome", "RB_DetectWhereAmI"]
   },
-  "RB_IsTeamStatusPanel": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["E_ExpSubHub1"],
-    "on_error": ["RB_DetectWhereAmI"]
-  },
   "RB_IsSwordDropColor": {
     "recognition": {
       "type": "ColorMatch",
@@ -374,7 +398,7 @@
     },
     "next": ["RB_DetectWhereAmI"]
   },
-  "RB_IsSpecialDrop": {
+  "RB_TerminateRound": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -382,9 +406,9 @@
         "expected": "完成|撤退"
       }
     },
-    "next": ["RB_TerminateRound"]
+    "next": ["RB_TerminateRoundDone"]
   },
-  "RB_TerminateRound": {
+  "RB_TerminateRoundDone": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -441,23 +465,29 @@
       }
     },
     "post_delay": 500,
-    "next": ["RB_ConfirmCaptainRetreat"],
+    "next": ["RB_CheckCaptainDamage", "RB_ConfirmCaptainRetreat"],
+    "on_error": ["RB_DetectWhereAmI"]
+  },
+  "RB_ConfirmCaptainRetreat": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [422, 447, 151, 42],
+        "expected": "是|确"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [466, 447, 60, 41]
+    },
+    "next": ["RB_DetectWhereAmI"],    
     "focus": {
       "Node.Action.Succeeded": {
         "content": "special:[海陆联队] 队长重伤撤退",
         "display": "log"
       }
     }
-  },
-  "RB_ConfirmCaptainRetreat": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [496, 469, 1, 1]
-      }
-    },
-    "post_delay": 100,
-    "next": ["RB_DetectWhereAmI"]
   },
   "RB_ClickContinueBattle": {
     "recognition": {

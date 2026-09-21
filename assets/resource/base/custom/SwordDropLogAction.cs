@@ -83,7 +83,7 @@ public class SwordDropLogAction : IMaaCustomAction
                 {
                     SaveScreenshot(context, swordName, "初始掉落");
                     LoggerHelper.Info($"{prefix} 刀剑掉落 {swordType} {swordName}");
-                    TryNotify(swordName, swordType);
+                    TryNotify(context, swordName, swordType);
                 }
                 else
                 {
@@ -245,12 +245,12 @@ public class SwordDropLogAction : IMaaCustomAction
         if (TryValidateSword(text, out var swordType, out var swordName))
         {
             LoggerHelper.Info($"{prefix} 刀剑掉落 {swordType} {swordName}");
-            TryNotify(swordName, swordType);
+            TryNotify(context, swordName, swordType);
         }
     }
 
     /// <summary>按全局开关和播报名单发送刀剑掉落通知。</summary>
-    private static void TryNotify(string swordName, string swordType)
+    private static void TryNotify<T>(T context, string swordName, string swordType) where T : IMaaContext
     {
         if (!ConfigurationManager.Current.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false))
             return;
@@ -262,9 +262,18 @@ public class SwordDropLogAction : IMaaCustomAction
             return;
         }
 
-        var message = SwordDropNotificationMatcher.FormatMessage(swordType, swordName);
+        var message = SwordDropNotificationMatcher.BuildNotificationMessage(swordType, swordName);
         ToastNotification.Show(message);
         _ = ExternalNotificationHelper.ExternalNotificationAsync(message);
+        try
+        {
+            // 只写实时 GUI 日志，不写文件日志，避免新增工作记录解析词条。
+            ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message, writeToFileLog: false);
+        }
+        catch
+        {
+            // GUI 日志失败不应影响系统通知与任务流程。
+        }
     }
 
     /// <summary>保存当前完整画面，截图失败不影响后续点击。</summary>

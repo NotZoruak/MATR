@@ -16,7 +16,6 @@
       "HP_IsMarching",
       "HP_IsEventPage",
       "HP_CheckHomeBrightness",
-      "HP_IsTeamStatusPanel",
       "HP_IsTeamSelect",
       "HP_IsSwordDropColor",
       "HP_IsSpecialDrop1",
@@ -27,6 +26,7 @@
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -64,19 +64,6 @@
       }
     },
     "next": ["HP_NavigateToActivity", "HP_DetectWhereAmI"]
-  },
-  "HP_IsTeamStatusPanel": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["E_ExpSubHub1"],
-    "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_IsMarching": {
     "recognition": {
@@ -251,6 +238,8 @@
         "target": [984, 307, 48, 3]
       }
     },
+    "repeat": 2,
+    "repeat_delay": 500,
     "next": ["HP_IsTeamSelect", "HP_DetectWhereAmI"]
   },
   "HP_IsSpecialDrop1": {
@@ -444,6 +433,20 @@
         "threshold": [0.98]
       }
     },
+    "next": ["HP_SortieSuccessDone"],
+    "on_error": ["HP_DetectWhereAmI"]
+  },
+  "HP_SortieSuccessDone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "inverse": true,
     "next": ["HP_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -465,7 +468,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["HP_IsPreSortieConfirm"],
+    "next": ["HP_FatigueCheck", "HP_IsPreSortieConfirm"],
     "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_FatigueCheck": {

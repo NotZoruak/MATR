@@ -7,11 +7,12 @@
     xmlns:settings="clr-namespace:MFAAvalonia.ViewModels.UsersControls.Settings">
     <StackPanel Spacing="12">
         <TextBlock FontSize="12" Foreground="Gray" Text="选择需要弹窗播报的刀剑。播报只对标准刀名识别成功且名单命中的掉落生效。" TextWrapping="Wrap" />
-        <TextBox Text="{Binding SearchText}" Watermark="输入刀剑名称搜索…" />
-        <ListBox MaxHeight="220" IsVisible="{calcBinding:Binding 'SearchText.Length > 0'}" ItemsSource="{Binding Candidates}">
+        <StackPanel x:Name="SwordSearchPanel" Spacing="4">
+            <TextBox x:Name="SwordSearchBox" Text="{Binding SearchText}" GotFocus="SearchBox_OnGotFocus" Watermark="输入刀剑名称或刀种搜索…" />
+            <ListBox MaxHeight="220" IsVisible="{calcBinding:Binding 'Candidates.Count > 0'}" ItemsSource="{Binding Candidates}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Button Padding="10,5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" Command="{Binding AddCommand}" IsEnabled="{calcBinding:Binding '!IsSelected'}">
+                    <Button Padding="10,5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" Command="{Binding AddCommand}">
                         <Grid ColumnDefinitions="*,Auto,Auto">
                             <TextBlock Text="{Binding DisplayName}" />
                             <TextBlock Grid.Column="1" Margin="12,0,0,0" FontSize="12" Foreground="Gray" Text="{Binding Type}" />
@@ -20,7 +21,8 @@
                     </Button>
                 </DataTemplate>
             </ListBox.ItemTemplate>
-        </ListBox>
+            </ListBox>
+        </StackPanel>
         <TextBlock FontSize="13" FontWeight="SemiBold" Text="{calcBinding:Binding '&quot;已选（&quot; + Tags.Count + &quot;）&quot;'}" />
         <ItemsControl ItemsSource="{Binding Tags}">
             <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>

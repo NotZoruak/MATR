@@ -26,7 +26,6 @@
       "S_IsIsekaiBattleEnd_1",
       "S_IsIsekaiBattleEnd_5",
       "S_IsInActivity",
-      "S_IsTeamStatusPanel",
       "S_CheckHomeBrightness",
       "S_IsKebiishi1",
       "S_IsKebiishi2",
@@ -36,6 +35,7 @@
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -1203,7 +1203,7 @@
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[常驻作战] 返回本丸",
-        "display": "log"
+        "display": "file"
       }
     }
   },
@@ -2245,19 +2245,6 @@
     },
     "next": ["S_IsHome", "S_DetectWhereAmI"]
   },
-  "S_IsTeamStatusPanel": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["E_ExpSubHub1"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
   "S_StopOnEquipmentPopup": {
     "recognition": {
       "type": "TemplateMatch",
@@ -2368,7 +2355,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["S_IsPreSortieConfirm"],
+    "next": ["S_FatigueCheck", "S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_FatigueCheck": {

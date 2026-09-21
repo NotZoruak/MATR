@@ -30,6 +30,7 @@
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -70,8 +71,7 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["EC_IsHome", "EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_IsHome", "EC_DetectWhereAmI"]
   },
   "EC_IsHome": {
     "recognition": {
@@ -122,8 +122,7 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["EC_CaptainHub"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_CaptainHub"]
   },
   "EC_IsEventPage": {
     "recognition": {
@@ -138,6 +137,15 @@
     "next": ["EC_SelectDifficulty", "EC_DetectWhereAmI"]
   },
   "EC_SelectDifficulty": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/江户城.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
@@ -157,8 +165,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["EC_CheckMoreSpecialDrops"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_CheckMoreSpecialDrops"]
   },
   "EC_ReplenishTicket": {
     "pre_delay": 100,
@@ -176,8 +183,7 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "通行令牌不足"}
-    },
-    "on_error": ["EC_DetectWhereAmI"]
+    }
   },
   "EC_ClickMenu": {
     "recognition": {
@@ -208,7 +214,7 @@
     "next": ["EC_PostSortieHub"]
   },
   "EC_CaptainHub": {
-    "next": ["EC_DragCaptain", "EC_FatigueCheck", "EC_IsPreSortieConfirm"],
+    "next": ["EC_DragCaptain",  "EC_IsPreSortieConfirm"],
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_TerminateRound": {
@@ -338,8 +344,7 @@
       "custom_action": "EdoActionSelectAction",
       "custom_action_param": {"strategy": "balanced"}
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_WaitForEventPage": {
     "recognition": {
@@ -425,8 +430,7 @@
         "target": [599, 582, 81, 41]
       }
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_ClickEnterBattle": {
     "recognition": {
@@ -472,16 +476,14 @@
         "target": [623, 459, 32, 15]
       }
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_RestartGame": {
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_DragCaptain": {
     "enabled": false,
@@ -518,8 +520,7 @@
     },
     "pre_delay": 500,
     "post_delay": 500,
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_NavigateToActivity": {
     "next": ["EC_ClickMenu", "EC_DetectWhereAmI"]

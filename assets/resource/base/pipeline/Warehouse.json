@@ -5,6 +5,7 @@
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -26,8 +27,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["Warehouse_Start"],
-    "on_error": []
+    "next": ["Warehouse_Start"]
   },
   "Warehouse_ClickMenu": {
     "recognition": {
@@ -62,8 +62,7 @@
         "roi": [395, 14, 90, 27]
       }
     },
-    "next": ["Warehouse_ReadSteel"],
-    "on_error": []
+    "next": ["Warehouse_ReadSteel"]
   },
   "Warehouse_ReadSteel": {
     "recognition": {
@@ -80,8 +79,7 @@
         "roi": [532, 13, 91, 28]
       }
     },
-    "next": ["Warehouse_ReadCoolingMaterial"],
-    "on_error": []
+    "next": ["Warehouse_ReadCoolingMaterial"]
   },
   "Warehouse_ReadCoolingMaterial": {
     "recognition": {
@@ -98,8 +96,7 @@
         "roi": [672, 13, 92, 28]
       }
     },
-    "next": ["Warehouse_ReadStone"],
-    "on_error": []
+    "next": ["Warehouse_ReadStone"]
   },
   "Warehouse_ReadStone": {
     "recognition": {
@@ -116,8 +113,7 @@
         "roi": [811, 13, 93, 28]
       }
     },
-    "next": ["Warehouse_ReadExpeditionPermit"],
-    "on_error": []
+    "next": ["Warehouse_ReadExpeditionPermit"]
   },
   "Warehouse_ReadExpeditionPermit": {
     "recognition": {
@@ -134,8 +130,7 @@
         "roi": [1145, 354, 106, 29]
       }
     },
-    "next": ["Warehouse_ReadSpeedup"],
-    "on_error": []
+    "next": ["Warehouse_ReadSpeedup"]
   },
   "Warehouse_ReadSpeedup": {
     "recognition": {
@@ -152,8 +147,7 @@
         "roi": [1142, 517, 107, 30]
       }
     },
-    "next": ["Warehouse_ClickMenuAfterForge"],
-    "on_error": []
+    "next": ["Warehouse_ClickMenuAfterForge"]
   },
   "Warehouse_ClickMenuAfterForge": {
     "recognition": {
@@ -208,7 +202,6 @@
         "koban_roi": [977, 32, 189, 48]
       }
     },
-    "next": [],
     "on_error": ["Warehouse_ClickPossessions"]
   },
   "Warehouse_ClickForge": {

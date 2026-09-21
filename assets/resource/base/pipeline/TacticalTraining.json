@@ -17,7 +17,6 @@
       "TT_IsSilhouettePopup",
       "TT_IsTicketReplenishPage",
       "TT_CheckHomeBrightness",
-      "TT_IsTeamStatusPanel",
       "TT_IsTeamSelect",
       "TT_IsSwordSelect",
       "TT_IsSortie",
@@ -27,6 +26,7 @@
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
@@ -70,19 +70,6 @@
       }
     },
     "next": ["TT_NavigateToActivity"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
-  "TT_IsTeamStatusPanel": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["E_ExpSubHub1"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_IsSwordDropColor": {
@@ -408,15 +395,16 @@
         "upper": [178, 27, 27]
       }
     },
-    "next": ["TT_IsPreSortieConfirm"],
+    "next": ["TT_DragCaptain", "TT_IsPreSortieConfirm"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_DragCaptain": {
+    "enabled": false,
     "action": {
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["TT_IsPreSortieConfirm"],
+    "next": ["TT_FatigueCheck", "TT_IsPreSortieConfirm"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_FatigueCheck": {

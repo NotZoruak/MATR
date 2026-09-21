@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MFAAvalonia.Configuration;
 using MFAAvalonia.Helper;
-using Newtonsoft.Json;
+using MFAAvalonia.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,11 +14,7 @@ namespace MFAAvalonia.ViewModels.UsersControls.Settings;
 /// <summary>刀剑掉落播报名单，使用刀剑名册搜索并保存基础名称。</summary>
 public partial class SwordDropNotificationUserControlModel : ViewModelBase
 {
-    private static readonly string[] TypeOrder = ["短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
-    private sealed record CatalogEntry(string BaseName, string Type, string DisplayName);
-    private sealed record CatalogRawItem(string Number, string Type, string Name, bool TypeOnly = false);
-
-    private readonly List<CatalogEntry> _catalog = [];
+    private readonly List<SwordCatalogEntry> _catalog;
     private readonly HashSet<string> _selected = new(StringComparer.Ordinal);
 
     public ObservableCollection<SwordDropNotificationTagItem> Tags { get; } = [];
@@ -28,30 +24,12 @@ public partial class SwordDropNotificationUserControlModel : ViewModelBase
 
     public SwordDropNotificationUserControlModel()
     {
-        LoadCatalog();
+        _catalog = SwordCatalogService.Load(Path.Combine(AppPaths.ResourceDirectory, "base", "SwordBookCatalog.json"));
         LoadList();
     }
 
-    private void LoadCatalog()
-    {
-        var path = Path.Combine(AppPaths.ResourceDirectory, "base", "SwordBookCatalog.json");
-        if (!File.Exists(path))
-            return;
-
-        var items = (JsonConvert.DeserializeObject<List<CatalogRawItem>>(File.ReadAllText(path)) ?? [])
-            .Where(item => !item.TypeOnly).ToList();
-        var duplicateNames = items.GroupBy(item => item.Name, StringComparer.Ordinal)
-            .Where(group => group.Count() > 1)
-            .ToDictionary(group => group.Key, group => group.Last().Number, StringComparer.Ordinal);
-        foreach (var item in items)
-        {
-            var displayName = duplicateNames.TryGetValue(item.Name, out var lastNumber) && lastNumber == item.Number
-                ? $"{item.Name}·极" : item.Name;
-            var baseName = displayName.EndsWith("·极", StringComparison.Ordinal) ? displayName[..^2] : displayName;
-            if (_catalog.All(entry => entry.BaseName != baseName))
-                _catalog.Add(new CatalogEntry(baseName, item.Type, displayName));
-        }
-    }
+    /// <summary>搜索框获得焦点时显示当前搜索结果。</summary>
+    public void ActivateSearch() => RefreshCandidates();
 
     private void LoadList()
     {
@@ -70,15 +48,9 @@ public partial class SwordDropNotificationUserControlModel : ViewModelBase
 
     partial void OnSearchTextChanged(string value) => RefreshCandidates();
 
-    private static int TypeRank(string type)
-    {
-        var index = Array.IndexOf(TypeOrder, type);
-        return index < 0 ? TypeOrder.Length : index;
-    }
-
-    private IEnumerable<CatalogEntry> SortedSelected() => _catalog
+    private IEnumerable<SwordCatalogEntry> SortedSelected() => _catalog
         .Where(entry => _selected.Contains(entry.BaseName))
-        .OrderBy(entry => TypeRank(entry.Type))
+        .OrderBy(entry => SwordCatalogService.TypeRank(entry.Type))
         .ThenBy(entry => _catalog.IndexOf(entry));
 
     private void RefreshTags()
@@ -92,11 +64,7 @@ public partial class SwordDropNotificationUserControlModel : ViewModelBase
     {
         Candidates.Clear();
         var keyword = SearchText?.Trim() ?? string.Empty;
-        if (keyword.Length == 0)
-            return;
-
-        foreach (var entry in _catalog.Where(entry => entry.DisplayName.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                     .OrderBy(entry => TypeRank(entry.Type)).ThenBy(entry => _catalog.IndexOf(entry)))
+        foreach (var entry in SwordCatalogService.Search(_catalog, keyword))
         {
             Candidates.Add(new SwordDropNotificationCandidateItem(entry.DisplayName, entry.Type,
                 entry.BaseName, _selected.Contains(entry.BaseName), AddCommand));
@@ -106,7 +74,8 @@ public partial class SwordDropNotificationUserControlModel : ViewModelBase
     [RelayCommand]
     private void Add(string baseName)
     {
-        if (!_selected.Add(baseName)) return;
+        if (!_selected.Add(baseName))
+            _selected.Remove(baseName);
         Persist();
         RefreshTags();
         RefreshCandidates();
