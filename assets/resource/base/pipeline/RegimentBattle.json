@@ -16,13 +16,13 @@
       "RB_IsActionSelect",
       "RB_IsEventPage",
       "RB_CheckHomeBrightness",
-      "RB_IsTeamStatusPanel",
       "RB_IsTeamSelect",
       "RB_IsSwordDropColor",
       "RB_IsSpecialDrop",
       "[JumpBack]IsInSortie",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsExpeditionReturn_Exp",
@@ -377,8 +377,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["E_ExpSubHub1"],
-    "on_error": ["RB_DetectWhereAmI"]
+    "next": ["E_ExpSubHub1"]
   },
   "RB_IsSwordDropColor": {
     "recognition": {
