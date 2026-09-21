@@ -169,11 +169,11 @@ ADB 输入方式设为“自动”时，`MaaProcessor` 必须为名称包含 `Mu
 
 ### `adb.remember-last-device-on-empty`
 
-ADB 自动检测结果为空时，`TaskQueueViewModel.UpdateDeviceList` 必须先调用 `TryRestoreLastDeviceOnEmpty` 兜底显示上次使用的设备（标记未连接、不触发连接），再由 `StartDeviceWaitRetry` 每 10 秒后台重试；模拟器就绪后按指纹选中设备，并按「刷新后尝试连接」设置连接。空结果分支不得直接调用 `SetEmptyDeviceState`，否则会连带执行 `ClearActiveAdbDeviceConfig`，把已记住的 ADB 路径与序列号清空。
+ADB 自动检测结果为空时，`TaskQueueViewModel.UpdateDeviceList` 必须先调用 `TryRestoreLastDeviceOnEmpty` 兜底显示上次使用的设备（标记未连接、不触发连接），再由 `StartDeviceWaitRetry` 每 10 秒后台重试；模拟器就绪后按指纹选中设备，并按「刷新设备列表后自动连接」设置连接。对于 TapTap 等外部启动方式，即使 `MaaToolkit.AdbDevice.Find()` 仍返回空，也必须在自动连接开启时使用已保存的 `AdbPath + AdbSerial` 直接尝试连接，例如 `127.0.0.1:16416`。空结果分支不得直接调用 `SetEmptyDeviceState`，否则会连带执行 `ClearActiveAdbDeviceConfig`，把已记住的 ADB 路径与序列号清空。
 
-行为受「记住连接」开关控制，关闭时保持上游原状。用户手动刷新、重连、切换控制器、其余进入自动检测的刷新路径，以及释放页面时，都必须取消后台重试。
+行为受「记住连接」开关控制，关闭时保持上游原状；「连接失败时自动重新搜寻可用设备」控制后台等待，「刷新设备列表后自动连接」控制发现设备后的自动连接与历史地址直连。后台恢复不得因为每轮尝试而触发 ADB Server 或 ADB 进程重启，也不得重复弹出 Toast。用户手动刷新、重连、切换控制器、其余进入自动检测的刷新路径，以及释放页面时，都必须取消后台重试。
 
-2026-08-14 首次实现（提交 `a844982b`），2026-09-04 升级 MFAAvalonia v2.16.1 时随 `TaskQueueViewModel.cs` 被上游整体覆盖删除，2026-09-14 按原设计恢复。
+2026-08-14 首次实现（提交 `a844982b`），2026-09-04 升级 MFAAvalonia v2.16.1 时随 `TaskQueueViewModel.cs` 被上游整体覆盖删除，2026-09-14 按原设计恢复；2026-09-21 增加历史 ADB 地址直连兜底，并接入自动重新搜寻与刷新后自动连接开关。
 
 ### `runtime.resource-path-and-packaging`
 
