@@ -52,7 +52,17 @@
         "threshold": [0.98]
       }
     },
-    "next": ["RB_CheckGoalPt", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
+    "next": ["RB_CheckGoalPt", "RB_IsRainbowBattle", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
+  },
+  "RB_IsRainbowBattle": {
+    "enabled": false,
+    "next": ["RB_CheckRainbowShell", "RB_CloseRainbowBattle"]
+  },
+  "RB_CheckRainbowShell": {
+    "next": ["RB_SelectDifficulty"]
+  },
+  "RB_CloseRainbowBattle": {
+    "next": ["RB_SelectDifficulty"]
   },
   "RB_CheckGoalPt": {
     "enabled": false,
@@ -73,7 +83,7 @@
       }
     },
     "post_delay": 300,
-    "next": ["RB_SelectDifficulty"],
+    "next": ["RB_IsRainbowBattle", "RB_SelectDifficulty"],
     "on_error": ["RB_CompleteCurrentTaskAfterGoalPt"]
   },
   "RB_CompleteCurrentTaskAfterGoalPt": {
