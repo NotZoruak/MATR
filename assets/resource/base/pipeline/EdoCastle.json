@@ -70,8 +70,7 @@
         "upper": [40, 155, 30]
       }
     },
-    "next": ["EC_IsHome", "EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_IsHome", "EC_DetectWhereAmI"]
   },
   "EC_IsHome": {
     "recognition": {
@@ -165,8 +164,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["EC_CheckMoreSpecialDrops"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_CheckMoreSpecialDrops"]
   },
   "EC_ReplenishTicket": {
     "pre_delay": 100,
@@ -184,8 +182,7 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "通行令牌不足"}
-    },
-    "on_error": ["EC_DetectWhereAmI"]
+    }
   },
   "EC_ClickMenu": {
     "recognition": {
@@ -216,7 +213,7 @@
     "next": ["EC_PostSortieHub"]
   },
   "EC_CaptainHub": {
-    "next": ["EC_DragCaptain", "EC_FatigueCheck", "EC_IsPreSortieConfirm"],
+    "next": ["EC_DragCaptain",  "EC_IsPreSortieConfirm"],
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_TerminateRound": {
@@ -488,8 +485,7 @@
       "type": "Custom",
       "custom_action": "RestartGameAction"
     },
-    "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_DragCaptain": {
     "enabled": false,

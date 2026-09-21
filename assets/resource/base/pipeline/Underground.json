@@ -454,7 +454,7 @@
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_CaptainHub": {
-    "next": ["U_IsPreSortieConfirm"],
+    "next": ["U_DragCaptain", "U_IsPreSortieConfirm"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_CheckEquipmentPopup": {

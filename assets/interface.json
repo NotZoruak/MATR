@@ -5521,12 +5521,6 @@
             "EC_跳过位置"
           ],
           "pipeline_override": {
-            "EC_CaptainHub": {
-              "next": [
-                "EC_DragCaptain",
-                "EC_IsPreSortieConfirm"
-              ]
-            },
             "EC_DragCaptain": {
               "enabled": true
             }
@@ -6045,11 +6039,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "TT_CaptainHub": {
-              "next": [
-                "TT_DragCaptain",
-                "TT_IsPreSortieConfirm"
-              ]
+            "TT_DragCaptain": {
+              "enabled": true
             }
           }
         }
@@ -7141,12 +7132,6 @@
             "U_跳过位置"
           ],
           "pipeline_override": {
-            "U_CaptainHub": {
-              "next": [
-                "U_DragCaptain",
-                "U_IsPreSortieConfirm"
-              ]
-            },
             "U_DragCaptain": {
               "enabled": true
             }

@@ -408,10 +408,11 @@
         "upper": [178, 27, 27]
       }
     },
-    "next": ["TT_IsPreSortieConfirm"],
+    "next": ["TT_DragCaptain", "TT_IsPreSortieConfirm"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_DragCaptain": {
+    "enabled": false,
     "action": {
       "type": "Custom",
       "custom_action": "DragCaptainAction"
