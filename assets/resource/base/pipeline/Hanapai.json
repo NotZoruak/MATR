@@ -251,7 +251,10 @@
         "target": [984, 307, 48, 3]
       }
     },
-    "next": ["HP_IsTeamSelect", "HP_DetectWhereAmI"]
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["HP_IsTeamSelect"],
+    "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_IsSpecialDrop1": {
     "recognition": {

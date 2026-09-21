@@ -159,13 +159,15 @@
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
                     <Button Command="{Binding CalculateCommand}"
                             Padding="24,10"
+                            Width="212"
                             Classes="Accent">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="计算" FontSize="15" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ResetCommand}"
-                            Padding="24,10">
+                            Padding="24,10"
+                            Width="212">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="重置" FontSize="15" VerticalAlignment="Center" />
                         </StackPanel>

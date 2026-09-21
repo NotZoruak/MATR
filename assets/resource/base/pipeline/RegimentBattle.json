@@ -55,6 +55,15 @@
     "next": ["RB_CheckGoalPt", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
   },
   "RB_CheckGoalPt": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/联队战.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
     "enabled": false,
     "action": {
       "type": "Custom",
@@ -93,6 +102,10 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1144, 617, 118, 42]
+    },
     "next": ["RB_IsTeamSelect", "RB_DetectWhereAmI"]
   },
   "RB_IsTeamSelect": {
