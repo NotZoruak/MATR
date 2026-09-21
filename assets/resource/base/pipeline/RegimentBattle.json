@@ -186,7 +186,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["RB_IsPreSortieConfirm"],
+    "next": ["RB_FatigueCheck", "RB_IsPreSortieConfirm"],
     "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_FatigueCheck": {

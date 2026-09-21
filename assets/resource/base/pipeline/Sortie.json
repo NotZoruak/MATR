@@ -2368,7 +2368,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["S_IsPreSortieConfirm"],
+    "next": ["S_FatigueCheck", "S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_FatigueCheck": {

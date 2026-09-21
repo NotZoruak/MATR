@@ -468,7 +468,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["HP_IsPreSortieConfirm"],
+    "next": ["HP_FatigueCheck", "HP_IsPreSortieConfirm"],
     "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_FatigueCheck": {

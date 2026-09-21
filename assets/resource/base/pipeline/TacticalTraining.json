@@ -416,7 +416,7 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
-    "next": ["TT_IsPreSortieConfirm"],
+    "next": ["TT_FatigueCheck", "TT_IsPreSortieConfirm"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_FatigueCheck": {

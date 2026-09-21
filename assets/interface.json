@@ -4931,11 +4931,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "HP_DragCaptain": {
-              "next": [
-                "HP_FatigueCheck"
-              ]
-            },
             "HP_FatigueCheck": {
               "enabled": true
             }
@@ -4945,11 +4940,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "HP_DragCaptain": {
-              "next": [
-                "HP_FatigueCheck"
-              ]
-            },
             "HP_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -6159,11 +6149,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "S_DragCaptain": {
-              "next": [
-                "S_FatigueCheck"
-              ]
-            },
             "S_FatigueCheck": {
               "enabled": true
             }
@@ -6173,11 +6158,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "S_DragCaptain": {
-              "next": [
-                "S_FatigueCheck"
-              ]
-            },
             "S_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -7236,11 +7216,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "U_DragCaptain": {
-              "next": [
-                "U_FatigueCheck"
-              ]
-            },
             "U_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -7253,11 +7228,6 @@
           "pipeline_override": {
             "U_FatigueCheck": {
               "enabled": true
-            },
-            "U_DragCaptain": {
-              "next": [
-                "U_FatigueCheck"
-              ]
             }
           }
         }
@@ -13897,11 +13867,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "RB_DragCaptain": {
-              "next": [
-                "RB_FatigueCheck"
-              ]
-            },
             "RB_FatigueCheck": {
               "enabled": true
             }
@@ -13911,11 +13876,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "RB_DragCaptain": {
-              "next": [
-                "RB_FatigueCheck"
-              ]
-            },
             "RB_FatigueCheck": {
               "enabled": true,
               "on_error": []
@@ -13937,11 +13897,6 @@
           "name": "刷花",
           "DisplayName": "刷花",
           "pipeline_override": {
-            "TT_DragCaptain": {
-              "next": [
-                "TT_FatigueCheck"
-              ]
-            },
             "TT_FatigueCheck": {
               "enabled": true
             }
@@ -13951,11 +13906,6 @@
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
-            "TT_DragCaptain": {
-              "next": [
-                "TT_FatigueCheck"
-              ]
-            },
             "TT_FatigueCheck": {
               "enabled": true,
               "on_error": []
