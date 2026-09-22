@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MFAAvalonia.ViewModels.Pages;
@@ -145,9 +146,8 @@ public partial class ForgeCalculatorViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void RecognizeScreen()
+    private async Task RecognizeScreenAsync()
     {
-        LoggerHelper.Info("[ForgeCalculator] 识别屏幕开始");
         if (IsRecognizing) return;
         IsRecognizing = true;
 
@@ -157,91 +157,172 @@ public partial class ForgeCalculatorViewModel : ViewModelBase
             if (processor == null)
             {
                 ShowError("未检测到已连接的模拟器，请先在主页连接设备。");
-                IsRecognizing = false;
                 return;
             }
 
-            var tasker = processor.MaaTasker!;
-
-            var controller = tasker.Controller!;
-            var capStatus = controller.Screencap().Wait();
-            LoggerHelper.Info($"[ForgeCalculator] 截图结果: {capStatus}");
-            if (capStatus != MaaJobStatus.Succeeded)
+            // 截图与 OCR 全程在后台线程执行，界面不会被识别耗时阻塞
+            var result = await Task.Run(() => RecognizeScreenCore(processor));
+            if (!result.Success || result.Values == null)
             {
-                ShowError("截图失败，请检查模拟器连接。");
-                IsRecognizing = false;
+                ShowError(result.Message);
                 return;
             }
 
-            var rois = new Dictionary<string, int[]>
-            {
-                ["charcoal"]  = new[] { 354, 7, 138, 38 },
-                ["steel"]     = new[] { 490, 7, 138, 38 },
-                ["coolant"]   = new[] { 628, 7, 138, 38 },
-                ["whetstone"] = new[] { 770, 7, 138, 38 },
-                ["plum"]      = new[] { 1042, 232, 99, 69 },
-                ["bamboo"]    = new[] { 1042, 309, 99, 69 },
-                ["pine"]      = new[] { 1042, 386, 99, 69 },
-                ["fuji"]      = new[] { 1042, 462, 99, 69 },
-                ["permits"]   = new[] { 1167, 283, 97, 26 },
-                ["speedups"]  = new[] { 1167, 448, 92, 32 },
-            };
-
-            // 获取缓存的截图作为 OCR 图像源
-            var imageBuffer = new MaaImageBuffer();
-            if (!controller.GetCachedImage(imageBuffer))
-            {
-                LoggerHelper.Info("[ForgeCalculator] 获取缓存图像失败");
-                ShowError("获取截图数据失败。");
-                IsRecognizing = false;
-                return;
-            }
-
-            int ParseOcr(string key)
-            {
-                var roi = rois[key];
-                var recoParam = JsonConvert.SerializeObject(new { roi = roi });
-                var job = tasker.AppendRecognition("OCR", recoParam, imageBuffer);
-                LoggerHelper.Info($"[ForgeCalculator] OCR {key} 开始...");
-                if (job.WaitFor(MaaJobStatus.Succeeded) == null)
-                {
-                    LoggerHelper.Info($"[ForgeCalculator] OCR {key} 失败");
-                    return 0;
-                }
-                var detailObj = job.QueryRecognitionDetail();
-                if (detailObj == null || string.IsNullOrWhiteSpace(detailObj.Detail))
-                {
-                    LoggerHelper.Info($"[ForgeCalculator] OCR {key} 无结果");
-                    return 0;
-                }
-                var query = JsonConvert.DeserializeObject<MaaExtensions.RecognitionQuery>(detailObj.Detail);
-                var text = query?.Best?.Text ?? "";
-                LoggerHelper.Info($"[ForgeCalculator] OCR {key} 识别到: [{text}]");
-                text = text.Replace(",", "").Replace("，", "").Replace(".", "").Trim();
-                return int.TryParse(text, out var val) ? val : 0;
-            }
-
-            CurrentCharcoal  = ParseOcr("charcoal");
-            CurrentSteel     = ParseOcr("steel");
-            CurrentCoolant   = ParseOcr("coolant");
-            CurrentWhetstone = ParseOcr("whetstone");
-            CurrentPlum      = ParseOcr("plum");
-            CurrentBamboo    = ParseOcr("bamboo");
-            CurrentPine      = ParseOcr("pine");
-            CurrentFuji      = ParseOcr("fuji");
-            CurrentPermits   = ParseOcr("permits");
-            CurrentSpeedups  = ParseOcr("speedups");
-            LoggerHelper.Info("[ForgeCalculator] 识别完成");
+            ApplyRecognizedValues(result.Values);
+            ToastHelper.Success("限锻计算", "已根据屏幕识别结果填入现有资源、御札和道具。");
         }
         catch (Exception ex)
         {
-            LoggerHelper.Error($"[ForgeCalculator] OCR 异常：{ex}", ex);
+            LoggerHelper.Error($"[ForgeCalculator] 识别屏幕异常：{ex}", ex);
             ShowError($"识别失败：{ex.Message}");
         }
         finally
         {
             IsRecognizing = false;
         }
+    }
+
+    /// <summary>
+    /// 屏幕识别的取样区域，基于 1280×720 的锻刀资源投入页面。
+    /// </summary>
+    private static readonly (string Key, string Label, int[] Roi)[] ScreenRois =
+    [
+        ("charcoal", "木炭", [354, 7, 138, 38]),
+        ("steel", "玉钢", [490, 7, 138, 38]),
+        ("coolant", "冷却材", [628, 7, 138, 38]),
+        ("whetstone", "砥石", [770, 7, 138, 38]),
+        ("plum", "梅", [1042, 232, 99, 69]),
+        ("bamboo", "竹", [1042, 309, 99, 69]),
+        ("pine", "松", [1042, 386, 99, 69]),
+        ("fuji", "富士", [1042, 462, 99, 69]),
+        ("permits", "依頼札", [1167, 283, 97, 26]),
+        ("speedups", "手伝い札", [1167, 448, 92, 32]),
+    ];
+
+    /// <summary>单次识别的等待上限，避免异常时无限期占用识别线程。</summary>
+    private static readonly TimeSpan RecognitionTimeout = TimeSpan.FromSeconds(5);
+
+    /// <summary>回退到主 tasker 且主任务正在运行时的等待上限，此时识别会被流水线阻塞。</summary>
+    private static readonly TimeSpan BusyRecognitionTimeout = TimeSpan.FromSeconds(3);
+
+    /// <summary>截图等待上限。</summary>
+    private static readonly TimeSpan ScreencapTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// 执行一次屏幕识别。
+    /// 主 tasker 空闲时直接使用它；正在跑流水线时改用独立识别执行器，避免识别排队等待；
+    /// 独立执行器不可用时回退到主 tasker，并用更短的超时给出明确提示。
+    /// </summary>
+    private static (bool Success, string Message, Dictionary<string, int>? Values) RecognizeScreenCore(MaaProcessor processor)
+    {
+        var mainTasker = processor.MaaTasker;
+        if (mainTasker?.Controller == null)
+            return (false, "未检测到已连接的模拟器，请先在主页连接设备。", null);
+
+        // 主 tasker 空闲时不必额外开一条设备连接，只有流水线运行期间才需要独立执行器
+        if (mainTasker.IsRunning || mainTasker.IsStopping)
+        {
+            var auxTasker = processor.AcquireAuxRecognitionTasker();
+            if (auxTasker != null)
+            {
+                var auxResult = RecognizeWithTasker(auxTasker, isAuxTasker: true);
+                if (auxResult.Success)
+                    return auxResult;
+
+                LoggerHelper.Warning($"[ForgeCalculator] 独立识别执行器识别失败，回退到主任务：{auxResult.Message}");
+                processor.DisposeAuxRecognitionTasker();
+            }
+        }
+
+        return RecognizeWithTasker(mainTasker, isAuxTasker: false);
+    }
+
+    /// <summary>
+    /// 用指定执行器完成截图与 OCR。
+    /// 主 tasker 正在运行流水线时识别会一直排队到该轮结束，此时使用更短的等待上限并给出提示。
+    /// </summary>
+    private static (bool Success, string Message, Dictionary<string, int>? Values) RecognizeWithTasker(MaaTasker tasker, bool isAuxTasker)
+    {
+        var controller = tasker.Controller;
+        if (controller == null)
+            return (false, "未检测到已连接的模拟器，请先在主页连接设备。", null);
+
+        var taskerBusy = !isAuxTasker && (tasker.IsRunning || tasker.IsStopping);
+        var timeout = taskerBusy ? BusyRecognitionTimeout : RecognitionTimeout;
+
+        LoggerHelper.Info($"[ForgeCalculator] 识别屏幕开始（执行器：{(isAuxTasker ? "独立" : "主")}）");
+
+        var capStatus = WaitJob(controller.Screencap(), ScreencapTimeout);
+        LoggerHelper.Info($"[ForgeCalculator] 截图结果：{capStatus}");
+        if (capStatus != MaaJobStatus.Succeeded)
+            return (false, "截图失败，请检查模拟器连接。", null);
+
+        // 获取缓存的截图作为 OCR 图像源
+        using var imageBuffer = new MaaImageBuffer();
+        if (!controller.GetCachedImage(imageBuffer))
+            return (false, "获取截图数据失败。", null);
+
+        var values = new Dictionary<string, int>();
+        foreach (var (key, label, roi) in ScreenRois)
+        {
+            var recoParam = JsonConvert.SerializeObject(new { roi });
+            var job = tasker.AppendRecognition("OCR", recoParam, imageBuffer);
+            var status = WaitJob(job, timeout);
+            if (status != MaaJobStatus.Succeeded)
+            {
+                LoggerHelper.Warning($"[ForgeCalculator] OCR {key} 未完成：{status}");
+                return (false, taskerBusy
+                    ? "识别被正在运行的任务阻塞，请先停止任务后再识别屏幕。"
+                    : $"识别超时（{label}），请确认游戏位于锻刀资源投入页面后重试。", null);
+            }
+
+            var detailObj = job.QueryRecognitionDetail();
+            if (detailObj == null || string.IsNullOrWhiteSpace(detailObj.Detail))
+            {
+                LoggerHelper.Info($"[ForgeCalculator] OCR {key} 无结果");
+                values[key] = 0;
+                continue;
+            }
+
+            var query = JsonConvert.DeserializeObject<MaaExtensions.RecognitionQuery>(detailObj.Detail);
+            var text = query?.Best?.Text ?? "";
+            LoggerHelper.Info($"[ForgeCalculator] OCR {key} 识别到：[{text}]");
+            var normalized = text.Replace(",", "").Replace("，", "").Replace(".", "").Trim();
+            values[key] = int.TryParse(normalized, out var parsed) ? parsed : 0;
+        }
+
+        LoggerHelper.Info("[ForgeCalculator] 识别完成");
+        return (true, string.Empty, values);
+    }
+
+    /// <summary>
+    /// 带超时地等待任务结束，替代无超时的 WaitFor，避免识别线程被无限期阻塞。
+    /// </summary>
+    private static MaaJobStatus WaitJob(MaaJob job, TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+        var status = job.Status;
+        while ((status.IsPending() || status.IsRunning()) && DateTime.UtcNow < deadline)
+        {
+            Thread.Sleep(30);
+            status = job.Status;
+        }
+
+        return status;
+    }
+
+    private void ApplyRecognizedValues(Dictionary<string, int> values)
+    {
+        CurrentCharcoal = values.GetValueOrDefault("charcoal");
+        CurrentSteel = values.GetValueOrDefault("steel");
+        CurrentCoolant = values.GetValueOrDefault("coolant");
+        CurrentWhetstone = values.GetValueOrDefault("whetstone");
+        CurrentPlum = values.GetValueOrDefault("plum");
+        CurrentBamboo = values.GetValueOrDefault("bamboo");
+        CurrentPine = values.GetValueOrDefault("pine");
+        CurrentFuji = values.GetValueOrDefault("fuji");
+        CurrentPermits = values.GetValueOrDefault("permits");
+        CurrentSpeedups = values.GetValueOrDefault("speedups");
     }
 
     private void ClearResults()

@@ -268,3 +268,7 @@ Windows 上正在写入的 `debug/logs/log-*.log` 被日志器占用（`shared: 
 当刀剑掉落命中播报名单时，系统通知与实时 GUI 日志使用同一条「获得 类型『名称』」文本。GUI 日志只能进入执行任务所属实例的实时面板，必须通过不写文件日志的路径投递，不能新增 `[Record]` 文件日志行；原有的 `[任务] 刀剑掉落 类型 名称` 词条保持不变，避免影响工作记录的刀剑掉落统计。
 
 设置页相关步骤的目标要按观感对齐：「设置页概览」高亮整个设置页（`SettingsLayout`）；「启动前与结束后操作」「软件路径」两步分别用包含对应下拉框与输入框的那张 `GlassCard`。上游原有一步「启动设置」分类总览已删除：它与设置页概览高亮同一块区域，而且在窄布局下设置页是整页滚动容器，容易停在别的分类上（用户从「关于我们」进入教程时，内容会停在关于页），保留反而更差；删除后不要恢复该步骤。设置页在窄布局下是带动画的整页滚动容器，滚动位置会停在用户上次看的那一项，因此进入这些步骤时必须依靠 `BringIntoView` 反复请求滚动直到目标完整可见（`WaitForTarget` 读不到位置时继续等待，不能直接放行）。
+
+### `forge-calculator.aux-recognition-tasker`
+
+限锻资源计算器的「识别屏幕」是界面侧的一次性识别，不能再投递给主 tasker 排队。主 tasker 正在执行流水线时，`AppendRecognition` 提交的识别要等整轮运行结束才会被执行，界面直接等待就会卡死（2026-09-22 实测记录到 AppHang）。`MaaProcessor.AcquireAuxRecognitionTasker` 提供的独立执行器必须保留：它与主 tasker 共享 `Resource`、自带控制器，只在主 tasker 处于运行或停止中时启用；主 tasker 空闲时仍直接使用主 tasker，不额外建立设备连接。执行器在实例关闭、主连接切换与主 tasker 变更时通过 `DisposeAuxRecognitionTasker` 回收，停止等待上限 3 秒，避免残留设备连接。界面侧的异步执行同样不能回退：`ForgeCalculatorViewModel.RecognizeScreen` 的截图与 OCR 全部在 `Task.Run` 中完成，等待用带超时的轮询代替无上限的 `WaitFor`（单次识别 5 秒、回退到运行中的主 tasker 时 3 秒、截图 10 秒），超时按当前状态给出提示而不是让界面停住。

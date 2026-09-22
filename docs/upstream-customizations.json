@@ -334,6 +334,17 @@
       "migration_strategy": "保留原有刀剑掉落文件词条与工作记录解析格式；播报命中后复用通知文本写入执行任务所属实例的 GUI 面板，并关闭该次 AddLog 的文件日志写入。",
       "verification": ["命中播报名单时同时出现系统通知与 GUI 日志", "未命中播报名单时不新增 GUI 播报日志", "刀剑掉落文件词条格式与数量不变", "多实例运行时 GUI 日志进入执行任务所属实例"],
       "notes": "MaaProcessor.AddLog 的 writeToFileLog=false 只跳过文件日志，不跳过 GUI 面板集合与平台日志发布；不得改用普通 AddLog，否则会额外生成 [Record] 行并干扰 WorkRecordBuilder 的刀剑掉落统计。"
+    },
+    {
+      "id": "forge-calculator.aux-recognition-tasker",
+      "title": "限锻计算器识别屏幕使用独立执行器",
+      "purpose": "界面侧识别不再排队等待正在运行的流水线，避免点击「识别屏幕」时界面卡死。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/ViewModels/Pages/ForgeCalculatorViewModel.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 MaaProcessor 的独立识别执行器及其回收调用点，保留界面侧的异步执行与带超时轮询。",
+      "verification": ["主 tasker 空闲时直接使用主 tasker 识别", "流水线运行期间点击识别屏幕界面保持可响应", "独立执行器创建失败时回退主 tasker 并给出提示", "实例关闭与主连接切换后不残留设备连接"],
+      "notes": "主 tasker 正在跑流水线时，AppendRecognition 提交的识别要等整轮运行结束才被执行，界面直接等待就会 AppHang（2026-09-22 实测）。独立执行器与主 tasker 共享 Resource、自带控制器，只在主 tasker 运行或停止中时启用；不得改成无条件创建，否则每次识别都会新建一条设备连接。"
     }
   ]
 }
