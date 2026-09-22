@@ -2284,7 +2284,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         if (string.IsNullOrWhiteSpace(savedDevice.AdbSerial))
             return false;
 
-        LoggerHelper.Info($"未检测到 ADB 设备，兜底恢复上次使用的设备：名称={savedDevice.Name}，ADB 序列号={savedDevice.AdbSerial}，启动后台等待重试。");
+        LoggerHelper.Info($"未检测到 ADB 设备，兜底恢复上次使用的设备：名称={savedDevice.Name}，ADB 序列号={savedDevice.AdbSerial}");
         DispatcherHelper.RunOnMainThread(() =>
         {
             _suppressAutoConnect = true;
@@ -2301,7 +2301,10 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
             }
             SetConnected(false);
         });
-        StartDeviceWaitRetry(savedDevice);
+        if (Processor.InstanceConfiguration.GetValue(ConfigurationKeys.AutoDetectOnConnectionFailed, true))
+            StartDeviceWaitRetry(savedDevice);
+        else
+            LoggerHelper.Info("已关闭连接失败时自动重新搜寻可用设备，不启动后台设备等待。");
         return true;
     }
 
@@ -2333,6 +2336,12 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                 if (IsRunning || IsConnected)
                     return;
 
+                if (!Processor.InstanceConfiguration.GetValue(ConfigurationKeys.AutoDetectOnConnectionFailed, true))
+                {
+                    LoggerHelper.Info("已关闭连接失败时自动重新搜寻可用设备，停止后台设备等待。");
+                    return;
+                }
+
                 // 用户改选了其他目标时停止等待（按序列号+路径比较，容忍连接流程重建设备实例）
                 if (CurrentDevice is not AdbDeviceInfo current
                     || !string.Equals(current.AdbSerial, restoredDevice.AdbSerial, StringComparison.OrdinalIgnoreCase)
@@ -2341,7 +2350,29 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
 
                 var devices = MaaProcessor.Toolkit.AdbDevice.Find();
                 if (devices.Count == 0)
+                {
+                    if (!Processor.InstanceConfiguration.GetValue(ConfigurationKeys.AutoConnectAfterRefresh, true))
+                        continue;
+
+                    // 部分外部启动的模拟器不会被 MaaToolkit 自动扫描，但已保存的 ADB 地址仍可直接连接。
+                    // 例如 TapTap 启动的 MuMu 会暴露 127.0.0.1:16416，却可能不出现在进程扫描结果中。
+                    try
+                    {
+                        LoggerHelper.Info($"未扫描到 ADB 设备，尝试使用已保存地址直接连接：{restoredDevice.AdbSerial}");
+                        Processor.TestConnecting().GetAwaiter().GetResult();
+                        if (IsConnected)
+                        {
+                            LoggerHelper.Info($"已通过已保存地址恢复 ADB 连接：{restoredDevice.AdbSerial}");
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggerHelper.Warning($"使用已保存地址直接连接失败：地址={restoredDevice.AdbSerial}，原因={ex.Message}");
+                    }
+
                     continue;
+                }
 
                 LoggerHelper.Info($"后台等待重试检测到 ADB 设备：数量={devices.Count}，自动选中上次设备。");
                 var saved = Processor.InstanceConfiguration.TryGetValue(ConfigurationKeys.AdbDevice,
@@ -2352,6 +2383,9 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                 var matched = saved != null ? FindBestFingerprintMatchedAdbDevice(devices, saved) : null;
                 var index = matched != null ? devices.IndexOf(matched) : 0;
                 UpdateDeviceList(new ObservableCollection<object>(devices), index);
+
+                if (!Processor.InstanceConfiguration.GetValue(ConfigurationKeys.AutoConnectAfterRefresh, true))
+                    return;
 
                 // 与手动刷新行为一致：按「刷新后尝试连接」设置自动连接；
                 // 连接失败（模拟器未就绪等）时继续下一轮重试，直到连接成功或用户接管

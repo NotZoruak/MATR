@@ -867,8 +867,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -892,8 +892,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -917,8 +917,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -942,8 +942,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -967,8 +967,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -992,8 +992,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1017,8 +1017,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1042,8 +1042,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1067,8 +1067,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1092,8 +1092,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1117,8 +1117,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1142,8 +1142,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1167,8 +1167,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1192,8 +1192,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1217,8 +1217,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1242,8 +1242,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1267,8 +1267,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1292,8 +1292,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   },
@@ -1317,8 +1317,8 @@
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[大阪挖地] 刀装近破坏撤退",
-        "display": "log"
+        "content": "special:[大阪挖地] 刀装近破坏撤退",
+        "display": "file"
       }
     }
   }

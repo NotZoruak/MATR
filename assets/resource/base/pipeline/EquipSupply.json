@@ -90,8 +90,286 @@
       }
     },
     "post_delay": 500,
-    "next": ["LogSupplyDone", "ConfirmEquipmentSupply"],
+    "next": ["ConfirmRecordEquipmentShortage", "ConfirmRecordShortageWithoutFallback", "LogSupplyDone", "ConfirmEquipmentSupply"],
     "on_error": ["[Anchor]Hub"]
+  },
+  "ConfirmRecordEquipmentShortage": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [568, 34, 142, 35],
+        "expected": "记录确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1045, 524, 64, 43]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1045, 524, 64, 43]
+    },
+    "next": ["VerifyEquipmentShortageTeamSelect", "ConfirmRecordEquipmentShortage"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "VerifyEquipmentShortageTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [571, 4, 146, 40],
+        "expected": "部队选择"
+      }
+    },
+    "next": ["IsEquipmentPanelVisible", "ClickEquipmentPanel"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "IsEquipmentPanelVisible": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [789, 127, 25, 26],
+        "expected": "宝",
+        "only_rec": true
+      }
+    },
+    "next": [
+      "FindEquipmentShortageSword1",
+      "FindEquipmentShortageSword2",
+      "FindEquipmentShortageSword3",
+      "FindEquipmentShortageSword4",
+      "FindEquipmentShortageSword5",
+      "FindEquipmentShortageSword6",
+      "LogSupplyDone"
+    ],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "FindEquipmentShortageSword1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [424, 125, 183, 81],
+        "template": "Common/刀装不足.png",
+        "green_mask": false,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [952, 137, 29, 59]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [941, 132, 117, 542]
+    },
+    "next": ["ConfirmAutoEquip", "VerifyEquipmentShortageTeamSelect"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "FindEquipmentShortageSword2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 220, 183, 82],
+        "template": "Common/刀装不足.png",
+        "green_mask": false,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [953, 233, 29, 59]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [941, 132, 117, 542]
+    },
+    "next": ["ConfirmAutoEquip", "VerifyEquipmentShortageTeamSelect"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "FindEquipmentShortageSword3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 315, 183, 81],
+        "template": "Common/刀装不足.png",
+        "green_mask": false,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [951, 328, 29, 59]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [941, 132, 117, 542]
+    },
+    "next": ["ConfirmAutoEquip", "VerifyEquipmentShortageTeamSelect"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "FindEquipmentShortageSword4": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 410, 183, 81],
+        "template": "Common/刀装不足.png",
+        "green_mask": false,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [952, 422, 29, 59]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [941, 132, 117, 542]
+    },
+    "next": ["ConfirmAutoEquip", "VerifyEquipmentShortageTeamSelect"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "FindEquipmentShortageSword5": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [424, 504, 183, 82],
+        "template": "Common/刀装不足.png",
+        "green_mask": false,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [952, 517, 29, 58]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [941, 132, 117, 542]
+    },
+    "next": ["ConfirmAutoEquip", "VerifyEquipmentShortageTeamSelect"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "FindEquipmentShortageSword6": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [424, 599, 182, 81],
+        "template": "Common/刀装不足.png",
+        "green_mask": false,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [952, 612, 29, 58]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [941, 132, 117, 542]
+    },
+    "next": ["ConfirmAutoEquip", "VerifyEquipmentShortageTeamSelect"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "ConfirmAutoEquip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [556, 81, 126, 28],
+        "expected": "自动装备刀装"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [556, 81, 126, 28]
+    },
+    "next": ["LeaveAutoEquip"]
+  },
+  "LeaveAutoEquip": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [136, 7, 31, 34]
+      }
+    },
+    "next": ["VerifyEquipmentShortageTeamSelect", "ConfirmAutoEquip"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "ClickEquipmentPanel": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1053, 80, 21, 26]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1053, 80, 21, 26]
+    },
+    "next": ["VerifyEquipmentShortageTeamSelect", "IsEquipmentPanelVisible"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "ConfirmRecordShortageWithoutFallback": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [568, 34, 142, 35],
+        "expected": "记录确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [776, 526, 56, 41]
+      }
+    },
+    "next": ["LeaveTroopRecordSupply", "ConfirmRecordShortageWithoutFallback"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "LeaveTroopRecordSupply": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [571, 4, 146, 40],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [57, 19, 31, 30]
+      }
+    },
+    "next": ["LogRecordShortage", "LeaveTroopRecordSupply"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "LogRecordShortage": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [571, 4, 146, 40],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "刀装不足"}
+    }
   },
   "LogSupplyDone": {
     "recognition": {

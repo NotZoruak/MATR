@@ -586,6 +586,7 @@ public class MaaProcessor
     public void Dispose()
     {
         _isClosed = true;
+        DisposeAuxRecognitionTasker();
         DetachScreenshotTasker(requireStopped: true);
         _detachedScreenshotCleanupCancellationTokenSource?.Cancel();
         _detachedScreenshotCleanupCancellationTokenSource?.Dispose();
@@ -739,6 +740,110 @@ public class MaaProcessor
     private CancellationTokenSource? _detachedScreenshotCleanupCancellationTokenSource;
     private Task? _detachedScreenshotCleanupTask;
     public MaaTasker? ScreenshotTasker => _screenshotTasker;
+
+    private readonly Lock _auxRecognitionTaskerLock = new();
+    private MaaTasker? _auxRecognitionTasker;
+    private MaaTasker? _auxRecognitionTaskerOwner;
+
+    /// <summary>
+    /// 获取界面侧一次性识别使用的独立任务执行器。
+    /// 主 tasker 正在执行流水线时，投递给它的识别任务要等整轮运行结束才会被执行，
+    /// 界面功能直接等待就会阻塞；该执行器拥有独立的运行线程，可在任务运行期间立即完成识别。
+    /// 资源与主 tasker 共享，避免重复加载识别模型；控制器由它自己持有并随实例释放。
+    /// 无法创建时返回 null，由调用方回退到主 tasker。
+    /// </summary>
+    public MaaTasker? AcquireAuxRecognitionTasker()
+    {
+        if (_isClosed)
+            return null;
+
+        lock (_auxRecognitionTaskerLock)
+        {
+            var mainTasker = MaaTasker;
+            if (mainTasker?.Resource == null)
+                return null;
+
+            if (_auxRecognitionTasker != null && ReferenceEquals(_auxRecognitionTaskerOwner, mainTasker))
+                return _auxRecognitionTasker;
+
+            ReleaseAuxRecognitionTasker();
+
+            try
+            {
+                var controller = InitializeController(ViewModel?.CurrentController ?? MaaControllerTypes.Adb, logConfig: false);
+                var tasker = new MaaTasker
+                {
+                    Controller = controller,
+                    Resource = mainTasker.Resource,
+                    Toolkit = Toolkit,
+                    Global = Global,
+                    DisposeOptions = DisposeOptions.Controller,
+                };
+
+                var linkStatus = tasker.Controller?.LinkStart().Wait();
+                if (linkStatus != MaaJobStatus.Succeeded)
+                {
+                    tasker.Dispose();
+                    LoggerHelper.Warning($"独立识别执行器连接失败：{linkStatus}");
+                    return null;
+                }
+
+                _auxRecognitionTasker = tasker;
+                _auxRecognitionTaskerOwner = mainTasker;
+                LoggerHelper.Info("已创建独立识别执行器，界面侧识别不再排队等待主任务。");
+                return tasker;
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Warning($"独立识别执行器初始化失败：{ex.Message}");
+                return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 释放界面侧独立识别执行器。主连接变更或实例关闭时必须调用，避免残留设备连接。
+    /// </summary>
+    public void DisposeAuxRecognitionTasker()
+    {
+        lock (_auxRecognitionTaskerLock)
+        {
+            ReleaseAuxRecognitionTasker();
+        }
+    }
+
+    private void ReleaseAuxRecognitionTasker()
+    {
+        var tasker = _auxRecognitionTasker;
+        _auxRecognitionTasker = null;
+        _auxRecognitionTaskerOwner = null;
+        if (tasker == null)
+            return;
+
+        try
+        {
+            if (tasker.IsRunning && !tasker.IsStopping)
+            {
+                var stopTask = Task.Run(() => tasker.Stop().Wait());
+                if (!stopTask.Wait(TimeSpan.FromSeconds(3)))
+                    LoggerHelper.Warning("停止独立识别执行器超时：已等待 3 秒。");
+            }
+        }
+        catch (Exception ex)
+        {
+            LoggerHelper.Warning($"停止独立识别执行器失败：{ex.Message}");
+        }
+
+        try
+        {
+            tasker.Dispose();
+        }
+        catch (Exception ex)
+        {
+            LoggerHelper.Warning($"释放独立识别执行器失败：{ex.Message}");
+        }
+    }
+
     public void SetTasker(MaaTasker? maaTasker = null, bool requireAllStopped = false)
     {
         ResetActionFailedCount();
@@ -774,6 +879,7 @@ public class MaaProcessor
 
             ViewModel?.SetConnected(false);
             var screenshotTaskerStopped = DetachScreenshotTasker(requireAllStopped);
+            DisposeAuxRecognitionTasker();
 
             if (requireAllStopped && (!taskerStopped || !screenshotTaskerStopped))
                 throw new InvalidOperationException("更新前未能停止所有 MaaTasker 或截图 Tasker。");
@@ -782,6 +888,7 @@ public class MaaProcessor
         {
             MaaTasker = maaTasker;
             DetachScreenshotTasker();
+            DisposeAuxRecognitionTasker();
             ResetScreencapFailureLogFlags();
         }
     }

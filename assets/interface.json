@@ -2157,6 +2157,7 @@
       "cases": [
         {
           "name": "",
+          "option": ["S_记录不足时自动装备刀装"],
           "pipeline_override": {
             "S_PostSortieHub": {
               "next": [
@@ -2171,6 +2172,20 @@
                 "S_SortieSuccess"
               ]
             }
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "S_记录不足时自动装备刀装": {
+      "name": "S_记录不足时自动装备刀装",
+      "label": "记录中刀装不足时使用自动装备刀装",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
         }
       ],
@@ -4200,8 +4215,23 @@
       "cases": [
         {
           "name": "",
+          "option": ["U_记录不足时自动装备刀装"],
           "pipeline_override": {
             "U_CheckEquipmentPopup": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "U_记录不足时自动装备刀装": {
+      "name": "U_记录不足时自动装备刀装",
+      "label": "记录中刀装不足时使用自动装备刀装",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
         }
       ],
