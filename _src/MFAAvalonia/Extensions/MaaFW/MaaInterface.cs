@@ -287,6 +287,10 @@ public partial class MaaInterface
         [JsonIgnore]
         public bool IsCheckbox => OptionType == "checkbox";
 
+        /// <summary>是否为纯标题设置分组类型</summary>
+        [JsonIgnore]
+        public bool IsSetting => OptionType == "setting";
+
         /// <summary>是否在当前选项页面直接展示下级选项。</summary>
         [JsonProperty("inline_sub_options")]
         public bool InlineSubOptions { get; set; }

@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.2",
+  "version": "v0.14.3-beta.1",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.2 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.3-beta.1 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -101,6 +101,29 @@
       ],
       "label": "常驻作战",
       "description": "合战场（过去/异去）出阵自动化。\n\n过去的王点前撤退、道中撤退与异去的购买门票设置：点「过去/异去」选项旁边的齿轮\n\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用。需要同时开启「更换队长」。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑重疲劳状态时撤退。\n* **更换队长**：点击右侧齿轮配置跳过位置。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+    },
+    {
+      "name": "刷收获物",
+      "entry": "Harvest",
+      "default_check": false,
+      "repeatable": false,
+      "repeat_count": 1,
+      "option": [
+        "HV_选择时代",
+        "HV_选择部队",
+        "HV_选择阵形",
+        "HV_重伤处理",
+        "HV_疲劳处理",
+        "HV_补充刀装",
+        "HV_刀装保护",
+        "HV_疲劳撤退",
+        "HV_自动行军",
+        "HV_换队长",
+        "HV_不进王点",
+        "HV_道中撤退",
+        "HV_避战检非"
+      ],
+      "label": "刷收获物"
     },
     {
       "name": "地下城",
@@ -2635,16 +2658,14 @@
         }
       ]
     },
-  "RB_攒彩虹贝": {
-    "name": "RB_攒彩虹贝",
-    "label": "攒彩虹贝",
-    "type": "checkbox",
-    "pipeline_override": {
-      "RB_IsRainbowBattle": {
-        "enabled": true
-      }
-    },
-    "cases": [
+    "RB_攒彩虹贝": {
+      "name": "RB_攒彩虹贝",
+      "label": "攒彩虹贝",
+      "type": "checkbox",
+      "pipeline_override": {
+        "RB_IsRainbowBattle": {"enabled": true}
+      },
+      "cases": [
         {"name": ""}
       ],
       "default_case": []
@@ -7618,6 +7639,654 @@
           }
         }
       ]
+    },
+    "HV_选择时代": {
+      "name": "HV_选择时代",
+      "label": "选择时代",
+      "type": "setting",
+      "default_case": "",
+      "cases": [
+        {
+          "name": "",
+          "option": [
+            "HV_时代一",
+            "HV_时代二",
+            "HV_时代三",
+            "HV_时代四",
+            "HV_时代五",
+            "HV_时代六",
+            "HV_时代七",
+            "HV_时代八"
+          ]
+        }
+      ]
+    },
+    "HV_时代一": {
+      "name": "HV_时代一",
+      "label": "时代一",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era1_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代二": {
+      "name": "HV_时代二",
+      "label": "时代二",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era2_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代三": {
+      "name": "HV_时代三",
+      "label": "时代三",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era3_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代四": {
+      "name": "HV_时代四",
+      "label": "时代四",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era4_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代五": {
+      "name": "HV_时代五",
+      "label": "时代五",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era5_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代六": {
+      "name": "HV_时代六",
+      "label": "时代六",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era6_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代七": {
+      "name": "HV_时代七",
+      "label": "时代七",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era7_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_时代八": {
+      "name": "HV_时代八",
+      "label": "时代八",
+      "type": "checkbox",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Era8_Enter": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_不进王点": {
+      "name": "HV_不进王点",
+      "label": "不进王点",
+      "type": "checkbox",
+      "description": "一图不生效。使用该功能时请保证模拟器分辨率为 1280*720，240DPI。",
+      "default_case": [],
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_Boss_E2_R1": {"enabled": true},
+            "HV_Boss_E2_R2_1": {"enabled": true},
+            "HV_Boss_E2_R2_2": {"enabled": true},
+            "HV_Boss_E2_R3_1": {"enabled": true},
+            "HV_Boss_E2_R3_2": {"enabled": true},
+            "HV_Boss_E2_R3_3": {"enabled": true},
+            "HV_Boss_E2_R4": {"enabled": true},
+            "HV_Boss_E3_R1": {"enabled": true},
+            "HV_Boss_E3_R2": {"enabled": true},
+            "HV_Boss_E3_R3": {"enabled": true},
+            "HV_Boss_E3_R4": {"enabled": true},
+            "HV_Boss_E4_R1": {"enabled": true},
+            "HV_Boss_E4_R2": {"enabled": true},
+            "HV_Boss_E4_R3": {"enabled": true},
+            "HV_Boss_E4_R4": {"enabled": true},
+            "HV_Boss_E5_R1": {"enabled": true},
+            "HV_Boss_E5_R2": {"enabled": true},
+            "HV_Boss_E5_R3": {"enabled": true},
+            "HV_Boss_E5_R3_2": {"enabled": true},
+            "HV_Boss_E5_R4_1": {"enabled": true},
+            "HV_Boss_E5_R4_2": {"enabled": true},
+            "HV_Boss_E6_R1": {"enabled": true},
+            "HV_Boss_E6_R1_2": {"enabled": true},
+            "HV_Boss_E6_R2": {"enabled": true},
+            "HV_Boss_E6_R3": {"enabled": true},
+            "HV_Boss_E6_R4": {"enabled": true},
+            "HV_Boss_E7_R1": {"enabled": true},
+            "HV_Boss_E7_R2_1": {"enabled": true},
+            "HV_Boss_E7_R2_2": {"enabled": true},
+            "HV_Boss_E7_R3_1": {"enabled": true},
+            "HV_Boss_E7_R3_2": {"enabled": true},
+            "HV_Boss_E7_R4": {"enabled": true},
+            "HV_Boss_E8_R1": {"enabled": true},
+            "HV_Boss_E8_R2": {"enabled": true},
+            "HV_Boss_E8_R3": {"enabled": true},
+            "HV_Boss_E8_R4": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_选择部队": {
+      "name": "HV_选择部队",
+      "label": "选择部队",
+      "default_case": "部队一",
+      "cases": [
+        {
+          "name": "部队一",
+          "DisplayName": "部队一",
+          "pipeline_override": {
+            "HV_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "部队二",
+          "DisplayName": "部队二",
+          "pipeline_override": {
+            "HV_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "部队三",
+          "DisplayName": "部队三",
+          "pipeline_override": {
+            "HV_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "部队四",
+          "DisplayName": "部队四",
+          "pipeline_override": {
+            "HV_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "部队五",
+          "DisplayName": "部队五",
+          "pipeline_override": {
+            "HV_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            }
+          }
+        }
+      ]
+    },
+    "HV_选择阵形": {
+      "name": "HV_选择阵形",
+      "label": "选择阵形",
+      "default_case": "逆行阵",
+      "cases": [
+        {
+          "name": "不启用",
+          "DisplayName": "不启用",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {"enabled": false}
+          }
+        },
+        {
+          "name": "鱼鳞阵",
+          "DisplayName": "鱼鳞阵",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {
+              "target": [212, 234, 1, 1]
+            }
+          }
+        },
+        {
+          "name": "横队阵",
+          "DisplayName": "横队阵",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {
+              "target": [591, 234, 1, 1]
+            }
+          }
+        },
+        {
+          "name": "雁行阵",
+          "DisplayName": "雁行阵",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {
+              "target": [1037, 222, 1, 1]
+            }
+          }
+        },
+        {
+          "name": "鹤翼阵",
+          "DisplayName": "鹤翼阵",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {
+              "target": [195, 431, 1, 1]
+            }
+          }
+        },
+        {
+          "name": "方阵",
+          "DisplayName": "方阵",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {
+              "target": [625, 407, 1, 1]
+            }
+          }
+        },
+        {
+          "name": "逆行阵",
+          "DisplayName": "逆行阵",
+          "pipeline_override": {
+            "HV_IsFormationSelect": {
+              "target": [1017, 421, 1, 1]
+            }
+          }
+        }
+      ]
+    },
+    "HV_重伤处理": {
+      "name": "HV_重伤处理",
+      "label": "重伤处理",
+      "default_case": "修刀并继续",
+      "cases": [
+        {
+          "name": "修刀并继续",
+          "DisplayName": "修刀并继续",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": true},
+            "HV_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
+          "name": "修刀并停止",
+          "DisplayName": "修刀并停止",
+          "pipeline_override": {
+            "ConfirmSelectSlot": {
+              "next": ["CaptureRepairInfo"]
+            },
+            "IsPreDamage": {"enabled": true},
+            "HV_StopOnDamagePopup": {"enabled": false},
+            "HV_DetectWhereAmI": {
+              "anchor": {"RepairDone": "HV_CompleteCurrentTaskAfterDamageRepair"}
+            },
+            "LogRepairDone": {
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重伤检测] 修刀后停止任务",
+                  "display": "log"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "HV_StopOnDamagePopup": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HV_疲劳处理": {
+      "name": "HV_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {
+          "name": "无",
+          "DisplayName": "无"
+        },
+        {
+          "name": "刷花",
+          "DisplayName": "刷花",
+          "pipeline_override": {
+            "HV_FatigueCheck": {"enabled": true}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "pipeline_override": {
+            "HV_FatigueCheck": {
+              "enabled": true,
+              "on_error": []
+            }
+          }
+        }
+      ]
+    },
+    "HV_补充刀装": {
+      "name": "HV_补充刀装",
+      "label": "补充刀装",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "option": ["HV_记录不足时自动装备刀装"],
+          "pipeline_override": {
+            "HV_PostSortieHub": {
+              "next": [
+                "IsPreDamage",
+                "HV_StopOnDamagePopup",
+                "IsEquipmentShortagePopup",
+                "HV_StopOnEquipmentPopup",
+                "HV_PostKebiishi1",
+                "HV_PostKebiishi2",
+                "HV_IsPreSortieConfirm",
+                "HV_SortieSuccess"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_刀装保护": {
+      "name": "HV_刀装保护",
+      "label": "刀装保护",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_EqCheck": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_记录不足时自动装备刀装": {
+      "name": "HV_记录不足时自动装备刀装",
+      "label": "记录中刀装不足时使用自动装备刀装",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_疲劳撤退": {
+      "name": "HV_疲劳撤退",
+      "label": "疲劳撤退",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_FatigueDetect": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_自动行军": {
+      "name": "HV_自动行军",
+      "label": "自动行军",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_DisableAutoMarch": {"enabled": false},
+            "HV_EnableAutoMarch": {"enabled": true},
+            "HV_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [713, 580, 150, 50]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_换队长": {
+      "name": "HV_换队长",
+      "label": "更换队长",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "option": ["HV_跳过位置"],
+          "pipeline_override": {
+            "HV_DragCaptain": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_跳过位置": {
+      "name": "HV_跳过位置",
+      "label": "跳过位置",
+      "type": "checkbox",
+      "description": "换队长时跳过指定位置。若在任务中启用了「疲劳撤退」，不建议在此处勾选。",
+      "cases": [
+        {"name": "位置一"},
+        {"name": "位置二"},
+        {"name": "位置三"},
+        {"name": "位置四"},
+        {"name": "位置五"},
+        {"name": "位置六"}
+      ],
+      "default_case": []
+    },
+    "HV_道中撤退": {
+      "name": "HV_道中撤退",
+      "label": "道中撤退",
+      "type": "checkbox",
+      "description": "需同时开启王点前撤退。包含4-1速刷委托符，8-1王点前三点处撤退，8-2与8-4不过桥，8-3玉钢点后撤退。",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_MidRetreat_E4_R1_1": {"enabled": true},
+            "HV_MidRetreat_E4_R1_2": {"enabled": true},
+            "HV_MidRetreat_E6_R1": {"enabled": true},
+            "HV_MidRetreat_E8_R1": {"enabled": true},
+            "HV_MidRetreat_E8_R2": {"enabled": true},
+            "HV_MidRetreat_E8_R3": {"enabled": true},
+            "HV_MidRetreat_E8_R4": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HV_避战检非": {
+      "name": "HV_避战检非",
+      "label": "避战检非",
+      "type": "checkbox",
+      "description": "检测到检非违使后重启游戏。",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HV_IsKebiishi1": {
+              "action": {},
+              "next": ["HV_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
+            },
+            "HV_IsKebiishi2": {
+              "action": {},
+              "repeat": 1,
+              "next": ["HV_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
+            },
+            "HV_PostKebiishi1": {
+              "action": {},
+              "next": ["HV_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
+            },
+            "HV_PostKebiishi2": {
+              "action": {},
+              "repeat": 1,
+              "next": ["HV_AvoidKebiRestart"],
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重启游戏] 遭遇检非",
+                  "display": "log"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "default_case": []
     },
     "RB_疲劳处理": {
       "name": "RB_疲劳处理",
