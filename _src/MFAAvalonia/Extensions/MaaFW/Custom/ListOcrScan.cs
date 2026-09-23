@@ -183,7 +183,7 @@ public static class ListOcrScan
     /// <summary>按下后的停顿（毫秒），确保按下被识别为拖拽起点而不是点击</summary>
     private const int TouchDownDelayMilliseconds = 20;
 
-    /// <summary>L 形收尾的横向位移（像素）：抬手前的最后一段只横向移动，用于消除列表惯性</summary>
+    /// <summary>L 形收尾的横向位移（像素）：抬手前的最后一段向左移动，用于消除列表惯性</summary>
     public const int InertiaBreakerOffset = 200;
 
     /// <summary>L 形收尾的横向步数</summary>
@@ -220,7 +220,7 @@ public static class ListOcrScan
         // L 形收尾：最后一整段只横向移动（途中不抬手），抬手时竖直速度为 0
         for (var i = 1; i <= HorizontalScrollSteps; i++)
         {
-            var currentX = x + InertiaBreakerOffset * i / HorizontalScrollSteps;
+            var currentX = x - InertiaBreakerOffset * i / HorizontalScrollSteps;
             context.TouchMove(0, currentX, endY, 1);
             Thread.Sleep(HorizontalStepDelayMilliseconds);
         }

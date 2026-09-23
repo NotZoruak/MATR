@@ -16,11 +16,11 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
 {
     private static readonly MixGreedyPoint[] SelectedMaterialMarkers =
     [
-        new(1099, 212),
-        new(1100, 313),
-        new(1100, 414),
-        new(1100, 516),
-        new(1100, 617)
+        new(1099, 172),
+        new(1100, 273),
+        new(1100, 374),
+        new(1100, 475),
+        new(1100, 576)
     ];
 
     private static readonly int[] SelectAll = [1145, 460, 111, 40];
