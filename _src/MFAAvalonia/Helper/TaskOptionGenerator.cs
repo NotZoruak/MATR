@@ -485,6 +485,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         {
             control = CreateHotkeyControl(option, interfaceOption);
         }
+        else if (interfaceOption.IsSetting)
+        {
+            control = CreateSettingControl(option, interfaceOption, source);
+        }
         else if (interfaceOption.IsInput)
         {
             control = CreateInputControl(option, interfaceOption);
@@ -505,6 +509,50 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         }
 
         panel.Children.Add(control);
+    }
+
+    /// <summary>创建纯标题设置分组，只显示标题和固定的下级选项。</summary>
+    private Control CreateSettingControl(
+        MaaInterface.MaaInterfaceSelectOption option,
+        MaaInterface.MaaInterfaceOption interfaceOption,
+        DragItemViewModel source)
+    {
+        var container = new StackPanel
+        {
+            Margin = new Thickness(0, 10, 0, 6),
+            Spacing = 4,
+        };
+
+        container.Children.Add(CreateOptionHeader(interfaceOption));
+
+        var selectedCase = interfaceOption.Cases?.FirstOrDefault();
+        if (selectedCase?.Option is not { Count: > 0 })
+            return container;
+
+        option.SubOptions ??= [];
+        var subOptionsPanel = new WrapPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Margin = new Thickness(0, 2, 0, 2),
+        };
+
+        foreach (var subOptionName in selectedCase.Option)
+        {
+            var subOption = option.SubOptions.FirstOrDefault(item => item.Name == subOptionName)
+                ?? CreateDefaultSelectOption(subOptionName);
+            if (!option.SubOptions.Contains(subOption))
+                option.SubOptions.Add(subOption);
+
+            var itemBox = new StackPanel { Margin = new Thickness(0, 0, 8, 4) };
+            AddSubOption(itemBox, subOption, source);
+            AppendSubOptionDescription(itemBox, subOptionName);
+            subOptionsPanel.Children.Add(itemBox);
+        }
+
+        container.Children.Add(CreateNestedOptionsBorder(subOptionsPanel));
+
+        return container;
     }
 
     /// <summary>
@@ -1743,7 +1791,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
     private Grid CreateSpecialTaskGrid(bool isFirstRow = false) => CreateBaseGrid();
 
-    private Border CreateNestedOptionsBorder(StackPanel content)
+    private Border CreateNestedOptionsBorder(Panel content)
     {
         var border = new Border
         {

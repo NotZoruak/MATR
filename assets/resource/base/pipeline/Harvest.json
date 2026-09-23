@@ -1,0 +1,3587 @@
+{
+  "Harvest": {
+    "anchor": {
+      "HV_Era1Active": "HV_Era1_Enter",
+      "HV_Era2Active": "HV_Era2_Enter",
+      "HV_Era3Active": "HV_Era3_Enter",
+      "HV_Era4Active": "HV_Era4_Enter",
+      "HV_Era5Active": "HV_Era5_Enter",
+      "HV_Era6Active": "HV_Era6_Enter",
+      "HV_Era7Active": "HV_Era7_Enter",
+      "HV_Era8Active": "HV_Era8_Enter"
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era1_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era2_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era3_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era4_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era5_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era6_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era7_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Confirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1206, 642, 1, 1]
+    },
+    "next": ["HV_Era8_IsRegionSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_EraRouter": {
+    "next": [
+      "[Anchor]HV_Era1Active",
+      "[Anchor]HV_Era2Active",
+      "[Anchor]HV_Era3Active",
+      "[Anchor]HV_Era4Active",
+      "[Anchor]HV_Era5Active",
+      "[Anchor]HV_Era6Active",
+      "[Anchor]HV_Era7Active",
+      "[Anchor]HV_Era8Active",
+      "HV_AllDone"
+    ]
+  },
+  "HV_Era1_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [246, 389, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era1_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["一"]
+      }
+    },
+    "next": ["HV_Era1_Region1_Check", "HV_Era1_Region2_Check", "HV_Era1_Region3_Check", "HV_Era1_Region4_Check", "HV_Era1_Done"]
+  },
+  "HV_Era1_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era1_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era1_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era1_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era1_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era1_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era1_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era1Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代1收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era2_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [345, 516, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era2_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["二"]
+      }
+    },
+    "next": ["HV_Era2_Region1_Check", "HV_Era2_Region2_Check", "HV_Era2_Region3_Check", "HV_Era2_Region4_Check", "HV_Era2_Done"]
+  },
+  "HV_Era2_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era2_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era2_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era2_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era2_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era2_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era2_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era2Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代2收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era3_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [447, 379, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era3_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["三"]
+      }
+    },
+    "next": ["HV_Era3_Region1_Check", "HV_Era3_Region2_Check", "HV_Era3_Region3_Check", "HV_Era3_Region4_Check", "HV_Era3_Done"]
+  },
+  "HV_Era3_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era3_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era3_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era3_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era3_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era3_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era3_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era3Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代3收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era4_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [546, 511, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era4_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["四"]
+      }
+    },
+    "next": ["HV_Era4_Region1_Check", "HV_Era4_Region2_Check", "HV_Era4_Region3_Check", "HV_Era4_Region4_Check", "HV_Era4_Done"]
+  },
+  "HV_Era4_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era4_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era4_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era4_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era4_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era4_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era4_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era4Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代4收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era5_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [644, 375, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era5_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["五"]
+      }
+    },
+    "next": ["HV_Era5_Region1_Check", "HV_Era5_Region2_Check", "HV_Era5_Region3_Check", "HV_Era5_Region4_Check", "HV_Era5_Done"]
+  },
+  "HV_Era5_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era5_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era5_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era5_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era5_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era5_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era5_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era5Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代5收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era6_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [750, 508, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era6_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["六"]
+      }
+    },
+    "next": ["HV_Era6_Region1_Check", "HV_Era6_Region2_Check", "HV_Era6_Region3_Check", "HV_Era6_Region4_Check", "HV_Era6_Done"]
+  },
+  "HV_Era6_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era6_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era6_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era6_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era6_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era6_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era6_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era6Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代6收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era7_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [849, 378, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era7_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["七"]
+      }
+    },
+    "next": ["HV_Era7_Region1_Check", "HV_Era7_Region2_Check", "HV_Era7_Region3_Check", "HV_Era7_Region4_Check", "HV_Era7_Done"]
+  },
+  "HV_Era7_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era7_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era7_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era7_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era7_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era7_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era7_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era7Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代7收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_Era8_Enter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [956, 519, 1, 1]
+      }
+    },
+    "post_delay": 500,
+    "next": ["HV_Era8_Confirm", "HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Verify": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["八"]
+      }
+    },
+    "next": ["HV_Era8_Region1_Check", "HV_Era8_Region2_Check", "HV_Era8_Region3_Check", "HV_Era8_Region4_Check", "HV_Era8_Done"]
+  },
+  "HV_Era8_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["HV_Era8_Verify", "HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Region1_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [143, 462, 217, 103],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [191, 308, 62, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era8_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Region2_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [441, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [495, 307, 42, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [495, 307, 42, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era8_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Region3_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [740, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [804, 307, 53, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [804, 307, 53, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era8_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Region4_Check": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 461, 218, 104],
+        "template": "Common/收获物_天竺牡丹.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [984, 307, 48, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [984, 307, 48, 3]
+    },
+    "next": ["HV_IsTeamSelect", "HV_Era8_Verify"],
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_Era8_Done": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "anchor": {"HV_Era8Active": ""},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [127, 77, 26, 28]
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物]时代8收获物已获取",
+        "display": "log"
+      }
+    }
+  },
+  "HV_AllDone": {
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 完成",
+        "display": "file"
+      }
+    }
+  },
+  "HV_DetectWhereAmI": {
+    "pre_delay": 0,
+    "anchor": {
+      "Hub": "HV_DetectWhereAmI",
+      "RepairDone": "HV_DetectWhereAmI",
+      "RepairAborted": "HV_DetectWhereAmI",
+      "SupplyDone": "HV_IsPreSortieConfirm",
+      "GrindDone": "HV_DetectWhereAmI"
+    },
+    "timeout": 120000,
+    "next": [
+      "HV_IsMarching",
+      "HV_IsSwordDropColor",
+      "HV_IsResourcePoint",
+      "HV_IsFormationSelect",
+      "HV_IsTeamSelect",
+      "HV_IsPastEraSelect",
+      "HV_IsRegionSelect",
+      "HV_IsInActivity",
+      "HV_CheckHomeBrightness",
+      "HV_IsKebiishi1",
+      "HV_IsKebiishi2",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
+    ],
+    "on_error": "HV_RestartGame"
+  },
+  "HV_IsResourcePoint": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1125, 577, 33, 26],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "timeout": 2500,
+    "next": ["HV_RecognizeResourcePoint"],
+    "on_error": "HV_IsTrainingApplication"
+  },
+  "HV_RecognizeResourcePoint": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [112, 594, 196, 30],
+        "expected": "获得"
+      }
+    },
+    "pre_delay": 0,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ResourcePointLogAction",
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":10000,\"poll_interval\":200,\"task\":\"刷收获物\"}"
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_IsMarching": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1067, 558, 120, 79],
+        "template": "Common/合战场_行军.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_IsMarchingDamage", "HV_FatigueDetect", "HV_EqCheck", "HV_CheckBoss", "HV_PostClickMarching"]
+  },
+  "HV_IsSwordDropColor": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "SwordDropLogAction",
+      "custom_action_param": {
+        "task": "刷收获物",
+        "roi": [52, 509, 282, 34],
+        "click": [947, 533, 67, 75]
+      }
+    },
+    "next": ["HV_IsMarching", "HV_DetectWhereAmI"]
+  },
+  "HV_IsFormationSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [570, 1, 139, 45],
+        "template": "Common/阵形选择.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1017, 421, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_IsPreSortieConfirm": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1156, 584, 96, 47],
+        "expected": "即刻"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1156, 584, 96, 47]
+    },
+    "next": ["HV_PostSortieHub"]
+  },
+  "HV_PostSortieHub": {
+    "timeout": 30000,
+    "next": [
+      "IsPreDamage",
+      "HV_StopOnDamagePopup",
+      "HV_StopOnEquipmentPopup",
+      "HV_PostKebiishi1",
+      "HV_PostKebiishi2",
+      "HV_IsPreSortieConfirm",
+      "HV_SortieSuccess"
+    ]
+  },
+  "HV_PostKebiishi1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [522, 93, 79, 64],
+        "template": "Common/检非.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["HV_PostSortieHub"]
+  },
+  "HV_PostKebiishi2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [106, 573, 35, 33],
+        "template": "Common/检非2.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {"type": "Click"},
+    "repeat": 3,
+    "repeat_delay": 500,
+    "next": ["HV_PostSortieHub"]
+  },
+  "HV_IsPostSwordDrop": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1067, 558, 120, 79]
+      }
+    },
+    "next": ["HV_PostSortieHub"]
+  },
+  "HV_SortieSuccess": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [539, 3, 87, 6],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 出阵",
+        "display": "file"
+      }
+    }
+  },
+  "HV_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["HV_DisableAutoMarch", "HV_EnableAutoMarch", "HV_ClickAutoMarchNoOrYesDelegate", "HV_CaptainHub"]
+  },
+  "HV_DisableAutoMarch": {
+    "enabled": true,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1173, 373, 57, 23],
+        "template": "Common/自动行军_委托中.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1151, 396, 105, 28]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1151, 396, 105, 28]
+    },
+    "next": ["HV_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_EnableAutoMarch": {
+    "enabled": false,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1176, 390, 1, 2],
+        "lower": [221, 107, 14],
+        "upper": [223, 109, 16]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1176, 390, 1, 2]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1176, 390, 1, 2]
+    },
+    "next": ["HV_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_ClickAutoMarchNoOrYesDelegate": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [440, 584, 110, 38],
+        "expected": "委托"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [440, 584, 110, 38]
+    },
+    "next": ["HV_ReturnFromAutoMarch"]
+  },
+  "HV_ReturnFromAutoMarch": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1024, 30, 35, 36]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1024, 30, 35, 36]
+    },
+    "next": ["HV_IsTeamSelect"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_IsPastEraSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [104, 331, 49, 235],
+        "template": "Common/时代选择.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_EraRouter"]
+  },
+  "HV_ClickPastTab": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [846, 78, 58, 29]
+      }
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_ClickEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [246, 389, 1, 1]
+      }
+    },
+    "post_delay": 200,
+    "next": ["HV_ConfirmEra"]
+  },
+  "HV_ConfirmEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1206, 642, 1, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_IsPastRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_VerifyEra", "HV_ClickBackToEra"]
+  },
+  "HV_VerifyEra": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": "一"
+      }
+    },
+    "next": ["HV_ClickRegion", "HV_DetectWhereAmI"]
+  },
+  "HV_ClickBackToEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_ClickRegion": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [173, 365, 97, 96]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["HV_IsTeamSelect", "HV_DetectWhereAmI"]
+  },
+  "HV_IsInActivity": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [0, 302, 49, 86],
+        "template": "Common/活动选中.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [23, 202, 1, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_IsHome": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_NavigateToSortie"]
+  },
+  "HV_NavigateToSortie": {
+    "next": ["HV_ClickMenu"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_ClickMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_CheckBoss": {
+    "pre_delay": 0,
+    "next": [
+      "HV_Boss_E2_R1",
+      "HV_Boss_E3_R1",
+      "HV_Boss_E4_R1",
+      "HV_MidRetreat_E4_R1_1",
+      "HV_Boss_E2_R2_1",
+      "HV_Boss_E2_R2_2",
+      "HV_Boss_E3_R2",
+      "HV_Boss_E3_R3",
+      "HV_Boss_E3_R4",
+      "HV_Boss_E4_R2",
+      "HV_MidRetreat_E4_R1_2",
+      "HV_Boss_E2_R3_1",
+      "HV_Boss_E2_R3_2",
+      "HV_Boss_E2_R3_3",
+      "HV_Boss_E4_R3",
+      "HV_Boss_E2_R4",
+      "HV_Boss_E4_R4",
+      "HV_Boss_E5_R1",
+      "HV_Boss_E5_R2",
+      "HV_Boss_E5_R3",
+      "HV_Boss_E5_R3_2",
+      "HV_Boss_E5_R4_1",
+      "HV_Boss_E5_R4_2",
+      "HV_MidRetreat_E6_R1",
+      "HV_Boss_E6_R1",
+      "HV_Boss_E6_R1_2",
+      "HV_Boss_E6_R2",
+      "HV_Boss_E6_R3",
+      "HV_Boss_E6_R4",
+      "HV_Boss_E7_R1",
+      "HV_Boss_E7_R2_1",
+      "HV_Boss_E7_R2_2",
+      "HV_Boss_E7_R3_1",
+      "HV_Boss_E7_R3_2",
+      "HV_Boss_E7_R4",
+      "HV_MidRetreat_E8_R1",
+      "HV_MidRetreat_E8_R2",
+      "HV_MidRetreat_E8_R3",
+      "HV_MidRetreat_E8_R4",
+      "HV_Boss_E8_R1",
+      "HV_Boss_E8_R2",
+      "HV_Boss_E8_R3",
+      "HV_Boss_E8_R4",
+      "HV_PostClickMarching"
+    ],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_PostClickMarching": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1072, 563, 110, 69]
+      }
+    },
+    "next": ["HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 点击行军",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E4_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1160, 265, 11, 14],
+        "template": "Sortie_boss/王点_4_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E4_R2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1144, 307, 11, 16],
+        "template": "Sortie_boss/王点_4_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E4_R3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1149, 220, 12, 17],
+        "template": "Sortie_boss/王点_4_3.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E4_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1152, 282, 11, 15],
+        "template": "Sortie_boss/王点_4_4.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E5_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1156, 275, 11, 15],
+        "template": "Sortie_boss/王点_5_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E5_R2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1115, 312, 9, 15],
+        "template": "Sortie_boss/王点_5_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E5_R3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1142, 294, 12, 16],
+        "template": "Sortie_boss/王点_5_3_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E5_R4_1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1160, 299, 16, 23],
+        "template": "Sortie_boss/王点_5_4.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E5_R4_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1148, 301, 12, 18],
+        "template": "Sortie_boss/王点_5_4_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_MidRetreat_E4_R1_1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1080, 242, 10, 15],
+        "template": "Sortie_boss/道中_4_1_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_MidRetreat_E4_R1_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1031, 303, 10, 14],
+        "template": "Sortie_boss/道中_4_1_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_MidRetreat_E6_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [972, 229, 11, 15],
+        "template": "Sortie_boss/道中_6_1_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E6_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [983, 204, 10, 13],
+        "template": "Sortie_boss/王点_6_1_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E6_R1_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1103, 224, 11, 16],
+        "template": "Sortie_boss/王点_6_1_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E6_R2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [969, 200, 11, 16],
+        "template": "Sortie_boss/王点_6_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E6_R3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1170, 259, 13, 17],
+        "template": "Sortie_boss/王点_6_3.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E6_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [985, 223, 9, 14],
+        "template": "Sortie_boss/王点_6_4.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E7_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [997, 218, 9, 15],
+        "template": "Sortie_boss/王点_7_1.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E7_R2_1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [994, 230, 11, 15],
+        "template": "Sortie_boss/王点_7_2_1.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E7_R2_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1009, 230, 9, 14],
+        "template": "Sortie_boss/王点_7_2_2.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E7_R3_1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1076, 200, 9, 15],
+        "template": "Sortie_boss/王点_7_3_1.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E7_R3_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1061, 200, 12, 16],
+        "template": "Sortie_boss/王点_7_3_2.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E7_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1076, 232, 11, 15],
+        "template": "Sortie_boss/王点_7_4.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E8_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1032, 198, 10, 15],
+        "template": "Sortie_boss/王点_8_1.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E8_R2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [963, 191, 11, 17],
+        "template": "Sortie_boss/王点_8_2.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E8_R3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1118, 186, 11, 15],
+        "template": "Sortie_boss/王点_8_3.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E8_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1204, 278, 11, 15],
+        "template": "Sortie_boss/王点_8_4.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_ClickRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1164, 407, 88, 40],
+        "expected": "返回"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1173, 416, 70, 68]
+      }
+    },
+    "post_delay": 200,
+    "next": ["HV_ConfirmRetreat", "HV_ClickRetreat", "HV_DetectWhereAmI"]
+  },
+  "HV_ConfirmRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [480, 459, 20, 20]
+    },
+    "next": ["HV_CheckHomeBrightness", "HV_ConfirmRetreat"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 返回本丸",
+        "display": "file"
+      }
+    }
+  },
+  "HV_IsMarchingDamage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [229, 116, 90, 569],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": 0.85
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_LogMarchingDamageWord"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_FatigueDetect": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [254, 154, 31, 502],
+        "template": "Common/重疲劳.png",
+        "green_mask": true,
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiFatigueLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 疲劳撤退",
+        "display": "log"
+      }
+    }
+  },
+  "HV_EqCheck": {
+    "enabled": false,
+    "next": [
+      "HV_EqCheckTemplate",
+      "HV_EqCheckC_R0C0",
+      "HV_EqCheckC_R0C1",
+      "HV_EqCheckC_R0C2",
+      "HV_EqCheckC_R1C0",
+      "HV_EqCheckC_R1C1",
+      "HV_EqCheckC_R1C2",
+      "HV_EqCheckC_R2C0",
+      "HV_EqCheckC_R2C1",
+      "HV_EqCheckC_R2C2",
+      "HV_EqCheckC_R3C0",
+      "HV_EqCheckC_R3C1",
+      "HV_EqCheckC_R3C2",
+      "HV_EqCheckC_R4C0",
+      "HV_EqCheckC_R4C1",
+      "HV_EqCheckC_R4C2",
+      "HV_EqCheckC_R5C0",
+      "HV_EqCheckC_R5C1",
+      "HV_EqCheckC_R5C2",
+      "HV_CheckBoss",
+      "HV_PostClickMarching"
+    ],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_EqCheckTemplate": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [576, 135, 162, 529],
+        "template": "Common/刀装破坏.png",
+        "green_mask": true,
+        "threshold": 0.85
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R0C0": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [591, 183, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R0C1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [650, 182, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R0C2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [708, 182, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R1C0": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [591, 277, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R1C1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [650, 276, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R1C2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [708, 276, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R2C0": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [591, 371, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R2C1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [650, 370, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R2C2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [708, 370, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R3C0": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [591, 465, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R3C1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [650, 464, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R3C2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [708, 464, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R4C0": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [591, 559, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R4C1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [650, 558, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R4C2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [708, 558, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R5C0": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [591, 653, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R5C1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [650, 652, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_EqCheckC_R5C2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [708, 652, 1, 5],
+        "lower": [182, 181, 181],
+        "upper": [184, 183, 183],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["HV_GuiEqNearDamageLog"],
+    "on_error": "HV_DetectWhereAmI",
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 刀装近破坏撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_GuiFatigueLog": {
+    "post_delay": 500,
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[疲劳检测] 检测到刀剑疲劳，撤退",
+        "display": "log"
+      }
+    }
+  },
+  "HV_GuiEqDamageLog": {
+    "post_delay": 500,
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刀装检测] 检测到刀装破坏，撤退",
+        "display": "log"
+      }
+    }
+  },
+  "HV_GuiEqNearDamageLog": {
+    "post_delay": 500,
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刀装检测] 检测到刀装近破坏，撤退",
+        "display": "log"
+      }
+    }
+  },
+  "HV_ConfirmReturnHome": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [564, 305, 152, 33],
+        "template": "Common/合战场_确认返回本丸.png",
+        "green_mask": true,
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 10, 10]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 500,
+      "target": [490, 469, 10, 10]
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_CaptainHub": {
+    "next": ["HV_DragCaptain", "HV_IsPreSortieConfirm"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_WaitRefresh": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "post_delay": 1000,
+    "next": ["E_CheckTeamStatus"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_IsKebiishi1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [522, 93, 79, 64],
+        "template": "Common/检非.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_IsKebiishi2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [106, 573, 35, 33],
+        "template": "Common/检非2.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {"type": "Click"},
+    "repeat": 3,
+    "repeat_delay": 500,
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_IsTrainingApplication": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [197, 600, 52, 26]
+      }
+    },
+    "repeat": 10,
+    "repeat_delay": 500,
+    "next": ["HV_ClickTrainingApplication", "HV_CancelTrainingApplication"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_ClickTrainingApplication": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [96, 558, 54, 38],
+        "template": "Common/修行申请_狐之助.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [96, 558, 54, 38]
+      }
+    },
+    "next": ["HV_CancelTrainingApplication", "HV_ClickTrainingApplication"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_CancelTrainingApplication": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [460, 587, 69, 37],
+        "expected": "取消"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [460, 587, 69, 37]
+      }
+    },
+    "next": ["HV_CancelTrainingApplication", "HV_DetectWhereAmI"]
+  },
+  "HV_Boss_E5_R3_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1164, 218, 10, 15],
+        "template": "Sortie_boss/王点_5_3_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1039, 320, 15, 19],
+        "template": "Sortie_boss/王点_2_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R2_1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 216, 14, 17],
+        "template": "Sortie_boss/王点_2_2_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R2_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1078, 269, 12, 15],
+        "template": "Sortie_boss/王点_2_2_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R3_1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1015, 300, 12, 17],
+        "template": "Sortie_boss/王点_2_3_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R3_2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1115, 219, 13, 19],
+        "template": "Sortie_boss/王点_2_3_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R3_3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1029, 299, 10, 16],
+        "template": "Sortie_boss/王点_2_3_3.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E2_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1058, 276, 11, 17],
+        "template": "Sortie_boss/王点_2_4.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E3_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1135, 287, 12, 16],
+        "template": "Sortie_boss/王点_3_1.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E3_R2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1075, 223, 11, 16],
+        "template": "Sortie_boss/王点_3_2.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E3_R3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1032, 322, 12, 16],
+        "template": "Sortie_boss/王点_3_3.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_Boss_E3_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1040, 249, 11, 15],
+        "template": "Sortie_boss/王点_3_4.png",
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 命中王点",
+        "display": "file"
+      }
+    }
+  },
+  "HV_IsLoginReward": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": "Common/登录奖励.png",
+        "green_mask": true,
+        "threshold": 0.98,
+        "target": [816, 577, 182, 59]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    },
+    "next": ["HV_LoginRewardClick2"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_LoginRewardClick2": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [240, 104, 803, 561]
+    },
+    "next": ["HV_LoginRewardClick3"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_LoginRewardClick3": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1092, 318, 1, 1]
+      }
+    },
+    "timeout": 3000,
+    "next": ["HV_IsLoginReward"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_MidRetreat_E8_R1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1066, 221, 10, 16],
+        "template": "Sortie_boss/道中_8_1.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_MidRetreat_E8_R2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1038, 261, 11, 15],
+        "template": "Sortie_boss/道中_8_2.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_MidRetreat_E8_R3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1118, 217, 9, 16],
+        "template": "Sortie_boss/道中_8_3.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_MidRetreat_E8_R4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1151, 238, 11, 16],
+        "template": "Sortie_boss/道中_8_4.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷收获物] 道中撤退",
+        "display": "file"
+      }
+    }
+  },
+  "HV_CheckHomeBrightness": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [66, 58, 11, 13],
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
+      }
+    },
+    "next": ["HV_IsHome", "HV_DetectWhereAmI"]
+  },
+  "HV_StopOnEquipmentPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 484, 145, 56],
+        "template": "Common/整备刀装.png",
+        "green_mask": true,
+        "threshold": 0.98
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [427, 269, 426, 130]
+    },
+    "next": ["HV_CompleteCurrentTaskAfterEquipmentDamage"]
+  },
+  "HV_StopOnDamagePopup": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["HV_LogStopOnDamage"]
+  },
+  "HV_LogMarchingDamage": {
+    "next": ["HV_ClickRetreat", "HV_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[重伤检测] 检测到刀剑男士重伤，撤退撤退",
+        "display": "log"
+      }
+    }
+  },
+  "HV_LogStopOnDamage": {
+    "next": ["HV_CompleteCurrentTaskAfterDamage"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，停止任务",
+        "display": ["log", "notification"]
+      }
+    }
+  },
+  "HV_CompleteCurrentTaskAfterDamageRepair": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤修刀后停止"}
+    }
+  },
+  "HV_CompleteCurrentTaskAfterEquipmentDamage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "刀装破坏停止"}
+    },
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_CompleteCurrentTaskAfterDamage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤停止"}
+    },
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_RestartGame": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction"
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_AvoidKebiRestart": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction",
+      "custom_action_param": {"log_auto_recovery": false}
+    },
+    "next": ["HV_DetectWhereAmI"]
+  },
+  "HV_DragCaptain": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "DragCaptainAction"
+    },
+    "next": ["HV_FatigueCheck", "HV_IsPreSortieConfirm"],
+    "on_error": "HV_DetectWhereAmI"
+  },
+  "HV_FatigueCheck": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "FatigueCheckAction",
+      "custom_action_param": {
+        "mode": "check_first",
+        "threshold": 30
+      }
+    },
+    "next": ["HV_IsPreSortieConfirm"],
+    "on_error": "TF_EnterFromTeamSelect"
+  },
+  "HV_LogMarchingDamageWord": {
+    "next": ["HV_LogMarchingDamage"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷收获物] 重伤撤退",
+        "display": "log"
+      }
+    }
+  },
+  "HV_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [123, 72, 34, 37]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [123, 72, 34, 37]
+    },
+    "next": ["HV_DetectWhereAmI"]
+  }
+}
