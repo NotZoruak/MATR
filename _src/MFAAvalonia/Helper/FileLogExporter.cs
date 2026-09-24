@@ -156,7 +156,7 @@ public static class FileLogExporter
                         : $"日志和图片已成功压缩为 {archiveFiles.Count} 个分卷：\n{GetVolumeFileName(saveFile.Name, 1, archiveFiles.Count)}");
                     ToastHelper.SuccessWithIssue(
                         LangKeys.ExportLog.ToLocalization(),
-                        $"{LangKeys.ExportLogSuccess.ToLocalization()}，如果方便，欢迎在 GitHub Issue 中反馈。"
+                        $"{LangKeys.ExportLogSuccess.ToLocalization()}，"
                     );
                     return ExportLogResult.Success;
                 }
