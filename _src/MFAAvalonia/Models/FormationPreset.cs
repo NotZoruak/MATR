@@ -66,6 +66,9 @@ public class FormationSlot
     /// <summary>刀剑男士名称，空表示不指定</summary>
     public string Sword { get; set; } = "";
 
+    /// <summary>宝物名称，当前仅保存配置，不参与编队执行</summary>
+    public string Treasure { get; set; } = "";
+
     /// <summary>刀装名称，空表示不指定</summary>
     public string Equip { get; set; } = "";
 

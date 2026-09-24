@@ -28,6 +28,9 @@ public static class FormationContext
     /// <summary>1-6 号位马匹名（「无」= 不装备）</summary>
     public static readonly string[] Horses = new string[6];
 
+    /// <summary>1-6 号位宝物 OCR 短词（空 = 不装备）</summary>
+    public static readonly string[] Treasures = new string[6];
+
     /// <summary>有刀的位置列表（1-6，升序）</summary>
     public static List<int> MemberSlots = [];
 
@@ -46,6 +49,7 @@ public static class FormationContext
         Array.Clear(Swords);
         Array.Clear(Equips);
         Array.Clear(Horses);
+        Array.Clear(Treasures);
         MemberSlots = [];
         SwordTypeMap = null;
         CurrentSlot = 0;
@@ -68,7 +72,7 @@ public static class FormationContext
     }
 
     /// <summary>刀装候选词（不含「兵」），按长度降序用于最长匹配切分</summary>
-    private static readonly string[] EquipKeywords = ["轻步", "重步", "精锐", "轻骑", "重骑", "投石", "铳", "弓", "枪", "盾"];
+    private static readonly string[] EquipKeywords = ["轻步", "重步", "精锐", "轻骑", "重骑", "投石", "乐器", "水炮", "铳", "弓", "枪", "盾"];
 
     /// <summary>切分刀装文本（无分隔连写，最长匹配），返回刀装词序列</summary>
     public static List<string> SplitEquip(string? text)

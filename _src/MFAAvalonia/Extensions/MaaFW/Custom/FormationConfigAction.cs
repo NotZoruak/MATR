@@ -3,6 +3,7 @@ using MaaFramework.Binding.Custom;
 using MFAAvalonia.Configuration;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Models;
+using MFAAvalonia.ViewModels.UsersControls;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,7 @@ public class FormationConfigAction : IMaaCustomAction
                 FormationContext.Swords[i] = preset.Slots[i].Sword?.Trim() ?? "";
                 FormationContext.Equips[i] = (preset.Slots[i].Equip ?? "").Replace(" ", "");
                 FormationContext.Horses[i] = string.IsNullOrWhiteSpace(preset.Slots[i].Horse) ? "无" : preset.Slots[i].Horse.Trim();
+                FormationContext.Treasures[i] = FormationOptions.ToOcrTreasureName(preset.Slots[i].Treasure?.Trim());
             }
             FormationContext.MemberSlots = Enumerable.Range(1, 6)
                 .Where(i => !string.IsNullOrEmpty(FormationContext.Swords[i - 1]))

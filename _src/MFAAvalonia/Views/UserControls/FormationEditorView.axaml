@@ -7,6 +7,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:suki="https://github.com/kikipoulet/SukiUI"
     xmlns:usersControls="clr-namespace:MFAAvalonia.ViewModels.UsersControls"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
@@ -16,8 +17,38 @@
             <Setter Property="Foreground" Value="{DynamicResource SukiLowText}" />
         </Style>
 
-        <Style Selector="TextBox.fe-input, ComboBox.fe-input, AutoCompleteBox.fe-input">
+        <Style Selector="Border.fe-field">
+            <Setter Property="Background" Value="{DynamicResource SukiGlassCardBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource SmallCornerRadius}" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBox.fe-input, ComboBox.fe-input, AutoCompleteBox.fe-input">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MaxHeight" Value="40" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="6" />
+        </Style>
+
+        <!-- AutoCompleteBox 内部还嵌套一个 TextBox，清除重复的左侧内缩 -->
+        <Style Selector="AutoCompleteBox.fe-input">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="AutoCompleteBox.fe-input /template/ TextBox#PART_TextBox">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="10,6,6,5" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="suki:TextBoxExtensions.AddDeleteButton" Value="False" />
         </Style>
     </UserControl.Styles>
 
@@ -74,38 +105,79 @@
             </Grid>
         </StackPanel>
 
-        <!-- 1-6 号位 -->
+        <!-- 1-6 号位：第一行配置刀剑、宝物与马匹，第二行配置三个刀装槽 -->
         <ItemsControl ItemsSource="{Binding Slots}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid
                         Margin="0,4,0,0"
                         ColumnDefinitions="22,*,*,*"
-                        ColumnSpacing="8">
+                        RowDefinitions="40,40"
+                        ColumnSpacing="8"
+                        RowSpacing="8">
                         <TextBlock
+                            Grid.Row="0"
                             FontWeight="Bold"
                             Foreground="{DynamicResource SukiLowText}"
                             Text="{Binding Position}"
                             VerticalAlignment="Center" />
-                        <AutoCompleteBox
+                        <Border
                             Grid.Column="1"
-                            Classes="fe-input"
-                            FilterMode="Contains"
-                            IsTextCompletionEnabled="True"
-                            ItemsSource="{Binding $parent[UserControl].((usersControls:FormationEditorViewModel)DataContext).SwordOptions}"
-                            Text="{Binding Sword, Mode=TwoWay}"
-                            Watermark="刀剑名" />
-                        <TextBox
+                            Classes="fe-field">
+                            <AutoCompleteBox
+                                Classes="fe-input"
+                                FilterMode="Contains"
+                                IsTextCompletionEnabled="True"
+                                ItemsSource="{Binding $parent[UserControl].((usersControls:FormationEditorViewModel)DataContext).SwordOptions}"
+                                Padding="0"
+                                Text="{Binding Sword, Mode=TwoWay}"
+                                Watermark="刀剑名" />
+                        </Border>
+                        <Border
                             Grid.Column="2"
-                            Classes="fe-input"
-                            Text="{Binding Equip, Mode=TwoWay}"
-                            TextChanged="OnEquipTextChanged"
-                            Watermark="刀装配置" />
-                        <ComboBox
+                            Classes="fe-field">
+                            <ComboBox
+                                Classes="fe-input"
+                                ItemsSource="{Binding TreasureOptions}"
+                                SelectedItem="{Binding Treasure, Mode=TwoWay}" />
+                        </Border>
+                        <Border
                             Grid.Column="3"
-                            Classes="fe-input"
-                            ItemsSource="{Binding HorseOptions}"
-                            SelectedItem="{Binding Horse, Mode=TwoWay}" />
+                            Classes="fe-field">
+                            <ComboBox
+                                Classes="fe-input"
+                                ItemsSource="{Binding HorseOptions}"
+                                SelectedItem="{Binding Horse, Mode=TwoWay}" />
+                        </Border>
+                        <Grid
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3"
+                            ColumnDefinitions="*,*,*"
+                            ColumnSpacing="8">
+                            <Border Classes="fe-field">
+                                <ComboBox
+                                    Classes="fe-input"
+                                    ItemsSource="{Binding EquipOptions}"
+                                    SelectedItem="{Binding Equip1, Mode=TwoWay}" />
+                            </Border>
+                            <Border
+                                Grid.Column="1"
+                                Classes="fe-field">
+                                <ComboBox
+                                    Classes="fe-input"
+                                    ItemsSource="{Binding EquipOptions}"
+                                    SelectedItem="{Binding Equip2, Mode=TwoWay}" />
+                            </Border>
+                            <Border
+                                Grid.Column="2"
+                                Classes="fe-field">
+                                <ComboBox
+                                    Classes="fe-input"
+                                    ItemsSource="{Binding EquipOptions}"
+                                    SelectedItem="{Binding Equip3, Mode=TwoWay}" />
+                            </Border>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
