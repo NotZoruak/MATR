@@ -1836,7 +1836,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [0, 0, 1600, 900],
+        "roi": [0, 0, 1280, 720],
         "template": "Common/游戏图标.png",
         "green_mask": true,
         "threshold": [0.8]

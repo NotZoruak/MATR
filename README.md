@@ -112,11 +112,11 @@ MATR 是一个基于 MaaFramework 的《刀剑乱舞》PC 端长期自动化系�
 
 ## QQ频道
 
-频道号 `pd68335487`，用于日常交流、使用咨询和经验分享。Bug 反馈请优先通过下方问卷或 GitHub Issues 提交。
+频道号 `pd68335487`，用于日常交流、使用咨询和经验分享。Bug 反馈请通过下方 GitHub Issues 提交。
 
 ## 反馈与建议
 
-MATR 自带日志打包功能：在任务页面的“日志”卡片右上角点击文件夹图标，选择需要的日志和截图后点击“导出日志”。打包完成后，请将压缩包通过 [问题反馈与日志收集问卷](https://ycnviwngeokc.feishu.cn/share/base/form/shrcnEJvA6mbBOSU2RO7DnRm8Qh) 或 [GitHub Issues](https://github.com/NotZoruak/MATR/issues) 提交。
+MATR 自带日志打包功能：在任务页面的“日志”卡片右上角点击文件夹图标，选择需要的日志和截图后点击“导出日志”。打包完成后，请将压缩包提交到 [GitHub Issues](https://github.com/NotZoruak/MATR/issues)。
 
 提交反馈时请尽量包含以下信息：
 
