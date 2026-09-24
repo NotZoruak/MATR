@@ -38,6 +38,7 @@ public partial class WarehouseViewModel : ViewModelBase
     ];
 
     private readonly WarehouseDataEditor _editor;
+    private readonly WarehouseComparisonResourceSelection _comparisonSelection = new();
     private List<WarehouseResourceSnapshot> _pendingResourceHistory = [];
     private bool _hasPendingChartChanges;
     private readonly System.Collections.Generic.Dictionary<string, int> _savedCore = new(StringComparer.Ordinal);
@@ -48,10 +49,12 @@ public partial class WarehouseViewModel : ViewModelBase
     public ObservableCollection<WarehouseCoreResourceViewModel> CoreIconResources { get; } = [];
     public ObservableCollection<WarehouseCoreResourceViewModel> CoreTextResources { get; } = [];
     public ObservableCollection<WarehouseOtherItemViewModel> OtherItems { get; } = [];
+    public ObservableCollection<WarehouseComparisonResourceOption> ComparisonResources { get; } = [];
     public ObservableCollection<WarehouseChartViewModel> Charts { get; } = [];
+    public WarehouseComparisonChartViewModel ComparisonChart { get; private set; } = null!;
     public bool HasOtherItems => OtherItems.Count > 0;
     public bool NoOtherItems => !HasOtherItems;
-    public bool HasChartHistory => Charts.Any(chart => chart.HasHistory);
+    public bool HasChartHistory => ComparisonChart?.HasHistory == true || Charts.Any(chart => chart.HasHistory);
     public bool NoChartHistory => !HasChartHistory;
     public bool HasUnsavedChanges => _pendingResourceHistory.Count > 0
         || _hasPendingChartChanges
@@ -82,6 +85,9 @@ public partial class WarehouseViewModel : ViewModelBase
                 CoreTextResources.Add(resource);
             _savedCore[definition.Key] = value;
         }
+
+        foreach (var resourceName in WarehouseComparisonResourceSelection.AvailableResourceNames)
+            ComparisonResources.Add(new WarehouseComparisonResourceOption(resourceName, true, ToggleComparisonResource));
 
         var normalizedOtherItems = WarehouseScanDraftService.NormalizeOtherItems(_editor.Data.OtherItems);
         _editor.Data.OtherItems = normalizedOtherItems;
@@ -340,11 +346,31 @@ public partial class WarehouseViewModel : ViewModelBase
         var now = DateTime.Now;
         var filteredHistory = WarehouseResourceHistoryFilter.FilterWithIndices(
             _editor.Data.ResourceHistory, SelectedChartRange, now);
-        foreach (var definition in CoreDefinitions)
+        ComparisonChart = new WarehouseComparisonChartViewModel(
+            _comparisonSelection.SelectedResourceNames,
+            filteredHistory,
+            _editor.Data.ResourceHistory,
+            SelectedChartRange,
+            now,
+            DeleteChartPoint);
+        foreach (var definition in CoreDefinitions.Where(definition =>
+                     !WarehouseComparisonResourceSelection.AvailableResourceNames.Contains(definition.Name, StringComparer.Ordinal)))
             Charts.Add(new WarehouseChartViewModel(definition.Name, filteredHistory, _editor.Data.ResourceHistory,
                 SelectedChartRange, now, DeleteChartPoint));
+        OnPropertyChanged(nameof(ComparisonChart));
         OnPropertyChanged(nameof(HasChartHistory));
         OnPropertyChanged(nameof(NoChartHistory));
+    }
+
+    private void ToggleComparisonResource(string resourceName)
+    {
+        if (!_comparisonSelection.Toggle(resourceName))
+            return;
+
+        foreach (var resource in ComparisonResources)
+            resource.IsSelected = _comparisonSelection.SelectedResourceNames.Contains(resource.Name, StringComparer.Ordinal);
+
+        RebuildCharts();
     }
 
     [RelayCommand]
@@ -438,6 +464,234 @@ public sealed partial class WarehouseOtherItemViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(IsVisible));
         _changed();
+    }
+}
+
+public sealed partial class WarehouseComparisonResourceOption : ObservableObject
+{
+    public WarehouseComparisonResourceOption(string name, bool isSelected, Action<string> toggle)
+    {
+        Name = name;
+        IsSelected = isSelected;
+        ToggleCommand = new RelayCommand(() => toggle(Name));
+    }
+
+    public string Name { get; }
+    public string SelectionText => IsSelected ? $"✓ {Name}" : Name;
+    public ICommand ToggleCommand { get; }
+    [ObservableProperty] private bool _isSelected;
+
+    partial void OnIsSelectedChanged(bool value) => OnPropertyChanged(nameof(SelectionText));
+}
+
+public sealed partial class WarehouseComparisonChartViewModel : ObservableObject
+{
+    public const double ChartWidth = 650;
+    public const double ChartHeight = 230;
+    private readonly WarehouseComparisonSelection _selection = new();
+
+    public WarehouseComparisonChartViewModel(
+        IEnumerable<string> resourceNames,
+        IEnumerable<(WarehouseResourceSnapshot Snapshot, int Index)> history,
+        IReadOnlyList<WarehouseResourceSnapshot> fullHistory,
+        WarehouseChartRange range,
+        DateTime now,
+        Action<string, int> deletePoint)
+    {
+        var filteredHistory = history.ToList();
+        var start = now - range switch
+        {
+            WarehouseChartRange.Last24Hours => TimeSpan.FromHours(24),
+            WarehouseChartRange.Last7Days => TimeSpan.FromDays(7),
+            WarehouseChartRange.Last30Days => TimeSpan.FromDays(30),
+            _ => throw new ArgumentOutOfRangeException(nameof(range), range, "不支持的图表时间范围"),
+        };
+        foreach (var label in WarehouseChartTimeAxis.BuildLabels(start, now, range, ChartWidth))
+            AxisLabels.Add(label);
+
+        var values = resourceNames
+            .SelectMany(name => filteredHistory
+                .Where(item => item.Snapshot.Values.ContainsKey(name))
+                .Select(item => item.Snapshot.Values[name]))
+            .ToList();
+        var minimum = values.Count == 0 ? 0 : values.Min();
+        var maximum = values.Count == 0 ? 1 : values.Max();
+        var colors = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["木炭"] = "#667085",
+            ["玉钢"] = "#55CFA3",
+            ["冷却材"] = "#6CBFE8",
+            ["砥石"] = "#9B8AF5",
+        };
+
+        foreach (var name in resourceNames)
+        {
+            Series.Add(new WarehouseComparisonSeriesViewModel(
+                name,
+                colors[name],
+                filteredHistory,
+                fullHistory,
+                start,
+                now,
+                minimum,
+                maximum,
+                deletePoint,
+                SelectPoint));
+        }
+    }
+
+    public ObservableCollection<WarehouseComparisonSeriesViewModel> Series { get; } = [];
+    public ObservableCollection<WarehouseChartTimeAxisLabel> AxisLabels { get; } = [];
+    public bool HasHistory => Series.Any(series => series.HasHistory);
+    [ObservableProperty] private bool _hasCompletedSelection;
+    [ObservableProperty] private string _selectionSummaryText = string.Empty;
+
+    private void SelectPoint(WarehouseChartPointViewModel point)
+    {
+        var completed = _selection.Select(point.RecordedAt);
+        foreach (var series in Series)
+        {
+            foreach (var seriesPoint in series.Points)
+            {
+                seriesPoint.SetSelected(
+                    seriesPoint.RecordedAt == _selection.Start
+                    || seriesPoint.RecordedAt == _selection.End);
+            }
+        }
+
+        HasCompletedSelection = completed;
+        SelectionSummaryText = completed ? BuildSelectionSummary() : string.Empty;
+        OnPropertyChanged(nameof(TimeSummaryText));
+    }
+
+    private string BuildSelectionSummary()
+    {
+        var start = _selection.Start!.Value;
+        var end = _selection.End!.Value;
+        SelectionRows.Clear();
+        var summaries = Series.Select(series =>
+        {
+            var startPoint = series.Points.FirstOrDefault(point => point.RecordedAt == start);
+            var endPoint = series.Points.FirstOrDefault(point => point.RecordedAt == end);
+            if (startPoint == null || endPoint == null)
+            {
+                SelectionRows.Add(new WarehouseComparisonSelectionRowViewModel(series.Name, "数据不完整"));
+                return $"{series.Name}：数据不完整";
+            }
+
+            var change = endPoint.Value - startPoint.Value;
+            SelectionRows.Add(new WarehouseComparisonSelectionRowViewModel(
+                series.Name,
+                $"{startPoint.Value:N0} → {endPoint.Value:N0}（{change:+#,##0;-#,##0;0}）"));
+            return $"{series.Name} {startPoint.Value:N0} → {endPoint.Value:N0}（{change:+#,##0;-#,##0;0}）";
+        });
+        return $"起点：{start:yyyy-MM-dd HH:mm:ss} · 终点：{end:yyyy-MM-dd HH:mm:ss}\n{string.Join("　", summaries)}";
+    }
+
+    public ObservableCollection<WarehouseComparisonSelectionRowViewModel> SelectionRows { get; } = [];
+    public string TimeSummaryText => _selection.Duration is { } duration
+        ? $"起始：{_selection.Start:yyyy-MM-dd HH:mm:ss} · 终止：{_selection.End:yyyy-MM-dd HH:mm:ss}\n相隔：{FormatDuration(duration)}"
+        : string.Empty;
+
+    private static string FormatDuration(TimeSpan duration)
+    {
+        var totalHours = (int)duration.TotalHours;
+        return totalHours > 0
+            ? $"{totalHours}小时{duration.Minutes}分钟"
+            : $"{duration.Minutes}分钟";
+    }
+}
+
+public sealed class WarehouseComparisonSelectionRowViewModel
+{
+    public WarehouseComparisonSelectionRowViewModel(string name, string summary)
+    {
+        Name = name;
+        Summary = summary;
+    }
+
+    public string Name { get; }
+    public string Summary { get; }
+}
+
+public sealed partial class WarehouseComparisonSeriesViewModel : ObservableObject
+{
+    public WarehouseComparisonSeriesViewModel(
+        string name,
+        string color,
+        IReadOnlyList<(WarehouseResourceSnapshot Snapshot, int Index)> history,
+        IReadOnlyList<WarehouseResourceSnapshot> fullHistory,
+        DateTime start,
+        DateTime end,
+        int minimum,
+        int maximum,
+        Action<string, int> deletePoint,
+        Action<WarehouseChartPointViewModel> selectPoint)
+    {
+        Name = name;
+        Color = color;
+        var snapshots = history.Where(item => item.Snapshot.Values.ContainsKey(name)).ToList();
+        var values = snapshots.Select(item => item.Snapshot.Values[name]).ToList();
+        PointCount = values.Count;
+        if (values.Count > 0)
+        {
+            LatestValue = values[^1];
+            MinimumValue = values.Min();
+            MaximumValue = values.Max();
+        }
+
+        var span = Math.Max(1d, maximum - minimum);
+        const double horizontalPadding = 18;
+        var width = Math.Max(1d, WarehouseComparisonChartViewModel.ChartWidth - horizontalPadding * 2);
+        var height = 185d;
+        var totalElapsedTicks = (end - start).Ticks;
+        for (var i = 0; i < values.Count; i++)
+        {
+            var x = totalElapsedTicks > 0
+                ? horizontalPadding + width * (snapshots[i].Snapshot.RecordedAt - start).Ticks / totalElapsedTicks
+                : WarehouseComparisonChartViewModel.ChartWidth / 2;
+            var y = 10 + height - (values[i] - minimum) / span * height;
+            var change = FindChange(fullHistory, snapshots[i].Index, name, values[i]);
+            Points.Add(new WarehouseChartPointViewModel(
+                x, y, values[i], change, snapshots[i].Snapshot.RecordedAt, snapshots[i].Index,
+                name, deletePoint, selectPoint, color));
+        }
+
+        if (Points.Count < 2)
+            return;
+
+        var geometry = new StreamGeometry();
+        using (var context = geometry.Open())
+        {
+            context.BeginFigure(new Point(Points[0].X, Points[0].Y), false);
+            foreach (var point in Points.Skip(1))
+                context.LineTo(new Point(point.X, point.Y));
+        }
+        LineGeometry = geometry;
+    }
+
+    public string Name { get; }
+    public string Color { get; }
+    public int PointCount { get; }
+    public bool HasHistory => PointCount > 0;
+    public int MinimumValue { get; }
+    public int MaximumValue { get; }
+    public int LatestValue { get; }
+    public string SummaryText => PointCount == 0
+        ? "暂无识别记录"
+        : $"当前 {LatestValue:N0} · 范围 {MinimumValue:N0}–{MaximumValue:N0}";
+    public Geometry? LineGeometry { get; }
+    public ObservableCollection<WarehouseChartPointViewModel> Points { get; } = [];
+
+    private static int? FindChange(IReadOnlyList<WarehouseResourceSnapshot> history, int index, string name, int value)
+    {
+        for (var previousIndex = index - 1; previousIndex >= 0; previousIndex--)
+        {
+            if (history[previousIndex].Values.TryGetValue(name, out var previousValue))
+                return value - previousValue;
+        }
+
+        return null;
     }
 }
 
@@ -581,7 +835,7 @@ public sealed partial class WarehouseChartPointViewModel : ObservableObject
 {
     public WarehouseChartPointViewModel(double x, double y, int value, int? change, DateTime recordedAt,
         int historyIndex, string resourceName, Action<string, int> deletePoint,
-        Action<WarehouseChartPointViewModel> selectPoint)
+        Action<WarehouseChartPointViewModel> selectPoint, string color = "#5B8FF9")
     {
         X = x;
         Y = y;
@@ -590,6 +844,7 @@ public sealed partial class WarehouseChartPointViewModel : ObservableObject
         RecordedAt = recordedAt;
         DeleteCommand = new RelayCommand(() => deletePoint(resourceName, historyIndex));
         SelectCommand = new RelayCommand(() => selectPoint(this));
+        PointColor = color;
     }
 
     public double X { get; }
@@ -613,10 +868,13 @@ public sealed partial class WarehouseChartPointViewModel : ObservableObject
     public string TooltipText => WarehouseChartTooltipFormatter.Format(RecordedAt, Value, Change);
     public ICommand DeleteCommand { get; }
     public ICommand SelectCommand { get; }
+    public string PointColor { get; }
     [ObservableProperty] private bool _isSelected;
     public IBrush PointBrush => IsSelected
         ? new SolidColorBrush(Color.Parse("#F0A93A"))
-        : new SolidColorBrush(Color.Parse("#5B8FF9"));
+        : new SolidColorBrush(Color.Parse(PointColor));
+
+    public void SetSelected(bool value) => IsSelected = value;
 
     partial void OnIsSelectedChanged(bool value) => OnPropertyChanged(nameof(PointBrush));
 }

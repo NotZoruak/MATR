@@ -47,7 +47,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/联队战.png",
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -56,13 +56,45 @@
   },
   "RB_IsRainbowBattle": {
     "enabled": false,
-    "next": ["RB_CheckRainbowShell", "RB_CloseRainbowBattle"]
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [122, 137, 245, 53],
+        "template": "Activity/特别合战场开放.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["RB_CheckRainbowShell", "RB_CloseRainbowBattle", "RB_SelectDifficulty"]
   },
   "RB_CheckRainbowShell": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [435, 143, 51, 42],
+        "expected": "99|1[01][0-9]"
+      }
+    },
     "next": ["RB_SelectDifficulty"]
   },
   "RB_CloseRainbowBattle": {
-    "next": ["RB_SelectDifficulty"]
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [618, 440, 1, 1],
+        "lower": [245, 241, 227],
+        "upper": [251, 247, 233]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "repeat": 3,
+    "repeat_delay": 500,
+    "next": ["RB_CloseRainbowBattle", "RB_SelectDifficulty"]
   },
   "RB_CheckGoalPt": {
     "enabled": false,
@@ -70,7 +102,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/联队战.png",
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -79,7 +111,7 @@
       "type": "Custom",
       "custom_action": "GoalPtCheckAction",
       "custom_action_param": {
-        "roi": [888, 198, 184, 32]
+        "roi": [885, 206, 185, 33]
       }
     },
     "post_delay": 300,
@@ -257,7 +289,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/联队战.png",
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -270,7 +302,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/联队战.png",
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -316,14 +348,14 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [578, 61, 127, 34],
-        "expected": "通行令牌"
+        "roi": [556, 61, 177, 34],
+        "expected": "更新令牌补充"
       }
     },
     "action": {
       "type": "Click",
       "param": {
-        "target": [792, 509, 1, 3]
+        "target": [798, 508, 1, 3]
       }
     },
     "repeat": 2,
@@ -406,6 +438,10 @@
         "expected": "完成|撤退"
       }
     },
+    "pre_wait_freezes": {
+      "time": 1000,
+      "target": [701, 496, 574, 209]
+    },
     "next": ["RB_TerminateRoundDone"]
   },
   "RB_TerminateRoundDone": {
@@ -417,6 +453,10 @@
       }
     },
     "inverse": true,
+    "pre_wait_freezes": {
+      "time": 1000,
+      "target": [701, 496, 574, 209]
+    },
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 完成一圈",
@@ -428,8 +468,8 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [780, 12, 58, 53],
-        "template": "Activity/联队战_行动选择.png",
+        "roi": [780, 12, 51, 30],
+        "template": "Activity/海陆联队_行动选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }

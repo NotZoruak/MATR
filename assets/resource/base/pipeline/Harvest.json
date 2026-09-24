@@ -130,6 +130,7 @@
     ]
   },
   "HV_Era1_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -282,6 +283,7 @@
     }
   },
   "HV_Era2_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -434,6 +436,7 @@
     }
   },
   "HV_Era3_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -586,6 +589,7 @@
     }
   },
   "HV_Era4_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -738,6 +742,7 @@
     }
   },
   "HV_Era5_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -752,7 +757,7 @@
       "type": "OCR",
       "param": {
         "roi": [831, 80, 26, 26],
-        "expected": ["五"]
+        "expected": ["五", "h"]
       }
     },
     "next": ["HV_Era5_Region1_Check", "HV_Era5_Region2_Check", "HV_Era5_Region3_Check", "HV_Era5_Region4_Check", "HV_Era5_Done"]
@@ -890,6 +895,7 @@
     }
   },
   "HV_Era6_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -1042,6 +1048,7 @@
     }
   },
   "HV_Era7_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
@@ -1194,6 +1201,7 @@
     }
   },
   "HV_Era8_Enter": {
+    "enabled": false,
     "action": {
       "type": "Click",
       "param": {
