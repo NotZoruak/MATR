@@ -71,7 +71,8 @@ public partial class FormationEditorViewModel : ViewModelBase
         for (var i = 0; i < Slots.Count && i < 6; i++)
         {
             _preset.Slots[i].Sword = Slots[i].Sword.Trim();
-            _preset.Slots[i].Equip = Slots[i].Equip;
+            _preset.Slots[i].Treasure = Slots[i].Treasure?.Trim() ?? "";
+            _preset.Slots[i].Equip = Slots[i].EquipText;
             _preset.Slots[i].Horse = string.IsNullOrEmpty(Slots[i].Horse) ? "无" : Slots[i].Horse;
         }
         _onDone?.Invoke(_preset);
@@ -103,18 +104,37 @@ public partial class FormationSlotEdit : ObservableObject
     public int Position { get; }
 
     [ObservableProperty] private string _sword;
-    [ObservableProperty] private string _equip;
+    [ObservableProperty] private string _treasure;
     [ObservableProperty] private string _horse;
+    [ObservableProperty] private string _equip1;
+    [ObservableProperty] private string _equip2;
+    [ObservableProperty] private string _equip3;
 
     /// <summary>马匹下拉选项（含「无」）</summary>
     public string[] HorseOptions => FormationOptions.HorseOptions;
+
+    /// <summary>宝物下拉选项</summary>
+    public string[] TreasureOptions => FormationOptions.TreasureOptions;
+
+    /// <summary>刀装下拉选项（含「无」）</summary>
+    public string[] EquipOptions => FormationOptions.EquipOptions;
+
+    /// <summary>按旧配置格式拼接三个刀装槽，保持运行期兼容</summary>
+    public string EquipText => string.Concat(
+        FormationOptions.ToInternalEquipName(Equip1),
+        FormationOptions.ToInternalEquipName(Equip2),
+        FormationOptions.ToInternalEquipName(Equip3));
 
     public FormationSlotEdit(int position, FormationSlot slot)
     {
         Position = position;
         _sword = slot.Sword;
-        _equip = slot.Equip;
+        _treasure = slot.Treasure ?? "";
         _horse = slot.Horse;
+        var equips = FormationOptions.ParseEquipSlots(slot.Equip);
+        _equip1 = equips[0];
+        _equip2 = equips[1];
+        _equip3 = equips[2];
     }
 }
 
@@ -122,6 +142,69 @@ public partial class FormationSlotEdit : ObservableObject
 public static class FormationOptions
 {
     public static readonly string[] HorseOptions = ["无", "王庭", "三国黑", "松风", "小云雀", "高楯黑", "花柑子", "青海波", "望月", "白毛", "鹿毛", "青毛"];
+
+    public static readonly string[] TreasureOptions = ["曜变天目", "狮子螺钿鞍", "南蛮胴具足", "锷・月下梅树透图", "锷・双鹤图", "三所物・菊", "三所物・狮子"];
+
+    public static readonly string[] EquipOptions = ["无", "轻步兵", "重步兵", "精锐兵", "轻骑兵", "重骑兵", "投石兵", "铳兵", "弓兵", "枪兵", "盾兵", "乐器兵", "水炮兵"];
+
+    private static readonly Dictionary<string, string> TreasureOcrNameMap = new(StringComparer.Ordinal)
+    {
+        ["曜变天目"] = "变天目",
+        ["狮子螺钿鞍"] = "狮子螺",
+        ["南蛮胴具足"] = "南蛮",
+        ["锷・月下梅树透图"] = "月下",
+        ["锷・双鹤图"] = "双鹤",
+        ["三所物・菊"] = "三所物菊",
+        ["三所物・狮子"] = "三所物狮",
+    };
+
+    /// <summary>将宝物显示名称转换为运行期 OCR 使用的短词。</summary>
+    public static string ToOcrTreasureName(string? displayName)
+        => string.IsNullOrEmpty(displayName)
+            ? ""
+            : TreasureOcrNameMap.TryGetValue(displayName, out var ocrName) ? ocrName : displayName;
+
+    private static readonly Dictionary<string, string> EquipNameMap = new(StringComparer.Ordinal)
+    {
+        ["轻步兵"] = "轻步",
+        ["重步兵"] = "重步",
+        ["精锐兵"] = "精锐",
+        ["轻骑兵"] = "轻骑",
+        ["重骑兵"] = "重骑",
+        ["投石兵"] = "投石",
+        ["铳兵"] = "铳",
+        ["弓兵"] = "弓",
+        ["枪兵"] = "枪",
+        ["盾兵"] = "盾",
+        ["乐器兵"] = "乐器",
+        ["水炮兵"] = "水炮",
+    };
+
+    private static readonly string[] InternalEquipNames = ["轻步", "重步", "精锐", "轻骑", "重骑", "投石", "乐器", "水炮", "铳", "弓", "枪", "盾"];
+
+    /// <summary>将旧配置中的连续刀装名称拆分为三个显示槽位</summary>
+    public static string[] ParseEquipSlots(string? text)
+    {
+        var result = new[] { "无", "无", "无" };
+        var remaining = text?.Replace(" ", "") ?? "";
+        for (var i = 0; i < result.Length && remaining.Length > 0; i++)
+        {
+            var internalName = InternalEquipNames.FirstOrDefault(remaining.StartsWith);
+            if (internalName == null)
+                break;
+
+            result[i] = EquipNameMap.First(pair => pair.Value == internalName).Key;
+            remaining = remaining[internalName.Length..];
+        }
+
+        return result;
+    }
+
+    /// <summary>将界面显示名称转换为现有运行期使用的刀装名称</summary>
+    public static string ToInternalEquipName(string? displayName)
+        => string.IsNullOrEmpty(displayName) || displayName == "无"
+            ? ""
+            : EquipNameMap.TryGetValue(displayName, out var internalName) ? internalName : displayName;
 
     /// <summary>从刀帐目录读取并排序全部刀剑名称</summary>
     public static string[] LoadSwordOptions()

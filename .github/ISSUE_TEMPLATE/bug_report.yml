@@ -1,69 +1,35 @@
-name: Bug 报告
-description: 报告任务异常、程序崩溃、连接失败或识别错误
+name: Bug 反馈
+description: 反馈识别错误、操作异常、程序崩溃或连接问题
 title: "[Bug]: "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        感谢你帮助改进 MATR。信息越完整，问题通常越容易定位。
+        请尽量完整地提供复现步骤、版本信息、日志和截图，方便定位问题。
 
-        提交前请先查阅 [README 常见问题](https://github.com/NotZoruak/MATR/blob/main/README.md#常见问题)，并搜索已有 Issue，避免重复提交。
+        提交前请搜索 [活跃 Issue](https://github.com/NotZoruak/MATR/issues) 和 [已关闭 Issue](https://github.com/NotZoruak/MATR/issues?q=is%3Aissue%20state%3Aclosed)，避免重复提交。
 
-  - type: dropdown
-    id: issue_type
+  - type: checkboxes
+    id: checklist
     attributes:
-      label: 问题类型
-      description: 请选择最符合当前情况的类型。
+      label: 提交前确认
       options:
-        - 任务流程异常
-        - 画面识别或点击错误
-        - 程序启动或运行异常
-        - 模拟器或设备连接失败
-        - 更新或资源下载异常
-        - 程序崩溃或无响应
-        - 其他
-    validations:
-      required: true
-
-  - type: dropdown
-    id: task_type
-    attributes:
-      label: 涉及任务
-      description: 如果问题发生在任务运行期间，请选择对应任务。
-      options:
-        - 合战场
-        - 刷花
-        - 刀解
-        - 习合
-        - 地下城
-        - 陆联
-        - 战术强化
-        - 后勤
-        - 不涉及具体任务
-    validations:
-      required: true
-
-  - type: dropdown
-    id: frequency
-    attributes:
-      label: 发生频率
-      description: 在相同条件下重复操作时，问题出现的频率如何？
-      options:
-        - 每次都会发生
-        - 经常发生
-        - 偶尔发生
-        - 仅发生过一次
-        - 无法再次复现
-    validations:
-      required: true
+        - label: 我确认这是 Bug 反馈，而不是功能建议或一般咨询。
+          required: true
+        - label: 我使用的是当前可获取的最新版本，并确认问题仍然存在。
+          required: true
+        - label: 我已搜索活跃和已关闭 Issue，确认没有相同问题。
+          required: true
+        - label: 我已检查日志、截图和配置，不包含账号、密钥等敏感信息。
+          required: true
 
   - type: textarea
-    id: summary
+    id: description
     attributes:
-      label: 问题概述
-      description: 请简要说明问题发生在什么场景，以及最主要的异常表现。
-      placeholder: 例如：运行地下城任务并进入部队选择画面后，程序未继续操作。
+      label: 问题描述
+      description: 请清楚说明发生了什么，以及问题出现时模拟器画面处于什么状态。
+      placeholder: 例如：运行常驻作战时，模拟器停留在“部队编成”画面，MATR 一直等待，没有继续点击。
     validations:
       required: true
 
@@ -71,10 +37,10 @@ body:
     id: steps
     attributes:
       label: 复现步骤
-      description: 请从启动 MATR 或任务前的状态开始，按顺序列出操作和配置。
+      description: 请从任务开始前的状态写起，按顺序列出操作和相关设置。
       placeholder: |
         1. 启动 MATR 并连接模拟器
-        2. 勾选……任务，设置……选项
+        2. 选择……任务，设置……选项
         3. 点击“开始任务”
         4. 进入……画面后出现问题
     validations:
@@ -92,7 +58,7 @@ body:
     id: actual
     attributes:
       label: 实际结果
-      description: 实际发生了什么？请包含画面状态、程序提示和异常操作等信息。
+      description: 实际发生了什么？请包含画面状态、程序提示、是否点击以及是否需要重启等信息。
     validations:
       required: true
 
@@ -100,79 +66,31 @@ body:
     id: version
     attributes:
       label: MATR 版本
-      description: 请填写程序窗口标题或发布包中显示的完整版本号。
-      placeholder: 例如：v0.9.0-beta.2
-    validations:
-      required: true
-
-  - type: dropdown
-    id: release_channel
-    attributes:
-      label: 版本渠道
-      options:
-        - 正式版
-        - 测试版（beta）
-        - 自行构建或开发版本
-    validations:
-      required: true
-
-  - type: input
-    id: system
-    attributes:
-      label: 操作系统
-      description: 请填写系统名称、版本和架构。
-      placeholder: 例如：Windows 11 24H2，x64
-    validations:
-      required: true
-
-  - type: input
-    id: emulator
-    attributes:
-      label: 模拟器或设备
-      description: 请填写模拟器名称及版本；使用实体设备时请填写设备型号。
-      placeholder: 例如：MuMu 模拟器 12，版本 4.x.x
-    validations:
-      required: true
-
-  - type: input
-    id: resolution
-    attributes:
-      label: 分辨率与 DPI
-      description: 请填写模拟器或设备当前使用的分辨率和 DPI。
-      placeholder: 例如：1280×720，240 DPI
-    validations:
-      required: true
-
-  - type: dropdown
-    id: connection
-    attributes:
-      label: 连接方式
-      options:
-        - 自动检测
-        - ADB 地址
-        - 已运行的模拟器实例
-        - 实体 Android 设备
-        - 不清楚或不适用
+      description: 请填写程序窗口标题或发布包中的完整版本号。
+      placeholder: 例如：v0.14.3-beta.4
     validations:
       required: true
 
   - type: textarea
     id: configuration
     attributes:
-      label: 相关任务配置
-      description: 请列出与问题相关的任务选项和非默认设置。可直接粘贴配置截图；请勿上传账号、密钥等敏感信息。
+      label: 环境与配置信息
+      description: 请填写操作系统、模拟器或设备、分辨率、DPI、连接方式、涉及任务及非默认选项。
       placeholder: |
-        任务选项：
-        全局设置：
-        其他非默认设置：
+        操作系统：Windows 11 24H2，x64
+        模拟器或设备：MuMu 模拟器 12，版本……
+        分辨率与 DPI：1280×720，240 DPI
+        连接方式：自动检测 / ADB 地址 / 其他
+        涉及任务：常驻作战 / 本丸后勤 / ……
+        非默认配置：
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: logs
     attributes:
-      label: 日志
-      description: 请直接拖入或粘贴 `debug/maafw.log`；如问题发生在上一次运行，也请提供 `debug/maafw.bak.log`。提交前请检查并隐藏用户名、本地路径、设备地址等隐私信息。
+      label: 日志和配置文件
+      description: 请上传导出的日志压缩包，或直接拖入 `debug/maafw.log` 和相关文件。无法提供时请说明原因。
     validations:
       required: true
 
@@ -180,7 +98,7 @@ body:
     id: screenshots
     attributes:
       label: 截图或录屏
-      description: 识别、点击或画面流程问题请尽量提供问题发生前后的完整画面。可直接拖入文件；提交前请遮盖个人信息。
+      description: 识别、点击或画面流程问题请提供无遮挡的完整模拟器画面，最好包含问题发生前后的画面。请不要只上传带窗口边框的聊天软件截图。
     validations:
       required: false
 
@@ -191,17 +109,3 @@ body:
       description: 可填写临时解决方法、相关 Issue、异常出现前后的操作或其他线索。
     validations:
       required: false
-
-  - type: checkboxes
-    id: checklist
-    attributes:
-      label: 提交前确认
-      options:
-        - label: 我已阅读 README 常见问题，并确认其中没有可用的解决方法。
-          required: true
-        - label: 我已搜索现有 Issue，并确认没有内容相同的报告。
-          required: true
-        - label: 我已使用当前渠道的最新版本复现或确认此问题。
-          required: true
-        - label: 我已检查日志、截图和配置，不包含账号、密钥等敏感信息。
-          required: true

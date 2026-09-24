@@ -775,13 +775,17 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         foreach (var preset in presets)
         {
             var capturedPreset = preset;
-            var row = new StackPanel
+            var row = new Grid
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = 8,
                 VerticalAlignment = VerticalAlignment.Center,
             };
+            row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+            row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+            row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+            row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+            row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
             var checkBox = new CheckBox { IsChecked = selectedIds.Contains(capturedPreset.Id) };
+            Grid.SetColumn(checkBox, 0);
             checkBox.IsCheckedChanged += (_, _) =>
             {
                 var current = getSelectedIds();
@@ -805,14 +809,18 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 Foreground = Brushes.Gray,
                 VerticalAlignment = VerticalAlignment.Center,
                 MinWidth = 48,
+                Margin = new Thickness(8, 0, 8, 0),
             });
+            Grid.SetColumn(row.Children[^1], 1);
             var nameBox = new TextBox
             {
                 Text = capturedPreset.Name,
                 Watermark = $"预设{capturedPreset.Id}",
                 MinWidth = 160,
                 FontSize = 13,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
             };
+            Grid.SetColumn(nameBox, 2);
             nameBox.LostFocus += (_, _) =>
             {
                 var name = nameBox.Text?.Trim() ?? string.Empty;
@@ -829,7 +837,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 Width = 16,
                 Height = 16,
                 VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(8, 0),
             };
+            Grid.SetColumn(gearIcon, 3);
             gearIcon.PointerPressed += (_, eventArgs) =>
             {
                 eventArgs.Handled = true;
@@ -842,7 +852,13 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             };
             row.Children.Add(gearIcon);
 
-            var moreButton = new Button { Content = "▾", Padding = new Thickness(6, 2), FontSize = 12 };
+            var moreButton = new Button
+            {
+                Content = "▾",
+                Padding = new Thickness(6, 2),
+                FontSize = 12,
+            };
+            Grid.SetColumn(moreButton, 4);
             var menu = new ContextMenu();
             var deleteItem = new MenuItem { Header = "删除" };
             deleteItem.Click += (_, _) =>
@@ -963,9 +979,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         };
     }
 
-    /// <summary>深拷贝预设中的刀剑、刀装与马匹槽位。</summary>
+    /// <summary>深拷贝预设中的刀剑、宝物、刀装与马匹槽位。</summary>
     private static List<FormationSlot> CloneSlots(FormationPreset source)
-        => source.Slots.Select(slot => new FormationSlot { Sword = slot.Sword, Equip = slot.Equip, Horse = slot.Horse }).ToList();
+        => source.Slots.Select(slot => new FormationSlot { Sword = slot.Sword, Treasure = slot.Treasure, Equip = slot.Equip, Horse = slot.Horse }).ToList();
 
     /// <summary>打开编队预设编辑页。</summary>
     private void OpenFormationEditor(FormationPreset preset, Action<FormationPreset?>? onDone)

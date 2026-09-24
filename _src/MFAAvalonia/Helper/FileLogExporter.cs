@@ -154,9 +154,9 @@ public static class FileLogExporter
                     LoggerHelper.Info(archiveFiles.Count == 1
                         ? $"日志和图片已成功压缩到：\n{saveFile.Name}"
                         : $"日志和图片已成功压缩为 {archiveFiles.Count} 个分卷：\n{GetVolumeFileName(saveFile.Name, 1, archiveFiles.Count)}");
-                    ToastHelper.SuccessWithSurvey(
+                    ToastHelper.SuccessWithIssue(
                         LangKeys.ExportLog.ToLocalization(),
-                        $"{LangKeys.ExportLogSuccess.ToLocalization()}，如果方便，欢迎填写问卷反馈。"
+                        $"{LangKeys.ExportLogSuccess.ToLocalization()}，如果方便，欢迎在 GitHub Issue 中反馈。"
                     );
                     return ExportLogResult.Success;
                 }

@@ -1,48 +1,44 @@
-name: 功能建议
-description: 提出新功能或改进建议
+name: 需求建议
+description: 提出新功能、流程改进或体验优化建议
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## 提交前请确认
+        请先搜索 [活跃 Issue](https://github.com/NotZoruak/MATR/issues) 和 [已关闭 Issue](https://github.com/NotZoruak/MATR/issues?q=is%3Aissue%20state%3Aclosed)，确认没有相同建议。
 
-        - 已查阅 [README](https://github.com/NotZoruak/MATR/blob/main/README.md) 确认该功能尚未存在
-        - 已搜索已有 Issue，确认无重复建议
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我基本确定这是新功能或改进建议，而不是 Bug 反馈。
+          required: true
+        - label: 我已使用当前可获取的最新版本。
+          required: true
+        - label: 我已搜索活跃和已关闭 Issue，确认没有相同建议。
+          required: true
 
   - type: textarea
-    id: description
+    id: problem
     attributes:
-      label: 功能描述
-      description: 请描述你希望添加的功能及使用场景
+      label: 当前遇到的问题
+      description: 请说明现有功能有什么不便，或者什么场景目前无法完成。
     validations:
       required: true
 
-  - type: input
-    id: version
+  - type: textarea
+    id: proposal
     attributes:
-      label: MATR 版本
-      placeholder: 如 v0.5.3
-    validations:
-      required: false
-
-  - type: dropdown
-    id: scope
-    attributes:
-      label: 涉及范围
-      options:
-        - 现有任务改进（远征、合战场等）
-        - 新增任务类型
-        - GUI / 交互体验
-        - 更新 / 配置相关
-        - 其他
+      label: 期望的功能或改进
+      description: 请具体描述你希望 MATR 如何变化。
     validations:
       required: true
 
   - type: textarea
     id: additional
     attributes:
-      label: 补充信息
-      description: 截图、参考链接等其他有助于说明的信息
+      label: 其他补充信息
+      description: 可填写使用场景、替代方案、截图或参考链接。
     validations:
       required: false

@@ -2,6 +2,8 @@ using MaaFramework.Binding;
 using MaaFramework.Binding.Buffers;
 using MaaFramework.Binding.Custom;
 using MFAAvalonia.Helper;
+using Avalonia;
+using System.Runtime.InteropServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +47,18 @@ public class FormationEquipStateMachine : IMaaCustomAction
 
     /// <summary>马匹列表确认 OCR 区域</summary>
     private static readonly int[] HorseListConfirmRoi = [855, 96, 36, 27];
+
+    /// <summary>宝物槽位点击位置</summary>
+    private static readonly int[] TreasureSlotCoords = [647, 336, 106, 56];
+
+    /// <summary>宝物列表标题确认 OCR 区域</summary>
+    private static readonly int[] TreasureListConfirmRoi = [860, 96, 49, 25];
+
+    /// <summary>宝物列表中仅显示未装备筛选标记区域</summary>
+    private static readonly int[] TreasureUnassignedFilterRoi = [1020, 97, 24, 24];
+
+    /// <summary>宝物列表 OCR 区域</summary>
+    private static readonly int[] TreasureListRoi = [950, 172, 131, 515];
 
     /// <summary>当前位识别的最大尝试次数（进入装备页与翻页瞬间可能读不到前后位编号）</summary>
     private const int SlotDetectAttempts = 3;
@@ -275,6 +289,17 @@ public class FormationEquipStateMachine : IMaaCustomAction
             }
         }
 
+        // 宝物：马匹完成后，打开宝物页并确保只显示未装备宝物，再选择目标宝物
+        if (!string.IsNullOrEmpty(FormationContext.Treasures[pos - 1]))
+        {
+            if (!ClickTreasureSlot(context) || !EnsureUnassignedTreasureFilter(context)
+                || !SelectTreasure(context, pos))
+            {
+                slotMissing = true;
+                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 宝物配置失败");
+            }
+        }
+
         return true;
     }
 
@@ -311,6 +336,99 @@ public class FormationEquipStateMachine : IMaaCustomAction
         return false;
     }
 
+    /// <summary>点击宝物槽位并确认宝物页面打开。</summary>
+    private bool ClickTreasureSlot<T>(T context) where T : IMaaContext
+    {
+        for (int attempt = 0; attempt < 3; attempt++)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            ClickRect(context, TreasureSlotCoords);
+            ActionParamHelper.SleepWithStopCheck(context, 500);
+
+            if (IsOnlyRecTextAt(context, TreasureListConfirmRoi, "宝物"))
+                return true;
+        }
+        LoggerHelper.Error("[FormationEquipStateMachine] 宝物列表未确认");
+        return false;
+    }
+
+    /// <summary>反复点击筛选标记，直到宝物列表不再显示全白的未装备筛选标记。</summary>
+    private bool EnsureUnassignedTreasureFilter<T>(T context) where T : IMaaContext
+    {
+        for (int attempt = 0; attempt < 8; attempt++)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            if (!IsSolidColor(context, TreasureUnassignedFilterRoi, [255, 255, 252]))
+                return true;
+
+            ClickRect(context, TreasureUnassignedFilterRoi);
+            ActionParamHelper.SleepWithStopCheck(context, 500);
+        }
+
+        LoggerHelper.Error("[FormationEquipStateMachine] 宝物未装备筛选状态未能切换");
+        return false;
+    }
+
+    /// <summary>在宝物列表中 OCR 查找目标并点击确定。</summary>
+    private bool SelectTreasure<T>(T context, int pos) where T : IMaaContext
+    {
+        var target = FormationContext.Treasures[pos - 1];
+        return ListOcrScan.ScanAndClick(
+            context,
+            target,
+            TreasureListRoi,
+            ListOcrScan.EquipScroll,
+            box =>
+            {
+                var cx = box[0] + box[2] / 2;
+                var cy = box[1] + box[3] / 2;
+                context.Click(cx, cy);
+                ActionParamHelper.SleepWithStopCheck(context, 500);
+                return ListOcrScan.ClickConfirm(context);
+            },
+            "FormationTreasureSelect",
+            exactMatch: true);
+    }
+
+    /// <summary>检查 ROI 内所有像素是否都等于指定 RGB 颜色。</summary>
+    private static bool IsSolidColor<T>(T context, int[] roi, byte[] color) where T : IMaaContext
+    {
+        using var image = context.GetImage();
+        if (image is not MaaImageBuffer imageBuffer || color.Length < 3)
+            return false;
+
+        using var bitmap = imageBuffer.ToBitmap();
+        if (bitmap == null || roi.Length < 4 || roi[2] <= 0 || roi[3] <= 0
+            || roi[0] < 0 || roi[1] < 0
+            || roi[0] + roi[2] > bitmap.PixelSize.Width
+            || roi[1] + roi[3] > bitmap.PixelSize.Height)
+            return false;
+
+        var pixelBytes = new byte[roi[2] * roi[3] * 4];
+        var handle = GCHandle.Alloc(pixelBytes, GCHandleType.Pinned);
+        try
+        {
+            bitmap.CopyPixels(
+                new PixelRect(roi[0], roi[1], roi[2], roi[3]),
+                handle.AddrOfPinnedObject(),
+                pixelBytes.Length,
+                roi[2] * 4);
+        }
+        finally
+        {
+            handle.Free();
+        }
+
+        for (var index = 0; index < pixelBytes.Length; index += 4)
+        {
+            if (pixelBytes[index + 2] != color[0]
+                || pixelBytes[index + 1] != color[1]
+                || pixelBytes[index] != color[2])
+                return false;
+        }
+        return true;
+    }
+
     /// <summary>指定区域 OCR 是否包含目标文本</summary>
     private bool IsTextAt<T>(T context, int[] roi, string expected) where T : IMaaContext
     {
@@ -319,6 +437,24 @@ public class FormationEquipStateMachine : IMaaCustomAction
             return false;
         string text = context.GetText(roi[0], roi[1], roi[2], roi[3], image);
         return text?.Contains(expected, StringComparison.Ordinal) == true;
+    }
+
+    /// <summary>使用 MaaFramework 的 only_rec OCR 检查指定区域是否识别到目标文本。</summary>
+    private static bool IsOnlyRecTextAt<T>(T context, int[] roi, string expected) where T : IMaaContext
+    {
+        using var image = context.GetImage();
+        if (image == null)
+            return false;
+
+        var taskModel = new MaaNode
+        {
+            Name = "FormationTreasurePageConfirm",
+            Recognition = "OCR",
+            Expected = [expected],
+            OnlyRec = true,
+            Roi = new List<int>(roi),
+        };
+        return context.RunRecognition(taskModel, image)?.IsHit() == true;
     }
 
     /// <summary>计算区域中心并点击</summary>

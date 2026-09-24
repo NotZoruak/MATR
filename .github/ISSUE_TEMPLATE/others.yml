@@ -1,0 +1,36 @@
+name: 其它议题
+description: 提出一般咨询、使用问题或无法归类的议题
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        此模板用于一般咨询、使用问题或无法归类的议题。
+
+        如果是程序异常，请改用“Bug 反馈”；如果是新功能或改进建议，请改用“需求建议”。
+
+  - type: textarea
+    id: question
+    attributes:
+      label: 说说你遇到的问题
+      description: 请尽量清楚地描述背景、问题和希望得到的帮助。
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他补充信息
+      description: 可填写版本、环境、截图、日志或相关链接。
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索活跃和已关闭 Issue，确认没有相同议题。
+          required: true
+        - label: 我已检查补充信息，不包含账号、密钥等敏感信息。
+          required: true

@@ -12,7 +12,7 @@ namespace MFAAvalonia.Helper;
 
 public static class ToastHelper
 {
-    private const string SurveyUrl = "https://ycnviwngeokc.feishu.cn/share/base/form/shrcnEJvA6mbBOSU2RO7DnRm8Qh";
+    private const string IssueUrl = "https://github.com/NotZoruak/MATR/issues";
 
     public static SukiToastBuilder CreateToastByType(NotificationType toastType, string title = "", object? content = null, int duration = 3)
     {
@@ -37,7 +37,7 @@ public static class ToastHelper
         DispatcherHelper.RunOnMainThread(() => CreateToastByType(NotificationType.Success, title, content, duration).Queue());
     }
 
-    public static void SuccessWithSurvey(string title, string message, int duration = 0)
+    public static void SuccessWithIssue(string title, string message, int duration = 0)
     {
         DispatcherHelper.RunOnMainThread(() =>
         {
@@ -46,7 +46,7 @@ public static class ToastHelper
 
             var surveyButton = new Button
             {
-                Content = "去反馈bug",
+                Content = "前往反馈",
                 Foreground = Brushes.DodgerBlue,
                 Background = Brushes.Transparent,
                 BorderBrush = Brushes.Transparent,
@@ -59,11 +59,11 @@ public static class ToastHelper
             {
                 try
                 {
-                    Process.Start(new ProcessStartInfo(SurveyUrl) { UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo(IssueUrl) { UseShellExecute = true });
                 }
                 catch (Exception ex)
                 {
-                    LoggerHelper.Warning($"打开问卷链接失败：{ex.Message}");
+                    LoggerHelper.Warning($"打开 GitHub Issue 链接失败：{ex.Message}");
                 }
             };
             content.Children.Add(surveyButton);

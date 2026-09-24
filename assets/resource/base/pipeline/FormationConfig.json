@@ -213,8 +213,7 @@
         "expected": "装备解除"
       }
     },
-    "next": ["FC_ClickEquipCond1"],
-    "on_error": ["FC_DetectWhereAmI"]
+    "next": ["FC_ClickEquipCond1"]
   },
   "FC_ClickEquipCond1": {
     "action": {
@@ -224,8 +223,7 @@
       }
     },
     "post_delay": 500,
-    "next": ["FC_ClickEquipCond2"],
-    "on_error": ["FC_DetectWhereAmI"]
+    "next": ["FC_ClickEquipCond2"]
   },
   "FC_ClickEquipCond2": {
     "action": {
@@ -235,14 +233,24 @@
       }
     },
     "post_delay": 500,
-    "next": ["FC_ClickEquipCond3"],
-    "on_error": ["FC_DetectWhereAmI"]
+    "next": ["FC_ClickEquipCond3"]
   },
   "FC_ClickEquipCond3": {
     "action": {
-      "type": "Custom",
-      "custom_action": "FormationEquipTeamClickAction",
-      "custom_action_param": {"team": 1}
+      "type": "Click",
+      "param": {
+        "target": [872, 264, 62, 33]
+      }
+    },
+    "post_delay": 500,
+    "next": ["FC_ClickEquipCond4"]
+  },
+  "FC_ClickEquipCond4": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [348, 387, 59, 29]
+      }
     },
     "post_delay": 500,
     "next": ["FC_ConfirmEquipRemove"],
