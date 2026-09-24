@@ -1,5 +1,6 @@
 {
   "RegimentBattle": {
+    "anchor": {"RB_RoundDone": ""},
     "next": ["RB_DetectWhereAmI"]
   },
   "RB_DetectWhereAmI": {
@@ -18,7 +19,7 @@
       "RB_CheckHomeBrightness",
       "RB_IsTeamSelect",
       "RB_IsSwordDropColor",
-      "RB_TerminateRound",
+      "[Anchor]RB_RoundDone",
       "[JumpBack]IsInSortie",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
@@ -294,6 +295,7 @@
         "threshold": [0.98]
       }
     },
+    "anchor": {"RB_RoundDone": "RB_TerminateRound"},
     "next": ["RB_SortieSuccessDone"],
     "on_error": ["RB_DetectWhereAmI"]
   },
@@ -437,25 +439,6 @@
         "roi": [149, 204, 967, 175],
         "expected": "完成|撤退"
       }
-    },
-    "pre_wait_freezes": {
-      "time": 1000,
-      "target": [701, 496, 574, 209]
-    },
-    "next": ["RB_TerminateRoundDone"]
-  },
-  "RB_TerminateRoundDone": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [149, 204, 967, 175],
-        "expected": "完成|撤退"
-      }
-    },
-    "inverse": true,
-    "pre_wait_freezes": {
-      "time": 1000,
-      "target": [701, 496, 574, 209]
     },
     "focus": {
       "Node.Action.Succeeded": {
