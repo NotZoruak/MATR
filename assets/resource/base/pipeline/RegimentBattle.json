@@ -438,6 +438,10 @@
         "expected": "完成|撤退"
       }
     },
+    "pre_wait_freezes": {
+      "time": 1000,
+      "target": [701, 496, 574, 209]
+    },
     "next": ["RB_TerminateRoundDone"]
   },
   "RB_TerminateRoundDone": {

@@ -90,6 +90,11 @@ public class HarvestPipelineTests
             var confirmNext = pipeline[$"{prefix}_Confirm"]!["next"]!.AsArray();
             var regionSelect = pipeline[$"{prefix}_IsRegionSelect"]!.AsObject();
 
+            Assert.Equal(false, pipeline[$"{prefix}_Enter"]!["enabled"]?.GetValue<bool>());
+            if (era == 5)
+            {
+                Assert.Contains("h", pipeline[$"{prefix}_Verify"]!["recognition"]!["param"]!["expected"]!.AsArray().Select(value => value!.GetValue<string>()));
+            }
             Assert.Equal($"{prefix}_IsRegionSelect", confirmNext[0]!.GetValue<string>());
             Assert.Equal("[848,607,257,63]", regionSelect["recognition"]!["param"]!["roi"]!.ToJsonString());
             Assert.Equal($"{prefix}_Verify", regionSelect["next"]![0]!.GetValue<string>());
