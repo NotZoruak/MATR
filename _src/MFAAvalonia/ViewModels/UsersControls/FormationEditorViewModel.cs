@@ -129,7 +129,7 @@ public partial class FormationSlotEdit : ObservableObject
     {
         Position = position;
         _sword = slot.Sword;
-        _treasure = slot.Treasure ?? "";
+        _treasure = string.IsNullOrEmpty(slot.Treasure) ? "无" : slot.Treasure;
         _horse = slot.Horse;
         var equips = FormationOptions.ParseEquipSlots(slot.Equip);
         _equip1 = equips[0];
