@@ -41,21 +41,27 @@ public static class ToastHelper
     {
         DispatcherHelper.RunOnMainThread(() =>
         {
-            var content = new StackPanel { Spacing = 8, MaxWidth = 360 };
-            content.Children.Add(new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap });
-
-            var surveyButton = new Button
+            var content = new StackPanel
             {
-                Content = "前往反馈",
+                Orientation = Orientation.Horizontal,
+                Spacing = 0,
+                MaxWidth = 360,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            content.Children.Add(new TextBlock { Text = message, VerticalAlignment = VerticalAlignment.Center });
+
+            var issueButton = new Button
+            {
+                Content = "前往反馈。",
                 Foreground = Brushes.DodgerBlue,
                 Background = Brushes.Transparent,
                 BorderBrush = Brushes.Transparent,
                 BorderThickness = new Thickness(0),
                 Padding = new Thickness(0),
-                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center,
                 Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
             };
-            surveyButton.Click += (_, _) =>
+            issueButton.Click += (_, _) =>
             {
                 try
                 {
@@ -66,7 +72,7 @@ public static class ToastHelper
                     LoggerHelper.Warning($"打开 GitHub Issue 链接失败：{ex.Message}");
                 }
             };
-            content.Children.Add(surveyButton);
+            content.Children.Add(issueButton);
             CreateToastByType(NotificationType.Success, title, content, duration).Queue();
         });
     }
