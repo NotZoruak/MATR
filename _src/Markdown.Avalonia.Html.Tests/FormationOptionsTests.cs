@@ -8,11 +8,17 @@ namespace Markdown.Avalonia.Html.Tests;
 public class FormationOptionsTests
 {
     [Fact]
-    public void 宝物选项应包含七个下拉框名称()
+    public void 宝物选项应包含无和七个宝物名称()
     {
         Assert.Equal(
-            ["曜变天目", "狮子螺钿鞍", "南蛮胴具足", "锷・月下梅树透图", "锷・双鹤图", "三所物・菊", "三所物・狮子"],
+            ["无", "曜变天目", "狮子螺钿鞍", "南蛮胴具足", "锷・月下梅树透图", "锷・双鹤图", "三所物・菊", "三所物・狮子"],
             FormationOptions.TreasureOptions);
+    }
+
+    [Fact]
+    public void 宝物无选项应转换为空值()
+    {
+        Assert.Equal("", FormationOptions.ToOcrTreasureName("无"));
     }
 
     [Theory]

@@ -143,7 +143,7 @@ public static class FormationOptions
 {
     public static readonly string[] HorseOptions = ["无", "王庭", "三国黑", "松风", "小云雀", "高楯黑", "花柑子", "青海波", "望月", "白毛", "鹿毛", "青毛"];
 
-    public static readonly string[] TreasureOptions = ["曜变天目", "狮子螺钿鞍", "南蛮胴具足", "锷・月下梅树透图", "锷・双鹤图", "三所物・菊", "三所物・狮子"];
+    public static readonly string[] TreasureOptions = ["无", "曜变天目", "狮子螺钿鞍", "南蛮胴具足", "锷・月下梅树透图", "锷・双鹤图", "三所物・菊", "三所物・狮子"];
 
     public static readonly string[] EquipOptions = ["无", "轻步兵", "重步兵", "精锐兵", "轻骑兵", "重骑兵", "投石兵", "铳兵", "弓兵", "枪兵", "盾兵", "乐器兵", "水炮兵"];
 
@@ -160,7 +160,7 @@ public static class FormationOptions
 
     /// <summary>将宝物显示名称转换为运行期 OCR 使用的短词。</summary>
     public static string ToOcrTreasureName(string? displayName)
-        => string.IsNullOrEmpty(displayName)
+        => string.IsNullOrEmpty(displayName) || displayName == "无"
             ? ""
             : TreasureOcrNameMap.TryGetValue(displayName, out var ocrName) ? ocrName : displayName;
 

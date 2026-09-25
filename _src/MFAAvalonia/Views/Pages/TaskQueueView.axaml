@@ -1043,9 +1043,7 @@
                 <ScrollViewer x:Name="SettingsContent"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
-                              HorizontalScrollBarVisibility="Disabled"
                               VerticalScrollBarVisibility="Auto"
-                              Padding="0,0,20,0"
                               OpacityMask="{Binding (extensions:ScrollViewerExtensions.EdgeFadeMask), ElementName=SettingsContent}"
                               extensions:ScrollViewerExtensions.EnableEdgeFade="True">
                     <Grid>
