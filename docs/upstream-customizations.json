@@ -204,6 +204,17 @@
       "notes": "空结果不能直接走 SetEmptyDeviceState，那会连带执行 ClearActiveAdbDeviceConfig 清掉已保存的 ADB 目标；后台直连只使用历史目标，不改变启动模拟器与重启 ADB 的既有设置语义。"
     },
     {
+      "id": "adb.screencap-emulator-extras-fallback",
+      "title": "MuMu 专用截图失败回退通用 ADB 截图",
+      "purpose": "MuMu 专用截图接口初始化、连接或运行时截图失败时，回退到 Default，避免 ADB 已连接却因截图方式不可用而无法运行任务。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaAdbConnectionFallback.cs", "_src/Markdown.Avalonia.Html.Tests/MaaAdbConnectionFallbackTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "EmulatorExtras 初始化、连接或启动任务前的截图测试失败时，重建控制器并使用 Default；其它截图方式不触发回退。",
+      "verification": ["MuMu 专用截图连接失败后使用 Default 重试", "运行时截图失败后在任务启动前改用 Default 并重建执行器", "其它截图方式不触发回退", "回退过程输出明确 Warning 日志"],
+      "notes": "MuMu 6.6.4.0 的 ADB transport 可以返回 device，但 external_renderer_ipc.dll 的专用截图可能失败；MaaFramework 可能报告 No available screencap method，或在运行时返回 display_id=-1 和 Failed to capture display。"
+    },
+    {
       "id": "runtime.resource-path-and-packaging",
       "title": "资源路径兼容、桌面发布与 agent 移除",
       "purpose": "保留大小写容错资源解析、MATR 图标、GUI 子系统、libloader 启动钩子和跨平台发布布局，同时不使用 Python agent。",

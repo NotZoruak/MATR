@@ -175,6 +175,12 @@ ADB 自动检测结果为空时，`TaskQueueViewModel.UpdateDeviceList` 必须�
 
 2026-08-14 首次实现（提交 `a844982b`），2026-09-04 升级 MFAAvalonia v2.16.1 时随 `TaskQueueViewModel.cs` 被上游整体覆盖删除，2026-09-14 按原设计恢复；2026-09-21 增加历史 ADB 地址直连兜底，并接入自动重新搜寻与刷新后自动连接开关。
 
+### `adb.screencap-emulator-extras-fallback`
+
+ADB 控制器使用 `EmulatorExtras` 初始化或连接失败时，`MaaProcessor` 必须仅针对该截图方式改用 `Default` 重建控制器；其它截图方式保持原有行为。启动任务前的截图测试也必须检查实际返回状态：若 MuMu 专用截图在运行期间失败，同样切换到 `Default`、重建主任务执行器并验证回退后的截图结果。回退成功后更新当前控制器配置，并输出包含原截图方式、回退方式和失败状态或异常原因的 Warning 日志。
+
+该定制用于处理 MuMu 的 ADB transport 已返回 `device`、但 `external_renderer_ipc.dll` 的专用截图失败的情况。此时 MaaFramework 可能报告 `No available screencap method`，也可能在任务运行时反复返回 `display_id=-1` 和 `Failed to capture display`。不能把问题误判为 ADB 地址不可用，也不能让失败的截图测试被记录为耗时 0ms 的成功。
+
 ### `runtime.resource-path-and-packaging`
 
 保留资源大小写兼容、桌面发布结构、图标与 `libloader` 启动钩子；不恢复 Python agent。验证完整包资源加载、Windows/macOS 发布及 agent 排除。
