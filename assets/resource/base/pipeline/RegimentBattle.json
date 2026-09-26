@@ -17,6 +17,7 @@
       "RB_IsActionSelect",
       "RB_IsEventPage",
       "RB_CheckHomeBrightness",
+      "RB_IsTicketConfirm",
       "RB_IsTeamSelect",
       "RB_IsSwordDropColor",
       "[Anchor]RB_RoundDone",
@@ -262,7 +263,7 @@
   },
   "RB_PostSortieHub": {
     "timeout": 30000,
-    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "RB_IsTicketConfirm", "RB_IsTicketShortagePopup"],
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "RB_IsTicketConfirm", "RB_IsTicketShortagePopup", "RB_IsPreSortieConfirm"],
     "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_IsTicketConfirm": {

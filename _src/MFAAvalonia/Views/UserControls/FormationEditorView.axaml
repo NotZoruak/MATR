@@ -40,14 +40,19 @@
             <Setter Property="Padding" Value="6" />
         </Style>
 
-        <!-- AutoCompleteBox 内部还嵌套一个 TextBox，清除重复的左侧内缩 -->
+        <!-- 自动完成下拉框内部的文本框使用与其它选项一致的左侧内缩 -->
         <Style Selector="AutoCompleteBox.fe-input">
             <Setter Property="Padding" Value="0" />
         </Style>
         <Style Selector="AutoCompleteBox.fe-input /template/ TextBox#PART_TextBox">
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="10,6,6,5" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="12,0,12,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="suki:TextBoxExtensions.AddDeleteButton" Value="False" />
         </Style>
     </UserControl.Styles>
@@ -129,7 +134,6 @@
                                 FilterMode="Contains"
                                 IsTextCompletionEnabled="True"
                                 ItemsSource="{Binding $parent[UserControl].((usersControls:FormationEditorViewModel)DataContext).SwordOptions}"
-                                Padding="0"
                                 Text="{Binding Sword, Mode=TwoWay}"
                                 Watermark="刀剑名" />
                         </Border>
@@ -138,16 +142,16 @@
                             Classes="fe-field">
                             <ComboBox
                                 Classes="fe-input"
-                                ItemsSource="{Binding TreasureOptions}"
-                                SelectedItem="{Binding Treasure, Mode=TwoWay}" />
+                                ItemsSource="{Binding HorseOptions}"
+                                SelectedItem="{Binding Horse, Mode=TwoWay}" />
                         </Border>
                         <Border
                             Grid.Column="3"
                             Classes="fe-field">
                             <ComboBox
                                 Classes="fe-input"
-                                ItemsSource="{Binding HorseOptions}"
-                                SelectedItem="{Binding Horse, Mode=TwoWay}" />
+                                ItemsSource="{Binding TreasureOptions}"
+                                SelectedItem="{Binding Treasure, Mode=TwoWay}" />
                         </Border>
                         <Grid
                             Grid.Row="1"

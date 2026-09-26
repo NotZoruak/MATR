@@ -101,6 +101,10 @@
 
 实时画面截图链路连续失败、但主控制器仍在线时，会重建独立截图执行器。已同步 MFAAvalonia `8367707`：重建请求发出后必须立即结束当前定时刷新轮次，不得继续读取已替换的旧截图执行器。下一轮定时刷新会在新执行器准备后正常继续。
 
+实时画面还必须能自行从「静默卡住」中恢复，三道机制缺一不可。其一，截图任务记录提交时刻，提交后超过 3 秒仍未返回就判定卡住（正常截图是几十毫秒量级），放弃该任务、输出「实时画面截图任务超过 3 秒未返回，重建截图任务执行器。」并重建截图执行器；旧逻辑把这类任务一直当作「仍在执行」复用，既不成功也不失败，会表现为卡死恢复后实时视图永久空白且没有任何日志。其二，实时画面超过 5 秒没有新帧（含重连后首帧始终拿不到的情形）就重建截图通道，带 10 秒冷却避免重建风暴。其三，连接建立时记录时刻并复位帧状态，之后 15 秒内不把空帧判为异常，避免把「刚重连、画面尚未出来」报成截图故障。
+
+卡死恢复期间截图通道超时属于预期：此时不再输出橙色「截图超时，已断开连接」，改为信息行「卡死恢复中：截图通道超时，连接状态已重置」，恢复流程自己的 `[重启模拟器]` / `[重启游戏]` 词条才是这段时间的准确叙述。
+
 ### `gui-log.dispatch-order`
 
 GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor.AddLogByKey` 与 `AddMarkdown` 直接调用 `DispatcherHelper.PostOnMainThread`，不得在外面再套一层 `Task.Run`：套壳后每条日志各自经线程池投递，相邻两条的到达顺序不再受调用顺序保证。普通 `AddLog` 与 `LogRestartEvent` 一直是直接投递，按 key 输出的这两条路径必须与它们保持一致。
@@ -161,6 +165,12 @@ MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调�
 
 合战场过去模式的“避战检非”通过两个检非识别 node 写入 Warning 词条 `[重启游戏] 遭遇检非` 后调用 `RestartGameAction`。该重启必须传入 `log_auto_recovery: false`，不能误记为卡死恢复；`GuiLogAction` 写入 Warning 时必须同时在 GUI 与文件日志记录同一条词表，工作记录须将其显示为“遭遇检非违使，重启游戏”。
 
+模拟器重启必须按类型分派：MuMu 走 `mumu-cli.exe control --vmindex n restart`（判定无响应时不做温和重启，直接强杀设备进程与虚拟机进程后再 `control launch`），雷电走 `ldconsole.exe quit --index n` 与 `launch --index n`，夜神走 `NoxConsole.exe quit -index:n` 与 `launch -index:n`，逍遥走 `memuc.exe stop -i n` 与 `start -i n`，蓝叠没有按实例控制的控制台、只做进程级重启并在日志中说明影响范围。MuMuManager 入口的 `restart` 子命令未经验证，不得使用，只能作为 `launch` 入口。识别不到类型时日志必须写明实际设备名，不得再输出「未找到 MuMu 主程序」这类误导提示。
+
+模拟器环境来源优先级为「启动设置 → 连接配置 → 自动探测」：安装目录与主程序先取启动设置的软件路径（支持 exe 与快捷方式，快捷方式允许直接交给 ShellExecute 启动），实例序号先解析启动设置的启动参数（`-v`、`--vmindex`、`--index`、`-index:`、`-i`、`--instance`），其次取 `extras.mumu.index`，最后按 ADB 端口反推；端口规则按类型区分（MuMu 16384 + 32n 与 5555 + 2n、雷电 5555 + 2n、夜神 62001 与 62024 + n、逍遥 21503 + 10n，`emulator-5554` 形式按控制台端口加一换算）。任一步解析失败都要回退下一来源，不能让整条重启链路空转。是否恢复以 `adb shell echo ready` 就绪为唯一标准（每轮 12 次、单次 3 秒超时、间隔 2 秒，最多两轮），强杀后需确认进程退出再提交启动命令。`EmulatorEnvironmentHelper` 的类型识别、进程名表、控制台与主程序候选、实例序号规则和命令模板必须随该行为一并保留。
+
+恢复力度必须按触发原因区分，判据由 `TaskRecoveryMonitor.IsEmulatorUnresponsiveReason` 提供。只有原因以「模拟器无响应」开头的应用层恢复（连续 120 秒无回调，模拟器整机挂起）才直接强制重启模拟器；动作循环与画面冻结形态下模拟器仍在响应，沿用先只重启游戏的原有行为，游戏重启失败才升级为重启模拟器；pipeline 的 `*_RestartGame` 路径同样不携带强制标志。把应用层恢复一律当成模拟器无响应会把「仅游戏画面卡死」也变成整机重启，属于过重的恢复动作。
+
 ### `adb.mumu-emulator-extras-input`
 
 ADB 输入方式设为“自动”时，`MaaProcessor` 必须为名称包含 `MuMu` 的设备补充 `EmulatorExtras`，并保留 MaaFramework 已发现的全部输入方式。MaaFramework 某些 MuMu 版本会返回缺少该位的掩码，导致连续触控退回至不支持拖动的 `AdbShell`，使习合素材列表无法翻页。
@@ -174,6 +184,12 @@ ADB 自动检测结果为空时，`TaskQueueViewModel.UpdateDeviceList` 必须�
 行为受「记住连接」开关控制，关闭时保持上游原状；「连接失败时自动重新搜寻可用设备」控制后台等待，「刷新设备列表后自动连接」控制发现设备后的自动连接与历史地址直连。后台恢复不得因为每轮尝试而触发 ADB Server 或 ADB 进程重启，也不得重复弹出 Toast。用户手动刷新、重连、切换控制器、其余进入自动检测的刷新路径，以及释放页面时，都必须取消后台重试。
 
 2026-08-14 首次实现（提交 `a844982b`），2026-09-04 升级 MFAAvalonia v2.16.1 时随 `TaskQueueViewModel.cs` 被上游整体覆盖删除，2026-09-14 按原设计恢复；2026-09-21 增加历史 ADB 地址直连兜底，并接入自动重新搜寻与刷新后自动连接开关。
+
+### `adb.screencap-emulator-extras-fallback`
+
+ADB 控制器使用 `EmulatorExtras` 初始化或连接失败时，`MaaProcessor` 必须仅针对该截图方式改用 `Default` 重建控制器；其它截图方式保持原有行为。启动任务前的截图测试也必须检查实际返回状态：若 MuMu 专用截图在运行期间失败，同样切换到 `Default`、重建主任务执行器并验证回退后的截图结果。回退成功后更新当前控制器配置，并输出包含原截图方式、回退方式和失败状态或异常原因的 Warning 日志。
+
+该定制用于处理 MuMu 的 ADB transport 已返回 `device`、但 `external_renderer_ipc.dll` 的专用截图失败的情况。此时 MaaFramework 可能报告 `No available screencap method`，也可能在任务运行时反复返回 `display_id=-1` 和 `Failed to capture display`。不能把问题误判为 ADB 地址不可用，也不能让失败的截图测试被记录为耗时 0ms 的成功。
 
 ### `runtime.resource-path-and-packaging`
 
@@ -216,6 +232,14 @@ MATR 的资源包包含运行时动态编译的自定义动作。`MFAExtensions.
 保留 MATR 的磁盘日志维护。应用启动时必须调用 `AppPaths.CleanupOldDebugLogs`：轮转现有 `debug/maafw.log`，清理超过三天的备份日志和截图；当 `debug` 总大小超过 500 MiB 时，最多保留最新 10 个备份日志和 `on_error` 中最新 50 张 PNG 截图。
 
 `MaaLogRotator` 必须在应用启动时启动，并在退出时停止；运行期间每 30 秒检查一次，在单个 MaaFramework 日志超过 20 MiB 时切分为备份。升级应用生命周期、日志目录或 MaaFramework 日志初始化时，验证该维护流程仍被调用，避免 `debug/` 无限增长。
+
+### `runtime.log-export-package`
+
+导出日志包必须带上排查所需的全部日志。命名 Maa 日志按「以 `maa` 开头且以 `.log` 结尾」匹配，`maafw.log`、`maa.log` 与 `maafw.bak.*.log`、`maa.bak.*.log` 等轮转文件都要进包；只有完全没有命名 Maa 日志时才回退到「收集全部 `.log`」。轮转文件往往正是崩溃或卡死现场的那一份，曾出现被整体忽略的回归。GUI 日志必须同时从 `AppPaths.LogsDirectory`（安装目录的 `debug/logs`）与历史根目录 `logs` 两处收集，勾选 GUI 日志却导不出文件属于回归。
+
+导出对话框与「关于」页两个入口共用同一套选择规则：不传选项时按默认选项导出，不再保留「扫 `debug` 下全部日志」的旧分支，避免两条入口导出结果不同。导出快照必须保留源文件的最后写入时间，包内时间戳要能反映事件发生的真实时刻；写入仍以共享读方式打开源文件，正在写入的日志也要能导出。
+
+选择规则集中在 `LogExportSelection`：命名 Maa 日志、GUI 日志目录、自定义日志、图片分类与 `vision` 排除各一个入口。`FileLogExporter` 只负责编排、计数与压缩分卷，不得再复制一份选择逻辑；升级时不得把轮转日志或 GUI 日志重新排除。
 
 ### `privacy.telemetry-disabled`
 

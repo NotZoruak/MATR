@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.3",
+  "version": "v0.14.4",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.3 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.4 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -57,7 +57,7 @@
       "repeat_count": 0,
       "option": ["FC_选择预设"],
       "label": "自定编队",
-      "description": "按所选预设配置指定部队的刀剑、刀装与马匹。可在任务设置中新增、编辑、复制或删除预设，并勾选多个预设，任务会按设置页从上到下的顺序依次编成。\n\n刀装输入要求：刀装名称直接连写、无需分隔符，如「轻步重步」。支持的名称：轻步、重步、精锐、轻骑、重骑、投石、铳、弓、枪、盾。按输入个数装备：输入几个就装备几个，刀装槽不足的槽位自动跳过。"
+      "description": "按所选预设配置指定部队的刀剑、马匹、宝物。可在任务设置中新增、编辑、复制或删除预设，并勾选多个预设，任务会按设置页从上到下的顺序依次编成。"
     },
     {
       "name": "日课",

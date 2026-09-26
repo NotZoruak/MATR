@@ -5,6 +5,9 @@ namespace MFAAvalonia.Helper;
 /// <summary>独立于底层任务等待，记录回调静默和重复动作；每个执行器独立持有。</summary>
 public sealed class TaskRecoveryMonitor
 {
+    /// <summary>模拟器无响应（无回调）类原因的固定前缀，供恢复流程区分恢复力度。</summary>
+    public const string EmulatorUnresponsiveReasonPrefix = "模拟器无响应";
+
     private readonly object _gate = new();
     private readonly LoopDetector _loopDetector = new();
     private TimeSpan _lastCallback;
@@ -59,10 +62,17 @@ public sealed class TaskRecoveryMonitor
                 return null;
             }
             return _loopReason ?? (now - _lastCallback >= timeout
-                ? $"模拟器无响应：超过 {timeout.TotalSeconds:0} 秒没有任务回调"
+                ? $"{EmulatorUnresponsiveReasonPrefix}：超过 {timeout.TotalSeconds:0} 秒没有任务回调"
                 : null);
         }
     }
+
+    /// <summary>
+    /// 该原因是否属于模拟器整机无响应。只有这类形态需要强制重启模拟器；
+    /// 画面冻结（动作循环）时模拟器仍在响应，应先只重启游戏。
+    /// </summary>
+    public static bool IsEmulatorUnresponsiveReason(string? reason) =>
+        reason != null && reason.StartsWith(EmulatorUnresponsiveReasonPrefix, StringComparison.Ordinal);
 
     public static bool ShouldStartEmulator(bool retryLaunch, bool restartAdb, bool hardRestartAdb)
         => retryLaunch || restartAdb || hardRestartAdb;

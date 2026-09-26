@@ -106,14 +106,14 @@
     },
     {
       "id": "live-view.pipelined-screencap-recovery",
-      "title": "实时画面截图恢复轮次边界",
-      "purpose": "在截图执行器重建期间避免继续读取已替换的旧执行器。",
-      "files": ["_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs"],
+      "title": "实时画面截图恢复与自愈",
+      "purpose": "在截图执行器重建期间避免继续读取已替换的旧执行器，并保证卡死恢复后实时画面能自行恢复。",
+      "files": ["_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.2-beta.1",
-      "migration_strategy": "保留截图失败达到恢复阈值、且主控制器仍在线时重建截图执行器后立即 return 的控制流。",
-      "verification": ["截图恢复后当前定时刷新轮次不再读取旧执行器", "下一轮刷新可使用重建后的截图执行器", "主控制器断连时仍按原有路径更新连接状态"],
-      "notes": "同步 MFAAvalonia 8367707。该 return 只位于主控制器仍在线、刚调用 ResetLiveViewTasker 的恢复分支，不改变断连处理。"
+      "migration_strategy": "保留截图失败达到恢复阈值、且主控制器仍在线时重建截图执行器后立即 return 的控制流；同时保留实时画面的三处自愈：在途截图任务超过 3 秒未返回时放弃并重建、超过 5 秒没有新帧时重建（10 秒冷却）、连接建立后 15 秒内不把空帧判为异常。",
+      "verification": ["截图恢复后当前定时刷新轮次不再读取旧执行器", "下一轮刷新可使用重建后的截图执行器", "主控制器断连时仍按原有路径更新连接状态", "卡死恢复后实时画面在数秒内自行恢复", "在途截图任务长时间未返回时输出重建警告并重建截图执行器", "刚重连的 15 秒内不输出实时画面告警"],
+      "notes": "同步 MFAAvalonia 8367707。该 return 只位于主控制器仍在线、刚调用 ResetLiveViewTasker 的恢复分支，不改变断连处理。实时画面在途截图任务卡住时既不成功也不失败，旧逻辑会一直按「仍在执行」复用，导致恢复后实时视图永久空白且没有任何日志，因此必须保留 3 秒未返回即重建截图执行器、5 秒无新帧即重建截图通道两道自愈；卡死恢复期间截图超时属于预期，改为输出信息行而不是橙色告警。"
     },
     {
       "id": "gui-log.dispatch-order",
@@ -174,12 +174,12 @@
       "id": "recovery.game-and-emulator-restart",
       "title": "游戏与模拟器卡死恢复",
       "purpose": "保留 MATR 对 MFAAvalonia 恢复动作和日课卡死路径的二次开发，兼容不同模拟器的应用启动方式。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Helper/EmulatorEnvironmentHelper.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。",
-      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）「卡死等待时间」选项已于 2026-09-19 移除，应用层与 pipeline 的卡死判定统一写死 120 秒。", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节"],
-      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。「卡死等待时间」全局选项已于 2026-09-19 移除：各枢纽在 pipeline 中写死 timeout 120000，MaaProcessor 的静默阈值固定 120 秒，不再读取保存值。"
+      "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。模拟器重启按类型分派，环境来源优先「启动设置（软件路径与启动参数）」，其次连接配置与端口反推；判定无响应时不做温和重启，直接强杀后拉起，并以 ADB 就绪作为唯一成功标准。只有原因以「模拟器无响应」开头的形态才强制重启模拟器，动作循环与画面冻结形态先只重启游戏、失败再升级为重启模拟器。",
+      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）「卡死等待时间」选项已于 2026-09-19 移除，应用层与 pipeline 的卡死判定统一写死 120 秒。", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节", "每种模拟器类型解析出对应的控制台入口与实例参数写法", "启动设置填写软件路径与启动参数时优先于连接配置与自动探测", "无响应形态直接强制重启并在 ADB 就绪后重连", "未识别模拟器类型时日志写明实际设备名", "仅游戏卡死时先重启游戏且不触发模拟器重启", "动作循环形态先重启游戏，游戏重启失败才升级为重启模拟器"],
+      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。「卡死等待时间」全局选项已于 2026-09-19 移除：各枢纽在 pipeline 中写死 timeout 120000，MaaProcessor 的静默阈值固定 120 秒，不再读取保存值。模拟器重启的类型识别、实例序号规则、控制台与主程序候选集中在 EmulatorEnvironmentHelper：MuMu 用 mumu-cli 或 MuMuManager（MuMuManager 的 restart 子命令未验证，只能用于 launch），雷电用 ldconsole，夜神用 NoxConsole，逍遥用 memuc，蓝叠没有按实例控制的控制台、只做进程级重启并记录影响范围；实例序号按类型区分端口规则，emulator-5554 形式按控制台端口加一换算。环境来源优先级为启动设置、连接配置、自动探测，任一步解析失败都要回退下一来源，不能让重启链路空转。恢复力度按触发原因区分，判据由 TaskRecoveryMonitor.IsEmulatorUnresponsiveReason 提供：只有原因以「模拟器无响应」开头的应用层恢复才强制重启模拟器；动作循环形态沿用先重启游戏的原有行为，pipeline 的 *_RestartGame 路径也不携带强制标志。"
     },
     {
       "id": "adb.mumu-emulator-extras-input",
@@ -202,6 +202,17 @@
       "migration_strategy": "在 UpdateDeviceList 空结果分支保留 TryRestoreLastDeviceOnEmpty 兜底与 StartDeviceWaitRetry 后台重试，并在刷新、重连、控制器切换和释放路径取消重试；扫描为空且开启自动连接时，使用已保存的 AdbPath 与 AdbSerial 直接调用控制器连接。",
       "verification": ["模拟器未启动时打开 MATR 仍显示上次使用的设备", "已保存的 ADB 路径与序列号不被清空", "模拟器启动后自动选中并按设置连接", "MaaToolkit 扫描为空时可按已保存 ADB 地址直接连接", "关闭「记住连接」后恢复上游空状态行为", "关闭「连接失败时自动重新搜寻可用设备」后不启动后台等待", "关闭「刷新设备列表后自动连接」后不自动直连", "后台等待失败不重复弹出 Toast 或重启 ADB", "手动刷新或重连后不再有后台重试"],
       "notes": "空结果不能直接走 SetEmptyDeviceState，那会连带执行 ClearActiveAdbDeviceConfig 清掉已保存的 ADB 目标；后台直连只使用历史目标，不改变启动模拟器与重启 ADB 的既有设置语义。"
+    },
+    {
+      "id": "adb.screencap-emulator-extras-fallback",
+      "title": "MuMu 专用截图失败回退通用 ADB 截图",
+      "purpose": "MuMu 专用截图接口初始化、连接或运行时截图失败时，回退到 Default，避免 ADB 已连接却因截图方式不可用而无法运行任务。",
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaAdbConnectionFallback.cs", "_src/Markdown.Avalonia.Html.Tests/MaaAdbConnectionFallbackTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "EmulatorExtras 初始化、连接或启动任务前的截图测试失败时，重建控制器并使用 Default；其它截图方式不触发回退。",
+      "verification": ["MuMu 专用截图连接失败后使用 Default 重试", "运行时截图失败后在任务启动前改用 Default 并重建执行器", "其它截图方式不触发回退", "回退过程输出明确 Warning 日志"],
+      "notes": "MuMu 6.6.4.0 的 ADB transport 可以返回 device，但 external_renderer_ipc.dll 的专用截图可能失败；MaaFramework 可能报告 No available screencap method，或在运行时返回 display_id=-1 和 Failed to capture display。"
     },
     {
       "id": "runtime.resource-path-and-packaging",
@@ -257,6 +268,17 @@
       "migration_strategy": "保留启动清理、运行期切块和退出停止三个调用点；上游调整应用生命周期或日志目录时重新接入。",
       "verification": ["启动时轮转 maafw.log", "清理超过三天的备份日志和截图", "debug 超过 500MiB 时仅保留最新 10 个备份日志与 50 张 on_error PNG 截图", "日志超过 20MiB 时运行期切块", "应用退出时停止日志轮询任务"],
       "notes": "CleanupOldDebugLogs 使用跨平台 Path API；MaaLogRotator 每 30 秒检查一次。不得只保留切块器而遗漏 App 启动调用，否则运行期切块不会生效。"
+    },
+    {
+      "id": "runtime.log-export-package",
+      "title": "日志导出包含轮转与 GUI 日志",
+      "purpose": "保证用户反馈包能带上排查所需的全部日志，并让包内时间戳反映事件发生的真实时刻。",
+      "files": ["_src/MFAAvalonia/Helper/FileLogExporter.cs", "_src/MFAAvalonia/Helper/LogExportSelection.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留日志导出的选择规则与快照行为：命名 Maa 日志包含轮转备份，GUI 日志同时收集 debug/logs 与历史根目录 logs，两个导出入口共用同一套选项，快照保留源文件时间戳。",
+      "verification": ["导出包内同时存在 debug/maafw.log 与 debug/maafw.bak.*.log", "勾选 GUI 日志时导出 debug/logs/log-*.log", "导出对话框与关于页两个入口的产物集合一致", "包内文件时间戳与源文件一致", "图片分类与 vision 排除规则保持不变"],
+      "notes": "命名 Maa 日志按「以 maa 开头且以 .log 结尾」匹配，不得只认 maafw.log 而丢掉轮转文件；轮转日志往往正是崩溃或卡死现场的那一份。GUI 日志写在 AppPaths.LogsDirectory，历史布局还有根目录 logs，两处都要收集。选择规则集中在 LogExportSelection，FileLogExporter 只负责编排、计数与压缩分卷，不得再复制一份选择逻辑。"
     },
     {
       "id": "external-notification.qmsg-v3",
