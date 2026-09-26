@@ -161,6 +161,10 @@ MFAAvalonia 2.16.1 升级曾丢失 `93e62c16` 引入的动作循环与无回调�
 
 合战场过去模式的“避战检非”通过两个检非识别 node 写入 Warning 词条 `[重启游戏] 遭遇检非` 后调用 `RestartGameAction`。该重启必须传入 `log_auto_recovery: false`，不能误记为卡死恢复；`GuiLogAction` 写入 Warning 时必须同时在 GUI 与文件日志记录同一条词表，工作记录须将其显示为“遭遇检非违使，重启游戏”。
 
+模拟器重启必须按类型分派：MuMu 走 `mumu-cli.exe control --vmindex n restart`（判定无响应时不做温和重启，直接强杀设备进程与虚拟机进程后再 `control launch`），雷电走 `ldconsole.exe quit --index n` 与 `launch --index n`，夜神走 `NoxConsole.exe quit -index:n` 与 `launch -index:n`，逍遥走 `memuc.exe stop -i n` 与 `start -i n`，蓝叠没有按实例控制的控制台、只做进程级重启并在日志中说明影响范围。MuMuManager 入口的 `restart` 子命令未经验证，不得使用，只能作为 `launch` 入口。识别不到类型时日志必须写明实际设备名，不得再输出「未找到 MuMu 主程序」这类误导提示。
+
+模拟器环境来源优先级为「启动设置 → 连接配置 → 自动探测」：安装目录与主程序先取启动设置的软件路径（支持 exe 与快捷方式，快捷方式允许直接交给 ShellExecute 启动），实例序号先解析启动设置的启动参数（`-v`、`--vmindex`、`--index`、`-index:`、`-i`、`--instance`），其次取 `extras.mumu.index`，最后按 ADB 端口反推；端口规则按类型区分（MuMu 16384 + 32n 与 5555 + 2n、雷电 5555 + 2n、夜神 62001 与 62024 + n、逍遥 21503 + 10n，`emulator-5554` 形式按控制台端口加一换算）。任一步解析失败都要回退下一来源，不能让整条重启链路空转。是否恢复以 `adb shell echo ready` 就绪为唯一标准（每轮 12 次、单次 3 秒超时、间隔 2 秒，最多两轮），强杀后需确认进程退出再提交启动命令。`EmulatorEnvironmentHelper` 的类型识别、进程名表、控制台与主程序候选、实例序号规则和命令模板必须随该行为一并保留。
+
 ### `adb.mumu-emulator-extras-input`
 
 ADB 输入方式设为“自动”时，`MaaProcessor` 必须为名称包含 `MuMu` 的设备补充 `EmulatorExtras`，并保留 MaaFramework 已发现的全部输入方式。MaaFramework 某些 MuMu 版本会返回缺少该位的掩码，导致连续触控退回至不支持拖动的 `AdbShell`，使习合素材列表无法翻页。
@@ -222,6 +226,14 @@ MATR 的资源包包含运行时动态编译的自定义动作。`MFAExtensions.
 保留 MATR 的磁盘日志维护。应用启动时必须调用 `AppPaths.CleanupOldDebugLogs`：轮转现有 `debug/maafw.log`，清理超过三天的备份日志和截图；当 `debug` 总大小超过 500 MiB 时，最多保留最新 10 个备份日志和 `on_error` 中最新 50 张 PNG 截图。
 
 `MaaLogRotator` 必须在应用启动时启动，并在退出时停止；运行期间每 30 秒检查一次，在单个 MaaFramework 日志超过 20 MiB 时切分为备份。升级应用生命周期、日志目录或 MaaFramework 日志初始化时，验证该维护流程仍被调用，避免 `debug/` 无限增长。
+
+### `runtime.log-export-package`
+
+导出日志包必须带上排查所需的全部日志。命名 Maa 日志按「以 `maa` 开头且以 `.log` 结尾」匹配，`maafw.log`、`maa.log` 与 `maafw.bak.*.log`、`maa.bak.*.log` 等轮转文件都要进包；只有完全没有命名 Maa 日志时才回退到「收集全部 `.log`」。轮转文件往往正是崩溃或卡死现场的那一份，曾出现被整体忽略的回归。GUI 日志必须同时从 `AppPaths.LogsDirectory`（安装目录的 `debug/logs`）与历史根目录 `logs` 两处收集，勾选 GUI 日志却导不出文件属于回归。
+
+导出对话框与「关于」页两个入口共用同一套选择规则：不传选项时按默认选项导出，不再保留「扫 `debug` 下全部日志」的旧分支，避免两条入口导出结果不同。导出快照必须保留源文件的最后写入时间，包内时间戳要能反映事件发生的真实时刻；写入仍以共享读方式打开源文件，正在写入的日志也要能导出。
+
+选择规则集中在 `LogExportSelection`：命名 Maa 日志、GUI 日志目录、自定义日志、图片分类与 `vision` 排除各一个入口。`FileLogExporter` 只负责编排、计数与压缩分卷，不得再复制一份选择逻辑；升级时不得把轮转日志或 GUI 日志重新排除。
 
 ### `privacy.telemetry-disabled`
 
