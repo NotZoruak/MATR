@@ -1452,6 +1452,12 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
     public void SetConnected(bool connected)
     {
         IsConnected = connected;
+        if (!connected) return;
+
+        // 记录连接时刻并复位实时画面状态：刚连上（尤其是卡死恢复后）的最初几帧常常拿不到画面
+        _lastConnectedAtUtc = DateTime.UtcNow;
+        _liveViewLastFrameAtUtc = null;
+        _liveViewFrameAvailability.Reset();
     }
 
     private DateTime? _lastExecutionTime;
@@ -3395,6 +3401,18 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
     private int _liveViewTickInProgress;
     private int _isDisposed;
     private readonly LiveViewFrameAvailability _liveViewFrameAvailability = new();
+    private DateTime? _lastConnectedAtUtc;
+    private DateTime? _liveViewLastFrameAtUtc;
+    private DateTime? _liveViewChannelRebuildAtUtc;
+
+    /// <summary>刚建立连接后的实时画面宽限期：首帧常常为空，超过它才把空帧视为异常。</summary>
+    private static readonly TimeSpan LiveViewFrameGrace = TimeSpan.FromSeconds(15);
+
+    /// <summary>实时画面多久没有新帧就重建截图通道（覆盖在途任务静默卡住）。</summary>
+    private static readonly TimeSpan LiveViewFrameStaleLimit = TimeSpan.FromSeconds(5);
+
+    /// <summary>重建截图通道的冷却时间，避免重建风暴。</summary>
+    private static readonly TimeSpan LiveViewChannelRebuildCooldown = TimeSpan.FromSeconds(10);
 
     private void UpdateLiveViewTimerInterval()
     {
@@ -3437,7 +3455,11 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                     }
                     if (shouldDisconnected)
                     {
-                        AddLogByKey(LangKeys.ScreencapTimeoutDisconnected, Brushes.OrangeRed, changeColor: false);
+                        // 卡死恢复期间截图通道必然超时，恢复流程自己会说明状态，这里不重复输出告警
+                        if (Processor.IsGameRecoveryRunning)
+                            AddLog($"{MaaProcessor.INFO} 卡死恢复中：截图通道超时，连接状态已重置", (IBrush?)null);
+                        else
+                            AddLogByKey(LangKeys.ScreencapTimeoutDisconnected, Brushes.OrangeRed, changeColor: false);
                     }
                 });
             }
@@ -3474,7 +3496,13 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                 var buffer = Processor.GetLiveViewBuffer(false);
                 if (buffer == null)
                 {
-                    if (_liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabilityChange.BecameUnavailable)
+                    // 长时间没有任何新帧时重建截图通道，避免实时画面永久空白
+                    if (ShouldRebuildStaleLiveViewChannel())
+                        return;
+
+                    // 刚连上或正在卡死恢复时首帧常常为空，这段时间不计入不可用状态
+                    if (!IsLiveViewFrameGraceActive() &&
+                        _liveViewFrameAvailability.RecordFrame(false) == LiveViewFrameAvailabilityChange.BecameUnavailable)
                     {
                         var screencapType = Processor.ScreenshotType();
                         var controllerType = CurrentController;
@@ -3487,6 +3515,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
                 }
                 else
                 {
+                    _liveViewLastFrameAtUtc = DateTime.UtcNow;
                     if (_liveViewFrameAvailability.RecordFrame(true) == LiveViewFrameAvailabilityChange.Recovered)
                         LoggerHelper.Info("实时画面已恢复。");
                     _ = UpdateLiveViewImageAsync(buffer);
@@ -3505,6 +3534,40 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         {
             Interlocked.Exchange(ref _liveViewTickInProgress, 0);
         }
+    }
+
+    /// <summary>
+    /// 实时画面是否处于宽限期：刚连接或正在卡死恢复时，模拟器尚未给出新画面，
+    /// 这段时间的空帧不应被判为截图异常，避免恢复过程中输出误导性的告警。
+    /// </summary>
+    private bool IsLiveViewFrameGraceActive()
+    {
+        if (Processor.IsGameRecoveryRunning)
+            return true;
+
+        return _lastConnectedAtUtc is { } connectedAt &&
+               DateTime.UtcNow - connectedAt < LiveViewFrameGrace;
+    }
+
+    /// <summary>
+    /// 实时画面长时间没有新帧时重建截图任务执行器（带冷却）。用于覆盖「在途截图任务卡住、
+    /// 既不成功也不失败」造成的静默失效：卡死恢复后重连时最容易出现，表现为实时视图一直空白。
+    /// </summary>
+    private bool ShouldRebuildStaleLiveViewChannel()
+    {
+        var lastFrameAt = _liveViewLastFrameAtUtc ?? _lastConnectedAtUtc;
+        if (lastFrameAt is null || DateTime.UtcNow - lastFrameAt.Value < LiveViewFrameStaleLimit)
+            return false;
+
+        if (_liveViewChannelRebuildAtUtc is { } lastRebuild &&
+            DateTime.UtcNow - lastRebuild < LiveViewChannelRebuildCooldown)
+            return false;
+
+        _liveViewChannelRebuildAtUtc = DateTime.UtcNow;
+        LoggerHelper.Warning(
+            $"实时画面超过 {LiveViewFrameStaleLimit.TotalSeconds:0} 秒没有新帧，准备重建截图任务执行器。");
+        Processor.ResetLiveViewTasker();
+        return true;
     }
 
     /// <summary>

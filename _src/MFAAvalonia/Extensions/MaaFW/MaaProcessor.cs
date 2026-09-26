@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Media;
 using MaaFramework.Binding;
@@ -1446,6 +1446,12 @@ public class MaaProcessor
     /// </summary>
     private MaaJob? _liveViewScreencapJob;
 
+    /// <summary>在途截图任务的提交时刻（TickCount64），用于识别卡住的任务。</summary>
+    private long _liveViewScreencapSubmittedAt;
+
+    /// <summary>实时画面截图任务多久没返回就判定卡住：正常截图在几十毫秒量级。</summary>
+    private const int LiveViewScreencapStuckMs = 3000;
+
     /// <summary>
     /// 流水线式提交实时视图截图：非阻塞，提交后立即返回，截图由控制器在后台执行。
     /// 若上一帧截图仍在执行则复用而不重复提交，避免任务堆积。
@@ -1491,6 +1497,18 @@ public class MaaProcessor
 
             if (status.IsRunning() || status.IsPending())
             {
+                // 卡死恢复后重连时提交的首帧可能永远挂着：此时若继续按「仍在执行」复用，
+                // 实时视图会永久空白且不产生任何失败信号，因此超时后放弃并重建截图通道
+                if (Environment.TickCount64 - Volatile.Read(ref _liveViewScreencapSubmittedAt) >=
+                    LiveViewScreencapStuckMs)
+                {
+                    Volatile.Write(ref _liveViewScreencapJob, null);
+                    LoggerHelper.Warning(
+                        $"实时画面截图任务超过 {LiveViewScreencapStuckMs / 1000} 秒未返回，重建截图任务执行器。");
+                    ResetLiveViewTasker();
+                    return MaaJobStatus.Invalid;
+                }
+
                 // 上一帧仍在执行，保持流水线复用，不重复提交
                 return MaaJobStatus.Succeeded;
             }
@@ -1505,7 +1523,9 @@ public class MaaProcessor
 
         try
         {
-            Volatile.Write(ref _liveViewScreencapJob, controller.Screencap());
+            var liveViewJob = controller.Screencap();
+            Volatile.Write(ref _liveViewScreencapSubmittedAt, Environment.TickCount64);
+            Volatile.Write(ref _liveViewScreencapJob, liveViewJob);
             return MaaJobStatus.Succeeded;
         }
         catch (Exception ex)
@@ -5092,9 +5112,12 @@ public class MaaProcessor
                 var stopping = Task.Run(() => maa.Stop().Wait());
                 try
                 {
-                    // 判定依据是「连续无回调」，模拟器此时不响应控制命令，直接走强制重启
+                    // 只有「连续无回调」形态才是模拟器整机无响应，需要强制重启；
+                    // 画面冻结（动作循环）时模拟器仍在响应，先只重启游戏，失败再升级为重启模拟器
+                    var emulatorUnresponsive = TaskRecoveryMonitor.IsEmulatorUnresponsiveReason(reason);
                     await Task.Run(() => Custom.RestartGameAction.RestartAndReloadGame(
-                        logAutoRecovery: false, processor: this, token: token, emulatorUnresponsive: true), token);
+                        logAutoRecovery: false, processor: this, token: token,
+                        emulatorUnresponsive: emulatorUnresponsive), token);
                     if (await stopping.WaitAsync(TimeSpan.FromSeconds(30), token) != MaaJobStatus.Succeeded)
                         throw new InvalidOperationException("卡死恢复时底层执行器未能停止。");
                     await completion.WaitAsync(TimeSpan.FromSeconds(30), token);

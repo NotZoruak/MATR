@@ -106,14 +106,14 @@
     },
     {
       "id": "live-view.pipelined-screencap-recovery",
-      "title": "实时画面截图恢复轮次边界",
-      "purpose": "在截图执行器重建期间避免继续读取已替换的旧执行器。",
-      "files": ["_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs"],
+      "title": "实时画面截图恢复与自愈",
+      "purpose": "在截图执行器重建期间避免继续读取已替换的旧执行器，并保证卡死恢复后实时画面能自行恢复。",
+      "files": ["_src/MFAAvalonia/ViewModels/Pages/TaskQueueViewModel.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.2-beta.1",
-      "migration_strategy": "保留截图失败达到恢复阈值、且主控制器仍在线时重建截图执行器后立即 return 的控制流。",
-      "verification": ["截图恢复后当前定时刷新轮次不再读取旧执行器", "下一轮刷新可使用重建后的截图执行器", "主控制器断连时仍按原有路径更新连接状态"],
-      "notes": "同步 MFAAvalonia 8367707。该 return 只位于主控制器仍在线、刚调用 ResetLiveViewTasker 的恢复分支，不改变断连处理。"
+      "migration_strategy": "保留截图失败达到恢复阈值、且主控制器仍在线时重建截图执行器后立即 return 的控制流；同时保留实时画面的三处自愈：在途截图任务超过 3 秒未返回时放弃并重建、超过 5 秒没有新帧时重建（10 秒冷却）、连接建立后 15 秒内不把空帧判为异常。",
+      "verification": ["截图恢复后当前定时刷新轮次不再读取旧执行器", "下一轮刷新可使用重建后的截图执行器", "主控制器断连时仍按原有路径更新连接状态", "卡死恢复后实时画面在数秒内自行恢复", "在途截图任务长时间未返回时输出重建警告并重建截图执行器", "刚重连的 15 秒内不输出实时画面告警"],
+      "notes": "同步 MFAAvalonia 8367707。该 return 只位于主控制器仍在线、刚调用 ResetLiveViewTasker 的恢复分支，不改变断连处理。实时画面在途截图任务卡住时既不成功也不失败，旧逻辑会一直按「仍在执行」复用，导致恢复后实时视图永久空白且没有任何日志，因此必须保留 3 秒未返回即重建截图执行器、5 秒无新帧即重建截图通道两道自愈；卡死恢复期间截图超时属于预期，改为输出信息行而不是橙色告警。"
     },
     {
       "id": "gui-log.dispatch-order",
@@ -177,9 +177,9 @@
       "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Helper/EmulatorEnvironmentHelper.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。模拟器重启按类型分派，环境来源优先「启动设置（软件路径与启动参数）」，其次连接配置与端口反推；判定无响应时不做温和重启，直接强杀后拉起，并以 ADB 就绪作为唯一成功标准。",
-      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）「卡死等待时间」选项已于 2026-09-19 移除，应用层与 pipeline 的卡死判定统一写死 120 秒。", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节", "每种模拟器类型解析出对应的控制台入口与实例参数写法", "启动设置填写软件路径与启动参数时优先于连接配置与自动探测", "无响应形态直接强制重启并在 ADB 就绪后重连", "未识别模拟器类型时日志写明实际设备名"],
-      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。「卡死等待时间」全局选项已于 2026-09-19 移除：各枢纽在 pipeline 中写死 timeout 120000，MaaProcessor 的静默阈值固定 120 秒，不再读取保存值。模拟器重启的类型识别、实例序号规则、控制台与主程序候选集中在 EmulatorEnvironmentHelper：MuMu 用 mumu-cli 或 MuMuManager（MuMuManager 的 restart 子命令未验证，只能用于 launch），雷电用 ldconsole，夜神用 NoxConsole，逍遥用 memuc，蓝叠没有按实例控制的控制台、只做进程级重启并记录影响范围；实例序号按类型区分端口规则，emulator-5554 形式按控制台端口加一换算。环境来源优先级为启动设置、连接配置、自动探测，任一步解析失败都要回退下一来源，不能让重启链路空转。"
+      "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。模拟器重启按类型分派，环境来源优先「启动设置（软件路径与启动参数）」，其次连接配置与端口反推；判定无响应时不做温和重启，直接强杀后拉起，并以 ADB 就绪作为唯一成功标准。只有原因以「模拟器无响应」开头的形态才强制重启模拟器，动作循环与画面冻结形态先只重启游戏、失败再升级为重启模拟器。",
+      "verification": ["官服固定使用 com.youzu.djlw", "其它客户端读取手动包名", "旧目标应用配置迁移为客户端类型", "不依赖 monkey 命令启动游戏", "能解析目标应用实际启动 Activity", "模拟器重启失败与游戏启动失败分别记录", "游戏启动失败时继续尝试主枢纽流程", "开启卡死重启后日课 hub 超时进入 DT_RestartGame（日课 node 的 timeout 已在 pipeline 内写死为 120000）「卡死等待时间」选项已于 2026-09-19 移除，应用层与 pipeline 的卡死判定统一写死 120 秒。", "无回调与重复点击均可独立触发恢复", "智能等待、关闭开关及手动停止不触发恢复", "只重启当前中断任务且保留已完成轮次", "外部恢复不等待挂起执行器停止，恢复失败停止队列", "未启动模拟器且仅开启 ADB 重启时使用有效游戏路径启动", "恢复动作使用所属实例且 Windows 命令有平台隔离", "避战检非命中时 GUI 与文件日志均记录 Warning 词条且不输出卡死重启", "工作记录将避战检非显示为遭遇检非违使，重启游戏", "重启游戏与重启模拟器分别输出分类词表，动作循环原因简化后仍保留触发细节", "每种模拟器类型解析出对应的控制台入口与实例参数写法", "启动设置填写软件路径与启动参数时优先于连接配置与自动探测", "无响应形态直接强制重启并在 ADB 就绪后重连", "未识别模拟器类型时日志写明实际设备名", "仅游戏卡死时先重启游戏且不触发模拟器重启", "动作循环形态先重启游戏，游戏重启失败才升级为重启模拟器"],
+      "notes": "客户端类型位于全局设置首位，官服使用预设包名，其它客户端在同页展开包名输入和获取说明。TaskLoader 必须将旧版卡死重启的目标应用迁移为新配置。RestartGameAction 优先使用 cmd package resolve-activity 与 am start -n；模拟器重启成功但游戏启动失败时不得直接让任务失败。卡死重启模式需为日课 hub 配置 DT_RestartGame 错误路径；日课的画面检测枢纽、业务枢纽与各阶段 Gate 已在 DailyTask.json 中写死 timeout 120000，该开关只切换 on_error 指向的恢复枢纽。所有恢复阶段通过 [重启游戏] 或 [重启模拟器] 同时写入 GUI 与文件日志；卡死原因中的动作循环卡死或画面冻结必须显示为动作循环并保留细节。过去模式避战检非必须在两个检非识别 node 命中后写入 [重启游戏] 遭遇检非，并以 log_auto_recovery=false 重启游戏；GuiLogAction 的 Warning 词条必须同时写入 GUI 与文件日志，工作记录显示为遭遇检非违使，重启游戏。「卡死等待时间」全局选项已于 2026-09-19 移除：各枢纽在 pipeline 中写死 timeout 120000，MaaProcessor 的静默阈值固定 120 秒，不再读取保存值。模拟器重启的类型识别、实例序号规则、控制台与主程序候选集中在 EmulatorEnvironmentHelper：MuMu 用 mumu-cli 或 MuMuManager（MuMuManager 的 restart 子命令未验证，只能用于 launch），雷电用 ldconsole，夜神用 NoxConsole，逍遥用 memuc，蓝叠没有按实例控制的控制台、只做进程级重启并记录影响范围；实例序号按类型区分端口规则，emulator-5554 形式按控制台端口加一换算。环境来源优先级为启动设置、连接配置、自动探测，任一步解析失败都要回退下一来源，不能让重启链路空转。恢复力度按触发原因区分，判据由 TaskRecoveryMonitor.IsEmulatorUnresponsiveReason 提供：只有原因以「模拟器无响应」开头的应用层恢复才强制重启模拟器；动作循环形态沿用先重启游戏的原有行为，pipeline 的 *_RestartGame 路径也不携带强制标志。"
     },
     {
       "id": "adb.mumu-emulator-extras-input",
