@@ -51,6 +51,7 @@
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="12,0,12,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="suki:TextBoxExtensions.AddDeleteButton" Value="False" />
         </Style>
