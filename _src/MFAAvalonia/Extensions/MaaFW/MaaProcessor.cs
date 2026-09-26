@@ -5092,8 +5092,9 @@ public class MaaProcessor
                 var stopping = Task.Run(() => maa.Stop().Wait());
                 try
                 {
+                    // 判定依据是「连续无回调」，模拟器此时不响应控制命令，直接走强制重启
                     await Task.Run(() => Custom.RestartGameAction.RestartAndReloadGame(
-                        logAutoRecovery: false, processor: this, token: token), token);
+                        logAutoRecovery: false, processor: this, token: token, emulatorUnresponsive: true), token);
                     if (await stopping.WaitAsync(TimeSpan.FromSeconds(30), token) != MaaJobStatus.Succeeded)
                         throw new InvalidOperationException("卡死恢复时底层执行器未能停止。");
                     await completion.WaitAsync(TimeSpan.FromSeconds(30), token);
