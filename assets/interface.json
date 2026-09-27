@@ -84,6 +84,9 @@
       "default_check": false,
       "repeatable": true,
       "repeat_count": 3,
+      "pipeline_override": {
+        "IsEquipmentShortagePopup": {"enabled": false}
+      },
       "option": [
         "过去/异去",
         "S_选择时代",
@@ -2183,19 +2186,7 @@
           "name": "",
           "option": ["S_记录不足时自动装备刀装"],
           "pipeline_override": {
-            "S_PostSortieHub": {
-              "next": [
-                "IsPreDamage",
-                "S_StopOnDamagePopup",
-                "IsEquipmentShortagePopup",
-                "S_StopOnEquipmentPopup",
-                "S_IsIsekaiTicketConfirm",
-                "S_PostKebiishi1",
-                "S_PostKebiishi2",
-                "S_IsPreSortieConfirm",
-                "S_SortieSuccess"
-              ]
-            }
+            "IsEquipmentShortagePopup": {"enabled": true}
           }
         }
       ],

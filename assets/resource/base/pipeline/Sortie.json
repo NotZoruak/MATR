@@ -152,6 +152,7 @@
     "next": [
       "IsPreDamage",
       "S_StopOnDamagePopup",
+      "IsEquipmentShortagePopup",
       "S_StopOnEquipmentPopup",
       "S_IsIsekaiTicketConfirm",
       "S_PostKebiishi1",

@@ -206,7 +206,62 @@
       "time": 200,
       "target": [1156, 584, 96, 47]
     },
-    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "TF_Hub"]
+    "next": ["IsPreDamage", "TF_StopOnDamagePopup", "IsEquipmentShortagePopup", "TF_StopOnEquipmentPopup", "TF_Hub"]
+  },
+  "TF_StopOnDamagePopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["TF_CompleteCurrentTaskAfterDamage"]
+  },
+  "TF_StopOnEquipmentPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 484, 145, 56],
+        "template": "Common/整备刀装.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [427, 269, 426, 130]
+    },
+    "next": ["TF_CompleteCurrentTaskAfterEquipmentShortage"]
+  },
+  "TF_CompleteCurrentTaskAfterDamage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "刷花时重伤停止"}
+    },
+    "on_error": ["TF_Hub"]
+  },
+  "TF_CompleteCurrentTaskAfterEquipmentShortage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "刷花时刀装不足停止"}
+    },
+    "on_error": ["TF_Hub"]
   },
   "TF_IsMarching": {
     "recognition": {
