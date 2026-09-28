@@ -208,7 +208,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [191, 308, 62, 3],
+        "roi": [848, 607, 257, 63],
         "template": "Common/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -217,12 +217,11 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [194, 213, 8, 1]
+        "target": [191, 308, 62, 3]
       }
     },
     "post_wait_freezes": {"time": 100},
-    "next": ["THR_ClickRegion1_1", "THR_IsTeamSelect"],
-    "on_error": ["THR_Hub"]
+    "next": ["THR_ClickRegion1_1", "THR_IsTeamSelect", "THR_Hub"]
   },
   "THR_IsTeamSelect": {
     "recognition": {
@@ -403,11 +402,16 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [560, 81, 120, 26],
-        "expected": "自动装备刀装"
+        "roi": [665, 264, 54, 30],
+        "expected": "御守"
       }
     },
-    "action": {"type": "Click"},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [560, 81, 120, 26]
+      }
+    },
     "repeat": 2,
     "repeat_delay": 300,
     "post_wait_freezes": {
@@ -651,21 +655,68 @@
       "type": "TouchDown",
       "param": {"target": "THR_IsDamagedSword"}
     },
+    "post_delay": 500,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step1"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step1": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 157, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step2"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step2": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 177, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step3"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step3": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 197, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step4"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step4": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 217, 1, 1]
+      }
+    },
+    "post_delay": 100,
     "next": ["THR_TouchMoveDamagedSwordToSlot2"]
   },
   "THR_TouchMoveDamagedSwordToSlot2": {
+    "pre_delay": 0,
     "action": {
       "type": "TouchMove",
       "param": {
         "target": [273, 236, 1, 1]
       }
     },
-    "post_delay": 500,
+    "post_delay": 100,
     "next": ["THR_TouchUpDamagedSwordToSlot2"]
   },
   "THR_TouchUpDamagedSwordToSlot2": {
+    "pre_delay": 0,
     "action": {"type": "TouchUp"},
-    "post_delay": 500,
+    "post_delay": 0,
     "next": ["THR_IsDamagedSword"],
     "on_error": ["THR_Hub"]
   },
