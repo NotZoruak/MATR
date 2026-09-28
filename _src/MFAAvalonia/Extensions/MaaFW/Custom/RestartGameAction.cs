@@ -17,6 +17,14 @@ public class RestartGameAction : IMaaCustomAction
 {
     public string Name { get; set; } = nameof(RestartGameAction);
 
+    /// <summary>模拟器无响应或游戏重启期间 ADB 超时时，必须跳过温和重启并强制重启实例。</summary>
+    public static bool ShouldForceEmulatorRestart(bool emulatorUnresponsive, bool gameRestartAdbTimedOut)
+        => emulatorUnresponsive || gameRestartAdbTimedOut;
+
+    /// <summary>只有观察到旧 ADB 连接断开且随后恢复可用，才能确认模拟器已经重启。</summary>
+    public static bool IsEmulatorRestartConfirmed(bool observedOldConnectionUnavailable, bool adbReady)
+        => observedOldConnectionUnavailable && adbReady;
+
     private string? _adbPath;
     private string? _adbSerial;
     private string? _deviceName;
@@ -256,13 +264,22 @@ public class RestartGameAction : IMaaCustomAction
         LoggerHelper.Info($"[RestartGameAction] 通过控制台重启模拟器实例 {InstanceText}...");
         if (RunConsoleCommand(BuildMuMuArguments("restart"), 30000))
         {
-            LoggerHelper.Info("[RestartGameAction] 控制命令已提交，等待模拟器就绪...");
-            if (WaitForAdbReady(AdbReadyAttemptsPerRound, AdbReadyAttemptTimeoutMs, AdbReadyIntervalMs))
+            LoggerHelper.Info("[RestartGameAction] 控制命令已提交，等待旧 ADB 连接断开...");
+            var oldConnectionUnavailable = WaitForAdbDisconnected(
+                AdbReadyAttemptsPerRound, AdbReadyAttemptTimeoutMs, AdbReadyIntervalMs);
+            if (oldConnectionUnavailable)
             {
-                LoggerHelper.Info("[RestartGameAction] 模拟器已就绪");
-                return true;
+                LoggerHelper.Info("[RestartGameAction] 已观察到旧 ADB 连接断开，等待模拟器重新就绪...");
+                var adbReady = WaitForAdbReady(
+                    AdbReadyAttemptsPerRound, AdbReadyAttemptTimeoutMs, AdbReadyIntervalMs);
+                if (IsEmulatorRestartConfirmed(oldConnectionUnavailable, adbReady))
+                {
+                    LoggerHelper.Info("[RestartGameAction] 已确认模拟器重启完成");
+                    return true;
+                }
             }
-            LoggerHelper.Warning("[RestartGameAction] 控制命令重启后模拟器未就绪，转为强制重启");
+
+            LoggerHelper.Warning("[RestartGameAction] 未确认控制命令实际重启模拟器，转为强制重启");
         }
         else
         {
@@ -464,6 +481,21 @@ public class RestartGameAction : IMaaCustomAction
         return false;
     }
 
+    /// <summary>轮询 ADB，确认控制命令提交后旧连接曾经不可用。</summary>
+    private bool WaitForAdbDisconnected(int maxAttempts, int attemptTimeoutMs, int intervalMs)
+    {
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            _recoveryToken.ThrowIfCancellationRequested();
+            if (!IsAdbReady(attemptTimeoutMs))
+                return true;
+
+            WaitForRecovery(intervalMs);
+        }
+
+        return false;
+    }
+
     /// <summary>轮询 ADB 判断模拟器是否恢复响应，返回是否就绪。</summary>
     private bool WaitForAdbReady(int maxAttempts, int attemptTimeoutMs, int intervalMs)
     {
@@ -471,11 +503,7 @@ public class RestartGameAction : IMaaCustomAction
         {
             _recoveryToken.ThrowIfCancellationRequested();
 
-            var arguments = string.IsNullOrWhiteSpace(_adbSerial)
-                ? "shell echo ready"
-                : $"-s {_adbSerial} shell echo ready";
-            var (timedOut, exitCode, _, _) = RunHiddenProcess(_adbPath!, arguments, attemptTimeoutMs);
-            if (!timedOut && exitCode == 0)
+            if (IsAdbReady(attemptTimeoutMs))
             {
                 LoggerHelper.Info("[RestartGameAction] 模拟器已就绪");
                 return true;
@@ -485,6 +513,15 @@ public class RestartGameAction : IMaaCustomAction
         }
 
         return false;
+    }
+
+    private bool IsAdbReady(int timeoutMs)
+    {
+        var arguments = string.IsNullOrWhiteSpace(_adbSerial)
+            ? "shell echo ready"
+            : $"-s {_adbSerial} shell echo ready";
+        var (timedOut, exitCode, _, _) = RunHiddenProcess(_adbPath!, arguments, timeoutMs);
+        return !timedOut && exitCode == 0;
     }
 
     /// <summary>
@@ -539,14 +576,15 @@ public class RestartGameAction : IMaaCustomAction
     /// <summary>
     /// 执行一条 adb 命令，并返回命令是否成功
     /// </summary>
-    private bool RunAdbCommand(string adbPath, string adbSerial, string args, out string output)
+    private bool RunAdbCommand(string adbPath, string adbSerial, string args, out string output, out bool timedOut)
     {
         _recoveryToken.ThrowIfCancellationRequested();
         var arguments = string.IsNullOrWhiteSpace(adbSerial) ? args : $"-s {adbSerial} {args}";
-        var (timedOut, exitCode, standardOutput, standardError) = RunHiddenProcess(adbPath, arguments, 10000);
+        var (commandTimedOut, exitCode, standardOutput, standardError) = RunHiddenProcess(adbPath, arguments, 10000);
         output = standardOutput;
+        timedOut = commandTimedOut;
 
-        if (timedOut)
+        if (commandTimedOut)
         {
             LoggerHelper.Error($"[RestartGameAction] ADB 命令执行超时: {args}");
             return false;
@@ -563,19 +601,24 @@ public class RestartGameAction : IMaaCustomAction
         return true;
     }
 
+    private bool RunAdbCommand(string adbPath, string adbSerial, string args, out string output)
+        => RunAdbCommand(adbPath, adbSerial, args, out output, out _);
+
     private bool RunAdbCommand(string adbPath, string adbSerial, string args)
     {
         return RunAdbCommand(adbPath, adbSerial, args, out _);
     }
 
-    private bool TryResolveLaunchActivity(string package, out string launchActivity)
+    private bool TryResolveLaunchActivity(string package, out string launchActivity, out bool adbTimedOut)
     {
         launchActivity = "";
+        adbTimedOut = false;
         if (!RunAdbCommand(
                 _adbPath!,
                 _adbSerial ?? "",
                 $"shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER {package}",
-                out var output))
+                out var output,
+                out adbTimedOut))
             return false;
 
         var component = output
@@ -590,30 +633,40 @@ public class RestartGameAction : IMaaCustomAction
         return true;
     }
 
-    private bool TryRestartGame(string package)
+    private bool TryRestartGame(string package, out bool adbTimedOut)
     {
+        adbTimedOut = false;
         _recoveryToken.ThrowIfCancellationRequested();
         LoggerHelper.Info($"[RestartGameAction] 强制停止游戏进程: {package}");
-        if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am force-stop {package}"))
+        if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am force-stop {package}", out _, out var stopTimedOut))
             LoggerHelper.Info("[RestartGameAction] 强制停止游戏失败，继续尝试启动游戏");
+        adbTimedOut |= stopTimedOut;
         WaitForRecovery(2000);
 
         LoggerHelper.Info($"[RestartGameAction] 重新启动游戏: {package}");
-        if (TryResolveLaunchActivity(package, out var launchActivity))
+        if (TryResolveLaunchActivity(package, out var launchActivity, out var resolveTimedOut))
         {
-            if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am start -n {launchActivity}"))
+            if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell am start -n {launchActivity}", out _, out var startTimedOut))
             {
+                adbTimedOut |= startTimedOut;
                 LoggerHelper.Info("[RestartGameAction] 使用已解析的 Activity 启动游戏失败");
                 return false;
             }
         }
-        else if (!RunAdbCommand(
-                     _adbPath!,
-                     _adbSerial ?? "",
-                     $"shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p {package}"))
+        else
         {
-            LoggerHelper.Info("[RestartGameAction] 游戏启动失败");
-            return false;
+            adbTimedOut |= resolveTimedOut;
+            if (!RunAdbCommand(
+                    _adbPath!,
+                    _adbSerial ?? "",
+                    $"shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p {package}",
+                    out _,
+                    out var startTimedOut))
+            {
+                adbTimedOut |= startTimedOut;
+                LoggerHelper.Info("[RestartGameAction] 游戏启动失败");
+                return false;
+            }
         }
 
         LoggerHelper.Info("[RestartGameAction] 游戏重启完成");
@@ -653,30 +706,35 @@ public class RestartGameAction : IMaaCustomAction
                     throw new InvalidOperationException("模拟器重启失败，请检查模拟器路径、实例状态和 ADB 连接");
                 }
 
-                if (action.TryRestartGame(package))
+                if (action.TryRestartGame(package, out _))
                     processor?.LogRestartEvent("重启游戏", "模拟器重启完成，游戏已重新启动", false);
                 else
-                    processor?.LogRestartEvent("重启游戏", "模拟器重启完成，但游戏启动失败", true);
+                {
+                    processor?.LogRestartEvent("重启游戏", "模拟器已恢复，但游戏启动失败，停止任务", true);
+                    throw new InvalidOperationException("模拟器恢复后无法启动游戏");
+                }
                 return;
             }
 
-            if (action.TryRestartGame(package))
+            if (action.TryRestartGame(package, out var gameRestartAdbTimedOut))
             {
                 processor?.LogRestartEvent("重启游戏", "游戏重启完成", false);
                 return;
             }
 
-            processor?.LogRestartEvent("重启模拟器", "游戏重启失败，重启模拟器", true);
-            if (!action.RestartEmulator(force: false))
+            var forceRestart = ShouldForceEmulatorRestart(emulatorUnresponsive, gameRestartAdbTimedOut);
+            processor?.LogRestartEvent("重启模拟器",
+                forceRestart ? "游戏重启期间 ADB 超时，强制重启模拟器" : "游戏重启失败，重启模拟器", true);
+            if (!action.RestartEmulator(force: forceRestart))
             {
                 processor?.LogRestartEvent("重启模拟器", "模拟器重启失败，停止任务", true);
                 throw new InvalidOperationException("模拟器重启失败，请检查模拟器路径、实例状态和 ADB 连接");
             }
 
-            if (!action.TryRestartGame(package))
+            if (!action.TryRestartGame(package, out _))
             {
-                processor?.LogRestartEvent("重启游戏", "模拟器重启完成，但游戏启动失败", true);
-                return;
+                processor?.LogRestartEvent("重启游戏", "模拟器已恢复，但游戏启动失败，停止任务", true);
+                throw new InvalidOperationException("模拟器恢复后无法启动游戏");
             }
 
             processor?.LogRestartEvent("重启游戏", "游戏重启完成", false);

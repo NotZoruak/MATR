@@ -1,10 +1,30 @@
 using MFAAvalonia.Helper;
+using MFAAvalonia.ViewModels.Pages;
+using System;
+using System.Reflection;
 using Xunit;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class TaskRecoveryMonitorTests
 {
+    [Fact]
+    public void 重连宽限期内即使暂无新帧也不应重建截图通道()
+    {
+        using var viewModel = new TaskQueueViewModel("live-view-grace-test");
+        var type = typeof(TaskQueueViewModel);
+        type.GetField("_lastConnectedAtUtc", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(viewModel, DateTime.UtcNow - TimeSpan.FromSeconds(6));
+        type.GetField("_liveViewLastFrameAtUtc", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(viewModel, null);
+
+        var shouldRebuild = (bool)type
+            .GetMethod("ShouldRebuildStaleLiveViewChannel", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(viewModel, null)!;
+
+        Assert.False(shouldRebuild);
+    }
+
     [Theory]
     [InlineData("模拟器无响应：超过 120 秒没有任务回调", true)]
     [InlineData("画面冻结：重复点击 S_DetectWhereAmI，坐标 (100,200)", false)]

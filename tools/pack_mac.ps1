@@ -67,6 +67,12 @@ $TargetInterface = Join-Path $MacOsDir 'assets\interface.json'
 $TargetResource = Join-Path $MacOsDir 'assets\resource'
 Copy-Item -LiteralPath $SourceInterface -Destination $TargetInterface -Force
 Copy-Item -LiteralPath $SourceResource -Destination $TargetResource -Recurse -Force
+$HakusanRepairStub = Join-Path $Root 'tools\release\TaskHakusanRepair.stub.json'
+$HakusanRepairTarget = Join-Path $TargetResource 'base\pipeline\TaskHakusanRepair.json'
+if (-not (Test-Path -LiteralPath $HakusanRepairStub)) {
+    throw "白山修刀安全壳不存在: $HakusanRepairStub"
+}
+Copy-Item -LiteralPath $HakusanRepairStub -Destination $HakusanRepairTarget -Force
 if (-not (Test-Path -LiteralPath $TargetInterface)) {
     throw "macOS 打包未复制资源接口文件: $TargetInterface"
 }

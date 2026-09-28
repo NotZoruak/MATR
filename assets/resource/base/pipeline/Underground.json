@@ -6,8 +6,7 @@
     "pre_delay": 0,
     "anchor": {
       "Hub": "U_DetectWhereAmI",
-      "RepairDone": "U_DetectWhereAmI",
-      "RepairAborted": "U_DetectWhereAmI",
+      "PublicFlowDone": "U_DetectWhereAmI",
       "SupplyDone": "U_IsPreSortieConfirm",
       "GrindDone": "U_DetectWhereAmI"
     },
@@ -800,7 +799,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [254, 154, 31, 502],
-        "template": "Common/重疲劳.png",
+        "template": ["Common/重疲劳.png", "Common/疲劳.png"],
         "green_mask": true,
         "threshold": [0.9]
       }

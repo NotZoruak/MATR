@@ -1,5 +1,5 @@
 ﻿param(
-[string]$Version = "v0.14.4",
+[string]$Version = "v0.14.5",
     [string]$PublishDir = ""
 )
 
@@ -74,6 +74,12 @@ Get-ChildItem "$TempDir\runtimes\libs" -File | ForEach-Object {
 }
 
 Copy-Item "$Root\assets\resource" -Recurse -Destination "$TempDir\assets\resource"
+$HakusanRepairStub = Join-Path $Root 'tools\release\TaskHakusanRepair.stub.json'
+$HakusanRepairTarget = Join-Path $TempDir 'assets\resource\base\pipeline\TaskHakusanRepair.json'
+if (-not (Test-Path -LiteralPath $HakusanRepairStub)) {
+    throw "白山修刀安全壳不存在: $HakusanRepairStub"
+}
+Copy-Item -LiteralPath $HakusanRepairStub -Destination $HakusanRepairTarget -Force
 
 # 发布包不包含运行时配置和刀帐个人数据；这些文件只存在于开发区的 config/ 中。
 if (Test-Path "$TempDir\config") { Remove-Item -Recurse -Force "$TempDir\config" }

@@ -64,7 +64,7 @@ public class SortiePipelineTests
 
         var postSortieNext = pipeline["S_PostSortieHub"]!["next"]!.AsArray().Select(item => item!.GetValue<string>()).ToArray();
         var stopEquipmentIndex = Array.IndexOf(postSortieNext, "S_StopOnEquipmentPopup");
-        Assert.DoesNotContain("IsEquipmentShortagePopup", postSortieNext);
+        Assert.Contains("IsEquipmentShortagePopup", postSortieNext);
         Assert.True(stopEquipmentIndex >= 0);
         Assert.False(pipeline.ContainsKey("S_CheckEquipmentPopup"));
 
@@ -114,6 +114,48 @@ public class SortiePipelineTests
         Assert.False(pipeline.ContainsKey("S_IsMenuDirectory"));
         Assert.False(pipeline.ContainsKey("S_IsAnnouncementPopup"));
         Assert.False(pipeline.ContainsKey("S_IsConnectionInterrupted"));
+    }
+
+    [Fact]
+    public void 常驻作战刀装补充开关不覆盖出阵后路由()
+    {
+        var pipelinePath = FindPipelinePath();
+        var repositoryRoot = Directory.GetParent(Path.GetDirectoryName(pipelinePath)!)!.Parent!.Parent!.Parent!.FullName;
+        var pipeline = JsonNode.Parse(File.ReadAllText(pipelinePath))!.AsObject();
+        var interfaceConfig = JsonNode.Parse(File.ReadAllText(Path.Combine(repositoryRoot, "assets", "interface.json")))!.AsObject();
+
+        var postSortieNext = pipeline["S_PostSortieHub"]!["next"]!.AsArray()
+            .Select(item => item!.GetValue<string>())
+            .ToArray();
+        Assert.Contains("IsEquipmentShortagePopup", postSortieNext);
+
+        var sortieTask = interfaceConfig["task"]!.AsArray()
+            .Select(item => item!.AsObject())
+            .Single(item => item["name"]!.GetValue<string>() == "合战场");
+        Assert.False(sortieTask["pipeline_override"]!["IsEquipmentShortagePopup"]!["enabled"]!.GetValue<bool>());
+
+        var supplyOption = interfaceConfig["option"]!["S_补充刀装"]!.AsObject();
+        var enabledOverride = supplyOption["cases"]![0]!["pipeline_override"]!["IsEquipmentShortagePopup"]!["enabled"]!;
+        Assert.True(enabledOverride.GetValue<bool>());
+        Assert.Null(supplyOption["cases"]![0]!["pipeline_override"]!["S_PostSortieHub"]);
+    }
+
+    [Fact]
+    public void 任务中刷花出阵后遇到重伤或刀装不足时停止任务()
+    {
+        var pipelinePath = FindPipelinePath();
+        var repositoryRoot = Directory.GetParent(Path.GetDirectoryName(pipelinePath)!)!.Parent!.Parent!.Parent!.FullName;
+        var flowerPath = Path.Combine(repositoryRoot, "assets", "resource", "base", "pipeline", "TaskFlowerBrush.json");
+        var pipeline = JsonNode.Parse(File.ReadAllText(flowerPath))!.AsObject();
+
+        var next = pipeline["TF_ClickSortieNow"]!["next"]!.AsArray()
+            .Select(item => item!.GetValue<string>())
+            .ToArray();
+        Assert.Equal(
+            ["IsPreDamage", "TF_StopOnDamagePopup", "IsEquipmentShortagePopup", "TF_StopOnEquipmentPopup", "TF_Hub"],
+            next);
+        Assert.Equal("TF_CompleteCurrentTaskAfterDamage", pipeline["TF_StopOnDamagePopup"]!["next"]![0]!.GetValue<string>());
+        Assert.Equal("TF_CompleteCurrentTaskAfterEquipmentShortage", pipeline["TF_StopOnEquipmentPopup"]!["next"]![0]!.GetValue<string>());
     }
 
     private static string FindPipelinePath()

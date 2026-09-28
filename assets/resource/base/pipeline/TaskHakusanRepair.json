@@ -1,0 +1,843 @@
+{
+  "THR_IsPreDamage": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["THR_NavigateClickMenu"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[白山修刀] 检测到刀剑男士重伤，进入白山修刀流程",
+        "display": "log"
+      }
+    }
+  },
+  "THR_NavigateClickMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_NavigateIsInMenu", "THR_NavigateClickMenu"],
+    "on_error": ["[Anchor]Hub"]
+  },
+  "THR_NavigateIsInMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
+      }
+    },
+    "next": ["THR_Hub"]
+  },
+  "THR_Hub": {
+    "pre_delay": 0,
+    "next": [
+      "THR_IsEraSelect",
+      "THR_IsRegionSelect",
+      "THR_ClickRetreat",
+      "THR_CheckHomeBrightness",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
+    ],
+    "on_error": ["THR_RestartGame"]
+  },
+  "THR_ClickRetreat": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1164, 407, 88, 40],
+        "expected": "返回"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1173, 416, 70, 68]
+      }
+    },
+    "next": ["THR_ConfirmRetreat", "THR_ClickRetreat", "THR_Hub"]
+  },
+  "THR_ConfirmRetreat": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 1, 1]
+      }
+    },
+    "next": ["THR_ConfirmRetreat", "THR_Hub"]
+  },
+  "THR_CheckHomeBrightness": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [66, 58, 11, 13],
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
+      }
+    },
+    "next": ["THR_IsHome", "THR_Hub"]
+  },
+  "THR_IsHome": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["THR_NavigateToSortie", "THR_Hub"]
+  },
+  "THR_NavigateToSortie": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_Hub"]
+  },
+  "THR_IsEraSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [104, 331, 49, 235],
+        "template": "Common/时代选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [246, 389, 1, 1]
+      }
+    },
+    "post_delay": 200,
+    "next": ["THR_ConfirmEra"]
+  },
+  "THR_ConfirmEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1199, 633, 3, 1]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_Hub"]
+  },
+  "THR_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "next": ["THR_VerifyEra", "THR_ClickBackToEra"]
+  },
+  "THR_VerifyEra": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [831, 80, 26, 26],
+        "expected": ["一", "l", "1"]
+      }
+    },
+    "next": ["THR_ClickRegion1_1", "THR_Hub"]
+  },
+  "THR_ClickBackToEra": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [127, 77, 26, 28]
+      }
+    },
+    "next": ["THR_Hub"]
+  },
+  "THR_ClickRegion1_1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [191, 308, 62, 3]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_ClickRegion1_1", "THR_IsTeamSelect", "THR_Hub"]
+  },
+  "THR_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "next": ["THR_IsDamagedSword", "THR_LogNoDamagedSword"]
+  },
+  "THR_IsDamagedSword": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "next": ["THR_IsDamagedSwordInSlot2", "THR_TouchDownDamagedSword"]
+  },
+  "THR_IsDamagedSwordInSlot2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [231, 220, 64, 54],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "next": ["THR_DissolveExtraMembersHub"],
+    "on_error": ["THR_Hub"],
+    "focus": {
+      "Node.Recognition.Succeeded": {
+        "content": "[白山修刀] 已确认重伤刀剑位于2号位",
+        "display": "log"
+      }
+    }
+  },
+  "THR_IsHakusanInSlot1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [74, 182, 97, 24],
+        "expected": "白山吉光"
+      }
+    },
+    "next": ["THR_IsHakusanFatigueAbove35", "THR_LogHakusanFatigueInsufficient"],
+    "focus": {
+      "Node.Recognition.Succeeded": {
+        "content": "[白山修刀] 已确认白山吉光位于1号位",
+        "display": "log"
+      }
+    }
+  },
+  "THR_DissolveExtraMembersHub": {
+    "next": ["THR_DissolveExtraMembersCheck", "THR_IsHakusanInSlot1", "THR_ClickReplaceSlot1"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_DissolveExtraMembersCheck": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1074, 306, 41, 323],
+        "template": "Common/移除队员.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_DissolveExtraMembersHub"]
+  },
+  "THR_IsHakusanFatigueAbove35": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [344, 191, 30, 16],
+        "expected": "^(?:3[5-9]|[4-9][0-9]|100)$",
+        "only_rec": true
+      }
+    },
+    "next": ["THR_IsSlot2Naginata", "THR_ClickEquipSlot2"],
+    "on_error": ["THR_Hub"],
+    "focus": {
+      "Node.Recognition.Succeeded": {
+        "content": "[白山修刀] 已确认白山吉光疲劳值高于35",
+        "display": "log"
+      }
+    }
+  },
+  "THR_IsSlot2Naginata": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [74, 277, 117, 23],
+        "expected": "巴形|静形",
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "2号位为薙刀，无法通过白山在1-1修复"}
+    }
+  },
+  "THR_ClickEquipSlot2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [953, 231, 28, 33],
+        "expected": "装"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_IsEquipmentSelect", "THR_ClickEquipSlot2"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_IsEquipmentSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 9, 133, 40],
+        "expected": "更换装备"
+      }
+    },
+    "next": ["THR_CloseRangedEquipmentFilter", "THR_IsSlot2AmuletEmpty", "THR_ClickAutoEquipSlot2"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_CloseRangedEquipmentFilter": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [434, 84, 24, 24],
+        "method": 4,
+        "lower": [175, 30, 29],
+        "upper": [181, 36, 35],
+        "count": 1
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [476, 93, 27, 9]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [476, 93, 27, 9]
+    },
+    "next": ["THR_IsEquipmentSelect", "THR_Hub"]
+  },
+  "THR_IsSlot2AmuletEmpty": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [622, 250, 26, 28],
+        "expected": "空"
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤刀剑未装备御守"}
+    }
+  },
+  "THR_ClickAutoEquipSlot2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [665, 264, 54, 30],
+        "expected": "御守"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [560, 81, 120, 26]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [560, 81, 120, 26]
+    },
+    "next": ["THR_ClickEquipSlot1Tab"],
+    "on_error": ["THR_Hub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[白山修刀] 已确认2号刀剑装备了御守",
+        "display": "log"
+      }
+    }
+  },
+  "THR_ClickEquipSlot1Tab": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [435, 14, 27, 23],
+        "expected": "一"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [768, 13, 21, 26]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_IsEquipmentSlot1", "THR_ClickEquipSlot1Tab"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_IsEquipmentSlot1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [381, 11, 84, 28],
+        "expected": "五之二",
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [560, 81, 120, 26]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 300,
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [560, 81, 120, 26]
+    },
+    "next": ["THR_ClickBackToTeamSelect"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_ClickBackToTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 9, 133, 40],
+        "expected": "更换装备"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [134, 6, 35, 36]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_ClickSortieNow", "THR_ClickBackToTeamSelect"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_ClickSortieNow": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1165, 587, 78, 38],
+        "expected": "即刻"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_ConfirmDamagedSortie", "THR_ClickSortieNow"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_ConfirmDamagedSortie": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [542, 282, 187, 29],
+        "expected": "队中有重伤的刀剑"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [475, 448, 45, 40]
+      }
+    },
+    "repeat": 3,
+    "repeat_delay": 500,
+    "next": ["THR_ConfirmDamagedSortie", "THR_Hub"]
+  },
+  "THR_LogHakusanFatigueInsufficient": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "白山吉光疲劳值不足35"}
+    }
+  },
+  "THR_ClickReplaceSlot1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1024, 137, 28, 29],
+        "expected": "替"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_IsSwordSelect", "THR_ClickReplaceSlot1"],
+    "on_error": ["THR_Hub"],
+    "focus": {
+      "Node.Recognition.Succeeded": {
+        "content": "[白山修刀] 开始尝试将白山吉光编入1号位",
+        "display": "log"
+      }
+    }
+  },
+  "THR_IsSwordSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [537, 3, 212, 42],
+        "expected": "刀剑男士选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [827, 84, 68, 24]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_IsSwordFilter", "THR_IsSwordSelect"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_IsSwordFilter": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [532, 67, 37, 34],
+        "expected": "选"
+      }
+    },
+    "next": ["THR_ClickClearSwordFilter"]
+  },
+  "THR_ClickClearSwordFilter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [747, 138, 109, 29]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_ClickSwordTypeFilter"]
+  },
+  "THR_ClickSwordTypeFilter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [776, 289, 39, 24]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_ClickSakuraFilter"]
+  },
+  "THR_ClickSakuraFilter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [970, 437, 83, 33]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_ClickFavoriteFilter"]
+  },
+  "THR_ClickFavoriteFilter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [589, 434, 67, 34]
+      }
+    },
+    "post_delay": 500,
+    "next": ["THR_ClickConfirmSwordFilter"]
+  },
+  "THR_ClickConfirmSwordFilter": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 607, 84, 33],
+        "expected": "确定"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_delay": 500,
+    "next": ["THR_IsSwordFiltered", "THR_ClickConfirmSwordFilter"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_IsSwordFiltered": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [822, 83, 74, 26],
+        "expected": "筛选中"
+      }
+    },
+    "next": ["THR_SelectHakusan", "THR_LogHakusanNotFound"]
+  },
+  "THR_SelectHakusan": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [105, 185, 93, 24],
+        "expected": "白山吉光"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1193, 137, 32, 62]
+      }
+    },
+    "next": ["THR_IsHakusanInSlot1", "THR_SelectHakusan"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_TouchDownDamagedSword": {
+    "action": {
+      "type": "TouchDown",
+      "param": {"target": "THR_IsDamagedSword"}
+    },
+    "post_delay": 500,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step1"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step1": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 157, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step2"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step2": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 177, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step3"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step3": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 197, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2Step4"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2Step4": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 217, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchMoveDamagedSwordToSlot2"]
+  },
+  "THR_TouchMoveDamagedSwordToSlot2": {
+    "pre_delay": 0,
+    "action": {
+      "type": "TouchMove",
+      "param": {
+        "target": [273, 236, 1, 1]
+      }
+    },
+    "post_delay": 100,
+    "next": ["THR_TouchUpDamagedSwordToSlot2"]
+  },
+  "THR_TouchUpDamagedSwordToSlot2": {
+    "pre_delay": 0,
+    "action": {"type": "TouchUp"},
+    "post_delay": 0,
+    "next": ["THR_IsDamagedSword"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_LogNoDamagedSword": {
+    "next": ["THR_UseRecord_Step1"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[白山修刀] 未检测到重伤刀剑男士，结束白山修刀流程",
+        "display": "log"
+      }
+    }
+  },
+  "THR_LogHakusanNotFound": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "未找到白山吉光"}
+    }
+  },
+  "THR_UseRecord_Step1": {
+    "enabled": true,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_UseRecord_Step2", "THR_UseRecord_Step1"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_UseRecord_Step2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 140, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["THR_UseRecord_Step3"]
+  },
+  "THR_UseRecord_Step3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [442, 253, 395, 125]
+    },
+    "next": ["THR_UseRecord_Step4", "THR_UseRecord_Step3"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_UseRecord_Step4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 151, 126, 34],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [789, 512, 1, 4]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_NavigateBack", "THR_UseRecord_Step4"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_NavigateBack": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_VerifyMenuOpened", "THR_NavigateBack"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_VerifyMenuOpened": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
+      }
+    },
+    "next": ["[Anchor]PublicFlowDone"]
+  },
+  "THR_RestartGame": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction"
+    },
+    "next": ["THR_Hub"]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "THR_IsPreDamage": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["NavigateToRepair"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[重伤检测] 检测到刀剑男士重伤，进入修复流程",
+        "display": "log"
+      }
+    }
+  }
+}

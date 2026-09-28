@@ -3555,6 +3555,9 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
     /// </summary>
     private bool ShouldRebuildStaleLiveViewChannel()
     {
+        if (IsLiveViewFrameGraceActive())
+            return false;
+
         var lastFrameAt = _liveViewLastFrameAtUtc ?? _lastConnectedAtUtc;
         if (lastFrameAt is null || DateTime.UtcNow - lastFrameAt.Value < LiveViewFrameStaleLimit)
             return false;

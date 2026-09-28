@@ -1365,8 +1365,7 @@
     "pre_delay": 0,
     "anchor": {
       "Hub": "HV_DetectWhereAmI",
-      "RepairDone": "HV_DetectWhereAmI",
-      "RepairAborted": "HV_DetectWhereAmI",
+      "PublicFlowDone": "HV_DetectWhereAmI",
       "SupplyDone": "HV_IsPreSortieConfirm",
       "GrindDone": "HV_DetectWhereAmI"
     },
@@ -2430,7 +2429,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [254, 154, 31, 502],
-        "template": "Common/重疲劳.png",
+        "template": ["Common/重疲劳.png", "Common/疲劳.png"],
         "green_mask": true,
         "threshold": 0.9
       }
