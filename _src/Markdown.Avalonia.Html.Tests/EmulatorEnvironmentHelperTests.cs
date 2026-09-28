@@ -1,3 +1,4 @@
+using MFAAvalonia.Extensions.MaaFW.Custom;
 using MFAAvalonia.Helper;
 using System;
 using System.IO;
@@ -7,6 +8,28 @@ namespace Markdown.Avalonia.Html.Tests;
 
 public class EmulatorEnvironmentHelperTests
 {
+    [Theory]
+    [InlineData(false, false, false)]
+    [InlineData(true, false, true)]
+    [InlineData(false, true, true)]
+    public void 模拟器无响应或游戏重启出现ADB超时时必须强制重启(
+        bool emulatorUnresponsive, bool gameRestartAdbTimedOut, bool expected)
+    {
+        Assert.Equal(expected, RestartGameAction.ShouldForceEmulatorRestart(
+            emulatorUnresponsive, gameRestartAdbTimedOut));
+    }
+
+    [Theory]
+    [InlineData(false, true, false)]
+    [InlineData(true, false, false)]
+    [InlineData(true, true, true)]
+    public void 模拟器重启确认必须同时观察到旧连接断开与新连接就绪(
+        bool observedOldConnectionUnavailable, bool adbReady, bool expected)
+    {
+        Assert.Equal(expected, RestartGameAction.IsEmulatorRestartConfirmed(
+            observedOldConnectionUnavailable, adbReady));
+    }
+
     [Theory]
     [InlineData("MuMuPlayer12", EmulatorKind.MuMu)]
     [InlineData("LDPlayer", EmulatorKind.LDPlayer)]
