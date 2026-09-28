@@ -76,7 +76,7 @@
         "roi": [600, 34, 83, 49],
         "expected": "目录"
       }
-    },    
+    },
     "action": {
       "type": "Click",
       "param": {

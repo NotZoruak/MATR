@@ -1799,6 +1799,15 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "THR_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
             }
           }
         },
@@ -1822,6 +1831,15 @@
               "target": [282, 94, 1, 1]
             },
             "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "THR_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
             }
           }
@@ -1847,6 +1865,15 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "THR_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
             }
           }
         },
@@ -1871,6 +1898,15 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "THR_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
             }
           }
         },
@@ -1894,6 +1930,15 @@
               "target": [635, 91, 1, 1]
             },
             "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "THR_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
             }
           }

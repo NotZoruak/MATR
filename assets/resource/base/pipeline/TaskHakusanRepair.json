@@ -131,11 +131,18 @@
         "threshold": [0.98]
       }
     },
-    "next": ["THR_NavigateToSortie"]
+    "next": ["THR_NavigateToSortie", "THR_Hub"]
   },
   "THR_NavigateToSortie": {
-    "next": ["THR_NavigateClickMenu"],
-    "on_error": ["THR_Hub"]
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_Hub"]
   },
   "THR_IsEraSelect": {
     "recognition": {
@@ -201,7 +208,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [848, 607, 257, 63],
+        "roi": [191, 308, 62, 3],
         "template": "Common/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
@@ -257,7 +264,7 @@
         "threshold": [0.9]
       }
     },
-    "next": ["THR_IsHakusanInSlot1", "THR_ClickReplaceSlot1"],
+    "next": ["THR_DissolveExtraMembersHub"],
     "on_error": ["THR_Hub"],
     "focus": {
       "Node.Recognition.Succeeded": {
@@ -281,6 +288,23 @@
         "display": "log"
       }
     }
+  },
+  "THR_DissolveExtraMembersHub": {
+    "next": ["THR_DissolveExtraMembersCheck", "THR_IsHakusanInSlot1", "THR_ClickReplaceSlot1"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_DissolveExtraMembersCheck": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1074, 306, 41, 323],
+        "template": "Common/移除队员.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_DissolveExtraMembersHub"]
   },
   "THR_IsHakusanFatigueAbove35": {
     "recognition": {
@@ -407,7 +431,13 @@
         "expected": "一"
       }
     },
-    "action": {"type": "Click"},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [768, 13, 21, 26]
+      }
+    },
+    "post_delay": 500,
     "next": ["THR_IsEquipmentSlot1", "THR_ClickEquipSlot1Tab"],
     "on_error": ["THR_Hub"]
   },
@@ -415,8 +445,9 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [876, 17, 29, 19],
-        "expected": "二"
+        "roi": [381, 11, 84, 28],
+        "expected": "五之二",
+        "only_rec": true
       }
     },
     "action": {
@@ -639,7 +670,7 @@
     "on_error": ["THR_Hub"]
   },
   "THR_LogNoDamagedSword": {
-    "next": ["[Anchor]PublicFlowDone"],
+    "next": ["THR_UseRecord_Step1"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "special:[白山修刀] 未检测到重伤刀剑男士，结束白山修刀流程",
@@ -653,6 +684,103 @@
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "未找到白山吉光"}
     }
+  },
+  "THR_UseRecord_Step1": {
+    "enabled": true,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_UseRecord_Step2", "THR_UseRecord_Step1"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_UseRecord_Step2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 140, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["THR_UseRecord_Step3"]
+  },
+  "THR_UseRecord_Step3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [442, 253, 395, 125]
+    },
+    "next": ["THR_UseRecord_Step4", "THR_UseRecord_Step3"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_UseRecord_Step4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 151, 126, 34],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [789, 512, 1, 4]
+      }
+    },
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_NavigateBack", "THR_UseRecord_Step4"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_NavigateBack": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 100},
+    "next": ["THR_VerifyMenuOpened", "THR_NavigateBack"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_VerifyMenuOpened": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
+      }
+    },
+    "next": ["[Anchor]PublicFlowDone"]
   },
   "THR_RestartGame": {
     "action": {
