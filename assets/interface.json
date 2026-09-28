@@ -1733,7 +1733,14 @@
         }
       ],
       "pipeline_override": {
-        "E_WaitRefresh": {"post_delay": "{seconds}000"}
+        "E_WaitRefresh": {"post_delay": "{seconds}000"},
+        "E_SmartWait": {
+          "action": {
+            "type": "Custom",
+            "custom_action": "SmartWaitAction",
+            "custom_action_param": {"interval": "{seconds}"}
+          }
+        }
       }
     },
     "S_换队长": {
