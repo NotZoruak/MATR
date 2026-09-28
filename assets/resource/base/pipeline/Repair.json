@@ -190,7 +190,7 @@
         "gui": true
       }
     },
-    "next": ["[Anchor]RepairDone"]
+    "next": ["[Anchor]PublicFlowDone"]
   },
   "LogNoDamagedSword": {
     "recognition": {
@@ -201,7 +201,7 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["[Anchor]RepairAborted"],
+    "next": ["[Anchor]PublicFlowDone"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "special:[重伤检测] 未检测到可修复刀剑",

@@ -3,8 +3,7 @@
     "pre_delay": 0,
     "anchor": {
       "Hub": "TF_Hub",
-      "RepairDone": "TF_Hub",
-      "RepairAborted": "TF_Hub",
+      "PublicFlowDone": "TF_Hub",
       "SupplyDone": "TF_Hub"
     },
     "timeout": 120000,

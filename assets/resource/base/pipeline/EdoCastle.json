@@ -8,8 +8,7 @@
     "anchor": {
       "GrindDone": "EC_DetectWhereAmI",
       "Hub": "EC_DetectWhereAmI",
-      "RepairDone": "EC_DetectWhereAmI",
-      "RepairAborted": "EC_DetectWhereAmI",
+      "PublicFlowDone": "EC_DetectWhereAmI",
       "SupplyDone": "EC_IsPreSortieConfirm"
     },
     "timeout": 120000,
@@ -214,7 +213,7 @@
     "next": ["EC_PostSortieHub"]
   },
   "EC_CaptainHub": {
-    "next": ["EC_DragCaptain",  "EC_IsPreSortieConfirm"],
+    "next": ["EC_DragCaptain", "EC_IsPreSortieConfirm"],
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_TerminateRound": {
@@ -417,10 +416,20 @@
   },
   "EC_ClickReplenishConfirm": {
     "pre_delay": 500,
-    "action": {"type": "Click", "param": {"target": [603, 449, 78, 38]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [603, 449, 78, 38]
+      }
+    },
     "next": ["EC_AfterCaptain"],
     "on_error": ["EC_DetectWhereAmI"],
-    "focus": {"Node.Action.Succeeded": {"content": "[江户潜入] 补充门票", "display": "file"}}
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[江户潜入] 补充门票",
+        "display": "file"
+      }
+    }
   },
   "EC_ConfirmEnterMap": {
     "pre_delay": 100,
@@ -441,10 +450,20 @@
       }
     },
     "pre_delay": 100,
-    "action": {"type": "Click", "param": {"target": [590, 593, 84, 17]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [590, 593, 84, 17]
+      }
+    },
     "next": ["EC_WaitActionSelectAfterEnter"],
     "on_error": ["EC_DetectWhereAmI"],
-    "focus": {"Node.Action.Succeeded": {"content": "[江户潜入] 出阵", "display": "file"}}
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[江户潜入] 出阵",
+        "display": "file"
+      }
+    }
   },
   "EC_WaitActionSelectAfterEnter": {
     "recognition": {

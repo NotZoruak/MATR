@@ -1365,8 +1365,7 @@
     "pre_delay": 0,
     "anchor": {
       "Hub": "HV_DetectWhereAmI",
-      "RepairDone": "HV_DetectWhereAmI",
-      "RepairAborted": "HV_DetectWhereAmI",
+      "PublicFlowDone": "HV_DetectWhereAmI",
       "SupplyDone": "HV_IsPreSortieConfirm",
       "GrindDone": "HV_DetectWhereAmI"
     },

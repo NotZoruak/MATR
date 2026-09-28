@@ -7,8 +7,7 @@
     "anchor": {
       "GrindDone": "TT_DetectWhereAmI",
       "Hub": "TT_DetectWhereAmI",
-      "RepairDone": "TT_DetectWhereAmI",
-      "RepairAborted": "TT_DetectWhereAmI",
+      "PublicFlowDone": "TT_DetectWhereAmI",
       "SupplyDone": "TT_IsPreSortieConfirm"
     },
     "timeout": 120000,
@@ -106,7 +105,12 @@
     },
     "next": [],
     "on_error": ["TT_DetectWhereAmI"],
-    "focus": {"Node.Action.Succeeded": {"content": "[战术强化] 完成一圈", "display": "file"}}
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[战术强化] 完成一圈",
+        "display": "file"
+      }
+    }
   },
   "TT_IsSortie": {
     "recognition": {
@@ -271,11 +275,21 @@
         "expected": "确认"
       }
     },
-    "action": {"type": "Click", "param": {"target": [754, 592, 66, 22]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [754, 592, 66, 22]
+      }
+    },
     "post_delay": 300,
     "next": ["TT_CloseTicketDialog", "TT_ConfirmTicketReplenish"],
     "on_error": ["TT_DetectWhereAmI"],
-    "focus": {"Node.Action.Succeeded": {"content": "[战术强化] 补充门票", "display": "file"}}
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[战术强化] 补充门票",
+        "display": "file"
+      }
+    }
   },
   "TT_CloseTicketDialog": {
     "action": {
@@ -429,10 +443,20 @@
       }
     },
     "pre_delay": 100,
-    "action": {"type": "Click", "param": {"target": [1204, 629, 1, 1]}},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1204, 629, 1, 1]
+      }
+    },
     "next": ["IsPreDamage", "IsEquipmentShortagePopup", "TT_DetectWhereAmI"],
     "on_error": ["TT_DetectWhereAmI"],
-    "focus": {"Node.Action.Succeeded": {"content": "[战术强化] 出阵", "display": "file"}}
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[战术强化] 出阵",
+        "display": "file"
+      }
+    }
   },
   "TT_CheckCaptainColor": {
     "next": ["TT_CaptainHub", "TT_TryTeam1"],

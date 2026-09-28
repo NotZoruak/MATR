@@ -3645,6 +3645,15 @@
           }
         },
         {
+          "name": "白山修刀",
+          "DisplayName": "白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "S_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {

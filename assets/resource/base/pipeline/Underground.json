@@ -6,8 +6,7 @@
     "pre_delay": 0,
     "anchor": {
       "Hub": "U_DetectWhereAmI",
-      "RepairDone": "U_DetectWhereAmI",
-      "RepairAborted": "U_DetectWhereAmI",
+      "PublicFlowDone": "U_DetectWhereAmI",
       "SupplyDone": "U_IsPreSortieConfirm",
       "GrindDone": "U_DetectWhereAmI"
     },

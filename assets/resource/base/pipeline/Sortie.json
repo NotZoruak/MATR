@@ -7,8 +7,7 @@
     "pre_delay": 0,
     "anchor": {
       "Hub": "S_DetectWhereAmI",
-      "RepairDone": "S_DetectWhereAmI",
-      "RepairAborted": "S_DetectWhereAmI",
+      "PublicFlowDone": "S_DetectWhereAmI",
       "SupplyDone": "S_IsPreSortieConfirm",
       "GrindDone": "S_DetectWhereAmI"
     },
@@ -151,6 +150,7 @@
     "timeout": 30000,
     "next": [
       "IsPreDamage",
+      "THR_IsPreDamage",
       "S_StopOnDamagePopup",
       "IsEquipmentShortagePopup",
       "S_StopOnEquipmentPopup",
