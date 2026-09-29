@@ -280,7 +280,7 @@
         "expected": "白山吉光"
       }
     },
-    "next": ["THR_IsHakusanFatigueAbove35", "THR_LogHakusanFatigueInsufficient"],
+    "next": ["THR_IsSlot2Naginata", "THR_ClickEquipSlot2"],
     "focus": {
       "Node.Recognition.Succeeded": {
         "content": "[白山修刀] 已确认白山吉光位于1号位",
@@ -314,7 +314,7 @@
         "only_rec": true
       }
     },
-    "next": ["THR_IsSlot2Naginata", "THR_ClickEquipSlot2"],
+    "next": ["THR_ClickSortieNow"],
     "on_error": ["THR_Hub"],
     "focus": {
       "Node.Recognition.Succeeded": {
@@ -496,8 +496,18 @@
       }
     },
     "post_delay": 500,
-    "next": ["THR_ClickSortieNow", "THR_ClickBackToTeamSelect"],
+    "next": ["THR_IsBackAtTeamSelect", "THR_ClickBackToTeamSelect"],
     "on_error": ["THR_Hub"]
+  },
+  "THR_IsBackAtTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1165, 587, 78, 38],
+        "expected": "即刻"
+      }
+    },
+    "next": ["THR_IsHakusanFatigueAbove35", "THR_LogHakusanFatigueInsufficient"]
   },
   "THR_ClickSortieNow": {
     "recognition": {
@@ -530,10 +540,12 @@
     "next": ["THR_ConfirmDamagedSortie", "THR_Hub"]
   },
   "THR_LogHakusanFatigueInsufficient": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "白山吉光疲劳值不足35"}
+    "next": ["TF_EnterFromTeamSelect"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[白山修刀] 白山吉光疲劳值不足35，进入刷花流程",
+        "display": "log"
+      }
     }
   },
   "THR_ClickReplaceSlot1": {
