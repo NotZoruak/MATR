@@ -9,6 +9,14 @@ namespace Markdown.Avalonia.Html.Tests;
 public class WakeHomeInterruptionTests
 {
     [Fact]
+    public void 重启游戏动作必须使用所属实例的处理器()
+    {
+        var source = File.ReadAllText(FindSourcePath());
+
+        Assert.Contains("new Custom.RestartGameAction(this)", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void 唤醒本丸主枢纽使用公共中断处理并保留回本丸主线()
     {
         var pipeline = JsonNode.Parse(File.ReadAllText(FindPipelinePath()))!.AsObject();
@@ -69,5 +77,17 @@ public class WakeHomeInterruptionTests
         }
 
         throw new DirectoryNotFoundException("找不到 WakeHome.json 所在的仓库根目录。");
+    }
+
+    private static string FindSourcePath()
+    {
+        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        {
+            var sourcePath = Path.Combine(directory.FullName, "_src", "MFAAvalonia", "Extensions", "MaaFW", "MaaProcessor.cs");
+            if (Directory.Exists(Path.Combine(directory.FullName, ".git")))
+                return sourcePath;
+        }
+
+        throw new DirectoryNotFoundException("找不到 MaaProcessor.cs 所在的仓库根目录。");
     }
 }

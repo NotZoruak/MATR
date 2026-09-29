@@ -227,6 +227,10 @@ MATR 的资源包包含运行时动态编译的自定义动作。`MFAExtensions.
 
 升级时必须验证 `SwordDropLogAction`、`MixGreedySelectionAction` 和 `NewMixTargetSelectionAction` 能够动态编译并注册；同时确认资源切换后不会继续使用上一套自定义动作。
 
+### `runtime.single-instance-pipe-access`
+
+第二次启动时，若既有实例的命名管道因权限级别不同而拒绝访问，`AppRuntime.TryForwardLaunchCommand` 必须将该情况视为既有实例已接管，并让新进程安静退出。不得把 `UnauthorizedAccessException` 冒泡到 `Program.Main` 后显示“程序启动失败”弹窗；既有实例继续运行，计划任务的并行启动也不会因此产生误报。
+
 ### `runtime.debug-log-maintenance`
 
 保留 MATR 的磁盘日志维护。应用启动时必须调用 `AppPaths.CleanupOldDebugLogs`：轮转现有 `debug/maafw.log`，清理超过三天的备份日志和截图；当 `debug` 总大小超过 500 MiB 时，最多保留最新 10 个备份日志和 `on_error` 中最新 50 张 PNG 截图。

@@ -174,7 +174,7 @@
       "id": "recovery.game-and-emulator-restart",
       "title": "游戏与模拟器卡死恢复",
       "purpose": "保留 MATR 对 MFAAvalonia 恢复动作和日课卡死路径的二次开发，兼容不同模拟器的应用启动方式。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Helper/EmulatorEnvironmentHelper.cs", "_src/Markdown.Avalonia.Html.Tests/EmulatorEnvironmentHelperTests.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Helper/EmulatorEnvironmentHelper.cs", "_src/Markdown.Avalonia.Html.Tests/EmulatorEnvironmentHelperTests.cs", "_src/Markdown.Avalonia.Html.Tests/WakeHomeInterruptionTests.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json", "assets/resource/base/pipeline/WakeHome.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。模拟器重启按类型分派，环境来源优先「启动设置（软件路径与启动参数）」，其次连接配置与端口反推；温和重启必须先观察旧 ADB 连接断开、再确认新连接就绪，未观察到断开即升级强制重启。无回调或任一游戏重启 ADB 命令超时时强制重启模拟器；游戏启动失败时停止队列，不能重连并继续中断任务。",
@@ -367,6 +367,17 @@
       "migration_strategy": "保留 MaaProcessor 的独立识别执行器及其回收调用点，保留界面侧的异步执行与带超时轮询。",
       "verification": ["主 tasker 空闲时直接使用主 tasker 识别", "流水线运行期间点击识别屏幕界面保持可响应", "独立执行器创建失败时回退主 tasker 并给出提示", "实例关闭与主连接切换后不残留设备连接"],
       "notes": "主 tasker 正在跑流水线时，AppendRecognition 提交的识别要等整轮运行结束才被执行，界面直接等待就会 AppHang（2026-09-22 实测）。独立执行器与主 tasker 共享 Resource、自带控制器，只在主 tasker 运行或停止中时启用；不得改成无条件创建，否则每次识别都会新建一条设备连接。"
+    },
+    {
+      "id": "runtime.single-instance-pipe-access",
+      "title": "单实例命名管道权限拒绝处理",
+      "purpose": "避免既有实例以不同权限级别运行时，第二次启动被错误报告为程序启动失败。",
+      "files": ["_src/MFAAvalonia/AppRuntime.cs", "_src/Markdown.Avalonia.Html.Tests/AppRuntimeSingleInstanceTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 TryForwardLaunchCommand 对 UnauthorizedAccessException 的处理；发生权限拒绝时视为既有实例已接管，新进程直接退出。",
+      "verification": ["启动一个既有实例后再次启动不会显示程序启动失败弹窗", "回归测试断言权限拒绝分支存在"],
+      "notes": "命名管道可能因既有实例与新进程的权限级别不同而拒绝连接。该情况不是应用程序集或运行时缺失，不能继续落入启动总异常处理。"
     }
   ]
 }
