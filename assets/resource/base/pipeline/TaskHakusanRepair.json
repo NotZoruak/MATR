@@ -328,7 +328,7 @@
       "type": "OCR",
       "param": {
         "roi": [74, 277, 117, 23],
-        "expected": "巴形|静形",
+        "expected": "巴形|静形|岩融",
         "only_rec": true
       }
     },
@@ -418,7 +418,7 @@
       "time": 200,
       "target": [560, 81, 120, 26]
     },
-    "next": ["THR_ClickEquipSlot1Tab"],
+    "next": ["THR_RemoveSlot2Horse", "THR_ClickEquipSlot1Tab"],
     "on_error": ["THR_Hub"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -426,6 +426,18 @@
         "display": "log"
       }
     }
+  },
+  "THR_RemoveSlot2Horse": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [817, 128, 5, 3],
+        "lower": [41, 41, 41],
+        "upper": [45, 45, 45]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_ClickEquipSlot1Tab"]
   },
   "THR_ClickEquipSlot1Tab": {
     "recognition": {
