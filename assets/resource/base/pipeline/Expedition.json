@@ -585,8 +585,24 @@
     "on_error": ["Expedition"]
   },
   "E_GoHome": {
-    "next": ["E_ClickDirectoryTop", "E_LeaveTroopRecord", "E_VerifyMenuDir"],
+    "next": ["E_UseItem", "E_ClickDirectoryTop", "E_LeaveTroopRecord", "E_VerifyMenuDir"],
     "on_error": ["Expedition"]
+  },
+  "E_UseItem": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [567, 150, 136, 36],
+        "expected": "使用道具"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [467, 494, 59, 38]
+      }
+    },
+    "next": ["E_GoHome"]
   },
   "E_ClickDirectoryTop": {
     "recognition": {
@@ -2724,7 +2740,6 @@
       "custom_action": "NaibanOutfitLogAction",
       "custom_action_param": {"mode": "finish"}
     },
-    "next": ["E_GoHome"],
-    "on_error": ["E_GoHome"]
+    "next": ["E_GoHome"]
   }
 }

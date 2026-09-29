@@ -53,9 +53,11 @@
   },
   "THR_Hub": {
     "pre_delay": 0,
+    "timeout": 120000,
     "next": [
       "THR_IsEraSelect",
       "THR_IsRegionSelect",
+      "THR_IsFormationSelect",
       "THR_ClickRetreat",
       "THR_CheckHomeBrightness",
       "[JumpBack]IsBattleResult_Exp",
@@ -77,6 +79,43 @@
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["THR_RestartGame"]
+  },
+  "THR_IsFormationSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [570, 1, 139, 45],
+        "template": "Common/阵形选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1017, 421, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["THR_Hub"]
+  },
+  "THR_IsSwordDrop": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1067, 558, 120, 79]
+      }
+    },
+    "next": ["THR_Hub"]
   },
   "THR_ClickRetreat": {
     "recognition": {
@@ -280,7 +319,7 @@
         "expected": "白山吉光"
       }
     },
-    "next": ["THR_IsHakusanFatigueAbove35", "THR_LogHakusanFatigueInsufficient"],
+    "next": ["THR_IsSlot2Naginata", "THR_ClickEquipSlot2"],
     "focus": {
       "Node.Recognition.Succeeded": {
         "content": "[白山修刀] 已确认白山吉光位于1号位",
@@ -314,7 +353,7 @@
         "only_rec": true
       }
     },
-    "next": ["THR_IsSlot2Naginata", "THR_ClickEquipSlot2"],
+    "next": ["THR_ClickSortieNow"],
     "on_error": ["THR_Hub"],
     "focus": {
       "Node.Recognition.Succeeded": {
@@ -328,7 +367,7 @@
       "type": "OCR",
       "param": {
         "roi": [74, 277, 117, 23],
-        "expected": "巴形|静形",
+        "expected": "巴形|静形|岩融",
         "only_rec": true
       }
     },
@@ -418,7 +457,7 @@
       "time": 200,
       "target": [560, 81, 120, 26]
     },
-    "next": ["THR_ClickEquipSlot1Tab"],
+    "next": ["THR_RemoveSlot2Horse", "THR_ClickEquipSlot1Tab"],
     "on_error": ["THR_Hub"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -426,6 +465,18 @@
         "display": "log"
       }
     }
+  },
+  "THR_RemoveSlot2Horse": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [817, 128, 5, 3],
+        "lower": [41, 41, 41],
+        "upper": [45, 45, 45]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["THR_ClickEquipSlot1Tab"]
   },
   "THR_ClickEquipSlot1Tab": {
     "recognition": {
@@ -484,8 +535,18 @@
       }
     },
     "post_delay": 500,
-    "next": ["THR_ClickSortieNow", "THR_ClickBackToTeamSelect"],
+    "next": ["THR_IsBackAtTeamSelect", "THR_ClickBackToTeamSelect"],
     "on_error": ["THR_Hub"]
+  },
+  "THR_IsBackAtTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1165, 587, 78, 38],
+        "expected": "即刻"
+      }
+    },
+    "next": ["THR_IsHakusanFatigueAbove35", "THR_LogHakusanFatigueInsufficient"]
   },
   "THR_ClickSortieNow": {
     "recognition": {
@@ -501,10 +562,12 @@
   },
   "THR_ConfirmDamagedSortie": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [542, 282, 187, 29],
-        "expected": "队中有重伤的刀剑"
+        "roi": [229, 116, 90, 569],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.85]
       }
     },
     "action": {
@@ -518,10 +581,12 @@
     "next": ["THR_ConfirmDamagedSortie", "THR_Hub"]
   },
   "THR_LogHakusanFatigueInsufficient": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "白山吉光疲劳值不足35"}
+    "next": ["TF_EnterFromTeamSelect"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[白山修刀] 白山吉光疲劳值不足35，进入刷花流程",
+        "display": "log"
+      }
     }
   },
   "THR_ClickReplaceSlot1": {
