@@ -2256,7 +2256,12 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [423, 484, 145, 56]
+      }
+    },
     "post_wait_freezes": {
       "time": 200,
       "target": [427, 269, 426, 130]
