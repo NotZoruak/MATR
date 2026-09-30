@@ -166,9 +166,34 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["RB_EnableAutoMarch", "RB_CaptainHub"]
+    "next": ["RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"]
+  },
+  "RB_DisableAutoMarch": {
+    "enabled": true,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1173, 373, 57, 23],
+        "template": "Common/自动行军_委托中.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1151, 396, 105, 28]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1151, 396, 105, 28]
+    },
+    "next": ["RB_ClickAutoMarchConfirm"],
+    "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_EnableAutoMarch": {
+    "enabled": false,
     "recognition": {
       "type": "ColorMatch",
       "param": {
@@ -187,26 +212,25 @@
       "time": 100,
       "target": [1176, 390, 1, 2]
     },
-    "next": ["RB_ClickAutoMarchConfirm", "RB_EnableAutoMarch"],
+    "next": ["RB_ClickAutoMarchConfirm"],
     "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_ClickAutoMarchConfirm": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [713, 580, 150, 50],
-        "expected": "委托"
+        "roi": [440, 584, 110, 38],
+        "expected": ["委托"]
       }
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {
       "time": 100,
-      "target": [713, 580, 150, 50]
+      "target": [440, 584, 110, 38]
     },
     "next": ["RB_ReturnFromAutoMarch"]
   },
   "RB_ReturnFromAutoMarch": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -217,7 +241,8 @@
       "time": 100,
       "target": [1024, 30, 35, 36]
     },
-    "next": ["RB_IsTeamSelect", "RB_DetectWhereAmI"]
+    "next": ["RB_IsTeamSelect"],
+    "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_CaptainHub": {
     "next": ["RB_DragCaptain", "RB_IsPreSortieConfirm"]

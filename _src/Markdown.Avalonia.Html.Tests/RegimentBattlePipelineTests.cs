@@ -51,6 +51,60 @@ public class RegimentBattlePipelineTests
         Assert.False(pipeline.ContainsKey("RB_IsInSortie"));
     }
 
+    [Fact]
+    public void 海陆联队自动行军开关控制常规与远征计时成功路径()
+    {
+        var pipelinePath = FindPipelinePath();
+        var repositoryRoot = Directory.GetParent(Path.GetDirectoryName(pipelinePath)!)!.Parent!.Parent!.Parent!.FullName;
+        var pipeline = JsonNode.Parse(File.ReadAllText(pipelinePath))!.AsObject();
+        var interfaceConfig = JsonNode.Parse(File.ReadAllText(Path.Combine(repositoryRoot, "assets", "interface.json")))!.AsObject();
+
+        var task = interfaceConfig["task"]!.AsArray()
+            .Select(item => item!.AsObject())
+            .Single(item => item["name"]!.GetValue<string>() == "海陆联队");
+        Assert.Contains("RB_自动行军", task["option"]!.AsArray().Select(item => item!.GetValue<string>()));
+
+        var option = interfaceConfig["option"]!["RB_自动行军"]!.AsObject();
+        Assert.Equal("checkbox", option["type"]!.GetValue<string>());
+        Assert.Empty(option["default_case"]!.AsArray());
+
+        var teamSelectNext = pipeline["RB_IsTeamSelect"]!["next"]!.AsArray()
+            .Select(item => item!.GetValue<string>())
+            .ToArray();
+        var expectedAutoMarchNext = new[]
+        {
+            "RB_DisableAutoMarch",
+            "RB_EnableAutoMarch",
+            "RB_ClickAutoMarchConfirm",
+            "RB_CaptainHub"
+        };
+        Assert.Equal(expectedAutoMarchNext, teamSelectNext);
+        Assert.True(pipeline["RB_DisableAutoMarch"]!["enabled"]!.GetValue<bool>());
+        Assert.False(pipeline["RB_EnableAutoMarch"]!["enabled"]!.GetValue<bool>());
+        Assert.Equal(
+            new[] { 440, 584, 110, 38 },
+            pipeline["RB_ClickAutoMarchConfirm"]!["recognition"]!["param"]!["roi"]!.AsArray()
+                .Select(item => item!.GetValue<int>())
+                .ToArray());
+        var delegateExpected = Assert.IsType<JsonArray>(
+            pipeline["RB_ClickAutoMarchConfirm"]!["recognition"]!["param"]!["expected"]);
+        Assert.Equal(new[] { "委托" }, delegateExpected.Select(item => item!.GetValue<string>()).ToArray());
+
+        var enabledCase = option["cases"]![0]!["pipeline_override"]!.AsObject();
+        Assert.False(enabledCase["RB_DisableAutoMarch"]!["enabled"]!.GetValue<bool>());
+        Assert.True(enabledCase["RB_EnableAutoMarch"]!["enabled"]!.GetValue<bool>());
+        Assert.Equal(
+            new[] { 713, 580, 150, 50 },
+            enabledCase["RB_ClickAutoMarchConfirm"]!["recognition"]!["param"]!["roi"]!.AsArray()
+                .Select(item => item!.GetValue<int>())
+                .ToArray());
+
+        var syncOption = interfaceConfig["option"]!["RB_同步后勤"]!.AsObject();
+        var timerOverride = syncOption["cases"]![0]!["pipeline_override"]!["E_CheckTimerExpired"]!.AsObject();
+        Assert.Equal(expectedAutoMarchNext, timerOverride["next"]!.AsArray().Select(item => item!.GetValue<string>()).ToArray());
+        Assert.Equal("E_GoHome", timerOverride["on_error"]![0]!.GetValue<string>());
+    }
+
     private static string FindPipelinePath()
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
