@@ -84,6 +84,9 @@ task_plan.md
 /.claude/
 /CLAUDE.md
 
+# Superpowers 本地工作目录(不随仓库分发)
+/superpowers/
+
 # 误生成空文件（构建时 XamlCompiler 偶发把表达式写成空文件名）
 entry()
 o.Name

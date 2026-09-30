@@ -98,6 +98,12 @@ public class RegimentBattlePipelineTests
             enabledCase["RB_ClickAutoMarchConfirm"]!["recognition"]!["param"]!["roi"]!.AsArray()
                 .Select(item => item!.GetValue<int>())
                 .ToArray());
+        var terminateRound = pipeline["RB_TerminateRound"]!.AsObject();
+        Assert.Equal(10, terminateRound["repeat"]!.GetValue<int>());
+        Assert.Equal(800, terminateRound["repeat_delay"]!.GetValue<int>());
+        var enabledTerminateRoundOverride = enabledCase["RB_TerminateRound"]!.AsObject();
+        Assert.Equal(1, enabledTerminateRoundOverride["repeat"]!.GetValue<int>());
+        Assert.Equal(0, enabledTerminateRoundOverride["repeat_delay"]!.GetValue<int>());
 
         var syncOption = interfaceConfig["option"]!["RB_同步后勤"]!.AsObject();
         var timerOverride = syncOption["cases"]![0]!["pipeline_override"]!["E_CheckTimerExpired"]!.AsObject();

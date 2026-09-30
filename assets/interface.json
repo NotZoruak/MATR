@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.6-beta.2",
+  "version": "v0.14.6-beta.3",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.6-beta.2 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.6-beta.3 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -2303,6 +2303,10 @@
                   "roi": [713, 580, 150, 50]
                 }
               }
+            },
+            "RB_TerminateRound": {
+              "repeat": 1,
+              "repeat_delay": 0
             }
           }
         }

@@ -465,6 +465,14 @@
         "expected": "完成|撤退"
       }
     },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1117, 671, 2, 2]
+      }
+    },
+    "repeat": 10,
+    "repeat_delay": 800,
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 完成一圈",
@@ -482,6 +490,7 @@
         "threshold": [0.98]
       }
     },
+    "anchor": {"RB_RoundDone": "RB_TerminateRound"},
     "next": ["RB_TrySwitchTeam", "RB_CheckCaptainDamage", "RB_ClickContinueBattle", "RB_DetectWhereAmI"]
   },
   "RB_TrySwitchTeam": {
