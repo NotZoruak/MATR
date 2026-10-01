@@ -141,6 +141,12 @@ public class ResourcePointLogAction : IMaaCustomAction
 // 资源点奖励解析：把 OCR 文本（如「获得木炭×20」）转成打点格式「木炭x20」，多个资源以空格分隔
 internal static class ResourcePointRewardParser
 {
+    private static readonly IReadOnlyDictionary<string, string> ResourceNameMappings =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["末炭"] = "木炭"
+        };
+
     public static IReadOnlyList<string> Parse(string text)
     {
         var parts = new List<string>();
@@ -148,7 +154,11 @@ internal static class ResourcePointRewardParser
         // 因此乘号段允许连续出现多个 [×xX]。
         var matches = Regex.Matches(text, @"获得\s*(?<name>[^×xX\s]+)[×xX]+(?<count>\d+)");
         foreach (Match match in matches)
-            parts.Add($"{match.Groups["name"].Value}x{match.Groups["count"].Value}");
+        {
+            var rawName = match.Groups["name"].Value;
+            var name = ResourceNameMappings.GetValueOrDefault(rawName, rawName);
+            parts.Add($"{name}x{match.Groups["count"].Value}");
+        }
 
         // 资源点中的委托符固定只会掉落一个；数量末位被 OCR 截断时按该规则补全。
         if (parts.Count == 0 && Regex.IsMatch(text, @"获得\s*委托符\s*[×xX]+\s*$"))
