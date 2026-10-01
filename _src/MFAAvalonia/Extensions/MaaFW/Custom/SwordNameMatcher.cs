@@ -62,6 +62,13 @@ public static class SwordNameMatcher
     /// </summary>
     private static readonly char[] FrequentlyDroppedGlyphs = ['薙', '杵', '喰', '樋', '笹', '蛉', '髭', '麿'];
 
+    /// <summary>已确认的完整刀名 OCR 误识别别名，按目标刀名精确对应。</summary>
+    private static readonly Dictionary<string, string[]> ConfirmedOcrAliases = new(StringComparer.Ordinal)
+    {
+        ["二筋樋贞宗"] = ["二筋通贞宗"],
+        ["髭切"] = ["琵切"],
+    };
+
     /// <summary>
     /// 缺字后只剩一个字的刀名。仅当整条 OCR 文本恰好是剩余单字时才允许匹配；
     /// 其它目标仍至少保留两个字，避免普通短词发生误匹配。
@@ -81,6 +88,9 @@ public static class SwordNameMatcher
             return true;
         var normalizedOcr = Normalize(ocrText);
         var normalizedTarget = Normalize(target);
+        if (ConfirmedOcrAliases.TryGetValue(normalizedTarget, out var aliases)
+            && aliases.Any(alias => Normalize(alias) == normalizedOcr))
+            return true;
         if (normalizedOcr.Length > 0
             && (normalizedOcr.Contains(normalizedTarget, StringComparison.Ordinal)
                 || normalizedOcr == normalizedTarget))
