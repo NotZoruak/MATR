@@ -15,20 +15,22 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
-            <Button Command="{Binding AutoRecognizeCommand}" IsEnabled="{Binding IsIdle}"
-                    Background="#D9E6FF" Foreground="#165DFF">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                <Button Command="{Binding AutoRecognizeCommand}" IsEnabled="{Binding IsIdle}"
+                        Background="#D9E6FF" Foreground="#165DFF">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="自动识别" />
                     <ProgressBar Width="22" Height="4" IsIndeterminate="True" IsVisible="{Binding IsRecognizing}" VerticalAlignment="Center" />
                 </StackPanel>
-            </Button>
-            <Button Content="保存" Command="{Binding SaveCommand}" IsEnabled="{Binding HasUnsavedChanges}" Background="#5BAE7D" Foreground="White" />
-            <Button Content="撤销" Command="{Binding RevertCommand}" IsEnabled="{Binding HasUnsavedChanges}" Background="#8A94A6" Foreground="White" />
-            <Button Content="清空" Command="{Binding ClearCommand}" IsEnabled="{Binding IsIdle}" Background="#C96B6B" Foreground="White" />
-            <TextBlock Text="使用自动识别时，请保证游戏页面右上角能识别到目录按钮"
-                       Foreground="#7B8798" VerticalAlignment="Center" Margin="8,0,0,0" />
-        </StackPanel>
+                </Button>
+                <Button Content="保存" Command="{Binding SaveCommand}" IsEnabled="{Binding HasUnsavedChanges}" Background="#5BAE7D" Foreground="White" />
+                <Button Content="撤销" Command="{Binding RevertCommand}" IsEnabled="{Binding HasUnsavedChanges}" Background="#8A94A6" Foreground="White" />
+                <Button Content="清空" Command="{Binding ClearCommand}" IsEnabled="{Binding IsIdle}" Background="#C96B6B" Foreground="White" />
+            </StackPanel>
+            <TextBlock Grid.Column="1" Text="{Binding AutoRecognizeHint}" FontSize="12" TextWrapping="Wrap"
+                       Foreground="{DynamicResource SukiLowText}" VerticalAlignment="Center" />
+        </Grid>
 
         <Border Grid.Row="1" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="12,8">
             <StackPanel Spacing="6">

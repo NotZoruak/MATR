@@ -45,6 +45,12 @@ public static class ConfigurationKeys
     /// <summary>仓库数据与核心资源历史。</summary>
     public const string WarehouseData = "WarehouseData";
 
+    /// <summary>仓库正式数据最后保存时间。</summary>
+    public const string WarehouseLastUpdatedAt = "WarehouseLastUpdatedAt";
+
+    /// <summary>刀帐正式数据最后保存时间。</summary>
+    public const string SwordBookLastUpdatedAt = "SwordBookLastUpdatedAt";
+
     /// <summary>更新数据任务最近一次成功完成时间。</summary>
     public const string UpdateDataLastSucceededAt = "UpdateData.LastSucceededAt";
 

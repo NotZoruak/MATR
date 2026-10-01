@@ -68,6 +68,10 @@ public partial class WarehouseViewModel : ViewModelBase
     public string Last24HoursButtonText => IsLast24HoursSelected ? "✓ 24小时" : "24小时";
     public string Last7DaysButtonText => IsLast7DaysSelected ? "✓ 7天" : "7天";
     public string Last30DaysButtonText => IsLast30DaysSelected ? "✓ 30天" : "30天";
+    public string LastUpdatedText => DataLastUpdatedService.GetWarehouseLastUpdatedText();
+    public string AutoRecognizeHint => LastUpdatedTimeFormatter.FormatHint(
+        "使用自动识别时，请保证游戏页面右上角能识别到目录按钮。",
+        LastUpdatedText);
 
     [ObservableProperty] private bool _isRecognizing;
 
@@ -128,10 +132,13 @@ public partial class WarehouseViewModel : ViewModelBase
         }
         data.ResourceHistory = [.. _editor.Data.ResourceHistory, .. _pendingResourceHistory.Select(CloneSnapshot)];
         ConfigurationManager.Current.SetValue(ConfigurationKeys.WarehouseData, data);
+        DataLastUpdatedService.MarkWarehouseUpdated();
         _editor.LoadData(data);
         _editor.Save();
         _pendingResourceHistory.Clear();
         _hasPendingChartChanges = false;
+        OnPropertyChanged(nameof(LastUpdatedText));
+        OnPropertyChanged(nameof(AutoRecognizeHint));
         OnPropertyChanged(nameof(HasUnsavedChanges));
     }
 
@@ -227,7 +234,12 @@ public partial class WarehouseViewModel : ViewModelBase
 
     private void OnWarehouseDataSaved()
     {
-        _ = DispatcherHelper.RunOnMainThreadAsync(RefreshSavedData);
+        _ = DispatcherHelper.RunOnMainThreadAsync(() =>
+        {
+            OnPropertyChanged(nameof(LastUpdatedText));
+            OnPropertyChanged(nameof(AutoRecognizeHint));
+            RefreshSavedData();
+        });
     }
 
     private void RefreshSavedData()
@@ -384,10 +396,7 @@ public partial class WarehouseViewModel : ViewModelBase
 
     private void SetChartRange(WarehouseChartRange range)
     {
-        if (SelectedChartRange == range)
-            return;
-
-        SelectedChartRange = range;
+        SelectedChartRange = SelectedChartRange == range ? WarehouseChartRange.All : range;
         OnPropertyChanged(nameof(IsLast24HoursSelected));
         OnPropertyChanged(nameof(IsLast7DaysSelected));
         OnPropertyChanged(nameof(IsLast30DaysSelected));
@@ -499,14 +508,19 @@ public sealed partial class WarehouseComparisonChartViewModel : ObservableObject
         Action<string, int> deletePoint)
     {
         var filteredHistory = history.ToList();
-        var start = now - range switch
-        {
-            WarehouseChartRange.Last24Hours => TimeSpan.FromHours(24),
-            WarehouseChartRange.Last7Days => TimeSpan.FromDays(7),
-            WarehouseChartRange.Last30Days => TimeSpan.FromDays(30),
-            _ => throw new ArgumentOutOfRangeException(nameof(range), range, "不支持的图表时间范围"),
-        };
-        foreach (var label in WarehouseChartTimeAxis.BuildLabels(start, now, range, ChartWidth))
+        var end = range == WarehouseChartRange.All && filteredHistory.Count > 0
+            ? filteredHistory.Max(item => item.Snapshot.RecordedAt)
+            : now;
+        var start = range == WarehouseChartRange.All
+            ? filteredHistory.Count == 0 ? end : filteredHistory.Min(item => item.Snapshot.RecordedAt)
+            : now - range switch
+            {
+                WarehouseChartRange.Last24Hours => TimeSpan.FromHours(24),
+                WarehouseChartRange.Last7Days => TimeSpan.FromDays(7),
+                WarehouseChartRange.Last30Days => TimeSpan.FromDays(30),
+                _ => throw new ArgumentOutOfRangeException(nameof(range), range, "不支持的图表时间范围"),
+            };
+        foreach (var label in WarehouseChartTimeAxis.BuildLabels(start, end, range, ChartWidth))
             AxisLabels.Add(label);
 
         var values = resourceNames
@@ -532,7 +546,7 @@ public sealed partial class WarehouseComparisonChartViewModel : ObservableObject
                 filteredHistory,
                 fullHistory,
                 start,
-                now,
+                end,
                 minimum,
                 maximum,
                 deletePoint,
@@ -726,16 +740,21 @@ public sealed partial class WarehouseChartViewModel : ObservableObject
             MaximumValue = values.Max();
             LatestValue = values[^1];
         }
-        var start = now - range switch
-        {
-            WarehouseChartRange.Last24Hours => TimeSpan.FromHours(24),
-            WarehouseChartRange.Last7Days => TimeSpan.FromDays(7),
-            WarehouseChartRange.Last30Days => TimeSpan.FromDays(30),
-            _ => throw new ArgumentOutOfRangeException(nameof(range), range, "不支持的图表时间范围"),
-        };
-        foreach (var label in WarehouseChartTimeAxis.BuildLabels(start, now, range, ChartWidth))
+        var end = range == WarehouseChartRange.All && fullHistory.Count > 0
+            ? fullHistory.Max(snapshot => snapshot.RecordedAt)
+            : now;
+        var start = range == WarehouseChartRange.All
+            ? fullHistory.Count == 0 ? end : fullHistory.Min(snapshot => snapshot.RecordedAt)
+            : now - range switch
+            {
+                WarehouseChartRange.Last24Hours => TimeSpan.FromHours(24),
+                WarehouseChartRange.Last7Days => TimeSpan.FromDays(7),
+                WarehouseChartRange.Last30Days => TimeSpan.FromDays(30),
+                _ => throw new ArgumentOutOfRangeException(nameof(range), range, "不支持的图表时间范围"),
+            };
+        foreach (var label in WarehouseChartTimeAxis.BuildLabels(start, end, range, ChartWidth))
             AxisLabels.Add(label);
-        BuildPoints(name, snapshots, values, start, now, fullHistory, deletePoint);
+        BuildPoints(name, snapshots, values, start, end, fullHistory, deletePoint);
     }
     public string Name { get; }
     public int PointCount { get; }

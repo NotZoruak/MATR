@@ -378,6 +378,39 @@
       "migration_strategy": "保留 TryForwardLaunchCommand 对 UnauthorizedAccessException 的处理；发生权限拒绝时视为既有实例已接管，新进程直接退出。",
       "verification": ["启动一个既有实例后再次启动不会显示程序启动失败弹窗", "回归测试断言权限拒绝分支存在"],
       "notes": "命名管道可能因既有实例与新进程的权限级别不同而拒绝连接。该情况不是应用程序集或运行时缺失，不能继续落入启动总异常处理。"
+    },
+    {
+      "id": "warehouse.ocr-item-name-corrections",
+      "title": "仓库所持道具 OCR 名称修正",
+      "purpose": "将已知的物品名称 OCR 误识别还原为正式物品名，避免重复物品或错误名称写入仓库数据。",
+      "files": ["_src/MFAAvalonia/Services/WarehouseScanDraftService.cs", "_src/Markdown.Avalonia.Html.Tests/WarehouseScanDraftServiceTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 NormalizeOtherItemName 中套纸笔、狮子螺钾鞍与口团子的固定修正规则；实时扫描、历史草稿归一化和已保存名称匹配必须共用该入口。",
+      "verification": ["套纸笔归一化为一套纸笔", "狮子螺钾鞍归一化为狮子螺钿鞍", "口团子归一化为一口团子", "仓库物品名称定向测试通过"],
+      "notes": "不要只在仓库页面显示层替换名称，否则已保存草稿与重新扫描的名称无法统一，可能出现重复物品。"
+    },
+    {
+      "id": "ui.data-last-updated",
+      "title": "仓库与刀帐最后更新时间",
+      "purpose": "让用户可在仓库和刀帐页面确认各自正式数据的最后保存时间。",
+      "files": ["_src/MFAAvalonia/Configuration/ConfigurationKeys.cs", "_src/MFAAvalonia/Services/DataLastUpdatedService.cs", "_src/MFAAvalonia/Services/LastUpdatedTimeFormatter.cs", "_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia/ViewModels/Pages/WarehouseViewModel.cs", "_src/MFAAvalonia/ViewModels/Pages/SwordBookViewModel.cs", "_src/MFAAvalonia/Views/Pages/WarehouseView.axaml", "_src/MFAAvalonia/Views/Pages/SwordBookView.axaml", "_src/Markdown.Avalonia.Html.Tests/LastUpdatedTimeFormatterTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留仓库与刀帐两个独立配置键、ISO 8601 持久化格式、手动保存和更新数据任务两个写入点，以及保存完成后的页面属性刷新。自动识别提示与最后更新时间必须经同一个文本绑定并使用 SukiLowText，不能拆成两个会独立换行的控件。仓库说明末尾保留句号，说明与最后更新时间直接相连，不使用额外分隔符。",
+      "verification": ["首次打开页面显示最后更新：暂无", "手动保存仓库后仅仓库时间更新", "手动保存刀帐后仅刀帐时间更新", "更新数据任务仅保存仓库或刀帐时更新对应时间", "同时保存两类数据时两边均显示各自时间", "最后更新时间格式化测试通过", "桌面项目构建成功"],
+      "notes": "配置时间不属于更新数据任务的调度成功时间：前者反映正式数据写入时刻，后者用于决定任务是否到期。两个用途与键空间必须保持独立。"
+    },
+    {
+      "id": "ui.warehouse-chart-all-history",
+      "title": "仓库图表全部历史记录范围",
+      "purpose": "让用户取消全部预设时间范围后查看完整的核心资源变化历史。",
+      "files": ["_src/MFAAvalonia/Services/WarehouseResourceHistoryFilter.cs", "_src/MFAAvalonia/Services/WarehouseChartTimeAxis.cs", "_src/MFAAvalonia/ViewModels/Pages/WarehouseViewModel.cs", "_src/Markdown.Avalonia.Html.Tests/WarehouseComparisonChartTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 WarehouseChartRange.All：再次点击已选时间按钮时切换到该状态，筛选保留全部记录，图表横轴按完整记录的最早与最新时间生成。",
+      "verification": ["首次打开仓库页面默认选中 7 天", "再次点击已选时间按钮后三个按钮均未选中", "无选中范围时 60 天前的记录仍显示", "重新选择 24 小时、7 天或 30 天后恢复对应筛选", "定向过滤测试通过", "桌面项目构建成功"],
+      "notes": "All 仅是内部范围状态，界面不新增全部按钮；三个时间按钮均未选中即为全部记录。时间轴在全部范围不超过一天时显示时分，其它情况显示月日。"
     }
   ]
 }

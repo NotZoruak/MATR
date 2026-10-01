@@ -45,6 +45,7 @@ public static class UpdateDataPersistenceService
             .. warehouseData.ResourceHistory.Select(CloneSnapshot),
         ];
         ConfigurationManager.Current.SetValue(ConfigurationKeys.WarehouseData, warehouseData);
+        DataLastUpdatedService.MarkWarehouseUpdated();
         WarehouseDataSaved?.Invoke();
         return true;
     }
@@ -64,6 +65,7 @@ public static class UpdateDataPersistenceService
             states,
             Newtonsoft.Json.JsonSerializer.Create(serializerSettings));
         ConfigurationManager.Current.SetValue(ConfigurationKeys.SwordBookEntries, serializedStates);
+        DataLastUpdatedService.MarkSwordBookUpdated();
         NotifySwordBookDataSaved();
         return true;
     }

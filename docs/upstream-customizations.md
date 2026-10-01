@@ -63,6 +63,14 @@
 
 「识别内容」与「触发间隔」是两个独立选项，如果分别生成同一个 node 的 `pipeline_override`，MaaFramework 只保留最后一层。因此 `MaaProcessor.ApplyUpdateDataScheduleParams` 在合并完任务选项后，把调度键与触发间隔合成一次注入，并写明 `UD_IsIntervalDue.recognition` 与 `UD_MarkSuccess.action` 的完整结构。升级时必须保留该注入：删掉它会让间隔退化为 pipeline 里的默认值（每天 + 范围:仓库+刀帐），成功时间也会全部记到默认调度键上。
 
+### `ui.data-last-updated`
+
+仓库与刀帐页面使用同一段主题灰色说明文本显示自动识别提示与最后更新时间，说明句号后直接接“最后更新”；窄窗口需要换行时仍作为同一段自然换行，不得将最后更新时间单独排成一行。两类时间分别持久化：手动保存仓库或刀帐，以及更新数据任务成功写入对应正式数据后，分别更新各自的时间；更新其中一类不得覆盖另一类。旧配置没有时间时显示“最后更新：暂无”。升级时保留 `DataLastUpdatedService` 的 ISO 8601 存储与读取，以及更新数据持久化完成事件触发后的页面刷新。
+
+### `ui.warehouse-chart-all-history`
+
+仓库核心资源变化的 24 小时、7 天与 30 天按钮均可再次点击取消选择。三个按钮都未选中时，显示全部历史记录，并以最早到最新记录生成横轴；再次选择任一按钮后恢复相应时间范围。首次打开页面仍默认选择 7 天，避免改变既有显示范围。
+
 ### `daily-task.per-game-day-completion`
 
 一键日课的登录奖励、暖心礼包、合成、刀解和锻刀使用 MATR 自定义的游戏日完成台账。完成日期按每日 5:00 切换；状态写入 `debug/logs/daily-task-completion.log`。开启刀解时，首次刀解至少一把；若收取完成锻刀所需刀位不足，则按缺口刀解腾位。两种刀解均写入同一当天完成记录：已经完成当天刀解后，仍会在收刀缺位时继续按缺口刀解。每页选择许可名单中的刀剑前，必须读取当前已选数量，并且只选择剩余所需数量，不能因同页存在多把许可刀剑而超选。当天锻刀完成记录只阻止新建锻刀，仍必须进入锻刀状况页收取已完成刀剑。无合成素材、刀解素材不足或未完成 3 次锻刀均不得标记为完成；其中无合成素材走「本次运行跳过」，只写运行期状态，台账与设置页保持不变，下一次运行仍会重新尝试。
@@ -302,3 +310,7 @@ Windows 上正在写入的 `debug/logs/log-*.log` 被日志器占用（`shared: 
 ### `forge-calculator.aux-recognition-tasker`
 
 限锻资源计算器的「识别屏幕」是界面侧的一次性识别，不能再投递给主 tasker 排队。主 tasker 正在执行流水线时，`AppendRecognition` 提交的识别要等整轮运行结束才会被执行，界面直接等待就会卡死（2026-09-22 实测记录到 AppHang）。`MaaProcessor.AcquireAuxRecognitionTasker` 提供的独立执行器必须保留：它与主 tasker 共享 `Resource`、自带控制器，只在主 tasker 处于运行或停止中时启用；主 tasker 空闲时仍直接使用主 tasker，不额外建立设备连接。执行器在实例关闭、主连接切换与主 tasker 变更时通过 `DisposeAuxRecognitionTasker` 回收，停止等待上限 3 秒，避免残留设备连接。界面侧的异步执行同样不能回退：`ForgeCalculatorViewModel.RecognizeScreen` 的截图与 OCR 全部在 `Task.Run` 中完成，等待用带超时的轮询代替无上限的 `WaitFor`（单次识别 5 秒、回退到运行中的主 tasker 时 3 秒、截图 10 秒），超时按当前状态给出提示而不是让界面停住。
+
+### `warehouse.ocr-item-name-corrections`
+
+仓库所持道具 OCR 名称必须在 `WarehouseScanDraftService.NormalizeOtherItemName` 统一修正：`套纸笔` 还原为 `一套纸笔`，`狮子螺钾鞍` 还原为 `狮子螺钿鞍`，`口团子` 还原为 `一口团子`。该入口同时覆盖实时扫描、历史草稿归一化和已保存名称匹配，不能只在界面显示层处理，否则旧草稿与重新扫描的结果会产生重复物品。
