@@ -405,7 +405,7 @@
     "next": ["HP_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "special:[秘宝之里] 购买门票",
+        "content": "special:[秘宝之里] 补充门票",
         "display": "log"
       }
     }

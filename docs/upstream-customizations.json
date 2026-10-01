@@ -411,6 +411,17 @@
       "migration_strategy": "保留 WarehouseChartRange.All：再次点击已选时间按钮时切换到该状态，筛选保留全部记录，图表横轴按完整记录的最早与最新时间生成。",
       "verification": ["首次打开仓库页面默认选中 7 天", "再次点击已选时间按钮后三个按钮均未选中", "无选中范围时 60 天前的记录仍显示", "重新选择 24 小时、7 天或 30 天后恢复对应筛选", "定向过滤测试通过", "桌面项目构建成功"],
       "notes": "All 仅是内部范围状态，界面不新增全部按钮；三个时间按钮均未选中即为全部记录。时间轴在全部范围不超过一天时显示时分，其它情况显示月日。"
+    },
+    {
+      "id": "external-notification.run-summary",
+      "title": "外部通知结束报告与实例交接",
+      "purpose": "在任务正常完成时发送可选内容丰富的报告，并在实例切换时合并连续运行记录。",
+      "files": ["_src/MFAAvalonia/Configuration/ConfigurationKeys.cs", "_src/MFAAvalonia/Services/ExternalNotificationRunSummary.cs", "_src/MFAAvalonia/Services/ExternalNotificationReportFormatter.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/FocusHandler.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwitchInstanceAction.cs", "_src/MFAAvalonia/ViewModels/UsersControls/Settings/ExternalNotificationSettingsUserControlModel.cs", "_src/MFAAvalonia/Views/UserControls/Settings/ExternalNotificationSettingsUserControl.axaml", "assets/resource/base/custom/SwordDropLogAction.cs", "assets/resource/base/custom/ResourcePointLogAction.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留运行时内存摘要、固定结束摘要、四项默认关闭的拓展开关与实例交接会话；不得重新解析工作记录文件，也不得恢复旧的自定义成功或失败文案。",
+      "verification": ["结束报告格式化器定向测试通过", "刀剑掉落测试通过", "桌面项目构建成功", "正常完成时发送一条报告，停止或失败不发送部分成功报告", "实例切换后由最后一个实例发送合并报告"],
+      "notes": "即时刀剑掉落的系统通知与 GUI 日志仍由全局刀剑掉落播报及名单控制；仅外部即时发送额外读取拓展开关。任务收获中的刀剑汇总不受即时播报名单影响。"
     }
   ]
 }

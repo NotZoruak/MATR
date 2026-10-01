@@ -252,6 +252,9 @@ public class SwordDropLogAction : IMaaCustomAction
     /// <summary>按全局开关和播报名单发送刀剑掉落通知。</summary>
     private static void TryNotify<T>(T context, string swordName, string swordType) where T : IMaaContext
     {
+        var processor = ActionParamHelper.ResolveOwnerProcessor(context);
+        processor?.RecordExternalNotificationSwordDrop(swordType, swordName);
+
         if (!ConfigurationManager.Current.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false))
             return;
 
@@ -264,11 +267,13 @@ public class SwordDropLogAction : IMaaCustomAction
 
         var message = SwordDropNotificationMatcher.BuildNotificationMessage(swordType, swordName);
         ToastNotification.Show(message);
-        _ = ExternalNotificationHelper.ExternalNotificationAsync(message);
+        if (ConfigurationManager.Current.GetValue(ConfigurationKeys.ExternalNotificationIncludeSwordDropBroadcast, false))
+            _ = ExternalNotificationHelper.ExternalNotificationAsync(
+                SwordDropNotificationMatcher.BuildExternalNotificationMessage(swordType, swordName, DateTime.Now));
         try
         {
             // 只写实时 GUI 日志，不写文件日志，避免新增工作记录解析词条。
-            ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message, writeToFileLog: false);
+            processor?.AddLog(message, writeToFileLog: false);
         }
         catch
         {

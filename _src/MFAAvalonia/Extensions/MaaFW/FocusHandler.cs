@@ -235,6 +235,7 @@ public class FocusHandler
     /// </summary>
     private void DispatchToChannels(string displayText, List<string> displays, bool recordAsSpecial)
     {
+        _viewModel.Processor?.RecordExternalNotificationFocus(displayText, recordAsSpecial);
         foreach (var channel in displays)
         {
             switch (channel.ToLower())

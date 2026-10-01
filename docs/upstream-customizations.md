@@ -318,3 +318,9 @@ Windows 上正在写入的 `debug/logs/log-*.log` 被日志器占用（`shared: 
 ### `warehouse.ocr-item-name-corrections`
 
 仓库所持道具 OCR 名称必须在 `WarehouseScanDraftService.NormalizeOtherItemName` 统一修正：`套纸笔` 还原为 `一套纸笔`，`狮子螺钾鞍` 还原为 `狮子螺钿鞍`，`口团子` 还原为 `一口团子`。该入口同时覆盖实时扫描、历史草稿归一化和已保存名称匹配，不能只在界面显示层处理，否则旧草稿与重新扫描的结果会产生重复物品。
+
+### `external-notification.run-summary`
+
+外部通知的正常完成消息必须由 `ExternalNotificationRunSummary` 和 `ExternalNotificationReportFormatter` 生成，固定包含总用时和实际启动任务的聚合重复次数及耗时。设置页只提供“任务收获”“后勤动态”“特殊情况”“刀剑掉落播报”四项默认关闭的拓展开关，不得恢复旧的成功或失败自定义文案输入。刀剑掉落始终进入结束收获汇总；即时外部播报则额外受“刀剑掉落播报”拓展开关控制，关闭时仍保留原本的弹窗和 GUI 日志。
+
+实例切换时，`SwitchInstanceAction` 必须在停止源实例前交接已收集的运行会话；只有目标实例空闲并正常完成时发送一条按实例分段的合并报告。目标实例忙碌、任一分段失败或手动停止时不得伪造成功报告。升级上游时需同时核对 `MaaProcessor` 的任务生命周期、`FocusHandler` 的业务文本归类与资源侧的掉落、资源打点入口。

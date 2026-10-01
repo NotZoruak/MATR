@@ -207,6 +207,10 @@ public static class ConfigurationKeys
     public const string ExternalNotificationEnableCustomMessage = "ExternalNotificationEnableCustomMessage";
     public const string ExternalNotificationCustomSuccessText = "ExternalNotificationCustomSuccessText";
     public const string ExternalNotificationCustomFailureText = "ExternalNotificationCustomFailureText";
+    public const string ExternalNotificationIncludeTaskHarvest = "ExternalNotificationIncludeTaskHarvest";
+    public const string ExternalNotificationIncludeLogistics = "ExternalNotificationIncludeLogistics";
+    public const string ExternalNotificationIncludeSpecialCases = "ExternalNotificationIncludeSpecialCases";
+    public const string ExternalNotificationIncludeSwordDropBroadcast = "ExternalNotificationIncludeSwordDropBroadcast";
 
     #endregion
 
