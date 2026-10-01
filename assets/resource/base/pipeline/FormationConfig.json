@@ -462,7 +462,7 @@
       "time": 200,
       "target": [496, 8, 288, 108]
     },
-    "next": ["FC_IsSwordSelect2"],
+    "next": ["FC_IsSwordSelect2", "FC_ConfigureSwordSlot2"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_IsSwordSelect2": {
@@ -597,7 +597,7 @@
       "time": 200,
       "target": [496, 8, 288, 108]
     },
-    "next": ["FC_IsSwordSelect3"],
+    "next": ["FC_IsSwordSelect3", "FC_ConfigureSwordSlot3"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_IsSwordSelect3": {
@@ -732,7 +732,7 @@
       "time": 200,
       "target": [496, 8, 288, 108]
     },
-    "next": ["FC_IsSwordSelect4"],
+    "next": ["FC_IsSwordSelect4", "FC_ConfigureSwordSlot4"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_IsSwordSelect4": {
@@ -867,7 +867,7 @@
       "time": 200,
       "target": [496, 8, 288, 108]
     },
-    "next": ["FC_IsSwordSelect5"],
+    "next": ["FC_IsSwordSelect5", "FC_ConfigureSwordSlot5"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_IsSwordSelect5": {
@@ -1002,7 +1002,7 @@
       "time": 200,
       "target": [496, 8, 288, 108]
     },
-    "next": ["FC_IsSwordSelect6"],
+    "next": ["FC_IsSwordSelect6", "FC_ConfigureSwordSlot6"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_IsSwordSelect6": {
