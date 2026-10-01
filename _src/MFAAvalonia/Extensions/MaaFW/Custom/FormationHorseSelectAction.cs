@@ -63,8 +63,8 @@ public class FormationHorseSelectAction : IMaaCustomAction
                     context.Click(cx, cy);
                     ActionParamHelper.SleepWithStopCheck(context, 500);
 
-                    // 第二次点击：OCR 找「确定」并点击，冻结 100ms
-                    if (ListOcrScan.ClickConfirm(context))
+                    // 第二次点击：OCR 找到「确定」后双击确认按钮
+                    if (ListOcrScan.ClickConfirm(context, doubleClick: true))
                         return true;
                 }
                 LoggerHelper.Error("[FormationHorseSelect] 重试后仍未找到「确定」按钮");

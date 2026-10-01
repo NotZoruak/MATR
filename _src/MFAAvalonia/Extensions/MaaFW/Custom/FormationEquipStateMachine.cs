@@ -54,8 +54,8 @@ public class FormationEquipStateMachine : IMaaCustomAction
     /// <summary>宝物列表标题确认 OCR 区域</summary>
     private static readonly int[] TreasureListConfirmRoi = [860, 96, 49, 25];
 
-    /// <summary>宝物列表中仅显示未装备筛选标记区域</summary>
-    private static readonly int[] TreasureUnassignedFilterRoi = [1020, 97, 24, 24];
+    /// <summary>马匹与宝物列表中仅显示未装备筛选标记区域</summary>
+    private static readonly int[] UnassignedFilterRoi = [1020, 97, 24, 24];
 
     /// <summary>宝物列表 OCR 区域</summary>
     private static readonly int[] TreasureListRoi = [950, 172, 131, 515];
@@ -281,6 +281,11 @@ public class FormationEquipStateMachine : IMaaCustomAction
                 slotMissing = true;
                 LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 马匹列表未确认，跳过马匹配置");
             }
+            else if (!EnsureUnassignedFilter(context))
+            {
+                slotMissing = true;
+                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 马匹未装备筛选状态未能切换，跳过马匹配置");
+            }
             else if (!FormationHorseSelectAction.SelectHorse(context, pos))
             {
                 // 目标马匹不存在（列表已到底）：跳过马匹配置，继续下一成员，避免流程卡死
@@ -292,7 +297,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
         // 宝物：马匹完成后，打开宝物页并确保只显示未装备宝物，再选择目标宝物
         if (!string.IsNullOrEmpty(FormationContext.Treasures[pos - 1]))
         {
-            if (!ClickTreasureSlot(context) || !EnsureUnassignedTreasureFilter(context)
+            if (!ClickTreasureSlot(context) || !EnsureUnassignedFilter(context)
                 || !SelectTreasure(context, pos))
             {
                 slotMissing = true;
@@ -352,20 +357,20 @@ public class FormationEquipStateMachine : IMaaCustomAction
         return false;
     }
 
-    /// <summary>反复点击筛选标记，直到宝物列表不再显示全白的未装备筛选标记。</summary>
-    private bool EnsureUnassignedTreasureFilter<T>(T context) where T : IMaaContext
+    /// <summary>反复检查并点击筛选标记，直到马匹或宝物列表启用仅显示未装备筛选。</summary>
+    private bool EnsureUnassignedFilter<T>(T context) where T : IMaaContext
     {
         for (int attempt = 0; attempt < 8; attempt++)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            if (!IsSolidColor(context, TreasureUnassignedFilterRoi, [255, 255, 252]))
+            if (!IsSolidColor(context, UnassignedFilterRoi, [255, 255, 252]))
                 return true;
 
-            ClickRect(context, TreasureUnassignedFilterRoi);
+            ClickRect(context, UnassignedFilterRoi);
             ActionParamHelper.SleepWithStopCheck(context, 500);
         }
 
-        LoggerHelper.Error("[FormationEquipStateMachine] 宝物未装备筛选状态未能切换");
+        LoggerHelper.Error("[FormationEquipStateMachine] 马匹或宝物未装备筛选状态未能切换");
         return false;
     }
 
@@ -384,7 +389,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
                 var cy = box[1] + box[3] / 2;
                 context.Click(cx, cy);
                 ActionParamHelper.SleepWithStopCheck(context, 500);
-                return ListOcrScan.ClickConfirm(context);
+                return ListOcrScan.ClickConfirm(context, doubleClick: true);
             },
             "FormationTreasureSelect",
             exactMatch: true);
