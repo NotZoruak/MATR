@@ -60,6 +60,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchCountText))]
     [NotifyPropertyChangedFor(nameof(SelectedHasLogisticsSummary))]
     [NotifyPropertyChangedFor(nameof(SelectedHasLogisticsDispatch))]
+    [NotifyPropertyChangedFor(nameof(SelectedHasLogisticsDispatchDetails))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchTexts))]
     [NotifyPropertyChangedFor(nameof(SelectedHasLogisticsRepairs))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsRepairTexts))]
@@ -90,6 +91,11 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>后勤记录卡片内容是否展开。</summary>
     [ObservableProperty] private bool _isLogisticsExpanded = true;
 
+    /// <summary>派遣远征具体记录是否展开。</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchToggleText))]
+    private bool _isLogisticsDispatchExpanded;
+
     /// <summary>特殊情况卡片内容是否展开。</summary>
     [ObservableProperty] private bool _isSpecialEventsExpanded = true;
 
@@ -105,9 +111,18 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [RelayCommand]
     private void ToggleLogistics() => IsLogisticsExpanded = !IsLogisticsExpanded;
 
+    /// <summary>收起或展开派遣远征的具体记录。</summary>
+    [RelayCommand]
+    private void ToggleLogisticsDispatch() => IsLogisticsDispatchExpanded = !IsLogisticsDispatchExpanded;
+
     /// <summary>收起或展开特殊情况卡片内容。</summary>
     [RelayCommand]
     private void ToggleSpecialEvents() => IsSpecialEventsExpanded = !IsSpecialEventsExpanded;
+
+    partial void OnSelectedRecordChanged(WorkRecord? value)
+    {
+        IsLogisticsDispatchExpanded = false;
+    }
 
     public bool HasSavedRecords => SavedRecords.Count > 0;
     public bool CanSaveSelectedRecords => SelectedLogRecords.Count > 0
@@ -501,17 +516,43 @@ public partial class WorkRecordsViewModel : ViewModelBase
         }
     }
 
-    /// <summary>派遣远征摘要文本，与下面的详细派遣记录保持同一组。</summary>
-    public string SelectedLogisticsDispatchCountText =>
-        SelectedRecord?.LogisticsCounts.TryGetValue("派遣远征", out var count) == true
-            ? $"派遣远征 ×{count}"
-            : "";
+    /// <summary>派遣远征摘要文本，包含按地图编号排序的派遣次数。</summary>
+    public string SelectedLogisticsDispatchCountText
+    {
+        get
+        {
+            if (SelectedRecord?.LogisticsCounts.TryGetValue("派遣远征", out var count) != true)
+                return "";
+
+            var mapCounts = SelectedRecord.LogisticsDispatches
+                .GroupBy(dispatch => dispatch.Map)
+                .OrderBy(group => GetDispatchMapSortKey(group.Key).Area)
+                .ThenBy(group => GetDispatchMapSortKey(group.Key).Stage)
+                .ThenBy(group => GetDispatchMapSortKey(group.Key).Text, StringComparer.Ordinal)
+                .Select(group => $"{group.Key} ×{group.Count()}");
+            return $"派遣远征 ×{count}" + string.Concat(mapCounts.Select(item => $"    {item}"));
+        }
+    }
+
+    private static (int Area, int Stage, string Text) GetDispatchMapSortKey(string map)
+    {
+        var parts = map.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return parts.Length == 2
+            && int.TryParse(parts[0], out var area)
+            && int.TryParse(parts[1], out var stage)
+            ? (area, stage, map)
+            : (int.MaxValue, int.MaxValue, map);
+    }
 
     /// <summary>派遣远征明细文本，由界面按可用宽度自动换行。</summary>
     public IReadOnlyList<string> SelectedLogisticsDispatchTexts =>
         SelectedRecord?.LogisticsDispatches
             .Select(d => $"{d.Time:MM-dd HH:mm}  {d.Unit} → {d.Map}")
             .ToList() ?? [];
+
+    /// <summary>派遣远征具体记录的展开按钮文本。</summary>
+    public string SelectedLogisticsDispatchToggleText =>
+        IsLogisticsDispatchExpanded ? "收起具体远征派遣记录" : "查看具体远征派遣记录";
 
     /// <summary>是否有后勤摘要</summary>
     public bool SelectedHasLogisticsSummary => !string.IsNullOrWhiteSpace(SelectedLogisticsSummaryText);
@@ -520,6 +561,9 @@ public partial class WorkRecordsViewModel : ViewModelBase
     public bool SelectedHasLogisticsDispatch =>
         !string.IsNullOrWhiteSpace(SelectedLogisticsDispatchCountText)
         || SelectedLogisticsDispatchTexts.Count > 0;
+
+    /// <summary>是否有可展开的派遣远征具体记录。</summary>
+    public bool SelectedHasLogisticsDispatchDetails => SelectedLogisticsDispatchTexts.Count > 0;
 
     /// <summary>修刀明细，位于派遣远征组与内番服组之间。</summary>
     public IReadOnlyList<string> SelectedLogisticsRepairTexts =>
