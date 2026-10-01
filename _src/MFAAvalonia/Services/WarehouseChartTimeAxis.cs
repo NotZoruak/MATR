@@ -28,7 +28,10 @@ public static class WarehouseChartTimeAxis
         const int labelCount = 5;
         var labels = new List<WarehouseChartTimeAxisLabel>(labelCount);
         var elapsed = end - start;
-        var format = range == WarehouseChartRange.Last24Hours ? "HH:mm" : "MM-dd";
+        var format = range == WarehouseChartRange.Last24Hours
+            || range == WarehouseChartRange.All && elapsed <= TimeSpan.FromDays(1)
+            ? "HH:mm"
+            : "MM-dd";
         for (var index = 0; index < labelCount; index++)
         {
             var ratio = (double)index / (labelCount - 1);

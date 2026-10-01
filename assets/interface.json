@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.14.6-beta.1",
+  "version": "v0.14.6-beta.4",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.14.6-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.14.6-beta.4 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -162,6 +162,7 @@
         "RB_选择部队",
         "RB_选择难度",
         "RB_疲劳处理",
+        "RB_自动行军",
         "RB_更换队长",
         "RB_部队交替",
         "RB_购买门票",
@@ -2286,6 +2287,32 @@
       ],
       "default_case": []
     },
+    "RB_自动行军": {
+      "name": "RB_自动行军",
+      "label": "自动行军",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "RB_DisableAutoMarch": {"enabled": false},
+            "RB_EnableAutoMarch": {"enabled": true},
+            "RB_ClickAutoMarchConfirm": {
+              "recognition": {
+                "param": {
+                  "roi": [713, 580, 150, 50]
+                }
+              }
+            },
+            "RB_TerminateRound": {
+              "repeat": 1,
+              "repeat_delay": 0
+            }
+          }
+        }
+      ],
+      "default_case": []
+    },
     "RB_选择难度": {
       "name": "RB_选择难度",
       "label": "选择难度",
@@ -2655,7 +2682,7 @@
               "next": ["RB_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["RB_EnableAutoMarch", "RB_CaptainHub"],
+              "next": ["RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"],
               "on_error": ["E_GoHome"]
             }
           }

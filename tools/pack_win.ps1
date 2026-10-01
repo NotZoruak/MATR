@@ -89,6 +89,14 @@ if (Test-Path "$TempDir\assets\resource\temp") { Remove-Item -Recurse -Force "$T
 if (Test-Path "$TempDir\assets\resource\backup") { Remove-Item -Recurse -Force "$TempDir\assets\resource\backup" }
 if (Test-Path "$TempDir\assets\resource\base\image\unused") { Remove-Item -Recurse -Force "$TempDir\assets\resource\base\image\unused" }
 
+# 版本更新公告由发布页提供，安装包只保留长期公告。
+$AnnouncementDir = Join-Path $TempDir 'assets\resource\announcement'
+if (Test-Path -LiteralPath $AnnouncementDir) {
+    Get-ChildItem -LiteralPath $AnnouncementDir -File |
+        Where-Object { $_.Name -match '^\d+-v.+ 更新公告\.md$' } |
+        Remove-Item -Force
+}
+
 # Package (compress temp dir contents directly, no wrapper folder)
 Compress-Archive -Path "$TempDir\*" -DestinationPath $ZipFile -Force
 

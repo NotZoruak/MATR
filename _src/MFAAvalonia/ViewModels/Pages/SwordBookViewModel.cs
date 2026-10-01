@@ -36,7 +36,10 @@ public partial class SwordBookViewModel : ViewModelBase
     public IReadOnlyList<SwordBookFilterOption> TrueSwordFilterOptions { get; } = CreateFilterOptions("真剑");
     public IReadOnlyList<SwordBookFilterOption> InnerCareFilterOptions { get; } = CreateFilterOptions("内番");
     public IReadOnlyList<SwordBookFilterOption> CasualFilterOptions { get; } = CreateFilterOptions("轻装");
-    public string Instruction => "请先将游戏页面切换至序号最小的已拥有刀剑男士的刀帐页面，自动识别将从当前刀剑开始扫描。";
+    public string LastUpdatedText => DataLastUpdatedService.GetSwordBookLastUpdatedText();
+    public string AutoRecognizeHint => LastUpdatedTimeFormatter.FormatHint(
+        "请先将游戏页面切换至序号最小的已拥有刀剑男士的刀帐页面，自动识别将从当前刀剑开始扫描。",
+        LastUpdatedText);
     public bool HasUnsavedChanges => Entries.Any(HasChanged);
     public bool IsIdle => !IsRecognizing;
 
@@ -70,8 +73,11 @@ public partial class SwordBookViewModel : ViewModelBase
         foreach (var pair in values)
             _savedEntries[pair.Key] = pair.Value.Clone();
         ConfigurationManager.Current.SetValue(ConfigurationKeys.SwordBookEntries, values.Values.Select(ToState).ToList());
+        DataLastUpdatedService.MarkSwordBookUpdated();
         foreach (var row in Entries)
             row.MarkSaved();
+        OnPropertyChanged(nameof(LastUpdatedText));
+        OnPropertyChanged(nameof(AutoRecognizeHint));
         NotifySavedStateChanged();
     }
 
@@ -264,7 +270,12 @@ public partial class SwordBookViewModel : ViewModelBase
 
     private void OnSwordBookDataSaved()
     {
-        _ = DispatcherHelper.RunOnMainThreadAsync(LoadSavedState);
+        _ = DispatcherHelper.RunOnMainThreadAsync(() =>
+        {
+            LoadSavedState();
+            OnPropertyChanged(nameof(LastUpdatedText));
+            OnPropertyChanged(nameof(AutoRecognizeHint));
+        });
     }
 
     private void LoadDraft()

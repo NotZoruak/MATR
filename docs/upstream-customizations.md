@@ -35,9 +35,15 @@
 
 预设选择页支持新增、编辑、复制、粘贴、删除和勾选预设，自定编队任务可勾选多个预设并按设置页从上到下的顺序依次编成。多选编号保存在任务选项数据的 `preset_ids` 中；`MaaProcessor` 在任务装配阶段按预设逐个展开为多次编队任务，再把单个预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖。一键日课不再内置“开始前启用预设部队”，需要先编队时由用户启用默认排在日课之前的自定编队任务。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
 
+装备马匹与宝物时，点击槽位并确认对应列表展开后，均需检查同一筛选标记是否处于未勾选状态；若标记区域为全白 `[255,255,252]`，点击 `[1020,97,24,24]` 并等待后再次检查，确保仅显示未装备物品后再扫描选择。两种列表共用该状态检查与点击位置。
+
+自定编队选择刀装、马匹或宝物时，OCR 命中目标并点击后，需在右侧确认按钮区域识别“确定”，随后对该按钮双击，两次点击间隔 500 毫秒，并等待界面完成确认。
+
 刀装与刀剑名称匹配由 `FormationNameMatcher` 统一处理。刀装中存在铳、弓、枪、盾这类单字目标，必须先在归一化后的文本上做包含判断，再做单字长度判断，否则单字目标拿不到形近字容错。归一字形需保留銃/铳、统/铳、槍/枪，避免 OCR 把“铳兵”识别成“统兵”后扫到列表底部仍判定未找到。
 
-刀剑列表扫描的得分阈值与静止判定同属实现约束。`ListOcrScan.MinScore` 不得高于 0.8：2026-09-14 实机中“祢祢切丸”被识别成“称称切丸”时得分 0.843，高于 0.8 的判定才能正常命中，低于阈值会被当作列表里没有而触发无谓的上滑。上滑后必须等连续两帧 OCR 结果一致（列表静止）再判定命中，命中与点击坐标一律取自同一静止帧，否则会用到回弹过程中的 y 点到相邻行。“自定编队”的 `FC_FindSword1~6` 必须带选刀页识别（OCR“刀剑男士选择”）并在 `next` 末尾自引用重试，`FC_ConfirmFilterApply1~6` 的 `next` 末尾各自保留 `FC_ConfirmFilter1~6` 作为筛选未生效时的回退；这些自引用位置必须保留 `max_hit` 上限，否则重试会退化成无限点击。
+`SwordNameMatcher` 必须忽略刀名中的空白，并保留模型字典缺失的刀名字形容错：樋、笹、蛉、髭、麿，以及实测会整字漏识的薙、杵、喰。缺字后至少保留两个字才可匹配；仅“笹贯”“髭切”在去字后分别唯一剩下“贯”“切”，但只接受整条 OCR 文本恰好等于该单字，不能按包含关系匹配。不得直接修改 `keys.txt`：现有 `rec.onnx` 的输出类别与该字典一一对应，追加字符会造成类别错位。
+
+刀剑列表扫描的得分阈值与静止判定同属实现约束。`ListOcrScan.MinScore` 不得高于 0.8：2026-09-14 实机中“祢祢切丸”被识别成“称称切丸”时得分 0.843，高于 0.8 的判定才能正常命中，低于阈值会被当作列表里没有而触发无谓的上滑。上滑后必须等连续两帧 OCR 结果一致（列表静止）再判定命中，命中与点击坐标一律取自同一静止帧，否则会用到回弹过程中的 y 点到相邻行。`ListOcrScan.ScrollUp` 必须保持一次按下与一次抬手：竖直段完成后，收尾向右横移 200 像素，使抬手前的采样不再包含竖直速度。“自定编队”的 `FC_FindSword1~6` 必须带选刀页识别（OCR“刀剑男士选择”）并在 `next` 末尾自引用重试，`FC_ConfirmFilterApply1~6` 的 `next` 末尾各自保留 `FC_ConfirmFilter1~6` 作为筛选未生效时的回退；这些自引用位置必须保留 `max_hit` 上限，否则重试会退化成无限点击。
 
 ### `task-captain.skip-positions`
 
@@ -60,6 +66,14 @@
 更新数据任务的触发间隔按任务分别记录成功时间：优先用任务备注与显示名称，未写备注时按「识别内容」区分（实例配置键 `UpdateData.LastSucceededAt.<任务:备注 | 范围:识别内容>`，默认识别范围兼容旧版的单键记录），因此同一队列里的两个更新数据任务可以设置不同频率而不会互相顶掉。间隔判断由自定义识别 `UpdateDataIntervalRecognition` 在入口 node `UD_IsIntervalDue` 完成，未到间隔时识别失败，由 `UD_IntervalSkipped` 结束本次任务，不操作游戏；成功时间由 `UpdateDataMarkSuccessAction` 在任务末尾按同一调度键写入。
 
 「识别内容」与「触发间隔」是两个独立选项，如果分别生成同一个 node 的 `pipeline_override`，MaaFramework 只保留最后一层。因此 `MaaProcessor.ApplyUpdateDataScheduleParams` 在合并完任务选项后，把调度键与触发间隔合成一次注入，并写明 `UD_IsIntervalDue.recognition` 与 `UD_MarkSuccess.action` 的完整结构。升级时必须保留该注入：删掉它会让间隔退化为 pipeline 里的默认值（每天 + 范围:仓库+刀帐），成功时间也会全部记到默认调度键上。
+
+### `ui.data-last-updated`
+
+仓库与刀帐页面使用同一段主题灰色说明文本显示自动识别提示与最后更新时间，说明句号后直接接“最后更新”；窄窗口需要换行时仍作为同一段自然换行，不得将最后更新时间单独排成一行。两类时间分别持久化：手动保存仓库或刀帐，以及更新数据任务成功写入对应正式数据后，分别更新各自的时间；更新其中一类不得覆盖另一类。旧配置没有时间时显示“最后更新：暂无”。升级时保留 `DataLastUpdatedService` 的 ISO 8601 存储与读取，以及更新数据持久化完成事件触发后的页面刷新。
+
+### `ui.warehouse-chart-all-history`
+
+仓库核心资源变化的 24 小时、7 天与 30 天按钮均可再次点击取消选择。三个按钮都未选中时，显示全部历史记录，并以最早到最新记录生成横轴；再次选择任一按钮后恢复相应时间范围。首次打开页面仍默认选择 7 天，避免改变既有显示范围。
 
 ### `daily-task.per-game-day-completion`
 
@@ -227,6 +241,10 @@ MATR 的资源包包含运行时动态编译的自定义动作。`MFAExtensions.
 
 升级时必须验证 `SwordDropLogAction`、`MixGreedySelectionAction` 和 `NewMixTargetSelectionAction` 能够动态编译并注册；同时确认资源切换后不会继续使用上一套自定义动作。
 
+### `runtime.single-instance-pipe-access`
+
+第二次启动时，若既有实例的命名管道因权限级别不同而拒绝访问，`AppRuntime.TryForwardLaunchCommand` 必须将该情况视为既有实例已接管，并让新进程安静退出。不得把 `UnauthorizedAccessException` 冒泡到 `Program.Main` 后显示“程序启动失败”弹窗；既有实例继续运行，计划任务的并行启动也不会因此产生误报。
+
 ### `runtime.debug-log-maintenance`
 
 保留 MATR 的磁盘日志维护。应用启动时必须调用 `AppPaths.CleanupOldDebugLogs`：轮转现有 `debug/maafw.log`，清理超过三天的备份日志和截图；当 `debug` 总大小超过 500 MiB 时，最多保留最新 10 个备份日志和 `on_error` 中最新 50 张 PNG 截图。
@@ -296,3 +314,7 @@ Windows 上正在写入的 `debug/logs/log-*.log` 被日志器占用（`shared: 
 ### `forge-calculator.aux-recognition-tasker`
 
 限锻资源计算器的「识别屏幕」是界面侧的一次性识别，不能再投递给主 tasker 排队。主 tasker 正在执行流水线时，`AppendRecognition` 提交的识别要等整轮运行结束才会被执行，界面直接等待就会卡死（2026-09-22 实测记录到 AppHang）。`MaaProcessor.AcquireAuxRecognitionTasker` 提供的独立执行器必须保留：它与主 tasker 共享 `Resource`、自带控制器，只在主 tasker 处于运行或停止中时启用；主 tasker 空闲时仍直接使用主 tasker，不额外建立设备连接。执行器在实例关闭、主连接切换与主 tasker 变更时通过 `DisposeAuxRecognitionTasker` 回收，停止等待上限 3 秒，避免残留设备连接。界面侧的异步执行同样不能回退：`ForgeCalculatorViewModel.RecognizeScreen` 的截图与 OCR 全部在 `Task.Run` 中完成，等待用带超时的轮询代替无上限的 `WaitFor`（单次识别 5 秒、回退到运行中的主 tasker 时 3 秒、截图 10 秒），超时按当前状态给出提示而不是让界面停住。
+
+### `warehouse.ocr-item-name-corrections`
+
+仓库所持道具 OCR 名称必须在 `WarehouseScanDraftService.NormalizeOtherItemName` 统一修正：`套纸笔` 还原为 `一套纸笔`，`狮子螺钾鞍` 还原为 `狮子螺钿鞍`，`口团子` 还原为 `一口团子`。该入口同时覆盖实时扫描、历史草稿归一化和已保存名称匹配，不能只在界面显示层处理，否则旧草稿与重新扫描的结果会产生重复物品。

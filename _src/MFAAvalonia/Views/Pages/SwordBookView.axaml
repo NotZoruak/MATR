@@ -64,7 +64,8 @@
                 <Button Content="撤销" Command="{Binding RevertCommand}" IsEnabled="{Binding HasUnsavedChanges}" Background="#8A94A6" Foreground="White" />
                 <Button Content="清空" Command="{Binding ClearCommand}" IsEnabled="{Binding IsIdle}" Background="#C96B6B" Foreground="White" />
             </StackPanel>
-            <TextBlock Grid.Column="1" Text="{Binding Instruction}" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource SukiLowText}" />
+            <TextBlock Grid.Column="1" Text="{Binding AutoRecognizeHint}" FontSize="12" TextWrapping="Wrap"
+                       VerticalAlignment="Center" Foreground="{DynamicResource SukiLowText}" />
         </Grid>
         <Border Grid.Row="1" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="18,12" Margin="0,0,18,0">
             <Grid ColumnDefinitions="52,84,170,*,*,*,*,*" ColumnSpacing="2">

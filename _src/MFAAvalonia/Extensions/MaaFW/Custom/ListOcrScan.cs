@@ -148,8 +148,8 @@ public static class ListOcrScan
     /// <summary>刀装/马匹确定按钮 OCR 区域（右侧按钮列）</summary>
     public static readonly int[] ConfirmRoi = [1027, 130, 54, 561];
 
-    /// <summary>OCR 右侧按钮列找「确定」并点击（命中多个取最上方），冻结 100ms</summary>
-    public static bool ClickConfirm<T>(T context) where T : IMaaContext
+    /// <summary>OCR 右侧按钮列找「确定」并点击（命中多个取最上方）；可指定双击。</summary>
+    public static bool ClickConfirm<T>(T context, bool doubleClick = false) where T : IMaaContext
     {
         using var image = context.GetImage();
         if (image == null)
@@ -168,6 +168,11 @@ public static class ListOcrScan
             int cy = hit.Box[1] + hit.Box[3] / 2;
             LoggerHelper.Info($"[ListOcrScan] 点击「确定」box=[{string.Join(",", hit.Box)}]");
             context.Click(cx, cy);
+            if (doubleClick)
+            {
+                ActionParamHelper.SleepWithStopCheck(context, 500);
+                context.Click(cx, cy);
+            }
             ActionParamHelper.SleepWithStopCheck(context, 500);
             return true;
         }
@@ -183,7 +188,7 @@ public static class ListOcrScan
     /// <summary>按下后的停顿（毫秒），确保按下被识别为拖拽起点而不是点击</summary>
     private const int TouchDownDelayMilliseconds = 20;
 
-    /// <summary>L 形收尾的横向位移（像素）：抬手前的最后一段向左移动，用于消除列表惯性</summary>
+    /// <summary>L 形收尾的横向位移（像素）：抬手前的最后一段向右移动，用于消除列表惯性</summary>
     public const int InertiaBreakerOffset = 200;
 
     /// <summary>L 形收尾的横向步数</summary>
@@ -195,6 +200,29 @@ public static class ListOcrScan
     /// </summary>
     private const int HorizontalStepDelayMilliseconds = 40;
 
+    /// <summary>构造一次上滑的移动轨迹：先竖直上滑，再向右横移收尾。</summary>
+    public static IReadOnlyList<(int X, int Y)> BuildScrollPath(int[] scroll)
+    {
+        var x = scroll[0];
+        var startY = scroll[1];
+        var endY = scroll[3];
+        var path = new List<(int X, int Y)>(VerticalScrollSteps + HorizontalScrollSteps);
+
+        for (var i = 1; i <= VerticalScrollSteps; i++)
+        {
+            var y = startY - (startY - endY) * i / VerticalScrollSteps;
+            path.Add((x, y));
+        }
+
+        for (var i = 1; i <= HorizontalScrollSteps; i++)
+        {
+            var currentX = x + InertiaBreakerOffset * i / HorizontalScrollSteps;
+            path.Add((currentX, endY));
+        }
+
+        return path;
+    }
+
     /// <summary>
     /// 上滑手势：全程只用一次按下、一次抬手，不中途松手；竖直拖动到位后紧接着横向移动收尾（L 形），
     /// 使游戏在抬手前读到的最后几个采样都是水平方向，判定为无竖直速度，从而不产生列表惯性。
@@ -204,25 +232,16 @@ public static class ListOcrScan
     {
         var x = scroll[0];
         var startY = scroll[1];
-        var endY = scroll[3];
-
         context.TouchDown(0, x, startY, 1);
         // 短暂停顿：确保按下被识别为拖拽起点而不是点击
         Thread.Sleep(TouchDownDelayMilliseconds);
 
-        for (var i = 1; i <= VerticalScrollSteps; i++)
+        var path = BuildScrollPath(scroll);
+        for (var i = 0; i < path.Count; i++)
         {
-            var y = startY - (startY - endY) * i / VerticalScrollSteps;
-            context.TouchMove(0, x, y, 1);
-            Thread.Sleep(VerticalStepDelayMilliseconds);
-        }
-
-        // L 形收尾：最后一整段只横向移动（途中不抬手），抬手时竖直速度为 0
-        for (var i = 1; i <= HorizontalScrollSteps; i++)
-        {
-            var currentX = x - InertiaBreakerOffset * i / HorizontalScrollSteps;
-            context.TouchMove(0, currentX, endY, 1);
-            Thread.Sleep(HorizontalStepDelayMilliseconds);
+            var (currentX, currentY) = path[i];
+            context.TouchMove(0, currentX, currentY, 1);
+            Thread.Sleep(i < VerticalScrollSteps ? VerticalStepDelayMilliseconds : HorizontalStepDelayMilliseconds);
         }
 
         context.TouchUp(0);

@@ -11,6 +11,7 @@ public enum WarehouseChartRange
     Last24Hours,
     Last7Days,
     Last30Days,
+    All,
 }
 
 /// <summary>筛选核心资源历史记录。</summary>
@@ -31,6 +32,13 @@ public static class WarehouseResourceHistoryFilter
         WarehouseChartRange range,
         DateTime now)
     {
+        if (range == WarehouseChartRange.All)
+        {
+            return history
+                .Select((snapshot, index) => (Snapshot: snapshot, Index: index))
+                .ToList();
+        }
+
         var cutoff = now - range switch
         {
             WarehouseChartRange.Last24Hours => TimeSpan.FromHours(24),

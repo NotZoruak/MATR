@@ -5830,7 +5830,7 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.SystemNotificationAction());
             tasker.Resource.Register(new Custom.CustomProgramAction());
             tasker.Resource.Register(new Custom.KillProcessAction());
-            tasker.Resource.Register(new Custom.RestartGameAction());
+            tasker.Resource.Register(new Custom.RestartGameAction(this));
             tasker.Resource.Register(new Custom.DragCaptainAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerCheckAction());

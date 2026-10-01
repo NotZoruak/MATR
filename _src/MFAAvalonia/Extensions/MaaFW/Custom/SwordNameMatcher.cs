@@ -53,13 +53,27 @@ public static class SwordNameMatcher
     };
 
     /// <summary>
-    /// OCR 容易整字漏识的生僻字。刀帐中这些字只出现在固定的刀名里，
+    /// OCR 模型字典未收录或容易整字漏识的刀名用字。刀帐中这些字只出现在固定的刀名里，
     /// 去掉后不会与其他刀名冲突，因此允许目标缺字后再做包含判断。
     /// 「薙」：静形薙刀、巴形薙刀会被识别为「静形刀」「巴形刀」；
     /// 「杵」：御手杵会被识别为「御手」。
     /// 「喰」：骨喰藤四郎会被识别为「骨藤四郎」。
+    /// 「樋、笹、蛉、髭、麿」：当前 OCR 模型字典未收录。
     /// </summary>
-    private static readonly char[] FrequentlyDroppedGlyphs = ['薙', '杵', '喰'];
+    private static readonly char[] FrequentlyDroppedGlyphs = ['薙', '杵', '喰', '樋', '笹', '蛉', '髭', '麿'];
+
+    /// <summary>已确认的完整刀名 OCR 误识别别名，按目标刀名精确对应。</summary>
+    private static readonly Dictionary<string, string[]> ConfirmedOcrAliases = new(StringComparer.Ordinal)
+    {
+        ["二筋樋贞宗"] = ["二筋通贞宗"],
+        ["髭切"] = ["琵切"],
+    };
+
+    /// <summary>
+    /// 缺字后只剩一个字的刀名。仅当整条 OCR 文本恰好是剩余单字时才允许匹配；
+    /// 其它目标仍至少保留两个字，避免普通短词发生误匹配。
+    /// </summary>
+    private static readonly HashSet<string> SingleGlyphDroppedNameTargets = ["笹贯", "髭切"];
 
     /// <summary>
     /// 刀剑与刀装匹配：原文包含目标即命中；否则归一化字形后包含或全等才算命中。
@@ -74,6 +88,9 @@ public static class SwordNameMatcher
             return true;
         var normalizedOcr = Normalize(ocrText);
         var normalizedTarget = Normalize(target);
+        if (ConfirmedOcrAliases.TryGetValue(normalizedTarget, out var aliases)
+            && aliases.Any(alias => Normalize(alias) == normalizedOcr))
+            return true;
         if (normalizedOcr.Length > 0
             && (normalizedOcr.Contains(normalizedTarget, StringComparison.Ordinal)
                 || normalizedOcr == normalizedTarget))
@@ -84,8 +101,13 @@ public static class SwordNameMatcher
             return false;
 
         var strippedTarget = StripDroppableGlyphs(normalizedTarget);
+        if (strippedTarget == normalizedTarget)
+            return false;
+
+        if (SingleGlyphDroppedNameTargets.Contains(target))
+            return normalizedOcr == strippedTarget;
+
         return strippedTarget.Length >= 2
-            && strippedTarget != normalizedTarget
             && normalizedOcr.Contains(strippedTarget, StringComparison.Ordinal);
     }
 
@@ -149,7 +171,10 @@ public static class SwordNameMatcher
     private static string Normalize(string text)
     {
         if (text.Length == 0) return text;
-        return new string(text.Select(c => GlyphMap.TryGetValue(c, out var mapped) ? mapped : c).ToArray());
+        return new string(text
+            .Where(c => !char.IsWhiteSpace(c))
+            .Select(c => GlyphMap.TryGetValue(c, out var mapped) ? mapped : c)
+            .ToArray());
     }
 
     /// <summary>计算两个短字符串的编辑距离（Levenshtein）</summary>

@@ -1,5 +1,7 @@
+using MFAAvalonia.Models;
 using MFAAvalonia.Services;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Markdown.Avalonia.Html.Tests;
@@ -79,5 +81,24 @@ public sealed class WarehouseComparisonChartTests
         Assert.False(selection.Select(third));
         Assert.Equal(third, selection.Start);
         Assert.Null(selection.End);
+    }
+
+    [Fact]
+    public void 未选择时间范围时保留全部历史记录()
+    {
+        var now = new DateTime(2026, 10, 1, 12, 0, 0);
+        var history = new[]
+        {
+            new WarehouseResourceSnapshot { RecordedAt = now.AddDays(-60) },
+            new WarehouseResourceSnapshot { RecordedAt = now.AddDays(-10) },
+            new WarehouseResourceSnapshot { RecordedAt = now.AddHours(-1) },
+        };
+
+        var allRecords = WarehouseChartRange.All;
+        var result = WarehouseResourceHistoryFilter.FilterWithIndices(history, allRecords, now);
+
+        Assert.Equal(
+            [now.AddDays(-60), now.AddDays(-10), now.AddHours(-1)],
+            result.Select(item => item.Snapshot.RecordedAt));
     }
 }

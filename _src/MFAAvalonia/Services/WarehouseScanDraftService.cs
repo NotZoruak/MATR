@@ -14,6 +14,9 @@ public static class WarehouseScanDraftService
 {
     private static readonly Dictionary<string, string> OtherItemNameCorrections = new(StringComparer.Ordinal)
     {
+        ["套纸笔"] = "一套纸笔",
+        ["狮子螺钾鞍"] = "狮子螺钿鞍",
+        ["口团子"] = "一口团子",
         ["锣·月下梅树透图碎片"] = "锷·月下梅树透图碎片",
     };
 

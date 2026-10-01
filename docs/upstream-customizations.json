@@ -53,12 +53,12 @@
       "id": "task-formation-config.normal-task",
       "title": "自定编队普通任务与预设注入",
       "purpose": "让自定编队作为普通任务提供可复用的部队、刀装和马匹预设，不依赖上游特殊任务注册。",
-      "files": ["assets/interface.json", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Models/FormationPreset.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationNameMatcher.cs", "assets/resource/base/pipeline/FormationConfig.json"],
+      "files": ["assets/interface.json", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Models/FormationPreset.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationNameMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwordNameMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ListOcrScan.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationEquipStateMachine.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationEquipSelectAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationHorseSelectAction.cs", "assets/resource/base/pipeline/FormationConfig.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "将入口保留为 interface.json 普通任务，在运行前按 FC_选择预设生成 FormationConfigAction 参数与 pipeline 覆盖；勾选多个预设时按列表顺序展开为多次编队任务，不恢复上游特殊任务列表注册。",
-      "verification": ["任务列表出现自定编队普通任务且默认排在日课之前", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装"],
-      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户启用默认排在日课之前的自定编队任务。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。刀剑列表扫描的 ListOcrScan.MinScore 不得高于 0.8（祢祢切丸 被识别成 称称切丸 时得分为 0.843），上滑后必须等连续两帧 OCR 结果一致再判定命中并只用该静止帧的坐标点击；FC_FindSword1~6 必须带选刀页识别（OCR 刀剑男士选择）并在 next 末尾自引用重试，FC_ConfirmFilterApply1~6 的 next 末尾各自保留 FC_ConfirmFilter1~6 回退，这些自引用位置必须保留 max_hit 上限，否则会退化成无限点击。"
+      "verification": ["任务列表出现自定编队普通任务且默认排在日课之前", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装", "OCR 漏识樋、笹、蛉、髭、麿、薙、杵或喰时仍可匹配对应刀名", "髭切与笹贯的缺字容错仅接受整条 OCR 文本分别为切或贯", "OCR 省略童子切安纲 剥落名称中的空白时仍可匹配"],
+      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户启用默认排在日课之前的自定编队任务。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。刀剑列表扫描的 ListOcrScan.MinScore 不得高于 0.8（祢祢切丸 被识别成 称称切丸 时得分为 0.843），上滑后必须等连续两帧 OCR 结果一致再判定命中并只用该静止帧的坐标点击；ScrollUp 必须保持单次按下与抬手，竖直段后向右横移 200 像素收尾，避免抬手时带有竖直惯性；装备马匹与宝物时，确认列表打开后都必须通过同一 [1020,97,24,24] 全白标记检查，必要时点击切换到仅显示未装备状态；选择目标刀装、马匹或宝物后，OCR 定位右侧确定按钮并双击确认，两次点击间隔 500 毫秒；FC_FindSword1~6 必须带选刀页识别（OCR 刀剑男士选择）并在 next 末尾自引用重试，FC_ConfirmFilterApply1~6 的 next 末尾各自保留 FC_ConfirmFilter1~6 回退，这些自引用位置必须保留 max_hit 上限，否则会退化成无限点击。"
     },
     {
       "id": "services.update-data-scheduling",
@@ -174,7 +174,7 @@
       "id": "recovery.game-and-emulator-restart",
       "title": "游戏与模拟器卡死恢复",
       "purpose": "保留 MATR 对 MFAAvalonia 恢复动作和日课卡死路径的二次开发，兼容不同模拟器的应用启动方式。",
-      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Helper/EmulatorEnvironmentHelper.cs", "_src/Markdown.Avalonia.Html.Tests/EmulatorEnvironmentHelperTests.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json"],
+      "files": ["_src/MFAAvalonia/Extensions/MaaFW/ClientPackageSettings.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/RestartGameAction.cs", "_src/MFAAvalonia/Helper/EmulatorEnvironmentHelper.cs", "_src/Markdown.Avalonia.Html.Tests/EmulatorEnvironmentHelperTests.cs", "_src/Markdown.Avalonia.Html.Tests/WakeHomeInterruptionTests.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Helper/TaskRecoveryMonitor.cs", "_src/MFAAvalonia/Helper/LoopDetector.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs", "assets/interface.json", "assets/resource/base/custom/GuiLogAction.cs", "assets/resource/base/pipeline/DailyTask.json", "assets/resource/base/pipeline/Sortie.json", "assets/resource/base/pipeline/WakeHome.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
       "migration_strategy": "保留当前 ADB 配置读取、Activity 解析、模拟器重启结果判断和任务恢复分支；必须保留 TaskRecoveryMonitor 的回调与任务等待接入，避免重现 2.16.1 升级遗漏；开启 ADB 恢复且游戏路径有效时应允许启动模拟器。模拟器重启按类型分派，环境来源优先「启动设置（软件路径与启动参数）」，其次连接配置与端口反推；温和重启必须先观察旧 ADB 连接断开、再确认新连接就绪，未观察到断开即升级强制重启。无回调或任一游戏重启 ADB 命令超时时强制重启模拟器；游戏启动失败时停止队列，不能重连并继续中断任务。",
@@ -367,6 +367,50 @@
       "migration_strategy": "保留 MaaProcessor 的独立识别执行器及其回收调用点，保留界面侧的异步执行与带超时轮询。",
       "verification": ["主 tasker 空闲时直接使用主 tasker 识别", "流水线运行期间点击识别屏幕界面保持可响应", "独立执行器创建失败时回退主 tasker 并给出提示", "实例关闭与主连接切换后不残留设备连接"],
       "notes": "主 tasker 正在跑流水线时，AppendRecognition 提交的识别要等整轮运行结束才被执行，界面直接等待就会 AppHang（2026-09-22 实测）。独立执行器与主 tasker 共享 Resource、自带控制器，只在主 tasker 运行或停止中时启用；不得改成无条件创建，否则每次识别都会新建一条设备连接。"
+    },
+    {
+      "id": "runtime.single-instance-pipe-access",
+      "title": "单实例命名管道权限拒绝处理",
+      "purpose": "避免既有实例以不同权限级别运行时，第二次启动被错误报告为程序启动失败。",
+      "files": ["_src/MFAAvalonia/AppRuntime.cs", "_src/Markdown.Avalonia.Html.Tests/AppRuntimeSingleInstanceTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 TryForwardLaunchCommand 对 UnauthorizedAccessException 的处理；发生权限拒绝时视为既有实例已接管，新进程直接退出。",
+      "verification": ["启动一个既有实例后再次启动不会显示程序启动失败弹窗", "回归测试断言权限拒绝分支存在"],
+      "notes": "命名管道可能因既有实例与新进程的权限级别不同而拒绝连接。该情况不是应用程序集或运行时缺失，不能继续落入启动总异常处理。"
+    },
+    {
+      "id": "warehouse.ocr-item-name-corrections",
+      "title": "仓库所持道具 OCR 名称修正",
+      "purpose": "将已知的物品名称 OCR 误识别还原为正式物品名，避免重复物品或错误名称写入仓库数据。",
+      "files": ["_src/MFAAvalonia/Services/WarehouseScanDraftService.cs", "_src/Markdown.Avalonia.Html.Tests/WarehouseScanDraftServiceTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 NormalizeOtherItemName 中套纸笔、狮子螺钾鞍与口团子的固定修正规则；实时扫描、历史草稿归一化和已保存名称匹配必须共用该入口。",
+      "verification": ["套纸笔归一化为一套纸笔", "狮子螺钾鞍归一化为狮子螺钿鞍", "口团子归一化为一口团子", "仓库物品名称定向测试通过"],
+      "notes": "不要只在仓库页面显示层替换名称，否则已保存草稿与重新扫描的名称无法统一，可能出现重复物品。"
+    },
+    {
+      "id": "ui.data-last-updated",
+      "title": "仓库与刀帐最后更新时间",
+      "purpose": "让用户可在仓库和刀帐页面确认各自正式数据的最后保存时间。",
+      "files": ["_src/MFAAvalonia/Configuration/ConfigurationKeys.cs", "_src/MFAAvalonia/Services/DataLastUpdatedService.cs", "_src/MFAAvalonia/Services/LastUpdatedTimeFormatter.cs", "_src/MFAAvalonia/Services/UpdateDataPersistenceService.cs", "_src/MFAAvalonia/ViewModels/Pages/WarehouseViewModel.cs", "_src/MFAAvalonia/ViewModels/Pages/SwordBookViewModel.cs", "_src/MFAAvalonia/Views/Pages/WarehouseView.axaml", "_src/MFAAvalonia/Views/Pages/SwordBookView.axaml", "_src/Markdown.Avalonia.Html.Tests/LastUpdatedTimeFormatterTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留仓库与刀帐两个独立配置键、ISO 8601 持久化格式、手动保存和更新数据任务两个写入点，以及保存完成后的页面属性刷新。自动识别提示与最后更新时间必须经同一个文本绑定并使用 SukiLowText，不能拆成两个会独立换行的控件。仓库说明末尾保留句号，说明与最后更新时间直接相连，不使用额外分隔符。",
+      "verification": ["首次打开页面显示最后更新：暂无", "手动保存仓库后仅仓库时间更新", "手动保存刀帐后仅刀帐时间更新", "更新数据任务仅保存仓库或刀帐时更新对应时间", "同时保存两类数据时两边均显示各自时间", "最后更新时间格式化测试通过", "桌面项目构建成功"],
+      "notes": "配置时间不属于更新数据任务的调度成功时间：前者反映正式数据写入时刻，后者用于决定任务是否到期。两个用途与键空间必须保持独立。"
+    },
+    {
+      "id": "ui.warehouse-chart-all-history",
+      "title": "仓库图表全部历史记录范围",
+      "purpose": "让用户取消全部预设时间范围后查看完整的核心资源变化历史。",
+      "files": ["_src/MFAAvalonia/Services/WarehouseResourceHistoryFilter.cs", "_src/MFAAvalonia/Services/WarehouseChartTimeAxis.cs", "_src/MFAAvalonia/ViewModels/Pages/WarehouseViewModel.cs", "_src/Markdown.Avalonia.Html.Tests/WarehouseComparisonChartTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留 WarehouseChartRange.All：再次点击已选时间按钮时切换到该状态，筛选保留全部记录，图表横轴按完整记录的最早与最新时间生成。",
+      "verification": ["首次打开仓库页面默认选中 7 天", "再次点击已选时间按钮后三个按钮均未选中", "无选中范围时 60 天前的记录仍显示", "重新选择 24 小时、7 天或 30 天后恢复对应筛选", "定向过滤测试通过", "桌面项目构建成功"],
+      "notes": "All 仅是内部范围状态，界面不新增全部按钮；三个时间按钮均未选中即为全部记录。时间轴在全部范围不超过一天时显示时分，其它情况显示月日。"
     }
   ]
 }

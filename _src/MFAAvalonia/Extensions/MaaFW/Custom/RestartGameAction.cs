@@ -15,7 +15,14 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 public class RestartGameAction : IMaaCustomAction
 {
+    private readonly MaaProcessor? _owner;
+
     public string Name { get; set; } = nameof(RestartGameAction);
+
+    public RestartGameAction(MaaProcessor? owner = null)
+    {
+        _owner = owner;
+    }
 
     /// <summary>模拟器无响应或游戏重启期间 ADB 超时时，必须跳过温和重启并强制重启实例。</summary>
     public static bool ShouldForceEmulatorRestart(bool emulatorUnresponsive, bool gameRestartAdbTimedOut)
@@ -752,7 +759,7 @@ public class RestartGameAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
             var parameters = ActionParamHelper.Parse(args.ActionParam);
             var logAutoRecovery = (bool?)parameters["log_auto_recovery"] ?? true;
-            RestartAndReloadGame(logAutoRecovery);
+            RestartAndReloadGame(logAutoRecovery, processor: _owner);
             return true;
         }
         catch (MaaStopException)

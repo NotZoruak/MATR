@@ -102,6 +102,14 @@ Copy-Item (Join-Path $Root 'LICENSE') -Destination $MacOsDir -Force
     if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Recurse -Force }
 }
 
+# 版本更新公告由发布页提供，安装包只保留长期公告。
+$AnnouncementDir = Join-Path $MacOsDir 'assets\resource\announcement'
+if (Test-Path -LiteralPath $AnnouncementDir) {
+    Get-ChildItem -LiteralPath $AnnouncementDir -File |
+        Where-Object { $_.Name -match '^\d+-v.+ 更新公告\.md$' } |
+        Remove-Item -Force
+}
+
 $bundleVersion = Get-BundleVersion $Version
 @"
 <?xml version="1.0" encoding="UTF-8"?>
