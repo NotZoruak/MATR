@@ -39,6 +39,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "RB_HalfRoundDone",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["RB_RestartGame"]
@@ -453,6 +454,22 @@
         "task": "海陆联队",
         "roi": [52, 509, 282, 34],
         "click": [947, 533, 67, 75]
+      }
+    },
+    "next": ["RB_DetectWhereAmI"]
+  },
+  "RB_HalfRoundDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [149, 204, 967, 175],
+        "expected": "完成|撤退"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1117, 671, 2, 2]
       }
     },
     "next": ["RB_DetectWhereAmI"]
