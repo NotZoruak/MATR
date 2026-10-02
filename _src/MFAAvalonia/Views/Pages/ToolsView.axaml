@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:MFAAvalonia.ViewModels.Pages"
+             xmlns:views="clr-namespace:MFAAvalonia.Views.Pages"
+             xmlns:suki="using:SukiUI.Extensions"
+             mc:Ignorable="d"
+             d:DesignWidth="1280"
+             d:DesignHeight="720"
+             x:DataType="pages:ToolsViewModel"
+             x:Class="MFAAvalonia.Views.Pages.ToolsView">
+    <Design.DataContext>
+        <pages:ToolsViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="16,12">
+        <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                    suki:TabControlExtensions.HeaderHorizontalAlignment="Center">
+            <TabControl.Styles>
+                <Style Selector="TabItem.tools-tab /template/ ContentPresenter#PART_HeaderPresenter">
+                    <Setter Property="TextBlock.FontSize" Value="20" />
+                </Style>
+            </TabControl.Styles>
+            <TabItem Classes="tools-tab">
+                <TabItem.Header>
+                    <TextBlock Text="限锻计算" FontSize="20" />
+                </TabItem.Header>
+                <views:ForgeCalculatorView />
+            </TabItem>
+            <TabItem Classes="tools-tab">
+                <TabItem.Header>
+                    <TextBlock Text="剪影识别" FontSize="20" />
+                </TabItem.Header>
+                <views:SilhouetteView />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

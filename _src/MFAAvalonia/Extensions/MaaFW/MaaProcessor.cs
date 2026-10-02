@@ -3717,6 +3717,82 @@ public class MaaProcessor
     private DateTime? _startTime;
     private List<DragItemViewModel> _tempTasks = [];
     private MFATask? _activeQueueTask;
+    private ExternalNotificationRunSummary? _externalNotificationRunSummary;
+    private ExternalNotificationRunSession? _externalNotificationRunSession;
+
+    /// <summary>记录本实例本次运行中识别到的刀剑掉落。</summary>
+    public void RecordExternalNotificationSwordDrop(string swordType, string swordName) =>
+        _externalNotificationRunSummary?.RecordSwordDrop(swordType, swordName);
+
+    /// <summary>记录本实例本次运行中识别到的资源收获。</summary>
+    public void RecordExternalNotificationResource(string resourceName, int count) =>
+        _externalNotificationRunSummary?.RecordResource(resourceName, count);
+
+    /// <summary>记录后勤动态或特殊情况，供资源侧 action 与 focus 消息调用。</summary>
+    public void RecordExternalNotificationEvent(string category, string name, string? detail = null)
+    {
+        if (_externalNotificationRunSummary == null)
+            return;
+
+        switch (category)
+        {
+            case "后勤":
+                _externalNotificationRunSummary.RecordLogisticsCount(name);
+                break;
+            case "远征":
+                _externalNotificationRunSummary.RecordExpedition(name);
+                break;
+            case "内番":
+                _externalNotificationRunSummary.RecordNaibanDetail(detail ?? name);
+                break;
+            case "后勤修刀":
+                _externalNotificationRunSummary.RecordLogisticsRepairDetail(detail ?? name);
+                break;
+            case "特殊情况":
+                _externalNotificationRunSummary.RecordSpecialCase(name);
+                break;
+        }
+    }
+
+    /// <summary>把已解析的 focus 文本归入结束报告中可识别的后勤或特殊情况。</summary>
+    public void RecordExternalNotificationFocus(string content, bool recordAsSpecial)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return;
+
+        if (content.Contains("倒计时结束", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("后勤", "倒计时结束");
+        else if (content.Contains("检查队伍状况", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("后勤", "检查队伍状况");
+        else if (content.Contains("刷花", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("后勤", "刷花");
+        else if (content.Contains("购买门票", StringComparison.Ordinal) || content.Contains("补充门票", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("特殊情况", "补充门票");
+        else if (content.Contains("补充刀装", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("特殊情况", "补充刀装");
+        else if (content.Contains("重启", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("特殊情况", "自动重启");
+        else if (recordAsSpecial && content.Contains("修复", StringComparison.Ordinal))
+            RecordExternalNotificationEvent("特殊情况", "修刀");
+    }
+
+    /// <summary>把当前运行摘要交给目标实例，成功交接后源实例不再发送结束报告。</summary>
+    public ExternalNotificationRunSession? TakeExternalNotificationRunSession()
+    {
+        var session = _externalNotificationRunSession;
+        if (_externalNotificationRunSummary != null)
+        {
+            session ??= new ExternalNotificationRunSession(_externalNotificationRunSummary.StartedAt);
+            session.AddCompletedSegment(_externalNotificationRunSummary, DateTime.Now);
+        }
+
+        _externalNotificationRunSummary = null;
+        _externalNotificationRunSession = null;
+        return session;
+    }
+
+    /// <summary>接收上一个实例交接的运行会话。</summary>
+    public void AcceptExternalNotificationRunSession(ExternalNotificationRunSession session) => _externalNotificationRunSession = session;
 
     /// <summary>
     /// 请求提前结束当前正在执行的队列项，保留后续队列项。
@@ -3745,6 +3821,8 @@ public class MaaProcessor
         CancellationTokenSource = new CancellationTokenSource();
 
         _startTime = DateTime.Now;
+        if (!onlyStart)
+            _externalNotificationRunSummary = new ExternalNotificationRunSummary(InstanceId, _startTime.Value);
 
         var token = CancellationTokenSource.Token;
 
@@ -3818,6 +3896,8 @@ public class MaaProcessor
             if (token.IsCancellationRequested) break;
 
             Volatile.Write(ref _activeQueueTask, task);
+            var taskStartedAt = DateTime.Now;
+            var configuredRepeatCount = task.Count;
             MFATask.RunResult result;
             try
             {
@@ -3826,6 +3906,11 @@ public class MaaProcessor
             finally
             {
                 Interlocked.CompareExchange(ref _activeQueueTask, null, task);
+            }
+            if (result.Status == MFATask.MFATaskStatus.SUCCEEDED && task.SourceItem != null)
+            {
+                var taskName = task.SourceItem.Name ?? task.Name ?? "未知任务";
+                _externalNotificationRunSummary?.RecordTask(taskName, configuredRepeatCount, DateTime.Now - taskStartedAt);
             }
             if (result.Status == MFATask.MFATaskStatus.FAILED)
             {
@@ -5390,9 +5475,7 @@ public class MaaProcessor
             ToastNotification.Show(LangKeys.TaskFailed.ToLocalization());
             ToastHelper.Info(LangKeys.TaskFailed.ToLocalization());
             AddLogByKey(LangKeys.TaskFailed, (IBrush?)null);
-            ExternalNotificationHelper.ExternalNotificationAsync(Instances.ExternalNotificationSettingsUserControlModel.EnabledCustom
-                ? Instances.ExternalNotificationSettingsUserControlModel.CustomFailureText
-                : LangKeys.TaskFailed.ToLocalization());
+            ExternalNotificationHelper.ExternalNotificationAsync(LangKeys.TaskFailed.ToLocalization());
 
             if (!onlyStart)
                 HandleAfterTaskOperation();
@@ -5440,14 +5523,27 @@ public class MaaProcessor
             }
             if (!onlyStart)
             {
-                ExternalNotificationHelper.ExternalNotificationAsync(Instances.ExternalNotificationSettingsUserControlModel.EnabledCustom
-                    ? Instances.ExternalNotificationSettingsUserControlModel.CustomSuccessText
-                    : LangKeys.TaskAllCompleted.ToLocalization());
+                var settings = Instances.ExternalNotificationSettingsUserControlModel;
+                var session = _externalNotificationRunSession
+                    ?? (_externalNotificationRunSummary == null
+                        ? null
+                        : ExternalNotificationRunSession.FromCompleted(_externalNotificationRunSummary, DateTime.Now));
+                var message = session == null
+                    ? LangKeys.TaskAllCompleted.ToLocalization()
+                    : ExternalNotificationReportFormatter.Format(session, new ExternalNotificationReportOptions
+                    {
+                        IncludeTaskHarvest = settings.IncludeTaskHarvest,
+                        IncludeLogistics = settings.IncludeLogistics,
+                        IncludeSpecialCases = settings.IncludeSpecialCases,
+                    });
+                ExternalNotificationHelper.ExternalNotificationAsync(message);
                 HandleAfterTaskOperation();
             }
         }
         action?.Invoke();
         _startTime = null;
+        _externalNotificationRunSummary = null;
+        _externalNotificationRunSession = null;
     }
 
     public void HandleAfterTaskOperation()

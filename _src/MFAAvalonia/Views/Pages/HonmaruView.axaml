@@ -30,15 +30,15 @@
                 </TabItem>
                 <TabItem Classes="honmaru-tab">
                     <TabItem.Header>
-                        <TextBlock Text="工作记录" FontSize="20" />
-                    </TabItem.Header>
-                    <views:WorkRecordsView />
-                </TabItem>
-                <TabItem Classes="honmaru-tab">
-                    <TabItem.Header>
                         <TextBlock Text="刀帐" FontSize="20" />
                     </TabItem.Header>
                     <views:SwordBookView />
+                </TabItem>
+                <TabItem Classes="honmaru-tab">
+                    <TabItem.Header>
+                        <TextBlock Text="工作记录" FontSize="20" />
+                    </TabItem.Header>
+                    <views:WorkRecordsView />
                 </TabItem>
         </TabControl>
     </Grid>

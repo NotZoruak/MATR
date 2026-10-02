@@ -66,6 +66,7 @@ public class RepairStartLogAction : IMaaCustomAction
 
             _lastMessage = $"[后勤] 开始修复 {_capturedDetail}";
             LoggerHelper.Info(_lastMessage);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordExternalNotificationEvent("后勤修刀", "修刀", _lastMessage[5..]);
         }
         finally
         {

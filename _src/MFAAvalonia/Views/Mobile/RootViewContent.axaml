@@ -56,12 +56,12 @@
                                                                    IconVariant=Regular}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:HonmaruView}}" />
                         <suki:SukiSideMenuItem IsContentMovable="False"
-                                               Header="限锻计算"
-                                               Icon="{fluent:FluentIcon Icon=Calculator,
+                                               Header="工具"
+                                               Icon="{fluent:FluentIcon Icon=Wrench,
                                                                 IconVariant=Regular}"
-                                               PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:ForgeCalculatorView}}" />
+                                               PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:ToolsView}}" />
                         <suki:SukiSideMenuItem IsContentMovable="False"
-                                               Header="数据库"
+                                               Header="资料库"
                                                Icon="{fluent:FluentIcon Icon=Library,
                                                                 IconVariant=Regular}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:DataLookupView}}" />

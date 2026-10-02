@@ -71,7 +71,7 @@ public class ResourcePointLogAction : IMaaCustomAction
         else
         {
             LoggerHelper.Info($"[资源点] OCR 稳定识别结果: {bestText}");
-            LogGained(prefix, bestText);
+            LogGained(context, prefix, bestText);
         }
 
         // 弹窗未消失前回枢纽会被再次命中并重复打点，因此等它收起再返回
@@ -99,13 +99,22 @@ public class ResourcePointLogAction : IMaaCustomAction
     }
 
     // 把 OCR 文本（如「获得木炭×20」）转成打点格式「木炭x20」，多个资源以空格分隔
-    private static void LogGained(string prefix, string text)
+    private static void LogGained<T>(T context, string prefix, string text) where T : IMaaContext
     {
         var parts = ResourcePointRewardParser.Parse(text);
         if (parts.Count == 0)
             return;
 
         LoggerHelper.Info($"{prefix} 资源点获取 {string.Join(" ", parts)}");
+        var processor = ActionParamHelper.ResolveOwnerProcessor(context);
+        foreach (var part in parts)
+        {
+            var separator = part.LastIndexOf('x');
+            if (separator <= 0 || !int.TryParse(part[(separator + 1)..], out var count))
+                continue;
+
+            processor?.RecordExternalNotificationResource(part[..separator], count);
+        }
     }
 
     private static string ReadText<T>(T context, int[] roi) where T : IMaaContext

@@ -391,6 +391,7 @@ public partial class App : Application
             .AddView<ScreenshotView, ScreenshotViewModel>(services)
             .AddView<ForgeCalculatorView, ForgeCalculatorViewModel>(services)
             .AddView<SilhouetteView, SilhouetteViewModel>(services)
+            .AddView<ToolsView, ToolsViewModel>(services)
             .AddView<DataLookupView, DataLookupViewModel>(services)
             .AddView<HonmaruView, HonmaruViewModel>(services)
             .AddView<WarehouseView, WarehouseViewModel>(services)

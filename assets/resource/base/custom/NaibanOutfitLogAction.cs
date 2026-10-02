@@ -44,6 +44,10 @@ public class NaibanOutfitLogAction : IMaaCustomAction
                 else if (_state.SwordNames.Count > 0)
                 {
                     LoggerHelper.Info($"[后勤] 内番服 {string.Join("、", _state.SwordNames)}");
+                    ActionParamHelper.ResolveOwnerProcessor(context)?.RecordExternalNotificationEvent(
+                        "内番",
+                        "安排内番",
+                        $"安排内番（内番服：{string.Join("、", _state.SwordNames)}）");
                     if (json["sync_swordbook"]?.Value<bool>() == true)
                     {
                         var catalogPath = Path.Combine(AppPaths.ResourceDirectory, "base", "SwordBookCatalog.json");

@@ -43,42 +43,14 @@
                             VerticalAlignment="Center" />
                     </StackPanel>
                 </DockPanel>
-                <DockPanel>
-                    <ToggleSwitch
-                        Classes="Switch"
-                        DockPanel.Dock="Right"
-                        IsChecked="{Binding EnabledCustom}"
-                        VerticalAlignment="Top" />
-                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <TextBlock
-                            FontSize="16"
-                            Text="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationEnableCustomNotificationMessage}}"
-                            VerticalAlignment="Center" />
-                    </StackPanel>
-                </DockPanel>
-                <StackPanel IsVisible="{Binding EnabledCustom}" Spacing="8">
-                    <TextBlock
-                        FontSize="16"
-                        Text="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentSuccess}}" />
-                    <TextBox
-                        AcceptsReturn="True"
-                        MinHeight="72"
-                        Text="{Binding CustomSuccessText, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap"
-                        Watermark="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentSuccess}}"
-                        >
-                    </TextBox>
-                    <TextBlock
-                        FontSize="16"
-                        Text="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentFailure}}" />
-                    <TextBox
-                        AcceptsReturn="True"
-                        MinHeight="72"
-                        Text="{Binding CustomFailureText, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap"
-                        Watermark="{markup:I18n {x:Static helper:LangKeys.ExternalNotificationCustomNotificationContentFailure}}"
-                        >
-                    </TextBox>
+                <StackPanel Spacing="6">
+                    <TextBlock FontSize="16" Text="推送内容拓展" />
+                    <WrapPanel ItemHeight="32" ItemWidth="130">
+                        <CheckBox Content="任务收获" IsChecked="{Binding IncludeTaskHarvest}" />
+                        <CheckBox Content="后勤动态" IsChecked="{Binding IncludeLogistics}" />
+                        <CheckBox Content="特殊情况" IsChecked="{Binding IncludeSpecialCases}" />
+                        <CheckBox Content="刀剑掉落播报" IsChecked="{Binding IncludeSwordDropBroadcast}" />
+                    </WrapPanel>
                 </StackPanel>
             </StackPanel>
         </suki:GlassCard>

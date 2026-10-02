@@ -50,6 +50,7 @@ public class DispatchLogAction : IMaaCustomAction
                 message = $"[远征派遣] {teamLabel} → {mapLabel}";
                 // 文件日志保留词表格式，供工作记录解析器识别。
                 Log(context, message, $"[后勤] 派遣远征 {teamLabel}已派遣至 {mapLabel}");
+                MaaProcessor.ResolveByTasker(context.Tasker)?.RecordExternalNotificationEvent("远征", mapLabel);
             }
 
             return true;

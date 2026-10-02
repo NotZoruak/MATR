@@ -2,6 +2,7 @@ using MaaFramework.Binding;
 using MaaFramework.Binding.Custom;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.ValueType;
+using MFAAvalonia.Services;
 using MFAAvalonia.ViewModels.Other;
 using System;
 using System.Diagnostics;
@@ -51,11 +52,14 @@ public class SwitchInstanceAction : IMaaCustomAction
 
             LoggerHelper.Info($"[SwitchInstanceAction] 切换实例：{_owner.InstanceId} -> {targetId}");
 
+            // 在请求停止前冻结本实例已收集的内容；停止流程本身不会发送成功结束报告。
+            var notificationSession = _owner.TakeExternalNotificationRunSession();
+
             // 立即请求停止当前实例（异步排队），使“切换实例”之后的本实例任务尽快终止。
             _owner.Stop(MFATask.MFATaskStatus.STOPPED);
 
             // 切换、重连、启动等耗时操作放到后台，避免阻塞本任务的 native 回调。
-            _ = Task.Run(() => SwitchAsync(_owner, targetId));
+            _ = Task.Run(() => SwitchAsync(_owner, targetId, notificationSession));
             return true;
         }
         catch (Exception e)
@@ -67,7 +71,7 @@ public class SwitchInstanceAction : IMaaCustomAction
         }
     }
 
-    private static async Task SwitchAsync(MaaProcessor from, string targetId)
+    private static async Task SwitchAsync(MaaProcessor from, string targetId, ExternalNotificationRunSession? notificationSession)
     {
         try
         {
@@ -112,6 +116,8 @@ public class SwitchInstanceAction : IMaaCustomAction
 
             // 断开旧连接，保证 Start 时“重新连接”模拟器（而非复用已连接状态）。
             target.SetTasker();
+            if (notificationSession != null)
+                target.AcceptExternalNotificationRunSession(notificationSession);
             target.Start();
         }
         catch (Exception ex)

@@ -51,6 +51,10 @@ public static class SwordDropNotificationMatcher
     public static string BuildNotificationMessage(string swordType, string swordName) =>
         FormatMessage(swordType, swordName);
 
+    /// <summary>生成带发生时间的外部刀剑掉落通知文本。</summary>
+    public static string BuildExternalNotificationMessage(string swordType, string swordName, DateTime occurredAt) =>
+        $"{occurredAt:HH:mm:ss} {BuildNotificationMessage(swordType, swordName)}";
+
     public static bool ShouldNotify(bool enabled, IEnumerable<string>? swords, string? swordName)
     {
         if (!enabled || string.IsNullOrWhiteSpace(swordName) || swords == null)

@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:MFAAvalonia.ViewModels.Pages"
-    xmlns:views="clr-namespace:MFAAvalonia.Views.Pages"
+    xmlns:suki="using:SukiUI.Extensions"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluent="clr-namespace:FluentIcons.Avalonia.Fluent.Markup;assembly=FluentIcons.Avalonia.Fluent">
 
@@ -17,20 +17,20 @@
     </Design.DataContext>
 
     <ScrollViewer>
-        <Grid RowDefinitions="Auto,*" Margin="16,12">
-
-            <!-- 标题 -->
-            <StackPanel Grid.Row="0" Margin="0,0,0,12">
-                <TextBlock Text="数据库" FontSize="22" FontWeight="Bold" />
-                <TextBlock Text="数据来源：日服 Wiki https://wikiwiki.jp/toulove"
-                           FontSize="12" Opacity="0.5" Margin="0,2,0,0" />
-            </StackPanel>
-
-            <!-- TabControl -->
-            <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}">
+        <Grid Margin="16,12">
+            <TabControl SelectedIndex="{Binding SelectedTabIndex}"
+                        suki:TabControlExtensions.HeaderHorizontalAlignment="Center">
+                <TabControl.Styles>
+                    <Style Selector="TabItem.data-lookup-tab /template/ ContentPresenter#PART_HeaderPresenter">
+                        <Setter Property="TextBlock.FontSize" Value="20" />
+                    </Style>
+                </TabControl.Styles>
 
                 <!-- ========== 经验表（极） ========== -->
-                <TabItem Header="经验表（极）">
+                <TabItem Classes="data-lookup-tab">
+                    <TabItem.Header>
+                        <TextBlock Text="经验表（极）" FontSize="20" />
+                    </TabItem.Header>
                     <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
                         <!-- 计算区 -->
                         <Border Grid.Row="0" Background="{DynamicResource SukiCardBackground}"
@@ -80,7 +80,10 @@
                 </TabItem>
 
                 <!-- ========== 远征收益 ========== -->
-                <TabItem Header="远征收益">
+                <TabItem Classes="data-lookup-tab">
+                    <TabItem.Header>
+                        <TextBlock Text="远征收益" FontSize="20" />
+                    </TabItem.Header>
                     <Grid RowDefinitions="Auto,*" RowSpacing="8">
                         <TextBlock Grid.Row="0" Text="{Binding ExpeditionEfficiencyNote}"
                                    FontSize="12" Opacity="0.5" Margin="4,0,0,0" />
@@ -283,11 +286,6 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
-                </TabItem>
-
-                <!-- ========== 剪影识别 ========== -->
-                <TabItem Header="剪影识别">
-                    <views:SilhouetteView />
                 </TabItem>
 
             </TabControl>

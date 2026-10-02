@@ -17,7 +17,7 @@
     </Design.DataContext>
 
     <ScrollViewer>
-        <Grid RowDefinitions="Auto,Auto,*" Margin="0">
+        <Grid RowDefinitions="Auto,*" Margin="0">
 
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <Button Command="{Binding RecognizeCommand}"
@@ -28,12 +28,12 @@
                         <TextBlock FontSize="14" VerticalAlignment="Center" Text="识别当前画面" />
                     </StackPanel>
                 </Button>
+                <TextBlock Text="{Binding StatusMessage}" FontSize="14"
+                           Foreground="{DynamicResource SukiLowText}"
+                           VerticalAlignment="Center" TextWrapping="Wrap" />
             </StackPanel>
 
-            <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" FontSize="14"
-                       Foreground="{DynamicResource SukiLowText}" Margin="0,12,0,16" />
-
-            <Grid Grid.Row="2" ColumnDefinitions="2*,3*" ColumnSpacing="16">
+            <Grid Grid.Row="1" ColumnDefinitions="2*,3*" ColumnSpacing="16" Margin="0,16,0,0">
 
                 <!-- 左侧：识别结果 -->
                 <Border Grid.Column="0" Background="{DynamicResource SukiCardBackground}"

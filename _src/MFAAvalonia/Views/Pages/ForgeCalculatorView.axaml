@@ -16,12 +16,9 @@
     </Design.DataContext>
 
     <ScrollViewer>
-        <Grid RowDefinitions="Auto,*" Margin="16,12">
+        <StackPanel Margin="16,12" Spacing="16">
 
-            <StackPanel Spacing="16" Grid.Row="0">
-
-                <!-- 标题 -->
-                <TextBlock Text="限锻资源计算器" FontSize="22" FontWeight="Bold" />
+            <StackPanel Spacing="16">
 
                 <!-- 识别屏幕按钮 -->
                 <StackPanel Orientation="Horizontal" Spacing="6">
@@ -177,10 +174,9 @@
             </StackPanel>
 
             <!-- 结果区 -->
-            <Border Grid.Row="1"
-                    Background="{DynamicResource SukiCardBackground}"
+            <Border Background="{DynamicResource SukiCardBackground}"
                     CornerRadius="8" Padding="16"
-                    Margin="0,16,0,0">
+                    Margin="0">
                 <StackPanel Spacing="10">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="计算结果" FontWeight="Bold" FontSize="16" />
@@ -221,6 +217,6 @@
                 </StackPanel>
             </Border>
 
-        </Grid>
+        </StackPanel>
     </ScrollViewer>
 </UserControl>
