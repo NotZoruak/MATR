@@ -407,6 +407,30 @@ public partial class RootView : SukiWindow
 
             if (AppRuntime.IsAutoStart)
             {
+                var manager = MaaProcessorManager.Instance;
+                var targetInstanceId = AppRuntime.ResolveStartupInstance(
+                    AppRuntime.RequestedInstance,
+                    manager.ResolveInstanceId,
+                    vm.Processor.InstanceId);
+                if (targetInstanceId == null)
+                {
+                    LoggerHelper.Warning($"命令行自动启动未找到实例：{AppRuntime.RequestedInstance}");
+                    return;
+                }
+
+                if (!string.Equals(targetInstanceId, vm.Processor.InstanceId, StringComparison.Ordinal))
+                {
+                    manager.EnsureInstanceLoaded(targetInstanceId);
+                    Instances.InstanceTabBarViewModel.ReloadTabs();
+                    Instances.InstanceTabBarViewModel.SwitchToInstanceById(targetInstanceId);
+                    vm = manager.GetViewModel(targetInstanceId);
+                    if (vm == null)
+                    {
+                        LoggerHelper.Warning($"命令行自动启动加载实例失败：{targetInstanceId}");
+                        return;
+                    }
+                }
+
                 // 命令行自动启动同样算本分钟的定时触发：程序刚启动时应用内计时器的首次 tick
                 // 仍可能落在同一分钟（例如 15:29:51 启动、15:30:51 首次 tick），必须回写标记。
                 TimerModel.Instance.MarkScheduledStartHandled(vm.Processor.InstanceId);

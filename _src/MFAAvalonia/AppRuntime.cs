@@ -53,6 +53,18 @@ public static class AppRuntime
             ? value.Trim()
             : null;
 
+    /// <summary>解析新进程启动时应运行的实例；指定但无法解析时不回退到当前实例。</summary>
+    internal static string? ResolveStartupInstance(
+        string? requestedInstance,
+        Func<string, string?> resolveInstanceId,
+        string currentInstanceId)
+    {
+        if (string.IsNullOrWhiteSpace(requestedInstance))
+            return currentInstanceId;
+
+        return resolveInstanceId(requestedInstance);
+    }
+
     public static Dictionary<string, string> ParseArguments(string[] args)
     {
         var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
