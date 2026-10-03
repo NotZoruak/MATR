@@ -13,6 +13,10 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 public class ResourcePointLogAction : IMaaCustomAction
 {
+    // 缺省等待上限与各枢纽 pipeline 的 timeout(120 秒)取齐:奖励弹窗在此期间未消失即判定卡死,
+    // 动作返回 false 交给 node 的 on_error 走卡死重启,不再让主循环重复命中同一弹窗
+    private const int DefaultWaitTimeout = 120000;
+
     public string Name { get; set; } = nameof(ResourcePointLogAction);
 
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
@@ -20,7 +24,7 @@ public class ResourcePointLogAction : IMaaCustomAction
         var json = ActionParamHelper.Parse(args.ActionParam);
         var roi = ParseRoi(json["roi"] as JArray ?? throw new System.Exception("资源点 OCR ROI 缺失"));
         var expected = (string?)json["expected"] ?? "获得";
-        var timeout = Math.Max(1000, (int?)json["timeout"] ?? 10000);
+        var timeout = Math.Max(1000, (int?)json["timeout"] ?? DefaultWaitTimeout);
         var pollInterval = Math.Max(50, (int?)json["poll_interval"] ?? 200);
         // task 参数决定打点前缀（合战场/地下城）；缺省回退旧前缀 [资源点]
         var task = (string?)json["task"] ?? string.Empty;
@@ -42,24 +46,36 @@ public class ResourcePointLogAction : IMaaCustomAction
         // 弹窗存活期内持续读：优先记住能解析出资源数量的读数，数量相同时以后读到的为准
         var closed = false;
         var startTime = System.DateTime.UtcNow;
-        while ((System.DateTime.UtcNow - startTime).TotalMilliseconds < timeout)
+        // 等待期间登记智能等待窗口，避免卡死重启监控把这段正常等待判成模拟器无响应
+        var ownWaitWindow = !SmartWaitTracker.IsInWaitWindow();
+        if (ownWaitWindow)
+            SmartWaitTracker.BeginWait(System.DateTime.Now.AddMilliseconds(timeout));
+        try
         {
-            ActionParamHelper.ThrowIfStopping(context);
-            ActionParamHelper.SleepWithStopCheck(context, pollInterval);
-
-            var current = ReadText(context, roi);
-            if (!ContainsExpected(current, expected))
+            while ((System.DateTime.UtcNow - startTime).TotalMilliseconds < timeout)
             {
-                closed = true;
-                break;
-            }
+                ActionParamHelper.ThrowIfStopping(context);
+                ActionParamHelper.SleepWithStopCheck(context, pollInterval);
 
-            var currentParts = ResourcePointRewardParser.Parse(current).Count;
-            if (currentParts > bestParts || (currentParts == bestParts && currentParts > 0))
-            {
-                bestText = current;
-                bestParts = currentParts;
+                var current = ReadText(context, roi);
+                if (!ContainsExpected(current, expected))
+                {
+                    closed = true;
+                    break;
+                }
+
+                var currentParts = ResourcePointRewardParser.Parse(current).Count;
+                if (currentParts > bestParts || (currentParts == bestParts && currentParts > 0))
+                {
+                    bestText = current;
+                    bestParts = currentParts;
+                }
             }
+        }
+        finally
+        {
+            if (ownWaitWindow)
+                SmartWaitTracker.Clear();
         }
 
         if (bestParts == 0)
@@ -74,11 +90,15 @@ public class ResourcePointLogAction : IMaaCustomAction
             LogGained(context, prefix, bestText);
         }
 
-        // 弹窗未消失前回枢纽会被再次命中并重复打点，因此等它收起再返回
-        if (closed)
-            LoggerHelper.Info($"[资源点] OCR 已无法识别“{expected}”，结束等待");
-        else
-            LoggerHelper.Warning($"[资源点] 等待 OCR 消失超时（{timeout}ms），结束等待");
+        // 弹窗未消失前回枢纽会被再次命中并重复打点，因此一直等它收起再返回；
+        // 超时未收起说明画面卡死，交给 node 的 on_error 处理
+        if (!closed)
+        {
+            LoggerHelper.Warning($"[资源点] 奖励弹窗未消失（等待 {timeout}ms 超时），交由 on_error 处理卡死");
+            return false;
+        }
+
+        LoggerHelper.Info($"[资源点] OCR 已无法识别“{expected}”，结束等待");
         return true;
     }
 
