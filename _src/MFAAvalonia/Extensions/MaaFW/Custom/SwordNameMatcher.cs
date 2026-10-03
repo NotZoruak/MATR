@@ -9,7 +9,9 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 /// - 刀剑与刀装（IsExactMatch）：原文包含目标即命中；否则把常用日字形、繁体与形近误识字归一为简体后，
 ///   包含或全等才算命中。一字之差不再放行，避免「太郎太刀/次郎太刀」这类近似名被误选。
 ///   刀帐目录中只出现在固定刀名里的生僻字（薙、杵）允许整字漏识后再做包含判断。
-/// - 马匹（IsLegacyFuzzyMatch）：保留原有 OCR 丢字容错（编辑距离 ≤ 1）。
+/// - 马匹（IsHorseMatch）：字形归一并去掉 OCR 文本中的数量标记与名称连接符（中点）后要求与目标全等，
+///   不做编辑距离与包含容错，避免「祝一号/祝十号」「白毛/鹿毛/青毛」这类一字之差的马匹名互相误选；
+///   仅「高楯黑」允许整字漏识（OCR 读不到「楯」）。
 /// - 许可名单（FindMatchedName）与关键词（ContainsName）复用同一套归一规则。
 /// 纯文本逻辑、无 MaaFramework 依赖，可被测试工程直接编译。
 /// </summary>
@@ -59,8 +61,10 @@ public static class SwordNameMatcher
     /// 「杵」：御手杵会被识别为「御手」。
     /// 「喰」：骨喰藤四郎会被识别为「骨藤四郎」。
     /// 「樋、笹、蛉、髭、麿」：当前 OCR 模型字典未收录。
+    /// 「楯」：马匹「高楯黑」会被识别为「高黑」；该字只出现在这条马匹名中，
+    /// 刀帐、刀装与宝物名均不含，去掉后不会与其他名称冲突。
     /// </summary>
-    private static readonly char[] FrequentlyDroppedGlyphs = ['薙', '杵', '喰', '樋', '笹', '蛉', '髭', '麿'];
+    private static readonly char[] FrequentlyDroppedGlyphs = ['薙', '杵', '喰', '樋', '笹', '蛉', '髭', '麿', '楯'];
 
     /// <summary>已确认的完整刀名 OCR 误识别别名，按目标刀名精确对应。</summary>
     private static readonly Dictionary<string, string[]> ConfirmedOcrAliases = new(StringComparer.Ordinal)
@@ -153,19 +157,48 @@ public static class SwordNameMatcher
         return new string(text.Where(c => !FrequentlyDroppedGlyphs.Contains(c)).ToArray());
     }
 
-    /// <summary>马匹匹配：保留原有容错——原文包含目标；或目标 ≥ 2 字时，去除 OCR 文本中的数字/字母后与目标编辑距离 ≤ 1。</summary>
-    public static bool IsLegacyFuzzyMatch(string? ocrText, string? target)
+    /// <summary>
+    /// 马匹匹配：按字形归一表统一字形，并去掉 OCR 文本中的数量标记
+    /// （行号前缀与数量后缀，如「03松风」「小云雀x5」「小云雀×5」「小云雀＊5」「小云雀５」）
+    /// 与名称连接符（各类中点写法，使「汗血・新春」与「汗血新春」等价），
+    /// 之后要求与目标全等。不做包含判断，也不做编辑距离容错：
+    /// 「祝一号/祝十号/祝十一号」「白毛/鹿毛/青毛」「超光/超影」都只差一个字，
+    /// 任何丢字或近似容错都会让它们互相命中，选中列表中最靠上的错误马匹。
+    /// 仅对 FrequentlyDroppedGlyphs 中的字允许整字漏识（当前只有「高楯黑」的「楯」）。
+    /// </summary>
+    public static bool IsHorseMatch(string? ocrText, string? target)
     {
         if (string.IsNullOrEmpty(ocrText) || string.IsNullOrEmpty(target))
             return false;
-        if (ocrText.Contains(target, StringComparison.Ordinal))
+
+        var normalizedOcr = Normalize(RemoveIgnorableCharacters(ocrText));
+        var normalizedTarget = Normalize(RemoveIgnorableCharacters(target));
+        if (normalizedOcr == normalizedTarget)
             return true;
-        if (target.Length < 2)
-            return false;
-        // 去除 OCR 文本中的 ASCII 数字前缀（如「05」）与数量后缀（如「x1」）；不能用 char.IsLetter，它对中文字符也返回 true
-        var cleaned = new string(ocrText.Where(c => !char.IsAsciiLetterOrDigit(c)).ToArray());
-        return cleaned.Length > 0 && LevenshteinDistance(cleaned, target) <= 1;
+
+        var strippedTarget = StripDroppableGlyphs(normalizedTarget);
+        return strippedTarget != normalizedTarget
+            && strippedTarget.Length >= 2
+            && normalizedOcr == strippedTarget;
     }
+
+    /// <summary>
+    /// 去除马匹名比较前可忽略的字符：数量标记与名称连接符。
+    /// 名称连接符统一剔除，因此「汗血・新春」与「汗血新春」等价；马匹名去掉中点后互不重复，
+    /// 不会让「汗血」与「汗血・新春」互相命中（比较仍要求全等）。
+    /// </summary>
+    private static string RemoveIgnorableCharacters(string text)
+        => new(text.Where(c => !IsQuantityMarker(c) && !IsNameConnector(c)).ToArray());
+
+    /// <summary>是否为数量标记字符（ASCII 字母数字、Unicode 数字与常见乘号星号），不能用 char.IsLetter 代替，它对中文字符也返回 true</summary>
+    private static bool IsQuantityMarker(char c)
+        => char.IsAsciiLetter(c)
+            || char.IsDigit(c)
+            || c is '×' or '✕' or '✖' or '╳' or '✗' or '＊' or '*';
+
+    /// <summary>是否为名称连接符：各类中点/句点写法，OCR 与手输可能混用，马匹名中只作分隔用</summary>
+    private static bool IsNameConnector(char c)
+        => c is '・' or '･' or '·' or '•' or '‧' or '∙' or '⋅' or '﹒' or '．' or '.';
 
     /// <summary>按字形归一表把字符串中的字形替换为简体代表字</summary>
     private static string Normalize(string text)
@@ -177,20 +210,4 @@ public static class SwordNameMatcher
             .ToArray());
     }
 
-    /// <summary>计算两个短字符串的编辑距离（Levenshtein）</summary>
-    private static int LevenshteinDistance(string a, string b)
-    {
-        int m = a.Length, n = b.Length;
-        if (m == 0) return n;
-        if (n == 0) return m;
-        var dp = new int[m + 1, n + 1];
-        for (int i = 0; i <= m; i++) dp[i, 0] = i;
-        for (int j = 0; j <= n; j++) dp[0, j] = j;
-        for (int i = 1; i <= m; i++)
-            for (int j = 1; j <= n; j++)
-                dp[i, j] = Math.Min(
-                    Math.Min(dp[i - 1, j] + 1, dp[i, j - 1] + 1),
-                    dp[i - 1, j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1));
-        return dp[m, n];
-    }
 }

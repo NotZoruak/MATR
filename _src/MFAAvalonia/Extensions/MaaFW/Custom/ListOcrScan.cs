@@ -59,12 +59,13 @@ public static class ListOcrScan
     }
 
     /// <summary>滚动扫描循环：OCR 找目标文本（得分 ≥ 阈值），命中执行点击动作；未命中上滑；与上屏相同判定到底返回 false。
-    /// exactMatch=true 时用刀剑/刀装的字形归一精确匹配（一字之差不命中）；false 时用马匹的原有丢字容错匹配。
+    /// 默认使用刀剑/刀装的字形归一精确匹配（一字之差不命中）；马匹传入 IsHorseMatch，同样不做近似容错。
     /// 上滑后列表还在回弹，命中判定必须等到连续两帧 OCR 结果一致（列表静止）再做：
     /// 2026-09-14 实机即因为用了回弹过程中的 y 去点击，点到了相邻行的按钮，选刀页始终不变而卡住。</summary>
     public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll, Func<List<int>, bool> clickAction,
-        string logTag, bool exactMatch = false) where T : IMaaContext
+        string logTag, Func<string, string, bool>? matcher = null) where T : IMaaContext
     {
+        var isMatch = matcher ?? SwordNameMatcher.IsExactMatch;
         string lastOcr = string.Empty;
         string? lastFrameSignature = null;
         // 上滑之后必须先等列表静止，静止前的帧只用来判断「还在动」，不参与命中
@@ -106,9 +107,7 @@ public static class ListOcrScan
 
             // 命中多个时取最上方（y 最小）的匹配
             var hit = all
-                .Where(r => r.Score >= MinScore && r.Text != null && (exactMatch
-                    ? SwordNameMatcher.IsExactMatch(r.Text, target)
-                    : SwordNameMatcher.IsLegacyFuzzyMatch(r.Text, target)))
+                .Where(r => r.Score >= MinScore && r.Text != null && isMatch(r.Text, target))
                 .Where(r => r.Box is { Count: >= 4 })
                 .OrderBy(r => r.Box![1])
                 .FirstOrDefault();

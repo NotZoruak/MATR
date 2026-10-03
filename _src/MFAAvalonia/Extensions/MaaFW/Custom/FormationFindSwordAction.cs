@@ -43,9 +43,8 @@ public class FormationFindSwordAction : IMaaCustomAction
                     context.Click(1191, box[1]);
                     return true;
                 },
-                "FormationFindSword",
-                // 刀剑必须精确匹配：一字之差不得命中，避免「太郎太刀/次郎太刀」近似名误选
-                exactMatch: true);
+                // 默认精确匹配：一字之差不得命中，避免「太郎太刀/次郎太刀」近似名误选
+                "FormationFindSword");
         }
         catch (MaaStopException)
         {

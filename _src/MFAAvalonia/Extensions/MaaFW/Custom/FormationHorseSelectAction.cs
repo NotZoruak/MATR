@@ -70,6 +70,8 @@ public class FormationHorseSelectAction : IMaaCustomAction
                 LoggerHelper.Error("[FormationHorseSelect] 重试后仍未找到「确定」按钮");
                 return false;
             },
-            "FormationHorseSelect");
+            // 马匹同样精确匹配，仅「高楯黑」允许 OCR 漏识「楯」；否则祝一号/祝十号会互相误选
+            "FormationHorseSelect",
+            SwordNameMatcher.IsHorseMatch);
     }
 }
