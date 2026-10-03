@@ -1471,14 +1471,15 @@
     "on_error": ["E_FlowerBattleHub"]
   },
   "E_FlowerCheckCaptain": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {"mode": "check_captain"}
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [342, 189, 33, 19],
+        "expected": "^100$",
+        "only_rec": true
+      }
     },
-    "next": ["E_FlowerDone"],
-    "on_error": ["E_FlowerSortie"]
+    "next": ["E_FlowerDone"]
   },
   "E_FlowerDissolve": {
     "next": ["E_FlowerDissolveCheck", "E_FlowerCaptainClickSlot"],
@@ -1639,7 +1640,7 @@
     "pre_delay": 100,
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200},
-    "next": ["E_FlowerCheckCaptain"],
+    "next": ["E_FlowerCheckCaptain", "E_FlowerSortie"],
     "on_error": ["E_FlowerBattleHub"]
   },
   "E_FlowerCaptainSwipe": {
