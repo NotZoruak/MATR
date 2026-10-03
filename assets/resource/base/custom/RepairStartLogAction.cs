@@ -81,7 +81,7 @@ public class RepairStartLogAction : IMaaCustomAction
         var name = Normalize(ReadText(context, ParseRoi(json["name_roi"] as JArray, "修复刀剑 OCR ROI")));
         var costs = (json["cost_rois"] as JArray ?? throw new Exception("修复资源 OCR ROI 缺失"))
             .OfType<JArray>()
-            .Select(roi => ParseNumber(ReadText(context, ParseRoi(roi, "修复资源 OCR ROI"))))
+            .Select(roi => ParseNumber(ReadText(context, ParseRoi(roi, "修复资源 OCR ROI"), onlyRec: true)))
             .ToList();
 
         // 名条可能被漏字或形近误识（巴形刀/御手），能唯一归一到刀帐刀名时以标准名为准
@@ -106,7 +106,11 @@ public class RepairStartLogAction : IMaaCustomAction
         return SwordNameResolver.TryResolve(text, map, out var swordName) ? swordName : null;
     }
 
-    private static string ReadText<T>(T context, int[] roi) where T : IMaaContext
+    /// <summary>
+    /// 读取指定区域文本。onlyRec 为 true 时跳过文本检测、把整块 ROI 直接交给识别模型，
+    /// 用于已经精确框住数字的资源消耗栏，避免检测阶段漏掉单个数字。
+    /// </summary>
+    private static string ReadText<T>(T context, int[] roi, bool? onlyRec = null) where T : IMaaContext
     {
         using var image = context.GetImage();
         if (image == null)
@@ -116,6 +120,7 @@ public class RepairStartLogAction : IMaaCustomAction
         {
             Name = "RepairStartOCR",
             Recognition = "OCR",
+            OnlyRec = onlyRec,
             Roi = roi,
         };
         var detail = context.RunRecognition(node, image);
