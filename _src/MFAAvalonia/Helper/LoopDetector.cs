@@ -4,7 +4,7 @@ using System;
 namespace MFAAvalonia.Helper;
 
 /// <summary>
-/// 卡死循环检测器:统计连续相同的动作键(节点名+动作类型+目标坐标),
+/// 卡死循环检测器:统计连续相同的动作键(节点名+动作类型),
 /// 连续达到阈值并通过二次确认后判定画面冻结。
 /// 用于「卡死重启」开启时的补充检测,覆盖枢纽 timeout 检测不到的形态:
 /// 冻结画面恰好命中某个识别节点,形成"识别命中→执行→跳回枢纽→timeout 重置"的无限循环。
@@ -40,7 +40,8 @@ public sealed class LoopDetector
                 return false;
             }
 
-            var key = $"{nodeName}|{action}|{x}|{y}";
+            // OCR 匹配框会因抖动产生数像素偏移，不能把其坐标作为循环中断条件。
+            var key = $"{nodeName}|{action}";
             if (key != _lastKey)
             {
                 // 动作键变化:画面已变化,计数清零

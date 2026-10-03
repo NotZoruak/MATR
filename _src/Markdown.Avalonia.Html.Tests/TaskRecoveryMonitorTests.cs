@@ -9,6 +9,22 @@ namespace Markdown.Avalonia.Html.Tests;
 public class TaskRecoveryMonitorTests
 {
     [Fact]
+    public void 同一点击因识别框轻微漂移时仍应判定为循环()
+    {
+        var detector = new LoopDetector();
+        var triggered = false;
+
+        for (var i = 0; i < 99; i++)
+        {
+            var x = 1194 + i % 3 - 1;
+            var y = 22 + i % 5 - 2;
+            triggered = detector.Feed("E_ClickDirectoryTop", "Click", x, y);
+        }
+
+        Assert.True(triggered);
+    }
+
+    [Fact]
     public void 重连宽限期内即使暂无新帧也不应重建截图通道()
     {
         using var viewModel = new TaskQueueViewModel("live-view-grace-test");
