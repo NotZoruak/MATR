@@ -174,7 +174,26 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["FC_IsTeamEmpty", "FC_DissolveTeam"]
+    "next": ["FC_IsTeamOnExpedition", "FC_IsTeamEmpty", "FC_DissolveTeam"]
+  },
+  "FC_IsTeamOnExpedition": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [277, 125, 15, 6],
+        "lower": [150, 68, 226],
+        "upper": [152, 69, 230],
+        "count": 50
+      }
+    },
+    "pre_delay": 0,
+    "post_delay": 0,
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[自定编队] 目标部队正在远征，无法编成",
+        "display": "log"
+      }
+    }
   },
   "FC_IsTeamEmpty": {
     "recognition": {
