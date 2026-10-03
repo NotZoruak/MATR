@@ -391,8 +391,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
                 ActionParamHelper.SleepWithStopCheck(context, 500);
                 return ListOcrScan.ClickConfirm(context, doubleClick: true);
             },
-            "FormationTreasureSelect",
-            exactMatch: true);
+            "FormationTreasureSelect");
     }
 
     /// <summary>检查 ROI 内所有像素是否都等于指定 RGB 颜色。</summary>

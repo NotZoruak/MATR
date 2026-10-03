@@ -81,9 +81,8 @@ public class FormationEquipSelectAction : IMaaCustomAction
                 LoggerHelper.Error("[FormationEquipSelect] 重试后仍未找到「确定」按钮");
                 return false;
             },
-            "FormationEquipSelect",
-            // 刀装同样精确匹配：只允许字形容错，不允许一字之差命中异种刀装
-            exactMatch: true);
+            // 默认精确匹配：只允许字形容错，不允许一字之差命中异种刀装
+            "FormationEquipSelect");
     }
 
 }

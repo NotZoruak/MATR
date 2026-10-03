@@ -406,6 +406,7 @@
     "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftFinishClaimHub": {
+    "timeout": 120000,
     "next": ["DT_WarmGiftPurchaseDetail", "DT_WarmGiftCloseClaimPopup"]
   },
   "DT_WarmGiftPurchaseDetail": {
@@ -698,6 +699,7 @@
     "next": ["DT_ForgeNavigateToDisassemble"]
   },
   "DT_ForgeNavigateToDisassemble": {
+    "timeout": 120000,
     "next": ["DT_ForgeClickDisassemble", "DT_ForgeIsInDisassembleSelect"],
     "on_error": ["DT_ForgeEntry"]
   },
@@ -1632,6 +1634,7 @@
     "next": ["DT_DrillBattleHub"]
   },
   "DT_DrillBattleHub": {
+    "timeout": 120000,
     "next": ["DT_DrillIsInTeamSelect", "DT_DrillIsInFormationSelect", "DT_DrillBattleFinished", "DT_DrillIsBattleResult"],
     "on_error": ["DT_DrillEntry"]
   },
@@ -1890,6 +1893,7 @@
     "next": ["DT_RewardClosePopupHub"]
   },
   "DT_RewardClosePopupHub": {
+    "timeout": 120000,
     "next": ["DT_RewardClosePopup", "DT_ReturnHomeHub"]
   },
   "DT_RewardClosePopup": {
@@ -2093,6 +2097,7 @@
     "next": ["DT_MailClickClaim", "DT_MailCloseMailboxHub"]
   },
   "DT_MailCloseMailboxHub": {
+    "timeout": 120000,
     "next": ["DT_MailCloseMailbox", "DT_MailFinishedLog"]
   },
   "DT_MailCloseMailbox": {
@@ -2125,6 +2130,7 @@
     "next": ["DT_ReturnHomeHub"]
   },
   "DT_ReturnHomeHub": {
+    "timeout": 120000,
     "next": [
       "DT_ReturnHomeCheckHomeBrightness",
       "[JumpBack]IsExpeditionReturn_Exp",

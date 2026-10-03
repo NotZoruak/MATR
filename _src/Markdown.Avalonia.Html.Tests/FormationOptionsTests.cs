@@ -1,12 +1,46 @@
 using MFAAvalonia.ViewModels.UsersControls;
 using MFAAvalonia.Extensions.MaaFW;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class FormationOptionsTests
 {
+    [Fact]
+    public void 编队槽位内外行间距应保持一致()
+    {
+        var view = File.ReadAllText(FindFormationEditorViewPath());
+
+        Assert.Contains("Margin=\"0,4,0,0\"", view, StringComparison.Ordinal);
+        Assert.Contains("RowSpacing=\"4\"", view, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void 编队刀名应使用可搜索的原生下拉框()
+    {
+        var view = File.ReadAllText(FindFormationEditorViewPath());
+
+        Assert.Contains("extensions:ComboBoxExtensions.CanSearch=\"True\"", view, StringComparison.Ordinal);
+        Assert.Contains("extensions:ComboBoxExtensions.SearchWatermark=\"搜索刀剑名\"", view, StringComparison.Ordinal);
+        Assert.DoesNotContain("AutoCompleteBox", view, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void 马匹选项应包含图片中的全部马匹()
+    {
+        Assert.Equal(
+            [
+                "无", "王庭", "三国黑", "松风", "小云雀", "高楯黑", "花柑子", "青海波", "望月", "白毛", "鹿毛", "青毛",
+                "绝影", "赤兔", "乌雉", "的卢", "汗血", "驿骝", "青骢", "汗血・新春", "赤兔・新春", "超影・新春",
+                "踏雪乌骓", "爪黄飞电", "照夜玉狮子", "翻羽", "超光", "超影", "霜华", "牛牛号", "祝一号", "祝二号",
+                "祝三号", "祝四号", "祝五号", "祝六号", "祝七号", "祝八号", "祝九号", "祝十号", "祝十一号"
+            ],
+            FormationOptions.HorseOptions);
+    }
+
     [Fact]
     public void 宝物选项应包含无和七个宝物名称()
     {
@@ -51,5 +85,17 @@ public class FormationOptionsTests
         Assert.Contains("\"only_rec\": true", json);
         Assert.Contains("\"expected\"", json);
         Assert.Contains("宝物", json);
+    }
+
+    private static string FindFormationEditorViewPath()
+    {
+        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        {
+            var viewPath = Path.Combine(directory.FullName, "_src", "MFAAvalonia", "Views", "UserControls", "FormationEditorView.axaml");
+            if (Directory.Exists(Path.Combine(directory.FullName, ".git")))
+                return viewPath;
+        }
+
+        throw new DirectoryNotFoundException("找不到 FormationEditorView.axaml 所在的仓库根目录。");
     }
 }

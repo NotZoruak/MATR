@@ -29,4 +29,49 @@ public class SwordNameMatcherTests
     {
         Assert.False(SwordNameMatcher.IsExactMatch(ocrText, target));
     }
+
+    [Theory]
+    [InlineData("祝一号", "祝一号")]
+    [InlineData("祝十号", "祝十号")]
+    [InlineData("祝十一号", "祝十一号")]
+    [InlineData("03松风", "松风")]
+    [InlineData("小云雀x5", "小云雀")]
+    [InlineData("小云雀×5", "小云雀")]
+    [InlineData("小云雀＊5", "小云雀")]
+    [InlineData("小云雀５", "小云雀")]
+    [InlineData("×5小云雀", "小云雀")]
+    [InlineData("05高楯黑", "高楯黑")]
+    [InlineData("高楯黑x1", "高楯黑")]
+    [InlineData("高黑", "高楯黑")]
+    [InlineData("汗血・新春", "汗血・新春")]
+    [InlineData("汗血・新春", "汗血新春")]
+    [InlineData("汗血新春", "汗血・新春")]
+    [InlineData("汗血 新春", "汗血・新春")]
+    [InlineData("赤兔・新春", "赤兔新春")]
+    [InlineData("超影・新春", "超影新春")]
+    [InlineData("小云雀・5", "小云雀")]
+    public void 马匹名应精确匹配并保留数量标记与高楯黑漏字容错(string ocrText, string target)
+    {
+        Assert.True(SwordNameMatcher.IsHorseMatch(ocrText, target));
+    }
+
+    [Theory]
+    [InlineData("祝十号", "祝一号")]
+    [InlineData("祝十一号", "祝一号")]
+    [InlineData("祝一号", "祝十号")]
+    [InlineData("祝二号", "祝一号")]
+    [InlineData("鹿毛", "白毛")]
+    [InlineData("青毛", "白毛")]
+    [InlineData("超影", "超光")]
+    [InlineData("汗血・新春", "汗血")]
+    [InlineData("赤兔・新春", "赤兔")]
+    [InlineData("超影・新春", "超影")]
+    [InlineData("汗血新春", "汗血")]
+    [InlineData("赤兔新春", "赤兔")]
+    [InlineData("高黑", "三国黑")]
+    [InlineData("高", "高楯黑")]
+    public void 马匹名不应匹配其它马匹或残缺名(string ocrText, string target)
+    {
+        Assert.False(SwordNameMatcher.IsHorseMatch(ocrText, target));
+    }
 }

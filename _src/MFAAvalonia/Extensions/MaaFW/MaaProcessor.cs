@@ -4586,6 +4586,13 @@ public class MaaProcessor
         };
     }
 
+    /// <summary>FC_ClickTeam 的常驻首选判断：目标部队在远征中时直接结束本次编成</summary>
+    private const string FormationTeamExpeditionCheck = "FC_IsTeamOnExpedition";
+
+    /// <summary>构造 FC_ClickTeam 的 next，常驻判断固定位于首位</summary>
+    private static JArray BuildClickTeamNext(params string[] presetFlow) =>
+        new([FormationTeamExpeditionCheck, .. presetFlow]);
+
     /// <summary>将自定编队任务选择的预设转换为本次运行所需的 pipeline override。</summary>
     private void ApplyFormationPresetOverride(ref MaaToken taskModels, DragItemViewModel task, int? formationPresetId)
     {
@@ -4663,23 +4670,23 @@ public class MaaProcessor
 
         if (preset.UseGameFormationRecordOnly)
         {
-            ((JObject)overrides["FC_ClickTeam"])["next"] = new JArray("FC_UseRecord_Step1");
+            ((JObject)overrides["FC_ClickTeam"])["next"] = BuildClickTeamNext("FC_UseRecord_Step1");
         }
         else if (preset.SaveGameFormationRecordOnly)
         {
-            ((JObject)overrides["FC_ClickTeam"])["next"] = new JArray("FC_ClickTroopRecord");
+            ((JObject)overrides["FC_ClickTeam"])["next"] = BuildClickTeamNext("FC_ClickTroopRecord");
         }
 
         if (preset.UseGameFormationRecordOnly && preset.ClearEquipmentBeforeFormation)
         {
-            ((JObject)overrides["FC_ClickTeam"])["next"] = new JArray("FC_IsTeamEmpty", "FC_RemoveEquip");
+            ((JObject)overrides["FC_ClickTeam"])["next"] = BuildClickTeamNext("FC_IsTeamEmpty", "FC_RemoveEquip");
             overrides["FC_IsTeamEmpty"] = new JObject { ["next"] = new JArray("FC_UseRecord_Step1") };
             overrides["FC_ConfirmEquipRemove"] = new JObject { ["next"] = new JArray("FC_UseRecord_Step1") };
         }
         else if (!preset.UseGameFormationRecordOnly && !preset.SaveGameFormationRecordOnly
                  && preset.ClearEquipmentBeforeFormation)
         {
-            ((JObject)overrides["FC_ClickTeam"])["next"] = new JArray("FC_IsTeamEmpty", "FC_RemoveEquip");
+            ((JObject)overrides["FC_ClickTeam"])["next"] = BuildClickTeamNext("FC_IsTeamEmpty", "FC_RemoveEquip");
         }
 
         if (!preset.SaveGameFormationRecordAfterFormation)

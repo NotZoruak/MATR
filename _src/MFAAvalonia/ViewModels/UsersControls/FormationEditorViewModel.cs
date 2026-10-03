@@ -141,7 +141,7 @@ public partial class FormationSlotEdit : ObservableObject
 /// <summary>编队编辑器使用的候选列表</summary>
 public static class FormationOptions
 {
-    public static readonly string[] HorseOptions = ["无", "王庭", "三国黑", "松风", "小云雀", "高楯黑", "花柑子", "青海波", "望月", "白毛", "鹿毛", "青毛"];
+    public static readonly string[] HorseOptions = ["无", "王庭", "三国黑", "松风", "小云雀", "高楯黑", "花柑子", "青海波", "望月", "白毛", "鹿毛", "青毛", "绝影", "赤兔", "乌雉", "的卢", "汗血", "驿骝", "青骢", "汗血・新春", "赤兔・新春", "超影・新春", "踏雪乌骓", "爪黄飞电", "照夜玉狮子", "翻羽", "超光", "超影", "霜华", "牛牛号", "祝一号", "祝二号", "祝三号", "祝四号", "祝五号", "祝六号", "祝七号", "祝八号", "祝九号", "祝十号", "祝十一号"];
 
     public static readonly string[] TreasureOptions = ["无", "曜变天目", "狮子螺钿鞍", "南蛮胴具足", "锷・月下梅树透图", "锷・双鹤图", "三所物・菊", "三所物・狮子"];
 

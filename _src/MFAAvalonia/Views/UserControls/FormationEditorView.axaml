@@ -6,6 +6,7 @@
     x:DataType="usersControls:FormationEditorViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:extensions="clr-namespace:SukiUI.Extensions;assembly=SukiUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:suki="https://github.com/kikipoulet/SukiUI"
     xmlns:usersControls="clr-namespace:MFAAvalonia.ViewModels.UsersControls"
@@ -27,7 +28,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
-        <Style Selector="TextBox.fe-input, ComboBox.fe-input, AutoCompleteBox.fe-input">
+        <Style Selector="TextBox.fe-input, ComboBox.fe-input">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="0" />
@@ -40,21 +41,6 @@
             <Setter Property="Padding" Value="6" />
         </Style>
 
-        <!-- 自动完成下拉框内部的文本框使用与其它选项一致的左侧内缩 -->
-        <Style Selector="AutoCompleteBox.fe-input">
-            <Setter Property="Padding" Value="0" />
-        </Style>
-        <Style Selector="AutoCompleteBox.fe-input /template/ TextBox#PART_TextBox">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="12,0,12,0" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="suki:TextBoxExtensions.AddDeleteButton" Value="False" />
-        </Style>
     </UserControl.Styles>
 
     <StackPanel Margin="4,2,4,2" Spacing="10">
@@ -119,7 +105,7 @@
                         ColumnDefinitions="22,*,*,*"
                         RowDefinitions="40,40"
                         ColumnSpacing="8"
-                        RowSpacing="8">
+                        RowSpacing="4">
                         <TextBlock
                             Grid.Row="0"
                             FontWeight="Bold"
@@ -129,13 +115,12 @@
                         <Border
                             Grid.Column="1"
                             Classes="fe-field">
-                            <AutoCompleteBox
+                            <ComboBox
                                 Classes="fe-input"
-                                FilterMode="Contains"
-                                IsTextCompletionEnabled="True"
+                                extensions:ComboBoxExtensions.CanSearch="True"
+                                extensions:ComboBoxExtensions.SearchWatermark="搜索刀剑名"
                                 ItemsSource="{Binding $parent[UserControl].((usersControls:FormationEditorViewModel)DataContext).SwordOptions}"
-                                Text="{Binding Sword, Mode=TwoWay}"
-                                Watermark="刀剑名" />
+                                SelectedItem="{Binding Sword, Mode=TwoWay}" />
                         </Border>
                         <Border
                             Grid.Column="2"
