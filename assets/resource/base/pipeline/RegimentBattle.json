@@ -167,7 +167,23 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"]
+    "next": ["RB_CloseImmediateSortiePopup", "RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"]
+  },
+  "RB_CloseImmediateSortiePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [597, 54, 82, 38],
+        "expected": "出阵"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1127, 26, 41, 39]
+      }
+    },
+    "next": ["RB_IsTeamSelect", "RB_DetectWhereAmI"]
   },
   "RB_DisableAutoMarch": {
     "enabled": true,
