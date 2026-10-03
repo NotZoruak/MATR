@@ -1,12 +1,33 @@
 using MFAAvalonia.ViewModels.UsersControls;
 using MFAAvalonia.Extensions.MaaFW;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class FormationOptionsTests
 {
+    [Fact]
+    public void 编队槽位内外行间距应保持一致()
+    {
+        var view = File.ReadAllText(FindFormationEditorViewPath());
+
+        Assert.Contains("Margin=\"0,4,0,0\"", view, StringComparison.Ordinal);
+        Assert.Contains("RowSpacing=\"4\"", view, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void 编队刀名应使用可搜索的原生下拉框()
+    {
+        var view = File.ReadAllText(FindFormationEditorViewPath());
+
+        Assert.Contains("extensions:ComboBoxExtensions.CanSearch=\"True\"", view, StringComparison.Ordinal);
+        Assert.Contains("extensions:ComboBoxExtensions.SearchWatermark=\"搜索刀剑名\"", view, StringComparison.Ordinal);
+        Assert.DoesNotContain("AutoCompleteBox", view, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void 宝物选项应包含无和七个宝物名称()
     {
@@ -51,5 +72,17 @@ public class FormationOptionsTests
         Assert.Contains("\"only_rec\": true", json);
         Assert.Contains("\"expected\"", json);
         Assert.Contains("宝物", json);
+    }
+
+    private static string FindFormationEditorViewPath()
+    {
+        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        {
+            var viewPath = Path.Combine(directory.FullName, "_src", "MFAAvalonia", "Views", "UserControls", "FormationEditorView.axaml");
+            if (Directory.Exists(Path.Combine(directory.FullName, ".git")))
+                return viewPath;
+        }
+
+        throw new DirectoryNotFoundException("找不到 FormationEditorView.axaml 所在的仓库根目录。");
     }
 }
