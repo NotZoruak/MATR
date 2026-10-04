@@ -876,6 +876,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             {
                 if (_formationClipboard == null) return;
                 capturedPreset.Team = _formationClipboard.Team;
+                capturedPreset.RecordSlot = _formationClipboard.ResolveRecordSlot();
                 capturedPreset.ClearEquipmentBeforeFormation = _formationClipboard.ClearEquipmentBeforeFormation;
                 capturedPreset.SaveGameFormationRecordAfterFormation = _formationClipboard.SaveGameFormationRecordAfterFormation;
                 FormationPreset.SetRecordMode(capturedPreset, _formationClipboard.UseGameFormationRecordOnly, _formationClipboard.SaveGameFormationRecordOnly);
@@ -971,6 +972,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             Id = source.Id,
             Name = source.Name,
             Team = source.Team,
+            RecordSlot = source.ResolveRecordSlot(),
             ClearEquipmentBeforeFormation = source.ClearEquipmentBeforeFormation,
             SaveGameFormationRecordAfterFormation = source.SaveGameFormationRecordAfterFormation,
             UseGameFormationRecordOnly = source.UseGameFormationRecordOnly,

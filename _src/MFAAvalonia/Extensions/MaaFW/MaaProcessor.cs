@@ -4610,6 +4610,7 @@ public class MaaProcessor
 
         preset.EnsureSlots();
         var team = Math.Clamp(preset.Team, 1, 5);
+        var recordSlot = preset.ResolveRecordSlot();
         var overrides = new Dictionary<string, JToken>
         {
             ["FormationConfig"] = new JObject
@@ -4656,14 +4657,14 @@ public class MaaProcessor
             {
                 ["action"] = new JObject
                 {
-                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[recordSlot - 1]) },
                 },
             },
             ["FC_UseRecord_Step2_SelectRecord"] = new JObject
             {
                 ["action"] = new JObject
                 {
-                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[recordSlot - 1]) },
                 },
             },
         };

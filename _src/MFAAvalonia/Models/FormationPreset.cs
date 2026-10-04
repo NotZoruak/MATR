@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MFAAvalonia.Models;
@@ -14,10 +15,13 @@ public class FormationPreset
     /// <summary>目标部队编号，1-5</summary>
     public int Team { get; set; } = 1;
 
+    /// <summary>部队记录槽编号，1-5；旧配置缺少该值时沿用目标部队编号</summary>
+    public int? RecordSlot { get; set; }
+
     /// <summary>编成前是否卸下目标部队现有的刀装与马匹</summary>
     public bool ClearEquipmentBeforeFormation { get; set; }
 
-    /// <summary>编成后是否保存到与目标部队同编号的游戏部队记录槽</summary>
+    /// <summary>编成后是否保存到所选部队记录槽</summary>
     public bool SaveGameFormationRecordAfterFormation { get; set; }
 
     /// <summary>是否仅使用目标部队的游戏部队记录，不按预设重新编成</summary>
@@ -28,6 +32,9 @@ public class FormationPreset
 
     /// <summary>1-6 号位配置（第 1 位为队长），长度固定为 6</summary>
     public List<FormationSlot> Slots { get; set; } = [];
+
+    /// <summary>解析部队记录槽编号，兼容旧配置并限制在有效范围内</summary>
+    public int ResolveRecordSlot() => Math.Clamp(RecordSlot ?? Team, 1, 5);
 
     /// <summary>补齐 Slots 至 6 个位置，缺位补空槽</summary>
     public void EnsureSlots()

@@ -58,6 +58,19 @@
                 SelectedIndex="{Binding TeamIndex, Mode=TwoWay}" />
         </Grid>
 
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <TextBlock
+                Classes="fe-label"
+                Text="部队记录槽"
+                VerticalAlignment="Center" />
+            <ComboBox
+                Grid.Column="1"
+                Classes="fe-input"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding RecordSlotOptions}"
+                SelectedIndex="{Binding RecordSlotIndex, Mode=TwoWay}" />
+        </Grid>
+
         <StackPanel Spacing="6">
             <Grid ColumnDefinitions="*,Auto">
                 <TextBlock
@@ -73,7 +86,7 @@
             </Grid>
             <Grid ColumnDefinitions="*,Auto">
                 <TextBlock
-                    Text="编成后保存游戏部队记录"
+                    Text="编成后保存部队记录"
                     VerticalAlignment="Center" />
                 <ToggleSwitch
                     Grid.Column="1"
@@ -85,12 +98,12 @@
             </Grid>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                 <CheckBox
-                    Content="仅使用编队记录"
+                    Content="仅使用部队记录"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding UseGameFormationRecordOnly, Mode=TwoWay}" />
                 <CheckBox
                     Grid.Column="1"
-                    Content="仅记录编队"
+                    Content="仅保存当前编队"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding SaveGameFormationRecordOnly, Mode=TwoWay}" />
             </Grid>
