@@ -1,5 +1,6 @@
 using MaaFramework.Binding;
 using MaaFramework.Binding.Custom;
+using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using System;
 using System.Linq;
@@ -76,9 +77,8 @@ public class FatigueCheckAction : IMaaCustomAction
     /// <summary>获取用户阈值，默认 91。「疲劳阈值」是「长期远征计划」的子选项，需穿透 SubOptions 查找。</summary>
     public static int GetThreshold()
     {
-        var globalOpts = MaaProcessor.Interface?.GlobalSelectOptions;
-        // 「疲劳阈值」是「长期远征计划」的子选项，需穿透 SubOptions 查找
-        var planOpt = globalOpts?.FirstOrDefault(o => o.Name == "长期远征计划");
+        var planOpt = ExpeditionOptionResolver.FindEnabledLongTermPlanOption(
+            ExpeditionOptionResolver.GetCurrentTasks());
         var fatigueOpt = planOpt?.SubOptions?.FirstOrDefault(o => o.Name == "疲劳阈值");
         if (fatigueOpt?.Data != null
             && fatigueOpt.Data.TryGetValue("threshold", out var strVal)
