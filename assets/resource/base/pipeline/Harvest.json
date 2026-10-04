@@ -1511,6 +1511,7 @@
       "HV_StopOnEquipmentPopup",
       "HV_PostKebiishi1",
       "HV_PostKebiishi2",
+      "HV_IsPostSwordDrop",
       "HV_IsPreSortieConfirm",
       "HV_SortieSuccess"
     ]

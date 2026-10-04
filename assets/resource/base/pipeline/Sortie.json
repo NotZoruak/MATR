@@ -160,6 +160,7 @@
       "S_IsIsekaiTicketConfirm",
       "S_PostKebiishi1",
       "S_PostKebiishi2",
+      "S_IsPostSwordDrop",
       "S_IsPreSortieConfirm",
       "S_SortieSuccess"
     ]
