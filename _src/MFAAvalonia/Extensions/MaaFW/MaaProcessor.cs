@@ -4667,7 +4667,51 @@ public class MaaProcessor
                     ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[recordSlot - 1]) },
                 },
             },
+            ["FC_ForceRecallFindTeamRegion1"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion2"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion3"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion4"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
         };
+
+        if (!preset.SaveGameFormationRecordOnly && preset.ForceRecallExpeditionBeforeUsingRecord)
+        {
+            overrides[FormationTeamExpeditionCheck] = new JObject
+            {
+                ["next"] = new JArray("FC_ForceRecallOpenMenu"),
+                ["focus"] = new JObject
+                {
+                    ["Node.Action.Succeeded"] = new JObject
+                    {
+                        ["content"] = "special:[自定编队] 目标部队正在远征，开始强制召回",
+                        ["display"] = "log",
+                    },
+                },
+            };
+        }
 
         if (preset.UseGameFormationRecordOnly)
         {

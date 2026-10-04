@@ -29,6 +29,9 @@ public partial class FormationEditorViewModel : ViewModelBase
     /// <summary>是否仅使用部队记录</summary>
     [ObservableProperty] private bool _useGameFormationRecordOnly;
 
+    /// <summary>是否在编成前强制召回远征队伍</summary>
+    [ObservableProperty] private bool _forceRecallExpeditionBeforeUsingRecord;
+
     /// <summary>是否仅记录编队</summary>
     [ObservableProperty] private bool _saveGameFormationRecordOnly;
 
@@ -58,6 +61,7 @@ public partial class FormationEditorViewModel : ViewModelBase
         _clearEquipmentBeforeFormation = preset.ClearEquipmentBeforeFormation;
         _saveGameFormationRecordAfterFormation = preset.SaveGameFormationRecordAfterFormation;
         _useGameFormationRecordOnly = preset.UseGameFormationRecordOnly;
+        _forceRecallExpeditionBeforeUsingRecord = preset.ForceRecallExpeditionBeforeUsingRecord;
         _saveGameFormationRecordOnly = preset.SaveGameFormationRecordOnly && !_useGameFormationRecordOnly;
         preset.EnsureSlots();
         for (var i = 0; i < 6; i++)
@@ -74,6 +78,7 @@ public partial class FormationEditorViewModel : ViewModelBase
         _preset.RecordSlot = Math.Clamp(RecordSlotIndex + 1, 1, 5);
         _preset.ClearEquipmentBeforeFormation = ClearEquipmentBeforeFormation;
         _preset.SaveGameFormationRecordAfterFormation = SaveGameFormationRecordAfterFormation;
+        _preset.ForceRecallExpeditionBeforeUsingRecord = ForceRecallExpeditionBeforeUsingRecord;
         FormationPreset.SetRecordMode(_preset, UseGameFormationRecordOnly, SaveGameFormationRecordOnly);
         _preset.EnsureSlots();
         for (var i = 0; i < Slots.Count && i < 6; i++)

@@ -27,6 +27,9 @@ public class FormationPreset
     /// <summary>是否仅使用目标部队的游戏部队记录，不按预设重新编成</summary>
     public bool UseGameFormationRecordOnly { get; set; }
 
+    /// <summary>编成前强制召回目标部队；仅记录编队模式下不触发</summary>
+    public bool ForceRecallExpeditionBeforeUsingRecord { get; set; }
+
     /// <summary>是否仅将目标部队当前编成保存到游戏部队记录，不按预设重新编成</summary>
     public bool SaveGameFormationRecordOnly { get; set; }
 
