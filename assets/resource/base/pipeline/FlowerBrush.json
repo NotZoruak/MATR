@@ -4,6 +4,10 @@
   },
   "FB_DetectWhereAmI": {
     "pre_delay": 0,
+    "anchor": {
+      "Hub": "FB_DetectWhereAmI",
+      "PublicFlowDone": "FB_DetectWhereAmI"
+    },
     "timeout": 120000,
     "next": [
       "[JumpBack]IsExpeditionReturn_Exp",
@@ -116,122 +120,24 @@
         "expected": "刀剑男士选择"
       }
     },
-    "next": ["FB_ClickFilter"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_ClickFilter": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [828, 82, 68, 25]
-      }
-    },
-    "post_delay": 800,
-    "next": ["FB_ClearResidualFilter"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_ClearResidualFilter": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [752, 137, 97, 29]
-      }
-    },
-    "post_delay": 800,
-    "next": ["FB_FilterByTroop"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_FilterByTroop": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [226, 514, 109, 26]
-      }
-    },
-    "post_delay": 800,
-    "next": ["FB_FilterBySakura"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_FilterBySakura": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [965, 438, 91, 34]
-      }
-    },
-    "post_delay": 800,
-    "next": ["FB_ConfirmFilter"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_ConfirmFilter": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [592, 603, 107, 46]
-      }
-    },
-    "next": ["FB_DetectSortOrder"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_DetectSortOrder": {
-    "next": ["FB_ClickDescending", "FB_ConfirmSortAsc"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_ClickDescending": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [939, 77, 56, 39],
-        "expected": "降序"
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "post_delay": 800,
-    "next": ["FB_DetectSortOrder"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_ConfirmSortAsc": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [939, 77, 56, 39],
-        "expected": "升序"
-      }
-    },
-    "pre_delay": 100,
-    "next": ["FB_CaptainFind", "FB_CaptainSwipe"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_CaptainFind": {
-    "recognition": {
-      "type": "ColorMatch",
-      "param": {
-        "roi": [1224, 137, 11, 553],
-        "method": 4,
-        "lower": [200, 102, 102],
-        "upper": [206, 108, 108],
-        "connected": true,
-        "count": 1
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["FB_ClickSortieNow"],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_CaptainSwipe": {
     "action": {
       "type": "Custom",
-      "custom_action": "PageScrollAndHoldAction"
+      "custom_action": "FlowerBrushSwordSelectionAction",
+      "custom_action_param": {"max_swipes": 5}
     },
-    "next": ["FB_CaptainFind"],
-    "on_error": ["FB_DetectWhereAmI"]
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [530, 6, 224, 45]
+    },
+    "next": ["FB_ClickSortieNow", "FB_DetectWhereAmI"],
+    "on_error": ["FB_CompleteCurrentTaskAfterNoLockedSword"]
+  },
+  "FB_CompleteCurrentTaskAfterNoLockedSword": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "未找到上锁刀剑"}
+    }
   },
   "FB_ClickSortieNow": {
     "recognition": {
@@ -248,7 +154,132 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["FB_DetectWhereAmI"]
+    "next": ["FB_PostSortieHub"]
+  },
+  "FB_PostSortieHub": {
+    "pre_delay": 0,
+    "timeout": 30000,
+    "next": ["IsPreDamage", "THR_IsPreDamage", "FB_StopOnDamagePopup", "FB_CheckEquipmentPopup", "FB_SortieSuccess"],
+    "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_SortieSuccess": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [539, 3, 87, 6],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "next": ["FB_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷花回气] 出阵",
+        "display": "file"
+      }
+    }
+  },
+  "FB_StopOnDamagePopup": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [233, 128, 71, 549],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.9]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [788, 465, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [368, 464, 539, 90]
+    },
+    "next": ["FB_CompleteCurrentTaskAfterDamage"]
+  },
+  "FB_CompleteCurrentTaskAfterDamage": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤停止"}
+    },
+    "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_CheckEquipmentPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [423, 484, 145, 56],
+        "template": "Common/整备刀装.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [427, 269, 426, 130]
+    },
+    "next": ["FB_CheckEquipmentPopup", "FB_ClickEquipmentSlot"],
+    "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_ClickEquipmentSlot": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [952, 137, 30, 29],
+        "expected": "装"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["FB_ConfirmAutoEquip", "FB_ClickEquipmentSlot"],
+    "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_ConfirmAutoEquip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [560, 82, 122, 26],
+        "expected": "自动装备刀装"
+      }
+    },
+    "action": {"type": "Click"},
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FB_LeaveEquipmentPage", "FB_DetectWhereAmI"]
+  },
+  "FB_LeaveEquipmentPage": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [578, 9, 127, 35],
+        "expected": "更换装备"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [134, 8, 32, 33]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [134, 8, 32, 33]
+    },
+    "next": ["FB_ClickSortieNow", "FB_LeaveEquipmentPage"],
+    "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_CompleteCurrentTaskAfterDamageRepair": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "重伤修刀后停止"}
+    }
   },
   "FB_IsTeamSelect": {
     "recognition": {
@@ -258,8 +289,7 @@
         "expected": "部队选择"
       }
     },
-    "next": ["FB_ClickTeam"],
-    "on_error": ["FB_DetectWhereAmI"]
+    "next": ["FB_ClickTeam"]
   },
   "FB_ClickTeam": {
     "action": {
@@ -270,8 +300,7 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["FB_Dissolve"],
-    "on_error": ["FB_DetectWhereAmI"]
+    "next": ["FB_Dissolve"]
   },
   "FB_Dissolve": {
     "next": ["FB_DissolveCheck", "FB_CheckCaptainFatigue", "FB_ClickSortieNow"],
@@ -287,34 +316,29 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["FB_Dissolve"],
-    "on_error": ["FB_DetectWhereAmI"]
+    "next": ["FB_Dissolve"]
   },
   "FB_CheckCaptainFatigue": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [340, 187, 80, 22],
-        "expected": [
-          "100/100",
-          "100／100",
-          "100|100",
-          "100l100",
-          "100I100",
-          "1001100"
-        ]
+        "roi": [341,191,33,18],
+        "expected": ["100"],
+        "only_rec": true
       }
     },
-    "next": ["FB_ClickCaptainSlot"],
-    "on_error": ["FB_DetectWhereAmI"]
+    "next": ["FB_ClickCaptainSlot"]
   },
   "FB_ClickCaptainSlot": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1024, 140, 30, 50]
       }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1024, 140, 30, 50]
     },
     "next": ["FB_DetectWhereAmI"]
   },

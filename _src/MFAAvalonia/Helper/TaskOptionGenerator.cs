@@ -1056,9 +1056,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             container.Children.Add(header);
             if (HasSubOptions(interfaceOption) && !interfaceOption.InlineSubOptions)
                 AppendGearIcon(header, option, interfaceOption, source);
-            casesPanel = new WrapPanel
+            casesPanel = new UniformGrid
             {
-                Orientation = Orientation.Horizontal,
+                Columns = 1,
                 Margin = new Thickness(0, 2, 0, 2),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
@@ -1122,29 +1122,38 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             }
         }
 
-        if (casesPanel.Children.Count > 0)
+        if (casesPanel is UniformGrid caseGrid && caseGrid.Children.Count > 0)
         {
-            casesPanel.LayoutUpdated += EqualizeOnce;
-            void EqualizeOnce(object? s, EventArgs ev)
+            void UpdateColumns()
             {
-                casesPanel.LayoutUpdated -= EqualizeOnce;
-                double maxWidth = 0;
-                foreach (var child in casesPanel.Children)
+                if (caseGrid.Bounds.Width <= 0)
+                    return;
+
+                var maxItemWidth = 0d;
+                foreach (var child in caseGrid.Children.OfType<Control>())
                 {
-                    if (child is CheckBox checkBox)
-                    {
-                        checkBox.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                        maxWidth = Math.Max(maxWidth, checkBox.DesiredSize.Width);
-                    }
+                    child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    maxItemWidth = Math.Max(maxItemWidth, child.DesiredSize.Width);
                 }
-                if (maxWidth > 0)
-                {
-                    foreach (var child in casesPanel.Children)
-                    {
-                        if (child is CheckBox checkBox)
-                            checkBox.MinWidth = maxWidth;
-                    }
-                }
+
+                var columns = ResponsiveColumnCalculator.CalculateColumnCount(
+                    caseGrid.Bounds.Width - caseGrid.Margin.Left - caseGrid.Margin.Right,
+                    maxItemWidth,
+                    caseGrid.Children.Count);
+                if (caseGrid.Columns != columns)
+                    caseGrid.Columns = columns;
+            }
+
+            caseGrid.SizeChanged += (_, _) => UpdateColumns();
+            caseGrid.LayoutUpdated += InitializeColumns;
+
+            void InitializeColumns(object? sender, EventArgs args)
+            {
+                if (caseGrid.Bounds.Width <= 0)
+                    return;
+
+                caseGrid.LayoutUpdated -= InitializeColumns;
+                UpdateColumns();
             }
         }
 
@@ -1163,7 +1172,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         var isSingleDateInput = isSingleInput && interfaceOption.Inputs![0].IsDate;
 
         // 单输入且有 option description 时，需要显示 header，所以使用与多输入相同的 margin
-        var needsHeader = !isSingleInput || (hasOptionDescription && !isSingleDateInput);
+        var needsHeader = ShouldShowInputOptionHeader(
+            interfaceOption.Inputs?.Count ?? 0,
+            hasOptionDescription,
+            isSingleDateInput);
         
         var container = new StackPanel
         {
@@ -1415,8 +1427,18 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         // Initial setup
         HandleStringInputChange(textBox, input, option, interfaceOption, true); 
 
+        var hasInputLabel = HasInputLabel(input.Label);
+        if (!hasInputLabel && needsHeader)
+        {
+            Grid.SetColumn(textBox, 0);
+            Grid.SetColumnSpan(textBox, 2);
+            grid.Children.Add(textBox);
+            return grid;
+        }
+
         // Label Panel
-        var labelPanel = CreateLabelPanel(input.DisplayName, input.Name, input.Description);
+        var label = hasInputLabel ? input.DisplayName : interfaceOption.DisplayName;
+        var labelPanel = CreateLabelPanel(label, input.Name, input.Description);
 
         // Icon (Show only if single input WITHOUT header, because header already has icon)
         if (!needsHeader)
@@ -1435,6 +1457,19 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         grid.Children.Add(textBox);
 
         return grid;
+    }
+
+    internal static bool HasInputLabel(string? label) => !string.IsNullOrWhiteSpace(label);
+
+    internal static bool ShouldShowInputOptionHeader(
+        int inputCount,
+        bool hasOptionDescription,
+        bool isSingleDateInput)
+    {
+        if (inputCount != 1)
+            return true;
+
+        return !isSingleDateInput && hasOptionDescription;
     }
 
     private Control CreateBoolInputControl(

@@ -228,9 +228,9 @@
       "default_check": false,
       "repeatable": true,
       "repeat_count": 1,
-      "option": ["FB_选择部队"],
+      "option": ["FB_选择部队", "FB_重伤处理", "FB_最大滑动次数", "FB_刀剑筛选"],
       "label": "刷花回气",
-      "description": "筛选已装备刀装的刀剑男士，并按疲劳值从低到高优先选择角色，单骑出阵1-1刷花。当选择的部队不是部队一时，请保证所选部队有刀剑男士位于队长位。"
+      "description": "按自选刀种与状态筛选后，固定按樱吹雪升序选择最上方已上锁的刀剑，单骑出阵1-1刷花。最多滑动次数默认5次；未找到上锁刀剑时结束本次刷花。重伤处理默认使用加速符修刀。"
     },
     {
       "name": "刀解",
@@ -6762,20 +6762,21 @@
           "option": ["疲劳阈值", "临时部队记录槽"],
           "pipeline_override": {
             "E_MarkTeam1": {
-              "next": ["E_UseTeamRecord1"]
+              "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
             },
             "E_MarkTeam2": {
-              "next": ["E_UseTeamRecord2"]
+              "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
             },
             "E_MarkTeam3": {
-              "next": ["E_UseTeamRecord3"]
+              "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
             },
             "E_MarkTeam4": {
-              "next": ["E_UseTeamRecord4"]
+              "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
             },
             "E_MarkTeam5": {
-              "next": ["E_UseTeamRecord5"]
-            }
+              "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
+            },
+            "E_CheckDispatchFatigue": {"enabled": true}
           }
         }
       ]
@@ -6847,6 +6848,240 @@
         }
       ]
     },
+    "FB_刀剑筛选": {
+      "name": "FB_刀剑筛选",
+      "label": "刀剑筛选",
+      "type": "checkbox",
+      "description": "不选择刀种时表示全刀种；所有条件默认不选。筛选后固定按樱吹雪升序选择最上方已上锁的刀剑。",
+      "cases": [
+        {
+          "name": "短刀",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_short": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "胁差",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_wakizashi": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "打刀",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_uchigatana": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "太刀",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_tachi": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "大太刀",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_odachi": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "枪",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_yari": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "薙刀",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_naginata": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "剑",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"type_ken": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "初",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"first": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "极",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"kiwame": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "喜爱",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"favorite": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "未装备",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"unequipped": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "刀装装备",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"troop_equipped": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "马装备",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"horse_equipped": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "御守装备",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"charm_equipped": true}
+              }
+            }
+          }
+        },
+        {
+          "name": "宝物装备",
+          "pipeline_override": {
+            "FB_IsSwordSelect": {
+              "action": {
+                "custom_action_param": {"treasure_equipped": true}
+              }
+            }
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "FB_最大滑动次数": {
+      "name": "FB_最大滑动次数",
+      "label": "筛选后最大滑动次数",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "max_swipes",
+          "default": "5",
+          "pipeline_type": "int"
+        }
+      ],
+      "pipeline_override": {
+        "FB_IsSwordSelect": {
+          "action": {
+            "custom_action_param": {"max_swipes": "{max_swipes}"}
+          }
+        }
+      }
+    },
+    "FB_重伤处理": {
+      "name": "FB_重伤处理",
+      "label": "重伤处理",
+      "default_case": "加速符修刀",
+      "cases": [
+        {
+          "name": "加速符修刀",
+          "DisplayName": "加速符修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": true},
+            "FB_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
+          "name": "无加速符修刀",
+          "DisplayName": "无加速符修刀",
+          "pipeline_override": {
+            "ConfirmSelectSlot": {
+              "next": ["CaptureRepairInfo"]
+            },
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "LogRepairDone": {
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重伤检测] 修刀后停止任务",
+                  "display": "log"
+                }
+              }
+            },
+            "LogRepairCost": {
+              "next": ["FB_CompleteCurrentTaskAfterDamageRepair"]
+            },
+            "FB_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "FB_StopOnDamagePopup": {"enabled": true}
+          }
+        }
+      ]
+    },
     "疲劳阈值": {
       "name": "疲劳阈值",
       "label": "疲劳阈值",
@@ -6866,11 +7101,111 @@
       "label": "临时部队记录槽",
       "default_case": "记录一",
       "cases": [
-        {"name": "记录一"},
-        {"name": "记录二"},
-        {"name": "记录三"},
-        {"name": "记录四"},
-        {"name": "记录五"}
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "E_IsInTeamRecordPage": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1211, 140, 28, 71]
+                }
+              }
+            },
+            "E_IsInTeamRecordPageForUse": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1211, 140, 28, 71]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "E_IsInTeamRecordPage": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1209, 244, 34, 85]
+                }
+              }
+            },
+            "E_IsInTeamRecordPageForUse": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1209, 244, 34, 85]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "E_IsInTeamRecordPage": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1209, 355, 34, 85]
+                }
+              }
+            },
+            "E_IsInTeamRecordPageForUse": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1209, 355, 34, 85]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "E_IsInTeamRecordPage": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1208, 462, 35, 85]
+                }
+              }
+            },
+            "E_IsInTeamRecordPageForUse": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1208, 462, 35, 85]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "E_IsInTeamRecordPage": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1210, 571, 34, 85]
+                }
+              }
+            },
+            "E_IsInTeamRecordPageForUse": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1210, 571, 34, 85]
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "选择工坊": {

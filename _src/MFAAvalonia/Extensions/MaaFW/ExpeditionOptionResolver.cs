@@ -36,4 +36,40 @@ public static class ExpeditionOptionResolver
         var plan = expedition.SubOptions?.FirstOrDefault(option => option.Name == "长期远征计划");
         return plan?.Index == 1 ? plan : null;
     }
+
+    /// <summary>
+    /// 获取同步后勤需要读取的远征选项名称。新配置从「远征」上级选项进入，
+    /// 由常规 option 合并递归处理队伍地图及长期计划；旧配置仍按顶层队伍选项处理。
+    /// </summary>
+    public static List<string> GetSyncOptionNames(
+        MaaInterface.MaaInterfaceTask? logisticsTask,
+        List<string> legacyTeamOptionNames)
+    {
+        if (logisticsTask?.Option?.Any(option => option.Name == "远征") == true)
+            return ["远征"];
+
+        return legacyTeamOptionNames;
+    }
+
+    /// <summary>获取当前启用的远征组中的设置；兼容旧版顶层队伍选项。</summary>
+    public static List<MaaInterface.MaaInterfaceSelectOption> GetExpeditionOptionsForSync(
+        MaaInterface.MaaInterfaceTask? logisticsTask)
+    {
+        var options = logisticsTask?.Option;
+        if (options == null)
+            return [];
+
+        var expedition = options.FirstOrDefault(option => option.Name == "远征");
+        if (expedition == null)
+            return options;
+
+        return expedition.Index == 0 ? expedition.SubOptions ?? [] : [];
+    }
+
+    /// <summary>读取指定部队当前选择的远征地图序号；0 表示休息。</summary>
+    public static MaaInterface.MaaInterfaceSelectOption? FindTeamMapOption(
+        MaaInterface.MaaInterfaceTask? logisticsTask,
+        string teamOptionName)
+        => GetExpeditionOptionsForSync(logisticsTask)
+            .FirstOrDefault(option => option.Name == teamOptionName);
 }

@@ -7,6 +7,17 @@
   },
   "customizations": [
     {
+      "id": "task-flower-brush.locked-sword-selection",
+      "title": "刷花按筛选条件选择上锁刀剑",
+      "purpose": "按用户配置筛选刀剑并在刷花前选中最上方的上锁刀剑，处理出阵后的重伤与刀装不足弹窗。",
+      "files": ["assets/interface.json", "assets/resource/base/pipeline/FlowerBrush.json", "assets/resource/base/custom/FlowerBrushSwordSelectionAction.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留刷花任务的筛选与上锁刀剑选择动作注册、可配置滑动上限及无匹配安全结束分支；刷花主枢纽声明 Hub 和 PublicFlowDone 锚点以接入公共修刀链。刀装不足只识别并点击整备刀装，后续专属补充流程另行设计。",
+      "verification": ["桌面项目构建成功", "FlowerBrush.json 严格 JSON 校验通过", "资源压缩脚本校验通过"],
+      "notes": "筛选项默认全不选，刀种全不选代表全刀种；按樱吹雪升序固定排序。已锁可用刀剑通过 [30,126,1,563] 中 RGB(212,173,31) 的最上方命中判断，并点击 (1208,y)。"
+    },
+    {
       "id": "resource.expedition-settings",
       "title": "后勤远征设置与旧配置迁移",
       "purpose": "在本丸后勤中配置远征和长期远征计划，同时保持智能调度全局行为与既有用户设置。",

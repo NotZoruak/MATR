@@ -4342,8 +4342,8 @@ public class MaaProcessor
     /// </summary>
     public int? GetLogisticsTeamMapIndex(string teamOptionName)
     {
-        var option = FindLogisticsTask(GetSavedTaskItems())?.Option
-            ?.FirstOrDefault(o => o.Name == teamOptionName);
+        var option = ExpeditionOptionResolver.FindTeamMapOption(
+            FindLogisticsTask(GetSavedTaskItems()), teamOptionName);
         return option?.Index;
     }
 
@@ -4354,9 +4354,10 @@ public class MaaProcessor
         if (logisticsTask?.Option == null)
             return "无（未找到后勤任务选项）";
 
+        var teamOptions = ExpeditionOptionResolver.GetExpeditionOptionsForSync(logisticsTask);
         return string.Join(" ", teamOptionNames.Select(name =>
         {
-            var option = logisticsTask.Option.FirstOrDefault(o => o.Name == name);
+            var option = teamOptions.FirstOrDefault(o => o.Name == name);
             if (option == null) return $"{name}=选项缺失";
             return $"{name}={option.Index?.ToString() ?? "未选择"}";
         }));
@@ -4465,7 +4466,8 @@ public class MaaProcessor
                 if (expTask?.Option != null)
                 {
                     var teamOptionNames = new List<string> { "部队一", "部队二", "部队三", "部队四", "部队五" };
-                    ProcessOptions(ref taskModels, expTask.Option, teamOptionNames);
+                    var expeditionOptionNames = ExpeditionOptionResolver.GetSyncOptionNames(expTask, teamOptionNames);
+                    ProcessOptions(ref taskModels, expTask.Option, expeditionOptionNames);
                     var repairOptionNames = new List<string> { "修刀" };
                     ProcessOptions(ref taskModels, expTask.Option, repairOptionNames);
                     var naibanOptionNames = new List<string> { "内番" };
@@ -5988,6 +5990,7 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.ComputerOperationAction());
             tasker.Resource.Register(new Custom.WebhookAction());
             tasker.Resource.Register(new Custom.FatigueCheckAction());
+            tasker.Resource.Register(new Custom.FatigueCheckRecognition());
             tasker.Resource.Register(new Custom.PageScrollAndHoldAction());
             tasker.Resource.Register(new Custom.SelectFlowerTeamAction());
             tasker.Resource.Register(new Custom.ClickTopRepairableSwordAction());

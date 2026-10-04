@@ -12,7 +12,55 @@ public class MaaToken
 
     public void Merge(Dictionary<string, JToken> token)
     {
-        Tokens.Add(CloneTokenDictionary(token));
+        var clonedToken = CloneTokenDictionary(token);
+        foreach (var (nodeName, nodeValue) in clonedToken)
+        {
+            if (nodeValue is not JObject nodeObject
+                || nodeObject["action"] is not JObject actionObject
+                || actionObject["custom_action_param"] is not JObject actionParameters)
+                continue;
+
+            var mergedParameters = new JObject();
+            string? currentActionName = null;
+            foreach (var previousToken in Tokens)
+            {
+                if (previousToken.TryGetValue(nodeName, out var previousNode)
+                    && previousNode is JObject previousNodeObject
+                    && previousNodeObject["action"] is JObject previousActionObject)
+                {
+                    var previousActionName = (string?)previousActionObject["custom_action"];
+                    if (previousActionName != null && currentActionName != previousActionName)
+                    {
+                        mergedParameters.RemoveAll();
+                        currentActionName = previousActionName;
+                    }
+
+                    if (previousActionObject["custom_action_param"] is JObject previousParameters)
+                    {
+                        if (currentActionName == null)
+                            currentActionName = previousActionName;
+                        mergedParameters.Merge(previousParameters, new JsonMergeSettings
+                        {
+                            MergeArrayHandling = MergeArrayHandling.Replace,
+                            MergeNullValueHandling = MergeNullValueHandling.Ignore
+                        });
+                    }
+                }
+            }
+
+            var incomingActionName = (string?)actionObject["custom_action"];
+            if (incomingActionName != null && currentActionName != null && currentActionName != incomingActionName)
+                mergedParameters.RemoveAll();
+
+            mergedParameters.Merge(actionParameters, new JsonMergeSettings
+            {
+                MergeArrayHandling = MergeArrayHandling.Replace,
+                MergeNullValueHandling = MergeNullValueHandling.Ignore
+            });
+            actionObject["custom_action_param"] = mergedParameters;
+        }
+
+        Tokens.Add(clonedToken);
     }
 
     public static MaaToken FromDictionary(Dictionary<string, JToken> token)
