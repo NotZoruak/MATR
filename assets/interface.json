@@ -7063,7 +7063,7 @@
         {
           "name": "Yes",
           "label": "开启",
-          "option": ["自动使用堆肥", "联动本丸刀帐"],
+          "option": ["自动使用堆肥", "联动本丸刀帐", "耕作加成满值时跳过内番"],
           "pipeline_override": {
             "E_NaibanHub": {"enabled": true}
           }
@@ -7085,6 +7085,46 @@
           "label": "开启",
           "pipeline_override": {
             "E_NaibanClickCompost": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "耕作加成满值时跳过内番": {
+      "name": "耕作加成满值时跳过内番",
+      "label": "耕作加成满值时跳过内番",
+      "type": "select",
+      "default_case": "none",
+      "cases": [
+        {
+          "name": "none",
+          "label": "不跳过"
+        },
+        {
+          "name": "survival",
+          "label": "生存满时跳过",
+          "pipeline_override": {
+            "E_NaibanSkipSurvivalFull": {"enabled": true}
+          }
+        },
+        {
+          "name": "scouting",
+          "label": "侦察满时跳过",
+          "pipeline_override": {
+            "E_NaibanSkipScoutingFull": {"enabled": true}
+          }
+        },
+        {
+          "name": "either",
+          "label": "任一项满时跳过",
+          "pipeline_override": {
+            "E_NaibanSkipEitherFull": {"enabled": true}
+          }
+        },
+        {
+          "name": "both",
+          "label": "生存与侦察全满时跳过",
+          "pipeline_override": {
+            "E_NaibanSkipBothFull": {"enabled": true}
           }
         }
       ]

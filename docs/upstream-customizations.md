@@ -135,9 +135,9 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 
 ### `focus.display-channels`
 
-`focus` 的分发渠道与内容前缀属于 MATR 扩展，升级时不能按上游实现直接覆盖。`FocusHandler.DispatchToChannels` 在官方 `log` / `toast` / `notification` / `dialog` / `modal` 之外必须保留 `file` 分支，它调用 `MaaProcessor.AddMarkdownToFile`——只走 `LoggerHelper.Info` 写实例日志文件，不写 `LogItemViewModels` 这个实时面板集合、也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点，避免实时面板被刷屏。`log` 渠道仍同时写实时面板与文件。
+`focus` 的分发渠道与内容前缀属于 MATR 扩展，升级时不能按上游实现直接覆盖。`FocusHandler.DispatchToChannels` 在官方 `log` / `toast` / `notification` / `dialog` / `modal` 之外必须保留 `file` 与 `external_notification` 分支。`file` 调用 `MaaProcessor.AddMarkdownToFile`，只走 `LoggerHelper.Info` 写实例日志文件，不写实时面板，也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点。`external_notification` 将 focus 内容即时发送到已启用的外部通知渠道，并附加本地时分秒。`log` 渠道仍同时写实时面板与文件。
 
-`special:` 是 MATR 约定的内容前缀，不是 MaaFramework 的字段。`FocusHandler.TryExtractSpecialContent` 在实时展示前剥离它，`AddMarkdown` 以 `recordAsSpecial: true` 把词条写成 `[Record][Special]`，`WorkRecordBuilder` 再把它归入工作记录的「特殊情况」而不占用 Warning 级别。升级 focus 相关代码后，用「打点只进文件」「特殊情况仍归入工作记录」两条实机行为各验证一次。
+`special:` 是 MATR 约定的内容前缀，不是 MaaFramework 的字段。`FocusHandler.TryExtractSpecialContent` 在实时展示前剥离它，`AddMarkdown` 以 `recordAsSpecial: true` 把词条写成 `[Record][Special]`，`WorkRecordBuilder` 再把它归入工作记录的「特殊情况」而不占用 Warning 级别。升级 focus 相关代码后，验证「打点只进文件」「特殊情况仍归入工作记录」「external_notification 向已启用渠道实时推送」三种行为。
 
 ### `task.sync-expedition-reuse`
 

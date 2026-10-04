@@ -689,7 +689,7 @@
     "on_error": ["Expedition"]
   },
   "E_ExpSubHub5": {
-    "next": ["E_SkipTeam5", "E_CheckTeam5", "E_WorkshopHub", "E_NaibanHub", "E_AllTeamsBusy"],
+    "next": ["E_SkipTeam5", "E_CheckTeam5", "E_WorkshopHub", "[Anchor]E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["Expedition"]
   },
   "E_SkipTeam1": {
@@ -744,7 +744,7 @@
         "custom_recognition_param": {"team_label": "部队五"}
       }
     },
-    "next": ["E_WorkshopHub", "E_NaibanHub", "E_AllTeamsBusy"],
+    "next": ["E_WorkshopHub", "[Anchor]E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_IsSwordDropColor": {
@@ -2034,7 +2034,7 @@
     "on_error": ["E_RepairCooldownSkip"]
   },
   "E_RepairCooldownSkip": {
-    "next": ["E_NaibanHub", "E_AllTeamsBusy"],
+    "next": ["[Anchor]E_NaibanHub", "E_AllTeamsBusy"],
     "on_error": ["Expedition"]
   },
   "E_WorkshopHub2": {
@@ -2046,7 +2046,7 @@
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_WorkshopHub4": {
-    "next": ["E_CheckWorkshop4", "E_NaibanHub"],
+    "next": ["E_CheckWorkshop4", "[Anchor]E_NaibanHub"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_CheckWorkshop1": {
@@ -2094,7 +2094,7 @@
         "expected": "未使用"
       }
     },
-    "next": ["E_ClickRepairButton", "E_NaibanHub"],
+    "next": ["E_ClickRepairButton", "[Anchor]E_NaibanHub"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_ClickRepairButton": {
@@ -2279,7 +2279,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200},
-    "next": ["E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanClickEntry"],
+    "next": ["E_NaibanCheckFullHub", "E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanClickEntry"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_NaibanVerifyTodayTable": {
@@ -2293,6 +2293,137 @@
     },
     "next": ["E_NaibanRemoveAssignedHub", "E_NaibanVerifyTodayTable"],
     "on_error": ["E_NaibanClickEntry"]
+  },
+  "E_NaibanCheckFullHub": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [554, 7, 177, 42],
+        "expected": "今日内番表"
+      }
+    },
+    "next": [
+      "E_NaibanSkipScoutingFull",
+      "E_NaibanSkipSurvivalFull",
+      "E_NaibanSkipEitherFull",
+      "E_NaibanSkipBothFull",
+      "E_NaibanClickCompost",
+      "E_NaibanVerifyTodayTable",
+      "E_NaibanVerifyTable"
+    ],
+    "on_error": ["E_NaibanClickEntry"]
+  },
+  "E_NaibanSkipSurvivalFull": {
+    "enabled": false,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [745, 403, 1, 136],
+        "lower": [253, 238, 186],
+        "upper": [253, 238, 186],
+        "count": 25
+      }
+    },
+    "anchor": {"E_NaibanHub": ""},
+    "next": ["E_GoHome"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[本丸后勤] 耕作生存加成已满，跳过本次内番",
+        "display": ["log", "notification", "external_notification"]
+      }
+    }
+  },
+  "E_NaibanSkipScoutingFull": {
+    "enabled": false,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [802, 403, 1, 137],
+        "lower": [253, 238, 186],
+        "upper": [253, 238, 186],
+        "count": 25
+      }
+    },
+    "anchor": {"E_NaibanHub": ""},
+    "next": ["E_GoHome"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[本丸后勤] 耕作侦察加成已满，跳过本次内番",
+        "display": ["log", "notification", "external_notification"]
+      }
+    }
+  },
+  "E_NaibanSkipEitherFull": {
+    "enabled": false,
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "ColorMatch",
+            "param": {
+              "roi": [745, 403, 1, 136],
+              "lower": [253, 238, 186],
+              "upper": [253, 238, 186],
+              "count": 25
+            }
+          },
+          {
+            "type": "ColorMatch",
+            "param": {
+              "roi": [802, 403, 1, 137],
+              "lower": [253, 238, 186],
+              "upper": [253, 238, 186],
+              "count": 25
+            }
+          }
+        ]
+      }
+    },
+    "anchor": {"E_NaibanHub": ""},
+    "next": ["E_GoHome"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[本丸后勤] 耕作生存或侦察加成已满，跳过本次内番",
+        "display": ["log", "notification", "external_notification"]
+      }
+    }
+  },
+  "E_NaibanSkipBothFull": {
+    "enabled": false,
+    "recognition": {
+      "type": "And",
+      "param": {
+        "all_of": [
+          {
+            "type": "ColorMatch",
+            "param": {
+              "roi": [745, 403, 1, 136],
+              "lower": [253, 238, 186],
+              "upper": [253, 238, 186],
+              "count": 25
+            }
+          },
+          {
+            "type": "ColorMatch",
+            "param": {
+              "roi": [802, 403, 1, 137],
+              "lower": [253, 238, 186],
+              "upper": [253, 238, 186],
+              "count": 25
+            }
+          }
+        ]
+      }
+    },
+    "anchor": {"E_NaibanHub": ""},
+    "next": ["E_GoHome"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[本丸后勤] 耕作生存与侦察加成都已满，跳过本次内番",
+        "display": ["log", "notification", "external_notification"]
+      }
+    }
   },
   "E_NaibanRemoveAssignedHub": {
     "next": ["E_NaibanRemoveAssignedComplete", "E_NaibanRemoveAssigned", "E_NaibanRemoveAssignedHub"],

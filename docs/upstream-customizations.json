@@ -140,13 +140,13 @@
     {
       "id": "focus.display-channels",
       "title": "focus 显示渠道扩展",
-      "purpose": "让 pipeline 打点既能只写日志文件、不进实时面板，也能用 special: 前缀把业务上的特殊情况写进工作记录而不占用 Warning 级别。",
+      "purpose": "让 pipeline 打点既能只写日志文件、不进实时面板，也能通过 special: 记录特殊情况并向已启用的外部通知渠道实时推送。",
       "files": ["_src/MFAAvalonia/Extensions/MaaFW/FocusHandler.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留 FocusHandler 的 special: 前缀识别与 DispatchToChannels 的 file 分支，以及 MaaProcessor.AddMarkdownToFile；上游若重构 focus 分发路径，按本条目把它们重新接回。",
-      "verification": ["display: file 的打点只进实例日志文件，不进实时面板也不发布平台日志", "display: log 仍同时写实时面板与文件", "special: 前缀在实时展示前被剥离，文件里写成 [Record][Special]", "WorkRecordBuilder 按词头归属词条，未知词头落到当前记录"],
-      "notes": "FocusHandler 原本只认 log/toast/notification/dialog/modal 五个渠道；MATR 追加了 file（MaaProcessor.AddMarkdownToFile，只走 LoggerHelper.Info），供「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点使用，避免刷屏。special: 是 MATR 约定的内容前缀、不是 MaaFramework 字段：FocusHandler.TryExtractSpecialContent 在分发前剥离它，AddMarkdown 带 recordAsSpecial 落到 [Record][Special]，WorkRecordBuilder 再归入特殊情况。"
+      "migration_strategy": "保留 FocusHandler 的 special: 前缀识别、DispatchToChannels 的 file 与 external_notification 分支，以及 MaaProcessor.AddMarkdownToFile；上游若重构 focus 分发路径，按本条目把它们重新接回。",
+      "verification": ["display: file 的打点只进实例日志文件，不进实时面板也不发布平台日志", "display: log 仍同时写实时面板与文件", "special: 前缀在实时展示前被剥离，文件里写成 [Record][Special]", "external_notification 向已启用渠道发送带时间的实时通知", "WorkRecordBuilder 按词头归属词条，未知词头落到当前记录"],
+      "notes": "FocusHandler 原本只认 log/toast/notification/dialog/modal 五个渠道；MATR 追加了 file（MaaProcessor.AddMarkdownToFile，只走 LoggerHelper.Info）与 external_notification（调用 ExternalNotificationHelper 发送带本地时分秒的实时通知）。special: 是 MATR 约定的内容前缀、不是 MaaFramework 字段：FocusHandler.TryExtractSpecialContent 在分发前剥离它，AddMarkdown 带 recordAsSpecial 落到 [Record][Special]，WorkRecordBuilder 再归入特殊情况。"
     },
     {
       "id": "task.sync-expedition-reuse",

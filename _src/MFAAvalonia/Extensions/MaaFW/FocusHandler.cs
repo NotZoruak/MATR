@@ -260,6 +260,9 @@ public class FocusHandler
                         LangKeys.Tip.ToLocalization(),
                         CreateFocusMarkdownContent(displayText, NotificationMarkdownMaxHeight));
                     break;
+                case "external_notification":
+                    _ = ExternalNotificationHelper.ExternalNotificationAsync($"{DateTime.Now:HH:mm:ss} {displayText}");
+                    break;
                 case "dialog":
                     // 非阻塞式弹窗：fire-and-forget，任务继续执行
                     Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
