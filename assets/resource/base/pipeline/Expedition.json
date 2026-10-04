@@ -907,12 +907,12 @@
     "on_error": ["Expedition"]
   },
   "E_CheckTimerExpired": {
-    "action": {
+    "enabled": false,
+    "recognition": {
       "type": "Custom",
-      "custom_action": "ExpeditionTimerCheckAction"
+      "param": {"custom_recognition": "ExpeditionTimerRecognition"}
     },
-    "next": ["Expedition"],
-    "on_error": ["E_GoHome"]
+    "next": ["Expedition"]
   },
   "E_RestartGame": {
     "action": {

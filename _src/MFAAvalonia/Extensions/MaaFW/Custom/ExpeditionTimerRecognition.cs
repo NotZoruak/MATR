@@ -26,7 +26,7 @@ public class ExpeditionTimerRecognition : IMaaCustomRecognition
         _nextCheckTime = null;
     }
 
-    /// <summary>供 ExpeditionTimerCheckAction 调用</summary>
+    /// <summary>检查远征倒计时是否已到期</summary>
     public static bool IsExpired()
     {
         if (_nextCheckTime == null)

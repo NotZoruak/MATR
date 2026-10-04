@@ -4769,8 +4769,8 @@ public class MaaProcessor
             return;
 
         // 「远征智能调度」仅对远征任务自身与开启同步后勤的任务生效。
-        // 对未开启同步后勤的任务注入其 override 会劫持队伍选择流程
-        // （TT_IsTeamSelect 等跳转到 E_CheckTimerExpired，而计时器从未启动 → 视为过期 → 回本丸查看远征）。
+        // 对未开启同步后勤的任务注入其 override 会劫持队伍选择流程；
+        // 计时检查 node 默认禁用，但过滤仍可避免未关联的候选路由。
         if (task != null)
         {
             var syncExpEnabled = task.Option
@@ -5981,7 +5981,6 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.RestartGameAction(this));
             tasker.Resource.Register(new Custom.DragCaptainAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerAction());
-            tasker.Resource.Register(new Custom.ExpeditionTimerCheckAction());
             tasker.Resource.Register(new Custom.GoalPtCheckAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimeTracker());

@@ -71,6 +71,14 @@ public class RegimentBattlePipelineTests
         var teamSelectNext = pipeline["RB_IsTeamSelect"]!["next"]!.AsArray()
             .Select(item => item!.GetValue<string>())
             .ToArray();
+        var expectedTeamSelectNext = new[]
+        {
+            "RB_CloseImmediateSortiePopup",
+            "RB_DisableAutoMarch",
+            "RB_EnableAutoMarch",
+            "RB_ClickAutoMarchConfirm",
+            "RB_CaptainHub"
+        };
         var expectedAutoMarchNext = new[]
         {
             "RB_DisableAutoMarch",
@@ -78,7 +86,7 @@ public class RegimentBattlePipelineTests
             "RB_ClickAutoMarchConfirm",
             "RB_CaptainHub"
         };
-        Assert.Equal(expectedAutoMarchNext, teamSelectNext);
+        Assert.Equal(expectedTeamSelectNext, teamSelectNext);
         Assert.True(pipeline["RB_DisableAutoMarch"]!["enabled"]!.GetValue<bool>());
         Assert.False(pipeline["RB_EnableAutoMarch"]!["enabled"]!.GetValue<bool>());
         Assert.Equal(
@@ -107,8 +115,9 @@ public class RegimentBattlePipelineTests
 
         var syncOption = interfaceConfig["option"]!["RB_同步后勤"]!.AsObject();
         var timerOverride = syncOption["cases"]![0]!["pipeline_override"]!["E_CheckTimerExpired"]!.AsObject();
-        Assert.Equal(expectedAutoMarchNext, timerOverride["next"]!.AsArray().Select(item => item!.GetValue<string>()).ToArray());
-        Assert.Equal("E_GoHome", timerOverride["on_error"]![0]!.GetValue<string>());
+        Assert.True(timerOverride["enabled"]!.GetValue<bool>());
+        Assert.Equal(new[] { "E_GoHome" }, timerOverride["next"]!.AsArray().Select(item => item!.GetValue<string>()).ToArray());
+        Assert.Null(timerOverride["on_error"]);
     }
 
     private static string FindPipelinePath()

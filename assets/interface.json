@@ -2703,8 +2703,8 @@
               "next": ["RB_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"],
-              "on_error": ["E_GoHome"]
+              "enabled": true,
+              "next": ["E_GoHome"]
             }
           }
         }
@@ -3204,8 +3204,8 @@
               "next": ["HP_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["HP_EnableAutoMarch", "HP_CaptainHub"],
-              "on_error": ["E_GoHome"]
+              "enabled": true,
+              "next": ["E_GoHome"]
             },
             "HP_WaitRefresh": {"enabled": true}
           }
@@ -3510,8 +3510,8 @@
               "next": ["EC_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["EC_IsTeamSelect"],
-              "on_error": ["E_GoHome"]
+              "enabled": true,
+              "next": ["E_GoHome"]
             },
             "EC_WaitRefresh": {"enabled": true}
           }
@@ -3856,11 +3856,11 @@
           "name": "",
           "pipeline_override": {
             "S_IsHome": {
-              "next": ["E_CheckTimerExpired"]
+              "next": ["E_CheckTimerExpired", "S_NavigateToSortie"]
             },
             "E_CheckTimerExpired": {
-              "next": ["S_NavigateToSortie"],
-              "on_error": ["Expedition"]
+              "enabled": true,
+              "next": ["Expedition"]
             },
             "E_SelectMap1": {
               "action": {
@@ -6232,8 +6232,8 @@
               "next": ["U_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["U_GoHomeAfterRound", "U_ContinueNextRound"],
-              "on_error": ["U_ReturnHomeAfterMarch"]
+              "enabled": true,
+              "next": ["U_ReturnHomeAfterMarch"]
             },
             "U_ReturnHomeAfterMarch": {"enabled": true},
             "U_WaitRefresh": {"enabled": true}
@@ -6335,8 +6335,8 @@
               "next": ["TT_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "next": ["TT_ClickTargetTeam"],
-              "on_error": ["E_GoHome"]
+              "enabled": true,
+              "next": ["E_GoHome"]
             },
             "TT_WaitRefresh": {"enabled": true}
           }
@@ -6636,20 +6636,21 @@
           "label": "开启",
           "pipeline_override": {
             "RB_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired"]
+              "next": ["E_CheckTimerExpired", "RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"]
             },
             "EC_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired"]
+              "next": ["E_CheckTimerExpired", "EC_IsTeamSelect"]
             },
             "TT_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired"]
+              "next": ["E_CheckTimerExpired", "TT_ClickTargetTeam"]
             },
             "U_CheckRoundComplete": {
-              "next": ["E_CheckTimerExpired"]
+              "next": ["E_CheckTimerExpired", "U_GoHomeAfterRound", "U_ContinueNextRound"]
             },
             "HP_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired"]
+              "next": ["E_CheckTimerExpired", "HP_EnableAutoMarch", "HP_CaptainHub"]
             },
+            "E_CheckTimerExpired": {"enabled": true},
             "E_AllTeamsBusy": {
               "action": "DoNothing",
               "next": ["E_TrackerOCR"]
