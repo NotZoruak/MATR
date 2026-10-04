@@ -2695,11 +2695,6 @@
               "next": ["E_TimerStart"]
             },
             "E_TimerStart": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "ExpeditionTimerAction",
-                "custom_action_param": {"mode": "start"}
-              },
               "next": ["RB_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
@@ -3196,11 +3191,6 @@
               "next": ["E_TimerStart"]
             },
             "E_TimerStart": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "ExpeditionTimerAction",
-                "custom_action_param": {"mode": "start"}
-              },
               "next": ["HP_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
@@ -3502,11 +3492,6 @@
               "next": ["E_TimerStart"]
             },
             "E_TimerStart": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "ExpeditionTimerAction",
-                "custom_action_param": {"mode": "start"}
-              },
               "next": ["EC_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
@@ -3936,11 +3921,6 @@
               "next": ["E_TimerStart"]
             },
             "E_TimerStart": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "ExpeditionTimerAction",
-                "custom_action_param": {"mode": "start"}
-              },
               "next": ["S_NavigateToSortie"]
             },
             "S_WaitRefresh": {"enabled": true}
@@ -6224,11 +6204,6 @@
               "next": ["E_TimerStart"]
             },
             "E_TimerStart": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "ExpeditionTimerAction",
-                "custom_action_param": {"mode": "start"}
-              },
               "next": ["U_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
@@ -6327,11 +6302,6 @@
               "next": ["E_TimerStart"]
             },
             "E_TimerStart": {
-              "action": {
-                "type": "Custom",
-                "custom_action": "ExpeditionTimerAction",
-                "custom_action_param": {"mode": "start"}
-              },
               "next": ["TT_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {

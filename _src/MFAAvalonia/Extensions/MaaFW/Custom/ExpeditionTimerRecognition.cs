@@ -1,5 +1,6 @@
 using MaaFramework.Binding;
 using MaaFramework.Binding.Custom;
+using MFAAvalonia.Helper;
 using System;
 
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
@@ -20,12 +21,6 @@ public class ExpeditionTimerRecognition : IMaaCustomRecognition
         _nextCheckTime = DateTime.Now.AddSeconds(intervalSeconds);
     }
 
-    /// <summary>重置计时器（任务启动时清零）</summary>
-    public static void ResetTimer()
-    {
-        _nextCheckTime = null;
-    }
-
     /// <summary>检查远征倒计时是否已到期</summary>
     public static bool IsExpired()
     {
@@ -43,6 +38,34 @@ public class ExpeditionTimerRecognition : IMaaCustomRecognition
 
     public bool Analyze<T>(T context, in AnalyzeArgs args, in AnalyzeResults results) where T : IMaaContext
     {
-        return IsExpired();
+        try
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+
+            var expired = IsExpired();
+            if (expired && ExpeditionTimeTracker.IsSmartSchedulingEnabled())
+                Log(context, "[远征计时] 倒计时结束");
+
+            return expired;
+        }
+        catch (MaaStopException)
+        {
+            return false;
+        }
+        catch (Exception exception)
+        {
+            LoggerHelper.Error($"[远征计时] 识别失败: {exception.Message}");
+            return false;
+        }
+    }
+
+    private static void Log<T>(T context, string message) where T : IMaaContext
+    {
+        LoggerHelper.Info(message);
+        try
+        {
+            ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(message);
+        }
+        catch { }
     }
 }
