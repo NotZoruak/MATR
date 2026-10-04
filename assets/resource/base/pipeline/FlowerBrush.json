@@ -129,8 +129,33 @@
       "time": 100,
       "target": [530, 6, 224, 45]
     },
-    "next": ["FB_ClickSortieNow", "FB_DetectWhereAmI"],
+    "next": ["FB_IsTeamSelectAfterSwordSelection", "FB_DetectWhereAmI"],
     "on_error": ["FB_CompleteCurrentTaskAfterNoLockedSword"]
+  },
+  "FB_IsTeamSelectAfterSwordSelection": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "next": ["FB_CompleteCurrentTaskAfterAllEligibleSwordsRecovered", "FB_ClickSortieNow", "FB_DetectWhereAmI"]
+  },
+  "FB_CompleteCurrentTaskAfterAllEligibleSwordsRecovered": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [341, 191, 33, 18],
+        "expected": ["100"],
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "符合条件的刀剑疲劳值均已恢复完毕"}
+    }
   },
   "FB_CompleteCurrentTaskAfterNoLockedSword": {
     "action": {
@@ -240,6 +265,18 @@
     "next": ["FB_ConfirmAutoEquip", "FB_ClickEquipmentSlot"],
     "on_error": ["FB_DetectWhereAmI"]
   },
+  "FB_ClickEquipmentSlotForUnequip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [952, 137, 30, 29],
+        "expected": "装"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["FB_ConfirmAutoUnequip", "FB_ClickEquipmentSlotForUnequip"],
+    "on_error": ["FB_DetectWhereAmI"]
+  },
   "FB_ConfirmAutoEquip": {
     "recognition": {
       "type": "OCR",
@@ -252,6 +289,17 @@
     "repeat": 2,
     "repeat_delay": 500,
     "next": ["FB_LeaveEquipmentPage", "FB_DetectWhereAmI"]
+  },
+  "FB_ConfirmAutoUnequip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [702, 81, 96, 27],
+        "expected": "一键卸装"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["FB_LeaveEquipmentPageAfterUnequip", "FB_DetectWhereAmI"]
   },
   "FB_LeaveEquipmentPage": {
     "recognition": {
@@ -273,6 +321,36 @@
     },
     "next": ["FB_ClickSortieNow", "FB_LeaveEquipmentPage"],
     "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_LeaveEquipmentPageAfterUnequip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [578, 9, 127, 35],
+        "expected": "更换装备"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [134, 8, 32, 33]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [134, 8, 32, 33]
+    },
+    "next": ["FB_IsTeamSelectAfterUnequip", "FB_LeaveEquipmentPageAfterUnequip"],
+    "on_error": ["FB_DetectWhereAmI"]
+  },
+  "FB_IsTeamSelectAfterUnequip": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    }
   },
   "FB_CompleteCurrentTaskAfterDamageRepair": {
     "action": {
@@ -322,12 +400,13 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [341,191,33,18],
+        "roi": [341, 191, 33, 18],
         "expected": ["100"],
         "only_rec": true
       }
     },
-    "next": ["FB_ClickCaptainSlot"]
+    "next": ["FB_ClickEquipmentSlotForUnequip"],
+    "on_error": ["FB_DetectWhereAmI"]
   },
   "FB_ClickCaptainSlot": {
     "action": {
