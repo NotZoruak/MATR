@@ -81,6 +81,10 @@
 
 仓库与刀帐页面使用同一段主题灰色说明文本显示自动识别提示与最后更新时间，说明句号后直接接“最后更新”；窄窗口需要换行时仍作为同一段自然换行，不得将最后更新时间单独排成一行。两类时间分别持久化：手动保存仓库或刀帐，以及更新数据任务成功写入对应正式数据后，分别更新各自的时间；更新其中一类不得覆盖另一类。旧配置没有时间时显示“最后更新：暂无”。升级时保留 `DataLastUpdatedService` 的 ISO 8601 存储与读取，以及更新数据持久化完成事件触发后的页面刷新。
 
+### `storage.honmaru-data-directory`
+
+默认 `config.json` 中的 `WarehouseData`、`WarehouseLastUpdatedAt`、`SwordBookEntries` 与 `SwordBookLastUpdatedAt` 会在应用初始化时一次性迁入 `config/honmaru/default/warehouse.json` 和 `swordbook.json`。迁移必须先备份整个配置文件到 `backup/config-时间戳.json`，原子写入目标并读回校验，最后提交 `config/honmaru/manifest.json` 后才清理旧字段；迁移前置步骤失败时必须保留旧字段并继续沿用旧配置。迁移完成后，默认 `config.json` 的四个键经 `MFAConfiguration` 透明转向本丸数据目录。界面不增加本丸名称、切换或管理入口，工作记录继续使用全局 `config/saved_work_records.json`。升级时不得把四个字段写回 `config.json`，也不得把固定 `default` 目录误改为用户可见的多本丸功能。
+
 ### `ui.warehouse-chart-all-history`
 
 仓库核心资源变化的 24 小时、7 天与 30 天按钮均可再次点击取消选择。三个按钮都未选中时，显示全部历史记录，并以最早到最新记录生成横轴；再次选择任一按钮后恢复相应时间范围。首次打开页面仍默认选择 7 天，避免改变既有显示范围。

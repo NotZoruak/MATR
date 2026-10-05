@@ -4,6 +4,7 @@ using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.Converters;
+using MFAAvalonia.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,11 @@ public static class ConfigurationManager
     public static void Initialize()
     {
         LoggerHelper.Info("当前配置：" + GetCurrentConfiguration());
+        if (!HonmaruDataStoreService.Initialize())
+            return;
+
+        var defaultConfiguration = Configs.FirstOrDefault(config => config.FileName == "config");
+        defaultConfiguration?.ReloadFromDisk();
     }
 
     public static void SwitchConfiguration(string? name)

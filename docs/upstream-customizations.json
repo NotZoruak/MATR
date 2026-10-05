@@ -424,6 +424,17 @@
       "notes": "配置时间不属于更新数据任务的调度成功时间：前者反映正式数据写入时刻，后者用于决定任务是否到期。两个用途与键空间必须保持独立。"
     },
     {
+      "id": "storage.honmaru-data-directory",
+      "title": "本丸仓库与刀帐独立数据目录",
+      "purpose": "将默认配置中的仓库和刀帐数据迁入固定本丸数据目录，为后续隔离预留内部结构，同时不暴露多本丸界面。",
+      "files": ["_src/MFAAvalonia/Configuration/ConfigurationManager.cs", "_src/MFAAvalonia/Configuration/MFAConfiguration.cs", "_src/MFAAvalonia/Services/HonmaruDataStore.cs", "_src/Markdown.Avalonia.Html.Tests/HonmaruDataStoreTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "首次启动先备份完整 config.json，再原子写入 config/honmaru/default/warehouse.json 与 swordbook.json 并读回验证；manifest 写入成功后才移除四个旧字段。迁移完成后，默认配置的四个既有键透明转向独立数据文件。",
+      "verification": ["旧 config.json 含四个字段时会备份并迁入两个 JSON 后清理旧字段", "迁移失败时旧字段保持可读，后续启动可再次迁移", "迁移完成后既有仓库、刀帐读写只更新本丸数据目录", "本丸页面不出现名称、切换或管理入口", "定向迁移测试和桌面项目构建成功"],
+      "notes": "工作记录不参与本次迁移，继续使用 config/saved_work_records.json。config/honmaru/default 是内部固定目录，不代表用户可管理的账号或本丸。"
+    },
+    {
       "id": "ui.warehouse-chart-all-history",
       "title": "仓库图表全部历史记录范围",
       "purpose": "让用户取消全部预设时间范围后查看完整的核心资源变化历史。",
