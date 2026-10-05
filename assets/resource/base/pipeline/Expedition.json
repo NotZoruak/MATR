@@ -1323,8 +1323,7 @@
         "only_rec": true
       }
     },
-    "next": ["E_FlowerRemoveEquip"],
-    "on_error": ["E_FlowerBattleHub"],
+    "next": ["E_GoHome"],
     "focus": {
       "Node.Recognition.Succeeded": {
         "content": "[远征疲劳检测]刀剑疲劳值恢复完毕，结束刷花",
@@ -1496,87 +1495,6 @@
       }
     },
     "next": ["E_FlowerBattleHub"]
-  },
-  "E_FlowerRemoveEquip": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1150, 263, 106, 35],
-        "expected": "装备解除"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1145, 297, 117, 36]
-    },
-    "next": ["E_FlowerIsEquipRemovePanel", "E_FlowerRemoveEquip"],
-    "on_error": ["E_FlowerBattleHub"]
-  },
-  "E_FlowerIsEquipRemovePanel": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [579, 72, 118, 35],
-        "expected": "装备解除"
-      }
-    },
-    "next": ["E_FlowerClickEquipCond1"]
-  },
-  "E_FlowerClickEquipCond1": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [348, 264, 56, 31]
-      }
-    },
-    "post_delay": 500,
-    "next": ["E_FlowerClickEquipCond2"]
-  },
-  "E_FlowerClickEquipCond2": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [525, 268, 56, 31]
-      }
-    },
-    "post_delay": 500,
-    "next": ["E_FlowerClickEquipCond3"]
-  },
-  "E_FlowerClickEquipCond3": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [872, 264, 62, 33]
-      }
-    },
-    "post_delay": 500,
-    "next": ["E_FlowerClickEquipCond4"]
-  },
-  "E_FlowerClickEquipCond4": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "SelectFlowerTeamAction",
-      "custom_action_param": {"mode": "remove_equip"}
-    },
-    "post_delay": 500,
-    "next": ["E_FlowerConfirmEquipRemove"],
-    "on_error": ["E_FlowerBattleHub"]
-  },
-  "E_FlowerConfirmEquipRemove": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [602, 582, 77, 43],
-        "expected": "确定"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [602, 582, 77, 43]
-    },
-    "next": ["E_GoHome"]
   },
   "E_FlowerTeamSelect": {
     "recognition": {
@@ -2468,7 +2386,10 @@
     "action": {
       "type": "Custom",
       "custom_action": "NaibanOutfitLogAction",
-      "custom_action_param": {"mode": "finish"}
+      "custom_action_param": {
+        "mode": "finish",
+        "sync_swordbook": true
+      }
     },
     "next": ["E_GoHome"]
   },
