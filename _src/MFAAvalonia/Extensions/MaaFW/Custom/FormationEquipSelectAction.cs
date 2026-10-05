@@ -64,7 +64,7 @@ public class FormationEquipSelectAction : IMaaCustomAction
             target,
             ListOcrScan.EquipListRoi,
             ListOcrScan.EquipScroll,
-            box =>
+            (_, box) =>
             {
                 // 第一次点击：命中刀装位置中心；未出现「确定」时重试再点，最多 8 次
                 int cx = box[0] + box[2] / 2;

@@ -26,7 +26,7 @@ public class GoalPtCheckAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
 
             var currentPt = ReadCurrentPt(context, args);
-            var settings = ReadSettings();
+            var settings = ReadSettings(context);
             if (!settings.Enabled)
                 return true;
 
@@ -83,11 +83,10 @@ public class GoalPtCheckAction : IMaaCustomAction
     /// <summary>
     /// 从当前任务定义解析目标 PT 配置。选项名按后缀匹配，兼容各任务自己的前缀。
     /// </summary>
-    private static ActivityGoalPtSettings ReadSettings()
+    private static ActivityGoalPtSettings ReadSettings<T>(T context) where T : IMaaContext
     {
-        var task = MaaProcessor.Processors
-            .Select(processor => processor.GetActiveTaskDefinition())
-            .FirstOrDefault(definition => definition != null);
+        // 多实例并行时必须按当前 MaaTasker 定位，不能读取任意实例的活动任务。
+        var task = MaaProcessor.ResolveByTasker(context.Tasker)?.GetActiveTaskDefinition();
         if (task == null)
             return ActivityGoalPtSettings.Parse(null, null, null, null, null);
 

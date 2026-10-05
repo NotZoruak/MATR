@@ -21,14 +21,6 @@ public class ExpeditionTimerAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
 
             var json = ActionParamHelper.Parse(args.ActionParam);
-            var mode = (string?)json["mode"] ?? "start";
-
-            if (mode == "reset")
-            {
-                ExpeditionTimerRecognition.ResetTimer();
-                return true;
-            }
-
             int configuredInterval = (int?)json["interval"] ?? 600;
             int intervalSeconds = configuredInterval;
 

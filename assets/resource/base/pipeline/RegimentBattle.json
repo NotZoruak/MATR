@@ -14,6 +14,7 @@
     "timeout": 120000,
     "next": [
       "RB_IsActionSelect",
+      "RB_IsRegimentBattleSortieInProgress",
       "RB_IsEventPage",
       "RB_CheckHomeBrightness",
       "RB_IsTicketConfirm",
@@ -43,6 +44,22 @@
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["RB_RestartGame"]
+  },
+  "RB_IsRegimentBattleSortieInProgress": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [537, 248, 212, 26],
+        "expected": "出阵【联队战】途中"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [479, 446, 36, 45]
+      }
+    },
+    "next": ["RB_DetectWhereAmI"]
   },
   "RB_IsEventPage": {
     "recognition": {
@@ -469,10 +486,12 @@
       "custom_action_param": {
         "task": "海陆联队",
         "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
       }
     },
-    "next": ["RB_DetectWhereAmI"]
+    "next": ["RB_DetectWhereAmI"],
+    "on_error": ["RB_RestartGame"]
   },
   "RB_HalfRoundDone": {
     "recognition": {

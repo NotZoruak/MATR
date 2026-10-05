@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Lang.Avalonia.MarkupExtensions;
@@ -876,6 +877,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             {
                 if (_formationClipboard == null) return;
                 capturedPreset.Team = _formationClipboard.Team;
+                capturedPreset.RecordSlot = _formationClipboard.ResolveRecordSlot();
                 capturedPreset.ClearEquipmentBeforeFormation = _formationClipboard.ClearEquipmentBeforeFormation;
                 capturedPreset.SaveGameFormationRecordAfterFormation = _formationClipboard.SaveGameFormationRecordAfterFormation;
                 FormationPreset.SetRecordMode(capturedPreset, _formationClipboard.UseGameFormationRecordOnly, _formationClipboard.SaveGameFormationRecordOnly);
@@ -971,6 +973,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             Id = source.Id,
             Name = source.Name,
             Team = source.Team,
+            RecordSlot = source.ResolveRecordSlot(),
             ClearEquipmentBeforeFormation = source.ClearEquipmentBeforeFormation,
             SaveGameFormationRecordAfterFormation = source.SaveGameFormationRecordAfterFormation,
             UseGameFormationRecordOnly = source.UseGameFormationRecordOnly,
@@ -1054,9 +1057,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             container.Children.Add(header);
             if (HasSubOptions(interfaceOption) && !interfaceOption.InlineSubOptions)
                 AppendGearIcon(header, option, interfaceOption, source);
-            casesPanel = new WrapPanel
+            casesPanel = new UniformGrid
             {
-                Orientation = Orientation.Horizontal,
+                Columns = 1,
                 Margin = new Thickness(0, 2, 0, 2),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
@@ -1120,29 +1123,38 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             }
         }
 
-        if (casesPanel.Children.Count > 0)
+        if (casesPanel is UniformGrid caseGrid && caseGrid.Children.Count > 0)
         {
-            casesPanel.LayoutUpdated += EqualizeOnce;
-            void EqualizeOnce(object? s, EventArgs ev)
+            void UpdateColumns()
             {
-                casesPanel.LayoutUpdated -= EqualizeOnce;
-                double maxWidth = 0;
-                foreach (var child in casesPanel.Children)
+                if (caseGrid.Bounds.Width <= 0)
+                    return;
+
+                var maxItemWidth = 0d;
+                foreach (var child in caseGrid.Children.OfType<Control>())
                 {
-                    if (child is CheckBox checkBox)
-                    {
-                        checkBox.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                        maxWidth = Math.Max(maxWidth, checkBox.DesiredSize.Width);
-                    }
+                    child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    maxItemWidth = Math.Max(maxItemWidth, child.DesiredSize.Width);
                 }
-                if (maxWidth > 0)
-                {
-                    foreach (var child in casesPanel.Children)
-                    {
-                        if (child is CheckBox checkBox)
-                            checkBox.MinWidth = maxWidth;
-                    }
-                }
+
+                var columns = ResponsiveColumnCalculator.CalculateColumnCount(
+                    caseGrid.Bounds.Width - caseGrid.Margin.Left - caseGrid.Margin.Right,
+                    maxItemWidth,
+                    caseGrid.Children.Count);
+                if (caseGrid.Columns != columns)
+                    caseGrid.Columns = columns;
+            }
+
+            caseGrid.SizeChanged += (_, _) => UpdateColumns();
+            caseGrid.LayoutUpdated += InitializeColumns;
+
+            void InitializeColumns(object? sender, EventArgs args)
+            {
+                if (caseGrid.Bounds.Width <= 0)
+                    return;
+
+                caseGrid.LayoutUpdated -= InitializeColumns;
+                UpdateColumns();
             }
         }
 
@@ -1161,7 +1173,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         var isSingleDateInput = isSingleInput && interfaceOption.Inputs![0].IsDate;
 
         // 单输入且有 option description 时，需要显示 header，所以使用与多输入相同的 margin
-        var needsHeader = !isSingleInput || (hasOptionDescription && !isSingleDateInput);
+        var needsHeader = ShouldShowInputOptionHeader(
+            interfaceOption.Inputs?.Count ?? 0,
+            hasOptionDescription,
+            isSingleDateInput);
         
         var container = new StackPanel
         {
@@ -1390,31 +1405,73 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             grid.Margin = OptionRowMargin;
         }
 
-        // TextBox
+        // 文本框
         var displayValue = currentValue == MaaInterface.MaaInterfaceOption.ExplicitNullMarker ? "null" : currentValue;
-        var textBox = new TextBox
+        Control inputControl;
+        var isExpeditionMemberNamesInput = IsExpeditionMemberNamesInput(interfaceOption, input);
+        if (isExpeditionMemberNamesInput)
         {
-            MinWidth = 120,
-            Margin = new Thickness(0, 2, 0, 2),
-            BorderThickness = new Thickness(1),
-            Text = displayValue,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-        textBox.Bind(TextBox.BorderBrushProperty, new DynamicResourceExtension("SukiControlBorderBrush"));
-        
-        if (!string.IsNullOrWhiteSpace(input.PatternMsg))
-            textBox.Bind(TextBox.WatermarkProperty, new ResourceBinding(input.PatternMsg));
-        
-        BindIdleEnabled(textBox);
+            inputControl = CreateExpeditionMemberNamesInputControl(input, displayValue, option, interfaceOption);
+        }
+        else
+        {
+            var textBox = new TextBox
+            {
+                MinWidth = 120,
+                Margin = new Thickness(0, 2, 0, 2),
+                BorderThickness = new Thickness(1),
+                Text = displayValue,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            textBox.Bind(TextBox.BorderBrushProperty, new DynamicResourceExtension("SukiControlBorderBrush"));
 
-        // Events
-        textBox.TextChanged += (_, _) => HandleStringInputChange(textBox, input, option, interfaceOption);
-        
-        // Initial setup
-        HandleStringInputChange(textBox, input, option, interfaceOption, true); 
+            if (!string.IsNullOrWhiteSpace(input.PatternMsg))
+                textBox.Bind(TextBox.WatermarkProperty, new ResourceBinding(input.PatternMsg));
+
+            BindIdleEnabled(textBox);
+            textBox.TextChanged += (_, _) => HandleStringInputChange(textBox, input, option, interfaceOption);
+            HandleStringInputChange(textBox, input, option, interfaceOption, true);
+            inputControl = textBox;
+        }
+
+        var hasInputLabel = HasInputLabel(input.Label);
+        if (!hasInputLabel && needsHeader)
+        {
+            Grid.SetColumn(inputControl, 0);
+            Grid.SetColumnSpan(inputControl, 2);
+            grid.Children.Add(inputControl);
+            return grid;
+        }
 
         // Label Panel
-        var labelPanel = CreateLabelPanel(input.DisplayName, input.Name, input.Description);
+        var label = hasInputLabel ? input.DisplayName : interfaceOption.DisplayName;
+        var labelPanel = CreateLabelPanel(label, input.Name, input.Description);
+
+        var isExpeditionInlineSetting = IsExpeditionInlineSetting(interfaceOption);
+        var useCompactLabelColumn = isExpeditionMemberNamesInput || isExpeditionInlineSetting;
+        if (isExpeditionMemberNamesInput)
+        {
+            grid.ColumnDefinitions.Clear();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.Margin = new Thickness(10, 3, 24, 3);
+        }
+        else if (isExpeditionInlineSetting)
+        {
+            grid.ColumnDefinitions.Clear();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            labelPanel.Width = ExpeditionInlineLabelColumnWidth;
+        }
+
+        if (useCompactLabelColumn)
+        {
+            labelPanel.MinWidth = 0;
+            labelPanel.Margin = new Thickness(0, 0, 8, 0);
+            inputControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+            if (isExpeditionInlineSetting)
+                inputControl.MinWidth = 0;
+        }
 
         // Icon (Show only if single input WITHOUT header, because header already has icon)
         if (!needsHeader)
@@ -1425,14 +1482,144 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         }
 
         Grid.SetColumn(labelPanel, 0);
-        Grid.SetColumn(textBox, 1);
+        Grid.SetColumn(inputControl, 1);
         
-        AddResponsiveBehavior(grid, labelPanel, textBox);
+        if (!isExpeditionInlineSetting)
+            AddResponsiveBehavior(grid, labelPanel, inputControl, useCompactLabelColumn);
         
         grid.Children.Add(labelPanel);
-        grid.Children.Add(textBox);
+        grid.Children.Add(inputControl);
 
         return grid;
+    }
+
+    private static bool IsExpeditionMemberNamesInput(
+        MaaInterface.MaaInterfaceOption interfaceOption,
+        MaaInterface.MaaInterfaceOptionInput input)
+        => input.Name == "members"
+            && interfaceOption.Name?.StartsWith("远征部队", StringComparison.Ordinal) == true
+            && interfaceOption.Name.EndsWith("成员名单", StringComparison.Ordinal);
+
+    private static string GetCurrentSwordName(string? text)
+    {
+        var value = text ?? string.Empty;
+        var separatorIndex = Math.Max(value.LastIndexOf('，'), value.LastIndexOf(','));
+        return separatorIndex >= 0 ? value[(separatorIndex + 1)..].Trim() : value.Trim();
+    }
+
+    private Control CreateExpeditionMemberNamesInputControl(
+        MaaInterface.MaaInterfaceOptionInput input,
+        string currentValue,
+        MaaInterface.MaaInterfaceSelectOption option,
+        MaaInterface.MaaInterfaceOption interfaceOption)
+    {
+        var catalog = SwordCatalogService.Load(Path.Combine(AppPaths.ResourceDirectory, "base", "SwordBookCatalog.json"));
+        var textBox = new TextBox
+        {
+            MinWidth = 120,
+            BorderThickness = new Thickness(1),
+            Text = currentValue,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        textBox.Bind(TextBox.BorderBrushProperty, new DynamicResourceExtension("SukiControlBorderBrush"));
+        if (!string.IsNullOrWhiteSpace(input.PatternMsg))
+            textBox.Bind(TextBox.WatermarkProperty, new ResourceBinding(input.PatternMsg));
+        BindIdleEnabled(textBox);
+
+        var suggestionList = new ListBox
+        {
+            MaxHeight = 176,
+            Background = Brushes.Transparent,
+            ItemsSource = Array.Empty<string>()
+        };
+        var suggestionBorder = new Border
+        {
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(4),
+            Margin = new Thickness(0, 4, 0, 0),
+            Padding = new Thickness(2),
+            IsVisible = false,
+            Child = suggestionList
+        };
+        suggestionBorder.Bind(Border.BorderBrushProperty, new DynamicResourceExtension("SukiControlBorderBrush"));
+        suggestionBorder.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SukiPrimaryColor5"));
+
+        var isSelectingSuggestion = false;
+        textBox.TextChanged += (_, _) =>
+        {
+            var text = textBox.Text ?? string.Empty;
+            option.Data[input.Name!] = text == "null" ? MaaInterface.MaaInterfaceOption.ExplicitNullMarker : text;
+            UpdatePipeline(option, interfaceOption);
+            saveConfigurationAction();
+
+            if (isSelectingSuggestion)
+                return;
+
+            var suggestions = GetExpeditionMemberSuggestions(catalog, text);
+            suggestionList.ItemsSource = suggestions;
+            suggestionBorder.IsVisible = suggestions.Count > 0;
+        };
+
+        suggestionList.SelectionChanged += (_, _) =>
+        {
+            if (suggestionList.SelectedItem is not string selectedName)
+                return;
+
+            var currentText = textBox.Text ?? string.Empty;
+            var separatorIndex = Math.Max(currentText.LastIndexOf('，'), currentText.LastIndexOf(','));
+            var prefix = separatorIndex >= 0 ? currentText[..(separatorIndex + 1)] : string.Empty;
+
+            isSelectingSuggestion = true;
+            textBox.Text = $"{prefix}{selectedName}，";
+            textBox.CaretIndex = textBox.Text.Length;
+            suggestionBorder.IsVisible = false;
+            isSelectingSuggestion = false;
+            textBox.Focus();
+        };
+
+        textBox.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter && suggestionBorder.IsVisible && suggestionList.ItemCount > 0)
+            {
+                suggestionList.SelectedIndex = 0;
+                e.Handled = true;
+            }
+        };
+
+        return new StackPanel
+        {
+            Spacing = 0,
+            Children = { textBox, suggestionBorder }
+        };
+    }
+
+    private static List<string> GetExpeditionMemberSuggestions(
+        IReadOnlyList<SwordCatalogEntry> catalog,
+        string text)
+    {
+        var value = text ?? string.Empty;
+        var keyword = GetCurrentSwordName(value);
+        if (string.IsNullOrWhiteSpace(keyword))
+            return [];
+
+        return catalog
+            .Where(entry => entry.DisplayName.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+            .Select(entry => entry.DisplayName)
+            .Take(8)
+            .ToList();
+    }
+
+    internal static bool HasInputLabel(string? label) => !string.IsNullOrWhiteSpace(label);
+
+    internal static bool ShouldShowInputOptionHeader(
+        int inputCount,
+        bool hasOptionDescription,
+        bool isSingleDateInput)
+    {
+        if (inputCount != 1)
+            return true;
+
+        return !isSingleDateInput && hasOptionDescription;
     }
 
     private Control CreateBoolInputControl(
@@ -1674,7 +1861,28 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         Grid.SetColumn(labelPanel, 0);
         Grid.SetColumn(comboBox, 1);
         
-        AddResponsiveBehavior(grid, labelPanel, comboBox);
+        var isExpeditionInlineSetting = IsExpeditionInlineSetting(interfaceOption);
+        var isForgeFormulaInline = interfaceOption.Name == "DT_锻刀公式";
+        var useCompactLabelColumn = isExpeditionInlineSetting || isForgeFormulaInline;
+        if (useCompactLabelColumn)
+        {
+            grid.ColumnDefinitions.Clear();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            labelPanel.MinWidth = 0;
+            if (isExpeditionInlineSetting)
+                labelPanel.Width = ExpeditionInlineLabelColumnWidth;
+            labelPanel.Margin = new Thickness(0, 0, 8, 0);
+            comboBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+            comboBox.MinWidth = 0;
+        }
+
+        var useNaturalWidthLabelColumn = interfaceOption.Name == "耕作加成满值时跳过内番";
+        if (useNaturalWidthLabelColumn)
+            labelPanel.MinWidth = 0;
+
+        if (!useCompactLabelColumn)
+            AddResponsiveBehavior(grid, labelPanel, comboBox, useNaturalWidthLabelColumn, useNaturalWidthLabelColumn);
         
         grid.Children.Add(labelPanel);
         grid.Children.Add(comboBox);
@@ -1934,16 +2142,30 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         control.Bind(Control.IsEnabledProperty, new Binding("Idle") { Source = Instances.RootViewModel });
     }
 
-    private void AddResponsiveBehavior(Grid grid, Control label, Control input)
+    private void AddResponsiveBehavior(
+        Grid grid,
+        Control label,
+        Control input,
+        bool compactLabelColumn = false,
+        bool measureLabelWidth = false)
     {
         grid.SizeChanged += (sender, e) =>
         {
             if (sender is not Grid currentGrid) return;
             double totalMinWidth = currentGrid.Children.Sum(c => c is Control ctrl ? ctrl.MinWidth : 0);
             double availableWidth = currentGrid.Bounds.Width - currentGrid.Margin.Left - currentGrid.Margin.Right;
+            double requiredWidth = totalMinWidth * 0.8;
+
+            if (measureLabelWidth)
+            {
+                label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                double labelWidth = Math.Max(label.MinWidth, label.DesiredSize.Width) + label.Margin.Left + label.Margin.Right;
+                double inputWidth = input.MinWidth + input.Margin.Left + input.Margin.Right;
+                requiredWidth = labelWidth + inputWidth;
+            }
 
              // Responsive Switch
-            if (availableWidth < totalMinWidth * 0.8)
+            if (availableWidth < requiredWidth)
             {
                 currentGrid.ColumnDefinitions.Clear();
                 currentGrid.RowDefinitions.Clear();
@@ -1959,8 +2181,14 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             {
                 currentGrid.RowDefinitions.Clear();
                 currentGrid.ColumnDefinitions.Clear();
-                currentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Star) });
-                currentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(6, GridUnitType.Star) });
+                currentGrid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = compactLabelColumn ? GridLength.Auto : new GridLength(5, GridUnitType.Star)
+                });
+                currentGrid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = compactLabelColumn ? new GridLength(1, GridUnitType.Star) : new GridLength(6, GridUnitType.Star)
+                });
 
                 Grid.SetRow(label, 0);
                 Grid.SetRow(input, 0);
@@ -1968,6 +2196,13 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 Grid.SetColumn(input, 1);
             }
         };
+    }
+
+    private const double ExpeditionInlineLabelColumnWidth = 112;
+
+    private static bool IsExpeditionInlineSetting(MaaInterface.MaaInterfaceOption interfaceOption)
+    {
+        return interfaceOption.Name is "疲劳阈值" or "临时部队记录槽";
     }
 
     // Logic Helpers

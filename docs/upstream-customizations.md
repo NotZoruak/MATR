@@ -11,6 +11,14 @@
 
 ## 定制项
 
+### `resource.expedition-settings`
+
+本丸后勤的远征目的地和长期远征计划由任务内“远征”开关承载；长期计划默认开启，并以内联参数展示疲劳阈值与临时部队记录槽。首次加载新资源时，`TaskLoader` 将旧全局长期计划开关及阈值迁入本丸后勤任务，之后以任务内值为准并清理旧全局长期计划值。远征智能调度仍保留全局 option 名 `远征智能调度`、配置值和跨任务 pipeline 注入行为，仅显示 label 为“后勤智能调度”。
+
+### `task-flower-brush.locked-sword-selection`
+
+刷花任务使用 `FlowerBrushSwordSelectionAction` 完成筛选与选刀：先清空筛选，再按任务选项应用刀种与状态条件，固定切换为樱吹雪升序，扫描锁标记颜色并点击列表中最上方上锁刀剑右侧的选择位置。无刀种条件表示全刀种；连续滑动上限由用户配置，默认五次，初始画面也参与检查。达到上限仍无上锁刀剑时，通过自定义识别分支结束当前刷花尝试，不出阵。出阵后挂接地下城使用的公共重伤修刀链；加速符修刀为默认，无加速符时使用地下城的确认槽位后停止逻辑，另提供停止选项。刀装不足弹窗沿用常驻作战识别区域与模板，点击「整备刀装」后暂时结束当前刷花尝试；整备页面后的专属补充流程尚待后续设计。
+
 ### settings.responsive-form-layout
 
 默认 900×675 窗口下，设置分类改用顶部导航，不能显示会挤占 220 像素内容宽度的纵向分类栏。顶部导航使用 18 号文字并隐藏横向滚动条；分类项溢出时，用户可在导航文字区或同一高度的留白区按住左键横向拖动，横向移动不足 4 个逻辑像素时仍按点击处理，拖拽结束后松开不得误触发分类跳转。页面内容滚动到新的分类时，当前导航项必须自动滚入可视区域。界面与性能设置的选择控件采用弹性双列：控件宽度在 160 至 215 个逻辑像素间缩放，优先保留左侧标题和说明的可读宽度；所有说明文字不保留上游的 70 像素右边距。外部通知的成功与失败自定义内容必须分为独立多行输入框，支持自动换行和回车换行。上游升级时需在默认窗口宽度及更宽窗口分别检查导航切换、导航拖拽、说明换行和输入框显示。
@@ -33,7 +41,7 @@
 
 “自定编队”必须作为 `assets/interface.json` 中的普通任务注册，入口为 `FormationConfig`，通过任务专属的 `FC_选择预设` 设置选择编队预设；不得重新加入上游的特殊任务列表。
 
-预设选择页支持新增、编辑、复制、粘贴、删除和勾选预设，自定编队任务可勾选多个预设并按设置页从上到下的顺序依次编成。多选编号保存在任务选项数据的 `preset_ids` 中；`MaaProcessor` 在任务装配阶段按预设逐个展开为多次编队任务，再把单个预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖。一键日课不再内置“开始前启用预设部队”，需要先编队时由用户启用默认排在日课之前的自定编队任务。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
+预设选择页支持新增、编辑、复制、粘贴、删除和勾选预设，自定编队任务可勾选多个预设并按设置页从上到下的顺序依次编成。多选编号保存在任务选项数据的 `preset_ids` 中；`MaaProcessor` 在任务装配阶段按预设逐个展开为多次编队任务，再把单个预设转换为 `FormationConfigAction` 参数与编队 pipeline 覆盖。每个预设独立保存目标部队与部队记录槽；编成后保存、仅使用记录和仅保存当前编队都使用所选记录槽。旧预设缺少记录槽时沿用目标部队编号，复制和粘贴按解析后的记录槽保留选择。一键日课不再内置“开始前启用预设部队”，需要先编队时由用户启用默认排在日课之前的自定编队任务。升级时不得仅保留 `FormationConfig.json`，否则任务虽有 pipeline 却无法选择预设或注入参数。
 
 装备马匹与宝物时，点击槽位并确认对应列表展开后，均需检查同一筛选标记是否处于未勾选状态；若标记区域为全白 `[255,255,252]`，点击 `[1020,97,24,24]` 并等待后再次检查，确保仅显示未装备物品后再扫描选择。两种列表共用该状态检查与点击位置。
 
@@ -45,7 +53,7 @@
 
 马匹名称必须走精确匹配：`SwordNameMatcher.IsHorseMatch` 先按字形归一表统一字形，再去除 OCR 文本中的数量标记（行号前缀与数量后缀，含 ASCII 字母数字、全角等 Unicode 数字与常见乘号星号，如“03松风”“小云雀x5”“小云雀×5”“小云雀＊5”“小云雀５”）与名称连接符（各类中点写法，使“汗血・新春”与“汗血新春”等价），之后要求与目标全等，既不做包含判断，也不做编辑距离容错。祝一号/祝十号/祝十一号、白毛/鹿毛/青毛、超光/超影都只差一个字，任何近似容错都会让它们互相命中，并选中列表中最靠上的错误马匹；不得把马匹改回 `IsLegacyFuzzyMatch` 一类编辑距离容错。仅“高楯黑”允许 OCR 整字漏识“楯”，接受“高黑”命中；该字只出现在这条马匹名中，刀帐、刀装与宝物名均不含。
 
-刀剑列表扫描的得分阈值与静止判定同属实现约束。`ListOcrScan.MinScore` 不得高于 0.8：2026-09-14 实机中“祢祢切丸”被识别成“称称切丸”时得分 0.843，高于 0.8 的判定才能正常命中，低于阈值会被当作列表里没有而触发无谓的上滑。上滑后必须等连续两帧 OCR 结果一致（列表静止）再判定命中，命中与点击坐标一律取自同一静止帧，否则会用到回弹过程中的 y 点到相邻行。`ListOcrScan.ScrollUp` 必须保持一次按下与一次抬手：竖直段完成后，收尾向右横移 200 像素，使抬手前的采样不再包含竖直速度。“自定编队”的 `FC_FindSword1~6` 必须带选刀页识别（OCR“刀剑男士选择”）并在 `next` 末尾自引用重试，`FC_ConfirmFilterApply1~6` 的 `next` 末尾各自保留 `FC_ConfirmFilter1~6` 作为筛选未生效时的回退；这些自引用位置必须保留 `max_hit` 上限，否则重试会退化成无限点击。
+刀剑列表扫描的得分阈值与静止判定同属实现约束。`ListOcrScan.MinScore` 不得高于 0.8：2026-09-14 实机中“祢祢切丸”被识别成“称称切丸”时得分 0.843，高于 0.8 的判定才能正常命中，低于阈值会被当作列表里没有而触发无谓的上滑。上滑后必须等连续两帧 OCR 结果一致（列表静止）再判定命中，命中与点击坐标一律取自同一静止帧，否则会用到回弹过程中的 y 点到相邻行。`ListOcrScan.ScrollUp` 必须保持一次按下与一次抬手：竖直段完成后，收尾向右横移 200 像素，使抬手前的采样不再包含竖直速度。“自定编队”的 `FC_FindSword1~6` 必须带选刀页识别（OCR“刀剑男士选择”）并在 `next` 末尾自引用重试；`FC_ConfirmFilterApply1~6` 的 `next` 末尾各自保留 `FC_ConfirmFilter1~6` 作为筛选未生效时的回退，且确认按钮不得设置 `max_hit`，以允许后续筛选再次确认。选刀 OCR 命中后还必须检查 `[18, 命中框 y]` 是否为锁定标记颜色 `[212,173,31]`，颜色不匹配时按未命中处理并继续扫描；锁定标记通过后，点击行右侧按钮前检查 `[1191, 命中框 y]` 是否为不可选灰色 `[190,190,190]`，命中时向任务监控输出警告日志，并通过清空当前 node 的 next 结束本次编队 pipeline；已选中的后续预设继续执行。
 
 ### `task-captain.skip-positions`
 
@@ -72,6 +80,10 @@
 ### `ui.data-last-updated`
 
 仓库与刀帐页面使用同一段主题灰色说明文本显示自动识别提示与最后更新时间，说明句号后直接接“最后更新”；窄窗口需要换行时仍作为同一段自然换行，不得将最后更新时间单独排成一行。两类时间分别持久化：手动保存仓库或刀帐，以及更新数据任务成功写入对应正式数据后，分别更新各自的时间；更新其中一类不得覆盖另一类。旧配置没有时间时显示“最后更新：暂无”。升级时保留 `DataLastUpdatedService` 的 ISO 8601 存储与读取，以及更新数据持久化完成事件触发后的页面刷新。
+
+### `storage.honmaru-data-directory`
+
+默认 `config.json` 中的 `WarehouseData`、`WarehouseLastUpdatedAt`、`SwordBookEntries` 与 `SwordBookLastUpdatedAt` 会在应用初始化时一次性迁入 `config/honmaru/default/warehouse.json` 和 `swordbook.json`。迁移必须先备份整个配置文件到 `backup/config-时间戳.json`，原子写入目标并读回校验，最后提交 `config/honmaru/manifest.json` 后才清理旧字段；迁移前置步骤失败时必须保留旧字段并继续沿用旧配置。迁移完成后，默认 `config.json` 的四个键经 `MFAConfiguration` 透明转向本丸数据目录。界面不增加本丸名称、切换或管理入口，工作记录继续使用全局 `config/saved_work_records.json`。升级时不得把四个字段写回 `config.json`，也不得把固定 `default` 目录误改为用户可见的多本丸功能。
 
 ### `ui.warehouse-chart-all-history`
 
@@ -131,9 +143,9 @@ GUI 日志必须按调用顺序进入界面线程的调度队列。`MaaProcessor
 
 ### `focus.display-channels`
 
-`focus` 的分发渠道与内容前缀属于 MATR 扩展，升级时不能按上游实现直接覆盖。`FocusHandler.DispatchToChannels` 在官方 `log` / `toast` / `notification` / `dialog` / `modal` 之外必须保留 `file` 分支，它调用 `MaaProcessor.AddMarkdownToFile`——只走 `LoggerHelper.Info` 写实例日志文件，不写 `LogItemViewModels` 这个实时面板集合、也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点，避免实时面板被刷屏。`log` 渠道仍同时写实时面板与文件。
+`focus` 的分发渠道与内容前缀属于 MATR 扩展，升级时不能按上游实现直接覆盖。`FocusHandler.DispatchToChannels` 在官方 `log` / `toast` / `notification` / `dialog` / `modal` 之外必须保留 `file` 与 `external_notification` 分支。`file` 调用 `MaaProcessor.AddMarkdownToFile`，只走 `LoggerHelper.Info` 写实例日志文件，不写实时面板，也不发布平台日志；用于「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点。`external_notification` 将 focus 内容即时发送到已启用的外部通知渠道，并附加本地时分秒。`log` 渠道仍同时写实时面板与文件。
 
-`special:` 是 MATR 约定的内容前缀，不是 MaaFramework 的字段。`FocusHandler.TryExtractSpecialContent` 在实时展示前剥离它，`AddMarkdown` 以 `recordAsSpecial: true` 把词条写成 `[Record][Special]`，`WorkRecordBuilder` 再把它归入工作记录的「特殊情况」而不占用 Warning 级别。升级 focus 相关代码后，用「打点只进文件」「特殊情况仍归入工作记录」两条实机行为各验证一次。
+`special:` 是 MATR 约定的内容前缀，不是 MaaFramework 的字段。`FocusHandler.TryExtractSpecialContent` 在实时展示前剥离它，`AddMarkdown` 以 `recordAsSpecial: true` 把词条写成 `[Record][Special]`，`WorkRecordBuilder` 再把它归入工作记录的「特殊情况」而不占用 Warning 级别。升级 focus 相关代码后，验证「打点只进文件」「特殊情况仍归入工作记录」「external_notification 向已启用渠道实时推送」三种行为。
 
 ### `task.sync-expedition-reuse`
 

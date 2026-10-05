@@ -58,6 +58,32 @@
                 SelectedIndex="{Binding TeamIndex, Mode=TwoWay}" />
         </Grid>
 
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <TextBlock
+                Classes="fe-label"
+                Text="部队记录槽"
+                VerticalAlignment="Center" />
+            <ComboBox
+                Grid.Column="1"
+                Classes="fe-input"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding RecordSlotOptions}"
+                SelectedIndex="{Binding RecordSlotIndex, Mode=TwoWay}" />
+        </Grid>
+
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock
+                Text="编成前强制召回远征队伍"
+                VerticalAlignment="Center" />
+            <ToggleSwitch
+                Grid.Column="1"
+                Classes="Switch"
+                IsChecked="{Binding ForceRecallExpeditionBeforeUsingRecord, Mode=TwoWay}"
+                MaxHeight="60"
+                MaxWidth="100"
+                VerticalAlignment="Center" />
+        </Grid>
+
         <StackPanel Spacing="6">
             <Grid ColumnDefinitions="*,Auto">
                 <TextBlock
@@ -73,7 +99,7 @@
             </Grid>
             <Grid ColumnDefinitions="*,Auto">
                 <TextBlock
-                    Text="编成后保存游戏部队记录"
+                    Text="编成后保存部队记录"
                     VerticalAlignment="Center" />
                 <ToggleSwitch
                     Grid.Column="1"
@@ -84,15 +110,31 @@
                     VerticalAlignment="Center" />
             </Grid>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <CheckBox
-                    Content="仅使用编队记录"
-                    HorizontalAlignment="Stretch"
-                    IsChecked="{Binding UseGameFormationRecordOnly, Mode=TwoWay}" />
-                <CheckBox
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <CheckBox
+                        Content="仅使用部队记录"
+                        IsChecked="{Binding UseGameFormationRecordOnly, Mode=TwoWay}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource SukiLowText}"
+                        Text="?"
+                        ToolTip.Tip="忽略预设中的刀剑与装备配置，改用目标部队在所选部队记录槽中保存的编队。若开启强制召回且目标部队正在远征，会先召回再使用记录。若同时开启编成前卸下现有装备，会先卸装备再使用记录。"
+                        VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel
                     Grid.Column="1"
-                    Content="仅记录编队"
-                    HorizontalAlignment="Stretch"
-                    IsChecked="{Binding SaveGameFormationRecordOnly, Mode=TwoWay}" />
+                    Orientation="Horizontal"
+                    Spacing="4">
+                    <CheckBox
+                        Content="仅保存当前编队"
+                        IsChecked="{Binding SaveGameFormationRecordOnly, Mode=TwoWay}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource SukiLowText}"
+                        Text="?"
+                        ToolTip.Tip="不按预设调整部队，只将目标部队当前编队保存到所选部队记录槽；此模式不会触发编成前卸下现有装备。"
+                        VerticalAlignment="Center" />
+                </StackPanel>
             </Grid>
         </StackPanel>
 

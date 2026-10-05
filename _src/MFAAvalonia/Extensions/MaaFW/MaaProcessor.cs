@@ -4342,8 +4342,8 @@ public class MaaProcessor
     /// </summary>
     public int? GetLogisticsTeamMapIndex(string teamOptionName)
     {
-        var option = FindLogisticsTask(GetSavedTaskItems())?.Option
-            ?.FirstOrDefault(o => o.Name == teamOptionName);
+        var option = ExpeditionOptionResolver.FindTeamMapOption(
+            FindLogisticsTask(GetSavedTaskItems()), teamOptionName);
         return option?.Index;
     }
 
@@ -4354,9 +4354,10 @@ public class MaaProcessor
         if (logisticsTask?.Option == null)
             return "无（未找到后勤任务选项）";
 
+        var teamOptions = ExpeditionOptionResolver.GetExpeditionOptionsForSync(logisticsTask);
         return string.Join(" ", teamOptionNames.Select(name =>
         {
-            var option = logisticsTask.Option.FirstOrDefault(o => o.Name == name);
+            var option = teamOptions.FirstOrDefault(o => o.Name == name);
             if (option == null) return $"{name}=选项缺失";
             return $"{name}={option.Index?.ToString() ?? "未选择"}";
         }));
@@ -4465,7 +4466,8 @@ public class MaaProcessor
                 if (expTask?.Option != null)
                 {
                     var teamOptionNames = new List<string> { "部队一", "部队二", "部队三", "部队四", "部队五" };
-                    ProcessOptions(ref taskModels, expTask.Option, teamOptionNames);
+                    var expeditionOptionNames = ExpeditionOptionResolver.GetSyncOptionNames(expTask, teamOptionNames);
+                    ProcessOptions(ref taskModels, expTask.Option, expeditionOptionNames);
                     var repairOptionNames = new List<string> { "修刀" };
                     ProcessOptions(ref taskModels, expTask.Option, repairOptionNames);
                     var naibanOptionNames = new List<string> { "内番" };
@@ -4610,6 +4612,7 @@ public class MaaProcessor
 
         preset.EnsureSlots();
         var team = Math.Clamp(preset.Team, 1, 5);
+        var recordSlot = preset.ResolveRecordSlot();
         var overrides = new Dictionary<string, JToken>
         {
             ["FormationConfig"] = new JObject
@@ -4656,17 +4659,61 @@ public class MaaProcessor
             {
                 ["action"] = new JObject
                 {
-                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[recordSlot - 1]) },
                 },
             },
             ["FC_UseRecord_Step2_SelectRecord"] = new JObject
             {
                 ["action"] = new JObject
                 {
-                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[team - 1]) },
+                    ["param"] = new JObject { ["target"] = new JArray(FormationRecordSlotClickCoords[recordSlot - 1]) },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion1"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion2"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion3"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
+                },
+            },
+            ["FC_ForceRecallFindTeamRegion4"] = new JObject
+            {
+                ["recognition"] = new JObject
+                {
+                    ["param"] = new JObject { ["expected"] = $"第{team}部队" },
                 },
             },
         };
+
+        if (!preset.SaveGameFormationRecordOnly && preset.ForceRecallExpeditionBeforeUsingRecord)
+        {
+            overrides[FormationTeamExpeditionCheck] = new JObject
+            {
+                ["next"] = new JArray("FC_ForceRecallOpenMenu"),
+                ["focus"] = new JObject
+                {
+                    ["Node.Action.Succeeded"] = new JObject
+                    {
+                        ["content"] = "special:[自定编队] 目标部队正在远征，开始强制召回",
+                        ["display"] = "log",
+                    },
+                },
+            };
+        }
 
         if (preset.UseGameFormationRecordOnly)
         {
@@ -4724,8 +4771,8 @@ public class MaaProcessor
             return;
 
         // 「远征智能调度」仅对远征任务自身与开启同步后勤的任务生效。
-        // 对未开启同步后勤的任务注入其 override 会劫持队伍选择流程
-        // （TT_IsTeamSelect 等跳转到 E_CheckTimerExpired，而计时器从未启动 → 视为过期 → 回本丸查看远征）。
+        // 对未开启同步后勤的任务注入其 override 会劫持队伍选择流程；
+        // 计时检查 node 默认禁用，但过滤仍可避免未关联的候选路由。
         if (task != null)
         {
             var syncExpEnabled = task.Option
@@ -5936,7 +5983,6 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.RestartGameAction(this));
             tasker.Resource.Register(new Custom.DragCaptainAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerAction());
-            tasker.Resource.Register(new Custom.ExpeditionTimerCheckAction());
             tasker.Resource.Register(new Custom.GoalPtCheckAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimeTracker());
@@ -5944,6 +5990,7 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.ComputerOperationAction());
             tasker.Resource.Register(new Custom.WebhookAction());
             tasker.Resource.Register(new Custom.FatigueCheckAction());
+            tasker.Resource.Register(new Custom.FatigueCheckRecognition());
             tasker.Resource.Register(new Custom.PageScrollAndHoldAction());
             tasker.Resource.Register(new Custom.SelectFlowerTeamAction());
             tasker.Resource.Register(new Custom.ClickTopRepairableSwordAction());
@@ -5961,7 +6008,8 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.EdoActionSelectAction());
             tasker.Resource.Register(new Custom.EdoLastActionRetreatRecognition());
             tasker.Resource.Register(new Custom.FormationConfigAction());
-            tasker.Resource.Register(new Custom.FormationFindSwordAction());
+            tasker.Resource.Register(new Custom.FormationFindSwordAction(
+                message => AddLog(message, Brushes.Orange, changeColor: false, recordAsWarning: true)));
             tasker.Resource.Register(new Custom.FormationFilterClickAction());
             tasker.Resource.Register(new Custom.FormationEquipSelectAction());
             tasker.Resource.Register(new Custom.FormationHorseSelectAction());

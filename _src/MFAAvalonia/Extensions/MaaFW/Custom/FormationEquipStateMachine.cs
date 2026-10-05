@@ -383,7 +383,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
             target,
             TreasureListRoi,
             ListOcrScan.EquipScroll,
-            box =>
+            (_, box) =>
             {
                 var cx = box[0] + box[2] / 2;
                 var cy = box[1] + box[3] / 2;

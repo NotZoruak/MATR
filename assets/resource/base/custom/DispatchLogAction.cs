@@ -29,6 +29,8 @@ public class DispatchLogAction : IMaaCustomAction
         {
             int team = (int?)json["team"] ?? 0;
             _markedTeam = team;
+            if (team > 0)
+                FlowerStateTracker.BeginTeam(team);
             return true;
         }
 
@@ -139,23 +141,15 @@ public class DispatchLogAction : IMaaCustomAction
             if (config["TaskItems"] is not JArray taskItems)
                 return -1;
 
-            string teamName = TeamToConfigName(team);
             foreach (var item in taskItems)
             {
                 // 按 entry 匹配后勤任务（任务由「远征」改名而来，兼容旧名）
                 if ((string?)item["entry"] != "Expedition" && (string?)item["name"] != "远征")
                     continue;
 
-                if (item["option"] is not JArray options)
-                    return -1;
-
-                foreach (var opt in options)
-                {
-                    if ((string?)opt["name"] == teamName)
-                        return (int?)opt["index"] ?? -1;
-                }
-
-                return -1;
+                var logisticsTask = item.ToObject<MaaInterface.MaaInterfaceTask>();
+                return ExpeditionOptionResolver.FindTeamMapOption(
+                    logisticsTask, TeamToConfigName(team))?.Index ?? -1;
             }
 
             return -1;

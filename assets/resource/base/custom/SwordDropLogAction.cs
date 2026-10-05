@@ -38,9 +38,13 @@ public class SwordDropLogAction : IMaaCustomAction
     private const int InitialDropColorTolerance = 1;
     // 色条命中目标色的像素占比达到该值时判定画面仍在掉落画面
     private const double BannerMatchRatio = 0.9;
-    // 打点后的等待参数:轮询间隔与总超时
+    // 打点后的等待参数:轮询间隔、补点间隔与缺省总超时
+    // 总超时与各枢纽 pipeline 的 timeout(120 秒)取齐:画面在此期间未消失即判定卡死,
+    // 动作返回 false 交给 node 的 on_error 走卡死重启,不再让主循环重复命中本 node
     private const int BannerPollInterval = 200;
-    private const int BannerTimeout = 8000;
+    private const int BannerClickInterval = 1000;
+    private const int BannerConfirmSamples = 2;
+    private const int DefaultBannerTimeout = 120000;
 
     public string Name { get; set; } = nameof(SwordDropLogAction);
 
@@ -51,8 +55,7 @@ public class SwordDropLogAction : IMaaCustomAction
         var click = ParseArray(json["click"] as JArray, "刀剑掉落点击区域");
         var task = (string?)json["task"] ?? "刀剑掉落";
         var prefix = $"[{task}]";
-        // 产出掉落记录与需要留档的路径都要等画面关闭,避免同一次画面被重复处理
-        var shouldWaitForClose = false;
+        var waitTimeout = Math.Max(1000, (int?)json["timeout"] ?? DefaultBannerTimeout);
 
         // 极化归来判定放在最前:该画面的对话框色条与刀剑掉落一致,若先跑纯色校验可能被直接跳过而丢失截图
         if (IsKiwameReturn(context))
@@ -60,7 +63,6 @@ public class SwordDropLogAction : IMaaCustomAction
             // 与初掉落一样保存完整画面,但不视为掉落:不写掉落日志、不播报
             SaveKiwameReturnScreenshot(context, roi, prefix);
             LoggerHelper.Info($"{prefix} 极化归来画面，跳过刀剑掉落识别");
-            shouldWaitForClose = true;
         }
         else if (IsPlainBackdrop(context, json))
         {
@@ -90,22 +92,18 @@ public class SwordDropLogAction : IMaaCustomAction
                     SaveScreenshot(context, "未识别刀剑", "初始掉落");
                     LoggerHelper.Warning($"{prefix} 初始掉落刀名 OCR 校验失败: {text}");
                 }
-
-                shouldWaitForClose = true;
             }
             else
             {
                 ProcessOrdinaryDrop(context, roi, prefix);
-                shouldWaitForClose = true;
             }
         }
 
         ClickRectangle(context, click);
-        // 画面若一直停留在掉落画面,识别循环会反复命中本 node,导致一次掉落被重复打点与重复播报,
-        // 因此打点后等待画面关闭再回主循环;画面仍在时补一次点击
-        if (shouldWaitForClose)
-            WaitDropScreenClosed(context, click, prefix);
-        return true;
+        // 画面若一直停留在掉落画面,识别循环会反复命中本 node,导致一次掉落被重复打点与重复播报。
+        // 因此这里一直等到色条消失:等待期间按固定间隔补点击,画面关闭才回主循环;
+        // 超时未消失由 on_error 走卡死重启,不在本 node 内重复产出记录
+        return WaitDropScreenClosed(context, click, waitTimeout, prefix);
     }
 
     /// <summary>
@@ -153,28 +151,55 @@ public class SwordDropLogAction : IMaaCustomAction
     }
 
     /// <summary>
-    /// 打点与首次点击后轮询色条:画面仍停留在掉落画面时补一次点击,
-    /// 色条消失即返回主循环。
+    /// 打点与首次点击后轮询色条:画面仍停留在掉落画面时按固定间隔补点击,
+    /// 直到色条消失(视为画面已关闭)或超时。
+    /// 等待期间登记智能等待窗口,避免卡死重启监控把这段正常等待判成模拟器无响应。
     /// </summary>
-    private static void WaitDropScreenClosed<T>(T context, int[] click, string prefix) where T : IMaaContext
+    private static bool WaitDropScreenClosed<T>(T context, int[] click, int timeout, string prefix) where T : IMaaContext
     {
         var startTime = DateTime.UtcNow;
+        var lastClickAt = startTime;
+        var absentSamples = 0;
+        var ownWaitWindow = !SmartWaitTracker.IsInWaitWindow();
+        if (ownWaitWindow)
+            SmartWaitTracker.BeginWait(DateTime.Now.AddMilliseconds(timeout));
 
-        while ((DateTime.UtcNow - startTime).TotalMilliseconds < BannerTimeout)
+        try
         {
-            ActionParamHelper.ThrowIfStopping(context);
-            ActionParamHelper.SleepWithStopCheck(context, BannerPollInterval);
-
-            if (!IsDropBannerVisible(context))
+            while ((DateTime.UtcNow - startTime).TotalMilliseconds < timeout)
             {
-                LoggerHelper.Info($"{prefix} 掉落画面已关闭，结束等待");
-                return;
+                ActionParamHelper.ThrowIfStopping(context);
+                ActionParamHelper.SleepWithStopCheck(context, BannerPollInterval);
+
+                if (!IsDropBannerVisible(context))
+                {
+                    // 色条随对话关闭一起淡出,淡出过程中可能有一两轮读不到,连续确认后才算关闭
+                    if (++absentSamples >= BannerConfirmSamples)
+                    {
+                        LoggerHelper.Info($"{prefix} 掉落画面已关闭，结束等待");
+                        return true;
+                    }
+
+                    continue;
+                }
+
+                absentSamples = 0;
+                // 补点击只为处理被入场动画吞掉的点击,按固定间隔补点,避免在卡死画面上高频盲点
+                if ((DateTime.UtcNow - lastClickAt).TotalMilliseconds < BannerClickInterval)
+                    continue;
+
+                ClickRectangle(context, click);
+                lastClickAt = DateTime.UtcNow;
             }
 
-            ClickRectangle(context, click);
+            LoggerHelper.Warning($"{prefix} 掉落画面未消失（等待 {timeout}ms 超时），交由 on_error 处理卡死");
+            return false;
         }
-
-        LoggerHelper.Warning($"{prefix} 掉落画面未关闭（等待 {BannerTimeout}ms 超时）");
+        finally
+        {
+            if (ownWaitWindow)
+                SmartWaitTracker.Clear();
+        }
     }
 
     /// <summary>

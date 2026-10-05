@@ -124,22 +124,14 @@ public class ExpeditionMapSelectAction : IMaaCustomAction
         }
 
         // 从「后勤」任务配置中找到该部队的地图选择（按 entry 匹配，兼容任务改名）
-        string teamName = TeamToConfigName(team);
         foreach (var item in taskItems)
         {
             if ((string?)item["entry"] != "Expedition")
                 continue;
 
-            if (item["option"] is not JArray options)
-                return -1;
-
-            foreach (var opt in options)
-            {
-                if ((string?)opt["name"] == teamName)
-                    return (int?)opt["index"] ?? -1;
-            }
-
-            return -1;
+            var logisticsTask = item.ToObject<MaaInterface.MaaInterfaceTask>();
+            return ExpeditionOptionResolver.FindTeamMapOption(
+                logisticsTask, TeamToConfigName(team))?.Index ?? -1;
         }
 
         return -1;

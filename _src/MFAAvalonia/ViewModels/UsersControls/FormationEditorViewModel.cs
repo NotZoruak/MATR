@@ -17,6 +17,9 @@ public partial class FormationEditorViewModel : ViewModelBase
     /// <summary>目标部队下拉选中索引（0-4 对应部队一至五）</summary>
     [ObservableProperty] private int _teamIndex;
 
+    /// <summary>部队记录槽下拉选中索引（0-4 对应记录一至五）</summary>
+    [ObservableProperty] private int _recordSlotIndex;
+
     /// <summary>编成前卸下现有装备开关</summary>
     [ObservableProperty] private bool _clearEquipmentBeforeFormation;
 
@@ -26,11 +29,17 @@ public partial class FormationEditorViewModel : ViewModelBase
     /// <summary>是否仅使用部队记录</summary>
     [ObservableProperty] private bool _useGameFormationRecordOnly;
 
+    /// <summary>是否在编成前强制召回远征队伍</summary>
+    [ObservableProperty] private bool _forceRecallExpeditionBeforeUsingRecord;
+
     /// <summary>是否仅记录编队</summary>
     [ObservableProperty] private bool _saveGameFormationRecordOnly;
 
     /// <summary>部队下拉选项（1-5）</summary>
     public string[] TeamOptions { get; } = ["部队一", "部队二", "部队三", "部队四", "部队五"];
+
+    /// <summary>部队记录槽下拉选项（1-5）</summary>
+    public string[] RecordSlotOptions { get; } = ["记录一", "记录二", "记录三", "记录四", "记录五"];
 
     /// <summary>1-6 号位编辑行</summary>
     public ObservableCollection<FormationSlotEdit> Slots { get; } = [];
@@ -48,9 +57,11 @@ public partial class FormationEditorViewModel : ViewModelBase
         _preset = preset;
         _onDone = onDone;
         _teamIndex = Math.Clamp(preset.Team - 1, 0, 4);
+        _recordSlotIndex = preset.ResolveRecordSlot() - 1;
         _clearEquipmentBeforeFormation = preset.ClearEquipmentBeforeFormation;
         _saveGameFormationRecordAfterFormation = preset.SaveGameFormationRecordAfterFormation;
         _useGameFormationRecordOnly = preset.UseGameFormationRecordOnly;
+        _forceRecallExpeditionBeforeUsingRecord = preset.ForceRecallExpeditionBeforeUsingRecord;
         _saveGameFormationRecordOnly = preset.SaveGameFormationRecordOnly && !_useGameFormationRecordOnly;
         preset.EnsureSlots();
         for (var i = 0; i < 6; i++)
@@ -64,8 +75,10 @@ public partial class FormationEditorViewModel : ViewModelBase
     {
         // 名称不在此编辑，保持原值
         _preset.Team = TeamIndex + 1;
+        _preset.RecordSlot = Math.Clamp(RecordSlotIndex + 1, 1, 5);
         _preset.ClearEquipmentBeforeFormation = ClearEquipmentBeforeFormation;
         _preset.SaveGameFormationRecordAfterFormation = SaveGameFormationRecordAfterFormation;
+        _preset.ForceRecallExpeditionBeforeUsingRecord = ForceRecallExpeditionBeforeUsingRecord;
         FormationPreset.SetRecordMode(_preset, UseGameFormationRecordOnly, SaveGameFormationRecordOnly);
         _preset.EnsureSlots();
         for (var i = 0; i < Slots.Count && i < 6; i++)

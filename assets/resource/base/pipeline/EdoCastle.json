@@ -100,10 +100,12 @@
       "custom_action_param": {
         "task": "江户潜入",
         "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
       }
     },
-    "next": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"],
+    "on_error": ["EC_RestartGame"]
   },
   "EC_IsTeamSelect": {
     "recognition": {

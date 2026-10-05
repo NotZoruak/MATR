@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.Converters;
+using MFAAvalonia.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -48,6 +49,12 @@ public partial class MFAConfiguration(string name, string fileName, Dictionary<s
         public void SetValue(string key, object? value)
         {
             if (Config == null || value == null) return;
+            if (FileName.Equals("config", StringComparison.OrdinalIgnoreCase)
+                && HonmaruDataStoreService.TrySetValue(key, value))
+            {
+                Config.Remove(key);
+                return;
+            }
             // 移除配置切换时阻止 TaskItems 保存的逻辑
             // 这会导致任务配置无法正确更新到新配置中
             Config[key] = value;
@@ -70,6 +77,12 @@ public partial class MFAConfiguration(string name, string fileName, Dictionary<s
     
     public T GetValue<T>(string key, T defaultValue)
     {
+        if (FileName.Equals("config", StringComparison.OrdinalIgnoreCase)
+            && HonmaruDataStoreService.TryGetValue<T>(key, out var managedValue))
+        {
+            return managedValue;
+        }
+
         if (Config.TryGetValue(key, out var data))
         {
             try

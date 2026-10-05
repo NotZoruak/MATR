@@ -23,6 +23,16 @@ public class SelectFlowerTeamAction : IMaaCustomAction
         [638, 91],   // 部队五
     ];
 
+    /// <summary>部队 1~5 的装备解除选项点击区域</summary>
+    private static readonly int[][] EquipRemoveTeamTargets =
+    [
+        [348, 387, 59, 29],
+        [526, 388, 59, 29],
+        [701, 390, 59, 29],
+        [875, 387, 59, 29],
+        [351, 458, 60, 30],
+    ];
+
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
     {
         try
@@ -35,6 +45,15 @@ public class SelectFlowerTeamAction : IMaaCustomAction
                 return false;
             }
 
+            var parameters = ActionParamHelper.Parse(args.ActionParam);
+            if ((string?)parameters["mode"] == "remove_equip")
+            {
+                var clickPoint = GetEquipRemoveClickPoint(team)!.Value;
+                LoggerHelper.Info($"[刷花装备解除] 点击部队{team}的解除选项");
+                context.Tasker.Click(clickPoint.X, clickPoint.Y);
+                return true;
+            }
+
             var t = TeamTargets[team - 1];
             LoggerHelper.Info($"[选队刷花] 选择部队{team}，点击 ({t[0]}, {t[1]})");
             context.Tasker.Click(t[0], t[1]);
@@ -42,5 +61,14 @@ public class SelectFlowerTeamAction : IMaaCustomAction
         }
         catch (MaaStopException) { return false; }
         catch (Exception e) { LoggerHelper.Error($"[选队刷花] 错误: {e.Message}"); return false; }
+    }
+
+    internal static (int X, int Y)? GetEquipRemoveClickPoint(int team)
+    {
+        if (team < 1 || team > EquipRemoveTeamTargets.Length)
+            return null;
+
+        var target = EquipRemoveTeamTargets[team - 1];
+        return (target[0] + target[2] / 2, target[1] + target[3] / 2);
     }
 }

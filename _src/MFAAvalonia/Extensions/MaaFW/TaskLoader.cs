@@ -32,6 +32,9 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
         IList<DragItemViewModel>? oldDrags = null)
     {
         var instanceConfig = taskQueueViewModel.Processor.InstanceConfiguration;
+        var legacyGlobalOptions = instanceConfig.GetValue(
+            ConfigurationKeys.GlobalOptionItems,
+            new List<MaaInterface.MaaInterfaceSelectOption>()) ?? [];
 
         var currentTasks = instanceConfig.GetValue(ConfigurationKeys.CurrentTasks, new List<string>());
 
@@ -59,6 +62,10 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
             drags = items.Select(interfaceItem => new DragItemViewModel(interfaceItem) { OwnerViewModel = taskQueueViewModel }).ToList();
         }
 
+        var hasCurrentExpeditionSettings = drags
+            .Select(item => item.InterfaceItem)
+            .Any(item => item?.Entry == "Expedition" && item.Option?.Any(option => option.Name == "远征") == true);
+
         if (firstTask)
         {
             InitializeResources();
@@ -70,6 +77,24 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
         instanceConfig.SetValue(ConfigurationKeys.CurrentTasks, currentTasks);
         
         updateList.RemoveAll(d => removeList.Contains(d));
+
+        var logisticsTask = updateList
+            .Select(item => item.InterfaceItem)
+            .FirstOrDefault(item => item?.Name == "后勤" && item.Entry == "Expedition");
+        var migratedLongTermPlan = ExpeditionOptionMigration.MigrateLegacyLongTermPlan(
+            legacyGlobalOptions,
+            logisticsTask,
+            hasCurrentExpeditionSettings);
+        if (migratedLongTermPlan && logisticsTask?.Option?.FirstOrDefault(option => option.Name == "远征") is { } expeditionOption)
+            SetDefaultOptionValue(maaInterface, expeditionOption);
+
+        if ((migratedLongTermPlan || hasCurrentExpeditionSettings)
+            && legacyGlobalOptions.Any(option => option.Name == "长期远征计划"))
+        {
+            instanceConfig.SetValue(
+                ConfigurationKeys.GlobalOptionItems,
+                legacyGlobalOptions.Where(option => option.Name != "长期远征计划").ToList());
+        }
 
         // 同步保存 TaskItems，确保多实例 fallback 时 CurrentTasks 和 TaskItems 一致
         // 避免非默认实例通过 fallback 读到已更新的 CurrentTasks 但旧的 TaskItems，

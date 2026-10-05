@@ -10,6 +10,7 @@
     "pre_delay": 0,
     "timeout": 120000,
     "next": [
+      "FC_ForceRecallReturnToFormation",
       "FC_IsInMenu",
       "FC_IsFormationOverview",
       "FC_CheckHomeBrightness",
@@ -33,9 +34,64 @@
       "FC_IsSwordDropColor",
       "FC_RecoverFromEquip",
       "FC_LeaveSwordSelect",
+      "FC_IsTeamSelect",
+      "FC_IsEraSelect",
+      "FC_IsRegionSelect",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["FC_RestartGame"]
+  },
+  "FC_IsEraSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [104, 331, 49, 235],
+        "template": "Common/时代选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [123, 74, 30, 36]
+      }
+    },
+    "next": ["FC_DetectWhereAmI"]
+  },
+  "FC_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [123, 74, 30, 36]
+      }
+    },
+    "next": ["FC_DetectWhereAmI"]
+  },
+  "FC_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1197, 21, 65, 40]
+      }
+    },
+    "next": ["FC_DetectWhereAmI"]
   },
   "FC_LeaveTroopRecord": {
     "recognition": {
@@ -194,6 +250,391 @@
         "display": "log"
       }
     }
+  },
+  "FC_ForceRecallOpenMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1193, 23, 26, 32],
+        "expected": "目",
+        "only_rec": true
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["FC_ForceRecallOpenMenu", "FC_ForceRecallOpenExpedition"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallOpenExpedition": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [168, 278, 76, 34],
+        "expected": "远征"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["FC_ForceRecallOpenExpedition", "FC_ForceRecallIsExpeditionPage"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallIsExpeditionPage": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "next": ["FC_ForceRecallClickEra1"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickEra1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [274, 187, 65, 37]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyEra1", "FC_ForceRecallClickEra1"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyEra1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [807, 88, 31, 30],
+        "expected": "一",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallFindTeamRegion1", "FC_ForceRecallFindTeamRegion2", "FC_ForceRecallFindTeamRegion3", "FC_ForceRecallFindTeamRegion4", "FC_ForceRecallClickEra2"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickEra2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [478, 187, 65, 37]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyEra2", "FC_ForceRecallClickEra2"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyEra2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [807, 88, 31, 30],
+        "expected": "二",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallFindTeamRegion1", "FC_ForceRecallFindTeamRegion2", "FC_ForceRecallFindTeamRegion3", "FC_ForceRecallFindTeamRegion4", "FC_ForceRecallClickEra3"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickEra3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [679, 186, 65, 36]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyEra3", "FC_ForceRecallClickEra3"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyEra3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [807, 88, 31, 30],
+        "expected": "三",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallFindTeamRegion1", "FC_ForceRecallFindTeamRegion2", "FC_ForceRecallFindTeamRegion3", "FC_ForceRecallFindTeamRegion4", "FC_ForceRecallClickEra4"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickEra4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [877, 186, 65, 36]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyEra4", "FC_ForceRecallClickEra4"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyEra4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [807, 88, 31, 30],
+        "expected": "四",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallFindTeamRegion1", "FC_ForceRecallFindTeamRegion2", "FC_ForceRecallFindTeamRegion3", "FC_ForceRecallFindTeamRegion4", "FC_ForceRecallClickEra5"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickEra5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1077, 182, 65, 36]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyEra5", "FC_ForceRecallClickEra5"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyEra5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [807, 88, 31, 30],
+        "expected": "五",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallFindTeamRegion1", "FC_ForceRecallFindTeamRegion2", "FC_ForceRecallFindTeamRegion3", "FC_ForceRecallFindTeamRegion4", "FC_ForceRecallNotFound"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallFindTeamRegion1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [199, 341, 123, 34],
+        "expected": "第1部队"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyRegion1", "FC_ForceRecallFindTeamRegion1"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallFindTeamRegion2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [497, 340, 122, 35],
+        "expected": "第1部队"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyRegion2", "FC_ForceRecallFindTeamRegion2"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallFindTeamRegion3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [797, 340, 123, 35],
+        "expected": "第1部队"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyRegion3", "FC_ForceRecallFindTeamRegion3"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallFindTeamRegion4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1097, 340, 123, 35],
+        "expected": "第1部队"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["FC_ForceRecallVerifyRegion4", "FC_ForceRecallFindTeamRegion4"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyRegion1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1022, 88, 30, 30],
+        "expected": "一",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallClickRecall"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyRegion2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1022, 88, 30, 30],
+        "expected": "二",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallClickRecall"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyRegion3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1022, 88, 30, 30],
+        "expected": "三",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallClickRecall"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallVerifyRegion4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1022, 88, 30, 30],
+        "expected": "四",
+        "only_rec": true
+      }
+    },
+    "next": ["FC_ForceRecallClickRecall"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickRecall": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [828, 620, 105, 33],
+        "expected": "强制召回"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "next": ["FC_ForceRecallConfirmRecall", "FC_ForceRecallClickRecall"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallConfirmRecall": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [744, 491, 86, 36],
+        "expected": "确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "next": ["FC_ForceRecallClickExpeditionResult", "FC_ForceRecallConfirmRecall"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallClickExpeditionResult": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [570, 5, 139, 38],
+        "expected": "远征结果"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {"target": true}
+    },
+    "next": ["FC_ForceRecallClickExpeditionResult", "FC_ForceRecallReturnToFormation"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_ForceRecallNotFound": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "next": ["FC_ForceRecallReturnToFormation"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "未找到远征部队，返回编队流程",
+        "display": "log"
+      }
+    }
+  },
+  "FC_ForceRecallReturnToFormation": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [121, 74, 36, 34]
+      }
+    },
+    "post_delay": 800,
+    "next": ["FC_DetectWhereAmI"]
   },
   "FC_IsTeamEmpty": {
     "recognition": {
@@ -447,7 +888,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply1": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -582,7 +1022,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply2": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -717,7 +1156,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply3": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -852,7 +1290,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply4": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -987,7 +1424,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply5": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1122,7 +1558,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply6": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {

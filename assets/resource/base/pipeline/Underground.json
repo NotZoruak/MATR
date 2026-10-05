@@ -86,10 +86,12 @@
       "custom_action_param": {
         "task": "地下城",
         "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
       }
     },
-    "next": ["U_DetectWhereAmI"]
+    "next": ["U_DetectWhereAmI"],
+    "on_error": ["U_RestartGame"]
   },
   "U_IsKobanChest": {
     "recognition": {
@@ -165,10 +167,10 @@
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
-      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":10000,\"poll_interval\":200,\"task\":\"地下城\"}"
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"地下城\"}"
     },
     "next": ["U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
+    "on_error": ["U_RestartGame"]
   },
   "U_IsFormationSelect": {
     "recognition": {

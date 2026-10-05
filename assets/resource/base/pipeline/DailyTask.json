@@ -882,10 +882,12 @@
       "custom_action_param": {
         "task": "日课",
         "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
       }
     },
-    "next": ["DT_ForgeClaimCompletedHub"]
+    "next": ["DT_ForgeClaimCompletedHub"],
+    "on_error": ["DT_RestartGame"]
   },
   "DT_ForgeClaimCompleted": {
     "recognition": {

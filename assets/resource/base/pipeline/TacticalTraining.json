@@ -87,11 +87,13 @@
       "custom_action_param": {
         "task": "战术强化",
         "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
       }
     },
     "post_delay": 1000,
-    "next": ["TT_CheckRoundComplete", "TT_DetectWhereAmI"]
+    "next": ["TT_CheckRoundComplete", "TT_DetectWhereAmI"],
+    "on_error": ["TT_RestartGame"]
   },
   "TT_CheckRoundComplete": {
     "recognition": {

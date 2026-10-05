@@ -1,5 +1,6 @@
 using MaaFramework.Binding;
 using MaaFramework.Binding.Custom;
+using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using System;
 using System.Linq;
@@ -17,75 +18,21 @@ public class FatigueCheckAction : IMaaCustomAction
     public string Name { get; set; } = nameof(FatigueCheckAction);
 
     /// <summary>远征队伍面板——六个疲劳 OCR ROI</summary>
-    public static readonly int[][] FatigueRoisExpedition =
-    [
-        [839, 190, 77, 22], // 位置一（队长）
-        [839, 284, 77, 22], // 位置二
-        [839, 379, 77, 22], // 位置三
-        [839, 473, 77, 22], // 位置四
-        [839, 568, 77, 22], // 位置五
-        [839, 662, 77, 22], // 位置六
-    ];
+    public static readonly int[][] FatigueRoisExpedition = FatigueRecognitionHelper.FatigueRoisExpedition;
 
     /// <summary>出阵编队页面——六个疲劳 OCR ROI（复用 DragCaptainAction）</summary>
-    public static readonly int[][] FatigueRoisSortie =
-    [
-        [340, 187, 80, 22], // 位置一（队长）
-        [340, 282, 80, 22], // 位置二
-        [340, 376, 80, 22], // 位置三
-        [340, 471, 80, 22], // 位置四
-        [340, 565, 80, 22], // 位置五
-        [340, 660, 80, 22], // 位置六
-    ];
+    public static readonly int[][] FatigueRoisSortie = FatigueRecognitionHelper.FatigueRoisSortie;
 
     /// <summary>OCR 六个位置的疲劳值，空槽位或失败返回 null。返回 [0..5] 对应位置一~六</summary>
     public static int?[] ReadFatigue<T>(T context, int[][] rois) where T : IMaaContext
-    {
-        var values = new int?[6];
-        using var image = context.GetImage();
-        if (image == null) return values;
-
-        for (int i = 0; i < 6; i++)
-        {
-            var roi = rois[i];
-            var text = context.GetText(roi[0], roi[1], roi[2], roi[3], image);
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
-                if (clean.Contains('/')) clean = clean.Split('/')[0];
-                // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
-                if (int.TryParse(clean.Trim(), out var val) && val >= 0)
-                    values[i] = val;
-            }
-        }
-        return values;
-    }
+        => FatigueRecognitionHelper.ReadFatigue(context, rois);
 
     /// <summary>找最低疲劳值的索引和值。无可用位置返回 (-1, -1)</summary>
     public static (int Index, int Value) FindLowest(int?[] values)
-    {
-        int bestPos = -1, bestVal = int.MaxValue;
-        for (int i = 0; i < 6; i++)
-        {
-            if (!values[i].HasValue) continue;
-            if (values[i].Value < bestVal) { bestVal = values[i].Value; bestPos = i; }
-        }
-        return (bestPos, bestVal);
-    }
+        => FatigueRecognitionHelper.FindLowest(values);
 
     /// <summary>获取用户阈值，默认 91。「疲劳阈值」是「长期远征计划」的子选项，需穿透 SubOptions 查找。</summary>
-    public static int GetThreshold()
-    {
-        var globalOpts = MaaProcessor.Interface?.GlobalSelectOptions;
-        // 「疲劳阈值」是「长期远征计划」的子选项，需穿透 SubOptions 查找
-        var planOpt = globalOpts?.FirstOrDefault(o => o.Name == "长期远征计划");
-        var fatigueOpt = planOpt?.SubOptions?.FirstOrDefault(o => o.Name == "疲劳阈值");
-        if (fatigueOpt?.Data != null
-            && fatigueOpt.Data.TryGetValue("threshold", out var strVal)
-            && int.TryParse(strVal, out var t) && t > 0)
-            return t;
-        return 91;
-    }
+    public static int GetThreshold(IMaaContext context) => FatigueRecognitionHelper.GetThreshold(context);
 
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
     {
@@ -94,7 +41,7 @@ public class FatigueCheckAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
             var json = ActionParamHelper.Parse(args.ActionParam);
             var mode = (string?)json["mode"] ?? "check_all";
-            var threshold = (int?)json["threshold"] ?? GetThreshold();
+            var threshold = (int?)json["threshold"] ?? GetThreshold(context);
 
             // check_first 模式：仅 OCR 出阵编队页面首位疲劳值，不走通用六位扫描
             if (mode == "check_first")
@@ -105,15 +52,8 @@ public class FatigueCheckAction : IMaaCustomAction
                 {
                     if (image != null)
                     {
-                        var text = context.GetText(sortieRoi[0], sortieRoi[1], sortieRoi[2], sortieRoi[3], image);
-                        if (!string.IsNullOrWhiteSpace(text))
-                        {
-                            var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
-                            if (clean.Contains('/')) clean = clean.Split('/')[0];
-                            // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
-                            if (int.TryParse(clean.Trim(), out var val) && val >= 0)
-                                firstValue = val;
-                        }
+                        firstValue = FatigueRecognitionHelper.ParseFatigueValue(
+                            FatigueRecognitionHelper.ReadFatigueText(context, sortieRoi, image));
                     }
                 }
                 for (int retry = 0; retry < 10 && !firstValue.HasValue; retry++)
@@ -122,15 +62,8 @@ public class FatigueCheckAction : IMaaCustomAction
                     Thread.Sleep(200);
                     using var retryImage = context.GetImage();
                     if (retryImage == null) continue;
-                    var text = context.GetText(sortieRoi[0], sortieRoi[1], sortieRoi[2], sortieRoi[3], retryImage);
-                    if (!string.IsNullOrWhiteSpace(text))
-                    {
-                        var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
-                        if (clean.Contains('/')) clean = clean.Split('/')[0];
-                        // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
-                        if (int.TryParse(clean.Trim(), out var val) && val >= 0)
-                            firstValue = val;
-                    }
+                    firstValue = FatigueRecognitionHelper.ParseFatigueValue(
+                        FatigueRecognitionHelper.ReadFatigueText(context, sortieRoi, retryImage));
                 }
                 if (!firstValue.HasValue)
                 {
@@ -163,15 +96,8 @@ public class FatigueCheckAction : IMaaCustomAction
                     Thread.Sleep(200);
                     using var retryImage = context.GetImage();
                     if (retryImage == null) continue;
-                    var text = context.GetText(rois[0][0], rois[0][1], rois[0][2], rois[0][3], retryImage);
-                    if (!string.IsNullOrWhiteSpace(text))
-                    {
-                        var clean = text.Trim().Replace('B', '8').Replace('O', '0').Replace('S', '5');
-                        if (clean.Contains('/')) clean = clean.Split('/')[0];
-                        // 疲劳值可以为 0（游戏内显示 0/100），0 是合法值而非识别失败
-                        if (int.TryParse(clean.Trim(), out var val) && val >= 0)
-                            values[0] = val;
-                    }
+                    values[0] = FatigueRecognitionHelper.ParseFatigueValue(
+                        FatigueRecognitionHelper.ReadFatigueText(context, rois[0], retryImage));
                 }
             }
 

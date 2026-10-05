@@ -7,6 +7,28 @@
   },
   "customizations": [
     {
+      "id": "task-flower-brush.locked-sword-selection",
+      "title": "刷花按筛选条件选择上锁刀剑",
+      "purpose": "按用户配置筛选刀剑并在刷花前选中最上方的上锁刀剑，处理出阵后的重伤与刀装不足弹窗。",
+      "files": ["assets/interface.json", "assets/resource/base/pipeline/FlowerBrush.json", "assets/resource/base/custom/FlowerBrushSwordSelectionAction.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "保留刷花任务的筛选与上锁刀剑选择动作注册、可配置滑动上限及无匹配安全结束分支；刷花主枢纽声明 Hub 和 PublicFlowDone 锚点以接入公共修刀链。刀装不足只识别并点击整备刀装，后续专属补充流程另行设计。",
+      "verification": ["桌面项目构建成功", "FlowerBrush.json 严格 JSON 校验通过", "资源压缩脚本校验通过"],
+      "notes": "筛选项默认全不选，刀种全不选代表全刀种；按樱吹雪升序固定排序。已锁可用刀剑通过 [30,126,1,563] 中 RGB(212,173,31) 的最上方命中判断，并点击 (1208,y)。"
+    },
+    {
+      "id": "resource.expedition-settings",
+      "title": "后勤远征设置与旧配置迁移",
+      "purpose": "在本丸后勤中配置远征和长期远征计划，同时保持智能调度全局行为与既有用户设置。",
+      "files": ["assets/interface.json", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Extensions/MaaFW/ExpeditionOptionMigration.cs", "_src/MFAAvalonia/Extensions/MaaFW/ExpeditionOptionResolver.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "远征目的地与长期计划配置归本丸后勤任务；旧 GlobalOptionItems 中的长期计划开关与疲劳阈值仅迁移一次，已有任务内远征设置优先。远征智能调度保留原全局 option 名、状态和 pipeline 注入，仅将显示 label 改为后勤智能调度。",
+      "verification": ["全局设置继续包含远征智能调度内部选项", "长期计划及阈值从旧全局设置迁移", "已存在的任务内远征配置不会被旧值覆盖", "桌面项目构建成功"],
+      "notes": "不得把远征智能调度迁入本丸后勤任务树，否则会改变 GlobalOptionItems 的恢复路径和跨任务注入语义。"
+    },
+    {
       "id": "task-captain.skip-positions",
       "title": "换队长跳过位置参数注入",
       "purpose": "确保当前任务勾选的跳过位置实际传递给拖拽动作。",
@@ -53,12 +75,12 @@
       "id": "task-formation-config.normal-task",
       "title": "自定编队普通任务与预设注入",
       "purpose": "让自定编队作为普通任务提供可复用的部队、刀装和马匹预设，不依赖上游特殊任务注册。",
-      "files": ["assets/interface.json", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Models/FormationPreset.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationNameMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwordNameMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ListOcrScan.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationEquipStateMachine.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationEquipSelectAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationHorseSelectAction.cs", "assets/resource/base/pipeline/FormationConfig.json"],
+      "files": ["assets/interface.json", "_src/MFAAvalonia/Helper/TaskOptionGenerator.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Models/FormationPreset.cs", "_src/MFAAvalonia/ViewModels/UsersControls/FormationEditorViewModel.cs", "_src/MFAAvalonia/Views/UserControls/FormationEditorView.axaml", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationNameMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/SwordNameMatcher.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/ListOcrScan.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationEquipStateMachine.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationEquipSelectAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationFindSwordAction.cs", "_src/MFAAvalonia/Extensions/MaaFW/Custom/FormationHorseSelectAction.cs", "assets/resource/base/pipeline/FormationConfig.json"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "将入口保留为 interface.json 普通任务，在运行前按 FC_选择预设生成 FormationConfigAction 参数与 pipeline 覆盖；勾选多个预设时按列表顺序展开为多次编队任务，不恢复上游特殊任务列表注册。",
-      "verification": ["任务列表出现自定编队普通任务且默认排在日课之前", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装", "OCR 漏识樋、笹、蛉、髭、麿、薙、杵或喰时仍可匹配对应刀名", "髭切与笹贯的缺字容错仅接受整条 OCR 文本分别为切或贯", "OCR 省略童子切安纲 剥落名称中的空白时仍可匹配", "马匹名去除数字后与目标全等才命中，祝一号/祝十号/祝十一号一字之差不得互相命中", "OCR 漏识高楯黑的楯字、识别为高黑时仍可匹配"],
-      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户启用默认排在日课之前的自定编队任务。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。马匹名称匹配使用 IsHorseMatch：字形归一并去除 OCR 文本中的数量标记（ASCII 字母数字、全角等 Unicode 数字与常见乘号星号）与名称连接符（各类中点，使汗血・新春与汗血新春等价）后要求与目标全等，不做包含判断与编辑距离容错，否则祝一号/祝十号/祝十一号、白毛/鹿毛/青毛、超光/超影这类一字之差的马匹名会互相命中并选中列表中最靠上的错误马匹；仅高楯黑允许 OCR 整字漏识楯字（该字只出现在这条马匹名中），不得把马匹改回 IsLegacyFuzzyMatch 一类编辑距离容错。刀剑列表扫描的 ListOcrScan.MinScore 不得高于 0.8（祢祢切丸 被识别成 称称切丸 时得分为 0.843），上滑后必须等连续两帧 OCR 结果一致再判定命中并只用该静止帧的坐标点击；ScrollUp 必须保持单次按下与抬手，竖直段后向右横移 200 像素收尾，避免抬手时带有竖直惯性；装备马匹与宝物时，确认列表打开后都必须通过同一 [1020,97,24,24] 全白标记检查，必要时点击切换到仅显示未装备状态；选择目标刀装、马匹或宝物后，OCR 定位右侧确定按钮并双击确认，两次点击间隔 500 毫秒；FC_FindSword1~6 必须带选刀页识别（OCR 刀剑男士选择）并在 next 末尾自引用重试，FC_ConfirmFilterApply1~6 的 next 末尾各自保留 FC_ConfirmFilter1~6 回退，这些自引用位置必须保留 max_hit 上限，否则会退化成无限点击。"
+      "migration_strategy": "将入口保留为 interface.json 普通任务，在运行前按 FC_选择预设生成 FormationConfigAction 参数与 pipeline 覆盖；勾选多个预设时按列表顺序展开为多次编队任务，不恢复上游特殊任务列表注册。每个预设独立保存记录槽，旧配置缺少该字段时回退到目标部队编号。",
+      "verification": ["任务列表出现自定编队普通任务且默认排在日课之前", "任务设置可选择、新增、编辑、复制、粘贴和删除编队预设", "任务设置可勾选多个预设并按列表顺序依次编成", "运行时按所选预设配置目标部队与部队记录槽", "编成后保存、仅使用记录和仅保存当前编队均使用选择的记录槽", "旧预设缺少记录槽时沿用目标部队编号", "一键日课不再提供预设部队选项且 pipeline 无残留入口", "OCR 将铳识别为统时仍能命中铳兵刀装", "OCR 漏识樋、笹、蛉、髭、麿、薙、杵或喰时仍可匹配对应刀名", "髭切与笹贯的缺字容错仅接受整条 OCR 文本分别为切或贯", "OCR 省略童子切安纲 剥落名称中的空白时仍可匹配", "马匹名去除数字后与目标全等才命中，祝一号/祝十号/祝十一号一字之差不得互相命中", "OCR 漏识高楯黑的楯字、识别为高黑时仍可匹配"],
+      "notes": "仅保留 FormationConfig.json 不足以恢复功能：必须同时保留普通任务入口、预设编辑页和 MaaProcessor 参数注入。预设多选以任务选项数据 preset_ids 保存，任务装配阶段按预设逐个展开，参数注入始终按单个预设生成，不能只处理第一个编号。一键日课不注册预设部队选项，也不得恢复 DT_PresetHub 一类入口；需要先编队时由用户启用默认排在日课之前的自定编队任务。刀装名称匹配必须先做字形归一化再判断单字长度，并保留銃/铳、统/铳、槍/枪 的归一字形，否则单字刀装的 OCR 形近误识会扫到列表底部仍判定未找到。马匹名称匹配使用 IsHorseMatch：字形归一并去除 OCR 文本中的数量标记（ASCII 字母数字、全角等 Unicode 数字与常见乘号星号）与名称连接符（各类中点，使汗血・新春与汗血新春等价）后要求与目标全等，不做包含判断与编辑距离容错，否则祝一号/祝十号/祝十一号、白毛/鹿毛/青毛、超光/超影这类一字之差的马匹名会互相命中并选中列表中最靠上的错误马匹；仅高楯黑允许 OCR 整字漏识楯字（该字只出现在这条马匹名中），不得把马匹改回 IsLegacyFuzzyMatch 一类编辑距离容错。刀剑列表扫描的 ListOcrScan.MinScore 不得高于 0.8（祢祢切丸 被识别成 称称切丸 时得分为 0.843），上滑后必须等连续两帧 OCR 结果一致再判定命中并只用该静止帧的坐标点击；ScrollUp 必须保持单次按下与抬手，竖直段后向右横移 200 像素收尾，避免抬手时带有竖直惯性；装备马匹与宝物时，确认列表打开后都必须通过同一 [1020,97,24,24] 全白标记检查，必要时点击切换到仅显示未装备状态；选择目标刀装、马匹或宝物后，OCR 定位右侧确定按钮并双击确认，两次点击间隔 500 毫秒；FC_FindSword1~6 必须带选刀页识别（OCR 刀剑男士选择）并在 next 末尾自引用重试；FC_ConfirmFilterApply1~6 的 next 末尾各自保留 FC_ConfirmFilter1~6 回退，确认按钮不得设置 max_hit。刀名 OCR 命中后需在 x=18、命中框 y 处匹配锁定颜色 [212,173,31]，未命中按刀名未命中处理；通过后在按钮坐标 x=1191、命中框 y 处检查灰色 [190,190,190]，命中则向任务监控输出警告日志，并清空当前 node 的 next 结束本次编队 pipeline，后续已选预设继续执行。"
     },
     {
       "id": "services.update-data-scheduling",
@@ -129,13 +151,13 @@
     {
       "id": "focus.display-channels",
       "title": "focus 显示渠道扩展",
-      "purpose": "让 pipeline 打点既能只写日志文件、不进实时面板，也能用 special: 前缀把业务上的特殊情况写进工作记录而不占用 Warning 级别。",
+      "purpose": "让 pipeline 打点既能只写日志文件、不进实时面板，也能通过 special: 记录特殊情况并向已启用的外部通知渠道实时推送。",
       "files": ["_src/MFAAvalonia/Extensions/MaaFW/FocusHandler.cs", "_src/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs", "_src/MFAAvalonia/Services/WorkRecordBuilder.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "保留 FocusHandler 的 special: 前缀识别与 DispatchToChannels 的 file 分支，以及 MaaProcessor.AddMarkdownToFile；上游若重构 focus 分发路径，按本条目把它们重新接回。",
-      "verification": ["display: file 的打点只进实例日志文件，不进实时面板也不发布平台日志", "display: log 仍同时写实时面板与文件", "special: 前缀在实时展示前被剥离，文件里写成 [Record][Special]", "WorkRecordBuilder 按词头归属词条，未知词头落到当前记录"],
-      "notes": "FocusHandler 原本只认 log/toast/notification/dialog/modal 五个渠道；MATR 追加了 file（MaaProcessor.AddMarkdownToFile，只走 LoggerHelper.Info），供「出阵」「点击行军」「完成一圈」这类每轮重复、只给工作记录解析的打点使用，避免刷屏。special: 是 MATR 约定的内容前缀、不是 MaaFramework 字段：FocusHandler.TryExtractSpecialContent 在分发前剥离它，AddMarkdown 带 recordAsSpecial 落到 [Record][Special]，WorkRecordBuilder 再归入特殊情况。"
+      "migration_strategy": "保留 FocusHandler 的 special: 前缀识别、DispatchToChannels 的 file 与 external_notification 分支，以及 MaaProcessor.AddMarkdownToFile；上游若重构 focus 分发路径，按本条目把它们重新接回。",
+      "verification": ["display: file 的打点只进实例日志文件，不进实时面板也不发布平台日志", "display: log 仍同时写实时面板与文件", "special: 前缀在实时展示前被剥离，文件里写成 [Record][Special]", "external_notification 向已启用渠道发送带时间的实时通知", "WorkRecordBuilder 按词头归属词条，未知词头落到当前记录"],
+      "notes": "FocusHandler 原本只认 log/toast/notification/dialog/modal 五个渠道；MATR 追加了 file（MaaProcessor.AddMarkdownToFile，只走 LoggerHelper.Info）与 external_notification（调用 ExternalNotificationHelper 发送带本地时分秒的实时通知）。special: 是 MATR 约定的内容前缀、不是 MaaFramework 字段：FocusHandler.TryExtractSpecialContent 在分发前剥离它，AddMarkdown 带 recordAsSpecial 落到 [Record][Special]，WorkRecordBuilder 再归入特殊情况。"
     },
     {
       "id": "task.sync-expedition-reuse",
@@ -400,6 +422,17 @@
       "migration_strategy": "保留仓库与刀帐两个独立配置键、ISO 8601 持久化格式、手动保存和更新数据任务两个写入点，以及保存完成后的页面属性刷新。自动识别提示与最后更新时间必须经同一个文本绑定并使用 SukiLowText，不能拆成两个会独立换行的控件。仓库说明末尾保留句号，说明与最后更新时间直接相连，不使用额外分隔符。",
       "verification": ["首次打开页面显示最后更新：暂无", "手动保存仓库后仅仓库时间更新", "手动保存刀帐后仅刀帐时间更新", "更新数据任务仅保存仓库或刀帐时更新对应时间", "同时保存两类数据时两边均显示各自时间", "最后更新时间格式化测试通过", "桌面项目构建成功"],
       "notes": "配置时间不属于更新数据任务的调度成功时间：前者反映正式数据写入时刻，后者用于决定任务是否到期。两个用途与键空间必须保持独立。"
+    },
+    {
+      "id": "storage.honmaru-data-directory",
+      "title": "本丸仓库与刀帐独立数据目录",
+      "purpose": "将默认配置中的仓库和刀帐数据迁入固定本丸数据目录，为后续隔离预留内部结构，同时不暴露多本丸界面。",
+      "files": ["_src/MFAAvalonia/Configuration/ConfigurationManager.cs", "_src/MFAAvalonia/Configuration/MFAConfiguration.cs", "_src/MFAAvalonia/Services/HonmaruDataStore.cs", "_src/Markdown.Avalonia.Html.Tests/HonmaruDataStoreTests.cs"],
+      "baseline_upstream": "2.16.1",
+      "last_verified_upstream": "2.16.1",
+      "migration_strategy": "首次启动先备份完整 config.json，再原子写入 config/honmaru/default/warehouse.json 与 swordbook.json 并读回验证；manifest 写入成功后才移除四个旧字段。迁移完成后，默认配置的四个既有键透明转向独立数据文件。",
+      "verification": ["旧 config.json 含四个字段时会备份并迁入两个 JSON 后清理旧字段", "迁移失败时旧字段保持可读，后续启动可再次迁移", "迁移完成后既有仓库、刀帐读写只更新本丸数据目录", "本丸页面不出现名称、切换或管理入口", "定向迁移测试和桌面项目构建成功"],
+      "notes": "工作记录不参与本次迁移，继续使用 config/saved_work_records.json。config/honmaru/default 是内部固定目录，不代表用户可管理的账号或本丸。"
     },
     {
       "id": "ui.warehouse-chart-all-history",

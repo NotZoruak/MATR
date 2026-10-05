@@ -75,9 +75,10 @@
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
-      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":10000,\"poll_interval\":200,\"task\":\"常驻作战\"}"
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"常驻作战\"}"
     },
-    "next": ["S_DetectWhereAmI"]
+    "next": ["S_DetectWhereAmI"],
+    "on_error": ["S_RestartGame"]
   },
   "S_IsMarching": {
     "recognition": {
@@ -106,10 +107,12 @@
       "custom_action_param": {
         "task": "常驻作战",
         "roi": [52, 509, 282, 34],
-        "click": [947, 533, 67, 75]
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
       }
     },
-    "next": ["S_IsMarching", "S_DetectWhereAmI"]
+    "next": ["S_IsMarching", "S_DetectWhereAmI"],
+    "on_error": ["S_RestartGame"]
   },
   "S_IsFormationSelect": {
     "recognition": {
@@ -157,6 +160,7 @@
       "S_IsIsekaiTicketConfirm",
       "S_PostKebiishi1",
       "S_PostKebiishi2",
+      "S_IsPostSwordDrop",
       "S_IsPreSortieConfirm",
       "S_SortieSuccess"
     ]
