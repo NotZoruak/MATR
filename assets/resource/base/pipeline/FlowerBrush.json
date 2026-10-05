@@ -1,5 +1,6 @@
 {
   "FlowerBrush": {
+    "anchor": {"FB_AfterUnequip": "FB_ClickCaptainSlot"},
     "next": ["FB_DetectWhereAmI"]
   },
   "FB_DetectWhereAmI": {
@@ -12,6 +13,7 @@
     "next": [
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
+      "FB_IsMarchingDamage",
       "FB_IsMarching",
       "[JumpBack]IsBattleResult_Exp",
       "FB_IsSwordDropColor",
@@ -39,6 +41,77 @@
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["FB_RestartGame"]
+  },
+  "FB_IsMarchingDamage": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [229, 116, 90, 569],
+        "template": "Common/重伤.png",
+        "green_mask": true,
+        "threshold": [0.85]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [763, 446, 48, 44]
+      }
+    },
+    "next": ["FB_ClickRetreat"],
+    "on_error": ["FB_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[刷花回气] 重伤撤退",
+        "display": "log"
+      }
+    }
+  },
+  "FB_ClickRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1164, 407, 88, 40],
+        "expected": "返回"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1173, 416, 70, 68]
+      }
+    },
+    "post_delay": 200,
+    "next": ["FB_ConfirmRetreat", "FB_ClickRetreat", "FB_DetectWhereAmI"]
+  },
+  "FB_ConfirmRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [480, 459, 20, 20]
+    },
+    "next": ["FB_CheckHomeBrightness", "FB_ConfirmRetreat"],
+    "on_error": ["FB_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[刷花回气] 返回本丸",
+        "display": "file"
+      }
+    }
   },
   "FB_IsSwordDropColor": {
     "recognition": {
@@ -179,6 +252,7 @@
         "target": [1204, 629, 1, 1]
       }
     },
+    "anchor": {"FB_AfterUnequip": "FB_EndCurrentSwordIteration"},
     "next": ["FB_PostSortieHub"]
   },
   "FB_PostSortieHub": {
@@ -295,7 +369,7 @@
       "type": "OCR",
       "param": {
         "roi": [702, 81, 96, 27],
-        "expected": "一键卸装"
+        "expected": "全部卸装"
       }
     },
     "action": {"type": "Click"},
@@ -336,9 +410,10 @@
         "target": [134, 8, 32, 33]
       }
     },
+    "post_delay": 500,
     "post_wait_freezes": {
       "time": 200,
-      "target": [134, 8, 32, 33]
+      "target": [395, 53, 310, 148]
     },
     "next": ["FB_IsTeamSelectAfterUnequip", "FB_LeaveEquipmentPageAfterUnequip"],
     "on_error": ["FB_DetectWhereAmI"]
@@ -350,8 +425,10 @@
         "roi": [561, 1, 160, 49],
         "expected": "部队选择"
       }
-    }
+    },
+    "next": ["[Anchor]FB_AfterUnequip"]
   },
+  "FB_EndCurrentSwordIteration": {},
   "FB_CompleteCurrentTaskAfterDamageRepair": {
     "action": {
       "type": "Custom",
