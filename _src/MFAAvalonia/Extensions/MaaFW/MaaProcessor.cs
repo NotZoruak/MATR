@@ -5578,10 +5578,19 @@ public class MaaProcessor
             if (!onlyStart)
             {
                 var settings = Instances.ExternalNotificationSettingsUserControlModel;
-                var session = _externalNotificationRunSession
-                    ?? (_externalNotificationRunSummary == null
-                        ? null
-                        : ExternalNotificationRunSession.FromCompleted(_externalNotificationRunSummary, DateTime.Now));
+                var session = _externalNotificationRunSession;
+                if (_externalNotificationRunSummary != null)
+                {
+                    var completedAt = DateTime.Now;
+                    if (session == null)
+                    {
+                        session = ExternalNotificationRunSession.FromCompleted(_externalNotificationRunSummary, completedAt);
+                    }
+                    else
+                    {
+                        session.AddCompletedSegment(_externalNotificationRunSummary, completedAt);
+                    }
+                }
                 var message = session == null
                     ? LangKeys.TaskAllCompleted.ToLocalization()
                     : ExternalNotificationReportFormatter.Format(session, new ExternalNotificationReportOptions
