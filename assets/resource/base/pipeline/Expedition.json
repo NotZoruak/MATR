@@ -1472,13 +1472,13 @@
       }
     },
     "pre_delay": 500,
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [112, 79, 580, 30]
-    },
     "action": {
       "type": "Custom",
       "custom_action": "SelectFlowerTeamAction"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [112, 79, 580, 30]
     },
     "next": ["E_OpenTeamRecordForUse"],
     "on_error": ["E_FlowerBattleHub"]
