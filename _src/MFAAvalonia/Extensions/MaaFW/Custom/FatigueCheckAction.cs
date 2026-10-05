@@ -32,7 +32,7 @@ public class FatigueCheckAction : IMaaCustomAction
         => FatigueRecognitionHelper.FindLowest(values);
 
     /// <summary>获取用户阈值，默认 91。「疲劳阈值」是「长期远征计划」的子选项，需穿透 SubOptions 查找。</summary>
-    public static int GetThreshold() => FatigueRecognitionHelper.GetThreshold();
+    public static int GetThreshold(IMaaContext context) => FatigueRecognitionHelper.GetThreshold(context);
 
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
     {
@@ -41,7 +41,7 @@ public class FatigueCheckAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
             var json = ActionParamHelper.Parse(args.ActionParam);
             var mode = (string?)json["mode"] ?? "check_all";
-            var threshold = (int?)json["threshold"] ?? GetThreshold();
+            var threshold = (int?)json["threshold"] ?? GetThreshold(context);
 
             // check_first 模式：仅 OCR 出阵编队页面首位疲劳值，不走通用六位扫描
             if (mode == "check_first")

@@ -410,11 +410,11 @@
         "target": [134, 8, 32, 33]
       }
     },
-    "post_delay": 500,
     "post_wait_freezes": {
       "time": 200,
       "target": [395, 53, 310, 148]
     },
+    "post_delay": 500,
     "next": ["FB_IsTeamSelectAfterUnequip", "FB_LeaveEquipmentPageAfterUnequip"],
     "on_error": ["FB_DetectWhereAmI"]
   },

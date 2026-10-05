@@ -22,7 +22,7 @@ public sealed class FatigueCheckRecognition : IMaaCustomRecognition
             ActionParamHelper.ThrowIfStopping(context);
             var param = ActionParamHelper.Parse(args.RecognitionParam);
             var threshold = FatigueRecognitionHelper.ResolveThreshold(
-                (int?)param["threshold"], FatigueRecognitionHelper.GetThreshold());
+                (int?)param["threshold"], FatigueRecognitionHelper.GetThreshold(context));
             var values = FatigueRecognitionHelper.ReadFatigue(context, FatigueRecognitionHelper.FatigueRoisExpedition);
 
             if (!ShouldBrush(values, threshold))

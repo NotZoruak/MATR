@@ -1,6 +1,7 @@
 using MaaFramework.Binding;
 using MaaFramework.Binding.Buffers;
 using MFAAvalonia.Extensions.MaaFW;
+using MFAAvalonia.Helper;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,16 +94,19 @@ public static class FatigueRecognitionHelper
     }
 
     /// <summary>获取长期远征疲劳阈值，默认 91。</summary>
-    public static int GetThreshold()
+    public static int GetThreshold(IMaaContext context)
     {
         var planOpt = ExpeditionOptionResolver.FindEnabledLongTermPlanOption(
-            ExpeditionOptionResolver.GetCurrentTasks());
+            ExpeditionOptionResolver.GetCurrentTasks(context));
         var fatigueOpt = planOpt?.SubOptions?.FirstOrDefault(option => option.Name == "疲劳阈值");
         int? configuredThreshold = null;
         if (fatigueOpt?.Data != null
             && fatigueOpt.Data.TryGetValue("threshold", out var value)
             && int.TryParse(value, out var threshold))
             configuredThreshold = threshold;
+
+        if (configuredThreshold is null)
+            LoggerHelper.Warning("[疲劳检测] 当前任务实例未找到有效阈值配置，使用默认阈值91");
 
         return ResolveThreshold(configuredThreshold, 91);
     }

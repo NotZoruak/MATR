@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MaaFramework.Binding;
 
 namespace MFAAvalonia.Extensions.MaaFW;
 
@@ -11,12 +12,13 @@ public static class ExpeditionOptionResolver
     /// <summary>
     /// 获取当前实例任务列表中的后勤任务。
     /// </summary>
-    public static IEnumerable<MaaInterface.MaaInterfaceTask> GetCurrentTasks()
+    public static IEnumerable<MaaInterface.MaaInterfaceTask> GetCurrentTasks(IMaaContext context)
     {
-        if (!MaaProcessorManager.IsInstanceCreated)
+        var processor = MaaProcessor.ResolveByTasker(context.Tasker);
+        if (processor == null)
             return [];
 
-        return MaaProcessorManager.Instance.Current.ViewModel?.TaskItemViewModels
+        return processor.ViewModel?.TaskItemViewModels
             .Select(item => item.InterfaceItem)
             .OfType<MaaInterface.MaaInterfaceTask>()
             .ToList() ?? [];
