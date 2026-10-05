@@ -1447,15 +1447,30 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         var label = hasInputLabel ? input.DisplayName : interfaceOption.DisplayName;
         var labelPanel = CreateLabelPanel(label, input.Name, input.Description);
 
+        var isExpeditionInlineSetting = IsExpeditionInlineSetting(interfaceOption);
+        var useCompactLabelColumn = isExpeditionMemberNamesInput || isExpeditionInlineSetting;
         if (isExpeditionMemberNamesInput)
         {
             grid.ColumnDefinitions.Clear();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            labelPanel.MinWidth = 0;
-            labelPanel.Margin = new Thickness(0, 0, 6, 0);
-            inputControl.HorizontalAlignment = HorizontalAlignment.Stretch;
             grid.Margin = new Thickness(10, 3, 24, 3);
+        }
+        else if (isExpeditionInlineSetting)
+        {
+            grid.ColumnDefinitions.Clear();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            labelPanel.Width = ExpeditionInlineLabelColumnWidth;
+        }
+
+        if (useCompactLabelColumn)
+        {
+            labelPanel.MinWidth = 0;
+            labelPanel.Margin = new Thickness(0, 0, 8, 0);
+            inputControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+            if (isExpeditionInlineSetting)
+                inputControl.MinWidth = 0;
         }
 
         // Icon (Show only if single input WITHOUT header, because header already has icon)
@@ -1469,7 +1484,8 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         Grid.SetColumn(labelPanel, 0);
         Grid.SetColumn(inputControl, 1);
         
-        AddResponsiveBehavior(grid, labelPanel, inputControl, isExpeditionMemberNamesInput);
+        if (!isExpeditionInlineSetting)
+            AddResponsiveBehavior(grid, labelPanel, inputControl, useCompactLabelColumn);
         
         grid.Children.Add(labelPanel);
         grid.Children.Add(inputControl);
@@ -1845,7 +1861,28 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         Grid.SetColumn(labelPanel, 0);
         Grid.SetColumn(comboBox, 1);
         
-        AddResponsiveBehavior(grid, labelPanel, comboBox);
+        var isExpeditionInlineSetting = IsExpeditionInlineSetting(interfaceOption);
+        var isForgeFormulaInline = interfaceOption.Name == "DT_锻刀公式";
+        var useCompactLabelColumn = isExpeditionInlineSetting || isForgeFormulaInline;
+        if (useCompactLabelColumn)
+        {
+            grid.ColumnDefinitions.Clear();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            labelPanel.MinWidth = 0;
+            if (isExpeditionInlineSetting)
+                labelPanel.Width = ExpeditionInlineLabelColumnWidth;
+            labelPanel.Margin = new Thickness(0, 0, 8, 0);
+            comboBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+            comboBox.MinWidth = 0;
+        }
+
+        var useNaturalWidthLabelColumn = interfaceOption.Name == "耕作加成满值时跳过内番";
+        if (useNaturalWidthLabelColumn)
+            labelPanel.MinWidth = 0;
+
+        if (!useCompactLabelColumn)
+            AddResponsiveBehavior(grid, labelPanel, comboBox, useNaturalWidthLabelColumn, useNaturalWidthLabelColumn);
         
         grid.Children.Add(labelPanel);
         grid.Children.Add(comboBox);
@@ -2105,16 +2142,30 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         control.Bind(Control.IsEnabledProperty, new Binding("Idle") { Source = Instances.RootViewModel });
     }
 
-    private void AddResponsiveBehavior(Grid grid, Control label, Control input, bool compactLabelColumn = false)
+    private void AddResponsiveBehavior(
+        Grid grid,
+        Control label,
+        Control input,
+        bool compactLabelColumn = false,
+        bool measureLabelWidth = false)
     {
         grid.SizeChanged += (sender, e) =>
         {
             if (sender is not Grid currentGrid) return;
             double totalMinWidth = currentGrid.Children.Sum(c => c is Control ctrl ? ctrl.MinWidth : 0);
             double availableWidth = currentGrid.Bounds.Width - currentGrid.Margin.Left - currentGrid.Margin.Right;
+            double requiredWidth = totalMinWidth * 0.8;
+
+            if (measureLabelWidth)
+            {
+                label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                double labelWidth = Math.Max(label.MinWidth, label.DesiredSize.Width) + label.Margin.Left + label.Margin.Right;
+                double inputWidth = input.MinWidth + input.Margin.Left + input.Margin.Right;
+                requiredWidth = labelWidth + inputWidth;
+            }
 
              // Responsive Switch
-            if (availableWidth < totalMinWidth * 0.8)
+            if (availableWidth < requiredWidth)
             {
                 currentGrid.ColumnDefinitions.Clear();
                 currentGrid.RowDefinitions.Clear();
@@ -2145,6 +2196,13 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 Grid.SetColumn(input, 1);
             }
         };
+    }
+
+    private const double ExpeditionInlineLabelColumnWidth = 112;
+
+    private static bool IsExpeditionInlineSetting(MaaInterface.MaaInterfaceOption interfaceOption)
+    {
+        return interfaceOption.Name is "疲劳阈值" or "临时部队记录槽";
     }
 
     // Logic Helpers
