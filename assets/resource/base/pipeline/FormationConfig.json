@@ -34,9 +34,64 @@
       "FC_IsSwordDropColor",
       "FC_RecoverFromEquip",
       "FC_LeaveSwordSelect",
+      "FC_IsTeamSelect",
+      "FC_IsEraSelect",
+      "FC_IsRegionSelect",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["FC_RestartGame"]
+  },
+  "FC_IsEraSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [104, 331, 49, 235],
+        "template": "Common/时代选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [123, 74, 30, 36]
+      }
+    },
+    "next": ["FC_DetectWhereAmI"]
+  },
+  "FC_IsRegionSelect": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [848, 607, 257, 63],
+        "template": "Common/地域选择.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [123, 74, 30, 36]
+      }
+    },
+    "next": ["FC_DetectWhereAmI"]
+  },
+  "FC_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1197, 21, 65, 40]
+      }
+    },
+    "next": ["FC_DetectWhereAmI"]
   },
   "FC_LeaveTroopRecord": {
     "recognition": {
