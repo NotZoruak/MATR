@@ -833,7 +833,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply1": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -968,7 +967,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply2": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1103,7 +1101,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply3": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1238,7 +1235,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply4": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1373,7 +1369,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply5": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {
@@ -1508,7 +1503,6 @@
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_ConfirmFilterApply6": {
-    "max_hit": 2,
     "recognition": {
       "type": "OCR",
       "param": {

@@ -6008,7 +6008,8 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.EdoActionSelectAction());
             tasker.Resource.Register(new Custom.EdoLastActionRetreatRecognition());
             tasker.Resource.Register(new Custom.FormationConfigAction());
-            tasker.Resource.Register(new Custom.FormationFindSwordAction());
+            tasker.Resource.Register(new Custom.FormationFindSwordAction(
+                message => AddLog(message, Brushes.Orange, changeColor: false, recordAsWarning: true)));
             tasker.Resource.Register(new Custom.FormationFilterClickAction());
             tasker.Resource.Register(new Custom.FormationEquipSelectAction());
             tasker.Resource.Register(new Custom.FormationHorseSelectAction());

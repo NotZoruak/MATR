@@ -62,8 +62,10 @@ public static class ListOcrScan
     /// 默认使用刀剑/刀装的字形归一精确匹配（一字之差不命中）；马匹传入 IsHorseMatch，同样不做近似容错。
     /// 上滑后列表还在回弹，命中判定必须等到连续两帧 OCR 结果一致（列表静止）再做：
     /// 2026-09-14 实机即因为用了回弹过程中的 y 去点击，点到了相邻行的按钮，选刀页始终不变而卡住。</summary>
-    public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll, Func<List<int>, bool> clickAction,
-        string logTag, Func<string, string, bool>? matcher = null) where T : IMaaContext
+    public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll,
+        Func<IMaaImageBuffer, List<int>, bool> clickAction,
+        string logTag, Func<string, string, bool>? matcher = null,
+        Func<IMaaImageBuffer, List<int>, bool>? hitFilter = null) where T : IMaaContext
     {
         var isMatch = matcher ?? SwordNameMatcher.IsExactMatch;
         string lastOcr = string.Empty;
@@ -109,13 +111,14 @@ public static class ListOcrScan
             var hit = all
                 .Where(r => r.Score >= MinScore && r.Text != null && isMatch(r.Text, target))
                 .Where(r => r.Box is { Count: >= 4 })
+                .Where(r => hitFilter == null || hitFilter(image, r.Box!))
                 .OrderBy(r => r.Box![1])
                 .FirstOrDefault();
 
             if (hit?.Box is { Count: >= 4 })
             {
                 LoggerHelper.Info($"[{logTag}] 命中「{hit.Text}」box=[{string.Join(",", hit.Box)}]");
-                if (clickAction(hit.Box))
+                if (clickAction(image, hit.Box))
                     return true;
                 return false;
             }
