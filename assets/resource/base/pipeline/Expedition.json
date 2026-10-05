@@ -810,6 +810,121 @@
     "next": ["E_ClickBackToHome"],
     "on_error": ["Expedition"]
   },
+  "E_CheckConfiguredMembers1": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionConfiguredMembersRecognition",
+        "custom_recognition_param": {
+          "team": 1,
+          "members": ""
+        }
+      }
+    },
+    "inverse": true,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ExpeditionConfiguredMembersAction",
+      "custom_action_param": {
+        "team": 1,
+        "members": ""
+      }
+    },
+    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
+  },
+  "E_CheckConfiguredMembers2": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionConfiguredMembersRecognition",
+        "custom_recognition_param": {
+          "team": 2,
+          "members": ""
+        }
+      }
+    },
+    "inverse": true,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ExpeditionConfiguredMembersAction",
+      "custom_action_param": {
+        "team": 2,
+        "members": ""
+      }
+    },
+    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
+  },
+  "E_CheckConfiguredMembers3": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionConfiguredMembersRecognition",
+        "custom_recognition_param": {
+          "team": 3,
+          "members": ""
+        }
+      }
+    },
+    "inverse": true,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ExpeditionConfiguredMembersAction",
+      "custom_action_param": {
+        "team": 3,
+        "members": ""
+      }
+    },
+    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
+  },
+  "E_CheckConfiguredMembers4": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionConfiguredMembersRecognition",
+        "custom_recognition_param": {
+          "team": 4,
+          "members": ""
+        }
+      }
+    },
+    "inverse": true,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ExpeditionConfiguredMembersAction",
+      "custom_action_param": {
+        "team": 4,
+        "members": ""
+      }
+    },
+    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
+  },
+  "E_CheckConfiguredMembers5": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "ExpeditionConfiguredMembersRecognition",
+        "custom_recognition_param": {
+          "team": 5,
+          "members": ""
+        }
+      }
+    },
+    "inverse": true,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ExpeditionConfiguredMembersAction",
+      "custom_action_param": {
+        "team": 5,
+        "members": ""
+      }
+    },
+    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"]
+  },
   "E_MarkTeam1": {
     "action": {
       "type": "Custom",
@@ -819,7 +934,7 @@
         "team": 1
       }
     },
-    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"],
+    "next": ["E_CheckConfiguredMembers1", "E_CheckDispatchFatigue", "E_StartExpedition"],
     "on_error": ["Expedition"]
   },
   "E_MarkTeam2": {
@@ -831,7 +946,7 @@
         "team": 2
       }
     },
-    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"],
+    "next": ["E_CheckConfiguredMembers2", "E_CheckDispatchFatigue", "E_StartExpedition"],
     "on_error": ["Expedition"]
   },
   "E_MarkTeam3": {
@@ -843,7 +958,7 @@
         "team": 3
       }
     },
-    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"],
+    "next": ["E_CheckConfiguredMembers3", "E_CheckDispatchFatigue", "E_StartExpedition"],
     "on_error": ["Expedition"]
   },
   "E_MarkTeam4": {
@@ -855,7 +970,7 @@
         "team": 4
       }
     },
-    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"],
+    "next": ["E_CheckConfiguredMembers4", "E_CheckDispatchFatigue", "E_StartExpedition"],
     "on_error": ["Expedition"]
   },
   "E_MarkTeam5": {
@@ -867,7 +982,7 @@
         "team": 5
       }
     },
-    "next": ["E_CheckDispatchFatigue", "E_StartExpedition"],
+    "next": ["E_CheckConfiguredMembers5", "E_CheckDispatchFatigue", "E_StartExpedition"],
     "on_error": ["Expedition"]
   },
   "E_LogDispatch": {
