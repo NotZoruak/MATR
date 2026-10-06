@@ -524,14 +524,6 @@
         "expected": "完成|撤退"
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1117, 671, 2, 2]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 800,
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 完成一圈",
