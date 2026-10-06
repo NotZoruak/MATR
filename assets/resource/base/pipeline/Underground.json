@@ -573,7 +573,14 @@
   },
   "U_PostSortieHub": {
     "pre_delay": 0,
-    "next": ["U_ConfirmEnterUnderground", "IsPreDamage", "U_StopOnDamagePopup", "U_CheckEquipmentPopup", "U_DetectWhereAmI"]
+    "next": [
+      "U_ConfirmEnterUnderground",
+      "IsPreDamage",
+      "THR_IsPreDamage",
+      "U_StopOnDamagePopup",
+      "U_CheckEquipmentPopup",
+      "U_DetectWhereAmI"
+    ]
   },
   "U_ReturnHomeAfterMarch": {
     "recognition": {
@@ -651,23 +658,11 @@
     "next": ["U_PostClickMenuHub"],
     "on_error": ["U_DetectWhereAmI"]
   },
-  "U_ClickRepairandStop": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1159, 588, 83, 44],
-        "expected": "修复"
-      }
-    },
-    "action": {"type": "Click"},
-    "next": ["U_CompleteCurrentTaskAfterDamageRepair"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
   "U_CompleteCurrentTaskAfterDamageRepair": {
     "action": {
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "重伤无刀装停止"}
+      "custom_action_param": {"reason": "重伤修刀后停止"}
     },
     "on_error": ["U_DetectWhereAmI"]
   },

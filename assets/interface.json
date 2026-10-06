@@ -4021,9 +4021,8 @@
           "name": "无加速符修刀",
           "DisplayName": "无加速符修刀",
           "pipeline_override": {
-            "ConfirmSelectSlot": {
-              "next": ["CaptureRepairInfo"]
-            },
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
             "S_StopOnDamagePopup": {"enabled": false},
@@ -4391,11 +4390,22 @@
           "name": "无加速符修刀",
           "DisplayName": "无加速符修刀",
           "pipeline_override": {
-            "IsPreDamage": {"enabled": true},
-            "ConfirmSelectSlot": {
-              "next": ["U_ClickRepairandStop"]
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "U_StopOnDamagePopup": {"enabled": false},
+            "LogRepairDone": {
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重伤检测] 修刀后停止任务",
+                  "display": "log"
+                }
+              }
             },
-            "U_StopOnDamagePopup": {"enabled": false}
+            "LogRepairCost": {
+              "next": ["U_CompleteCurrentTaskAfterDamageRepair"]
+            }
           }
         },
         {
@@ -7325,9 +7335,8 @@
           "name": "无加速符修刀",
           "DisplayName": "无加速符修刀",
           "pipeline_override": {
-            "ConfirmSelectSlot": {
-              "next": ["CaptureRepairInfo"]
-            },
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
             "LogRepairDone": {
@@ -8799,14 +8808,11 @@
           "name": "修刀并停止",
           "DisplayName": "修刀并停止",
           "pipeline_override": {
-            "ConfirmSelectSlot": {
-              "next": ["CaptureRepairInfo"]
-            },
-            "IsPreDamage": {"enabled": true},
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
             "HV_StopOnDamagePopup": {"enabled": false},
-            "HV_DetectWhereAmI": {
-              "anchor": {"RepairDone": "HV_CompleteCurrentTaskAfterDamageRepair"}
-            },
             "LogRepairDone": {
               "focus": {
                 "Node.Action.Succeeded": {
@@ -8814,6 +8820,9 @@
                   "display": "log"
                 }
               }
+            },
+            "LogRepairCost": {
+              "next": ["HV_CompleteCurrentTaskAfterDamageRepair"]
             }
           }
         },
