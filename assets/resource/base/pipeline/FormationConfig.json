@@ -1944,10 +1944,17 @@
       "time": 200,
       "target": [789, 512, 1, 4]
     },
-    "next": ["FC_BackToHome"],
+    "next": ["FC_BackToHome", "FC_UseRecord_Step4"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_BackToHome": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [570, 3, 149, 48],
+        "expected": "部队编成"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
