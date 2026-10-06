@@ -27,6 +27,12 @@ MATR/
 
 > The following directories are auto-generated at runtime and excluded in `.gitignore`: `config/`, `debug/`, `logs/`, `temp/`, `backup/`, `libs/`, `plugins/`.
 
+## Terminology
+
+- **MaaFramework / MaaFW** 指自动化任务框架，包括 Pipeline 协议、原生运行库及其 .NET 封装（如 `Maa.Framework`、`Maa.Framework.Runtimes`）。用户提到“更新框架”时，默认指更新 MaaFramework 及相关运行库。
+- **MFAAvalonia** 指本项目使用的 Avalonia 桌面应用/UI 上游，不是 MaaFramework。只有用户明确提到 MFAAvalonia、UI 框架或 Avalonia 时，才按应用/UI 上游或 Avalonia 依赖升级处理。
+- 两者升级是不同工作：更新 MaaFramework 时重点核对 MaaFW 协议、托管封装与原生运行库的版本兼容；更新 MFAAvalonia 时重点核对 `_src/` 的上游定制。不得将两种升级混称或互相替代。
+
 ### Upstream Source Customizations
 
 `_src/` is a second-development fork of [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia). The following lists MATR's customizations over upstream:
