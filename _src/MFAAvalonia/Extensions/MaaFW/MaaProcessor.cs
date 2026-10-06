@@ -4742,7 +4742,24 @@ public class MaaProcessor
         var memberSlots = Enumerable.Range(1, 6)
             .Where(index => !string.IsNullOrWhiteSpace(preset.Slots[index - 1].Sword))
             .ToList();
-        for (var index = 0; index < memberSlots.Count; index++)
+
+        if (preset.UseGameFormationRecordOnly)
+        {
+            // 仅使用部队记录时，预设刀剑不能启用普通编成流程中的槽位 node。
+            // 即使其它覆盖意外改变了路由，也不能继续按预设选择刀剑。
+            for (var slot = 1; slot <= 6; slot++)
+            {
+                overrides[$"FC_ConfigureSwordSlot{slot}"] = new JObject { ["enabled"] = false };
+                overrides[$"FC_FindSword{slot}"] = new JObject { ["enabled"] = false };
+            }
+
+            overrides["FC_DissolveTeam"] = new JObject { ["enabled"] = false };
+            overrides["FC_ConfirmDissolveTeam"] = new JObject { ["enabled"] = false };
+            if (!preset.ClearEquipmentBeforeFormation)
+                overrides["FC_IsTeamEmpty"] = new JObject { ["enabled"] = false };
+        }
+
+        for (var index = 0; !preset.UseGameFormationRecordOnly && index < memberSlots.Count; index++)
         {
             var slot = memberSlots[index];
             var next = index + 1 < memberSlots.Count

@@ -53,17 +53,21 @@ public class FormationConfigAction : IMaaCustomAction
             FormationContext.SaveRecord = preset.SaveGameFormationRecordAfterFormation;
             for (int i = 0; i < 6; i++)
             {
-                FormationContext.Swords[i] = preset.Slots[i].Sword?.Trim() ?? "";
-                FormationContext.Equips[i] = (preset.Slots[i].Equip ?? "").Replace(" ", "");
-                FormationContext.Horses[i] = string.IsNullOrWhiteSpace(preset.Slots[i].Horse) ? "无" : preset.Slots[i].Horse.Trim();
-                FormationContext.Treasures[i] = FormationOptions.ToOcrTreasureName(preset.Slots[i].Treasure?.Trim());
+                if (!preset.UseGameFormationRecordOnly)
+                {
+                    FormationContext.Swords[i] = preset.Slots[i].Sword?.Trim() ?? "";
+                    FormationContext.Equips[i] = (preset.Slots[i].Equip ?? "").Replace(" ", "");
+                    FormationContext.Horses[i] = string.IsNullOrWhiteSpace(preset.Slots[i].Horse) ? "无" : preset.Slots[i].Horse.Trim();
+                    FormationContext.Treasures[i] = FormationOptions.ToOcrTreasureName(preset.Slots[i].Treasure?.Trim());
+                }
             }
             FormationContext.MemberSlots = Enumerable.Range(1, 6)
-                .Where(i => !string.IsNullOrEmpty(FormationContext.Swords[i - 1]))
+                .Where(i => !preset.UseGameFormationRecordOnly && !string.IsNullOrEmpty(FormationContext.Swords[i - 1]))
                 .ToList();
 
             LoggerHelper.Info(
                 $"[FormationConfig] 预设「{preset.Name}」Team={FormationContext.Team} " +
+                $"仅用记录={preset.UseGameFormationRecordOnly} " +
                 $"成员位={string.Join(",", FormationContext.MemberSlots)} " +
                 $"卸装备={FormationContext.ClearEquipment} 保存记录={FormationContext.SaveRecord}");
             return true;
