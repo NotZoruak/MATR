@@ -4798,6 +4798,11 @@ public class MaaProcessor
                 ?.SelectedCases?.Contains(string.Empty) == true;
             if (task.Entry != "Expedition" && !syncExpEnabled)
             {
+                taskModels.Merge(new Dictionary<string, JToken>
+                {
+                    ["E_CheckTimerExpired"] = new JObject { ["enabled"] = false }
+                });
+
                 globalSelectOptions = globalSelectOptions
                     .Where(o => o.Name != "远征智能调度")
                     .ToList();

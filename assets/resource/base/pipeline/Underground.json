@@ -346,7 +346,7 @@
         "expected": "传送凭证"
       }
     },
-    "next": ["U_GoHomeAfterRound", "U_ContinueNextRound"],
+    "next": ["E_CheckTimerExpired", "U_GoHomeAfterRound", "U_ContinueNextRound"],
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
