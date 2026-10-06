@@ -7685,37 +7685,51 @@
     "耕作加成满值时跳过内番": {
       "name": "耕作加成满值时跳过内番",
       "label": "耕作加成满值时跳过内番",
-      "type": "select",
-      "default_case": "none",
+      "type": "switch",
+      "inline_sub_options": true,
+      "default_case": "No",
       "cases": [
         {
-          "name": "none",
-          "label": "不跳过"
+          "name": "No",
+          "label": "关闭"
         },
         {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["内番耕作加成跳过条件"]
+        }
+      ]
+    },
+    "内番耕作加成跳过条件": {
+      "name": "内番耕作加成跳过条件",
+      "label": "跳过条件",
+      "type": "select",
+      "default_case": "survival",
+      "cases": [
+        {
           "name": "survival",
-          "label": "生存满时跳过",
+          "label": "生存满",
           "pipeline_override": {
             "E_NaibanSkipSurvivalFull": {"enabled": true}
           }
         },
         {
           "name": "scouting",
-          "label": "侦察满时跳过",
+          "label": "侦察满",
           "pipeline_override": {
             "E_NaibanSkipScoutingFull": {"enabled": true}
           }
         },
         {
           "name": "either",
-          "label": "任一项满时跳过",
+          "label": "任一满",
           "pipeline_override": {
             "E_NaibanSkipEitherFull": {"enabled": true}
           }
         },
         {
           "name": "both",
-          "label": "生存与侦察全满时跳过",
+          "label": "全满",
           "pipeline_override": {
             "E_NaibanSkipBothFull": {"enabled": true}
           }

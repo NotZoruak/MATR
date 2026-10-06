@@ -1877,12 +1877,8 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             comboBox.MinWidth = 0;
         }
 
-        var useNaturalWidthLabelColumn = interfaceOption.Name == "耕作加成满值时跳过内番";
-        if (useNaturalWidthLabelColumn)
-            labelPanel.MinWidth = 0;
-
         if (!useCompactLabelColumn)
-            AddResponsiveBehavior(grid, labelPanel, comboBox, useNaturalWidthLabelColumn, useNaturalWidthLabelColumn);
+            AddResponsiveBehavior(grid, labelPanel, comboBox);
         
         grid.Children.Add(labelPanel);
         grid.Children.Add(comboBox);
@@ -2202,7 +2198,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
     private static bool IsExpeditionInlineSetting(MaaInterface.MaaInterfaceOption interfaceOption)
     {
-        return interfaceOption.Name is "疲劳阈值" or "临时部队记录槽";
+        return interfaceOption.Name is "疲劳阈值" or "临时部队记录槽" or "内番耕作加成跳过条件";
     }
 
     // Logic Helpers
