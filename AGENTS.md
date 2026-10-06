@@ -400,7 +400,7 @@ All version numbers follow [Semantic Versioning](https://semver.org/lang/zh-CN/)
 
 测试版和正式版：都先通过 GitHub PR 把 `develop` 合并进 `main`（使用 Merge commit），合并后本地执行 `git switch main` 与 `git pull --ff-only`，再将 `develop` 快进同步到 `main` 的合并提交，最后在 `main` 上打 tag 并打包。`main` 已开启分支保护，本地合并后直接 `git push` 会被拒绝。
 
-测试版 tag 格式为 `vX.Y.Z-beta.N`，在 `main` 上打 tag 并创建 GitHub Release 时勾选 pre-release；正式版使用 `vX.Y.Z`，不勾选 pre-release。测试版发布后确认 MirrorChyan 将其识别为测试版频道。每次发布完成后确保 `main` 与 `develop` 同步。
+测试版 tag 格式为 `vX.Y.Z-beta.N`，正式版使用 `vX.Y.Z`；两者都创建普通 GitHub Release，不勾选 pre-release。测试版发布后确认 MirrorChyan 根据 tag 将其识别为测试版频道。每次发布完成后确保 `main` 与 `develop` 同步。
 
 **Local one-command packaging is the release flow** (since 2026-08-29; the GitHub Actions release workflow has been removed):
 
