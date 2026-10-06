@@ -321,12 +321,12 @@ feat(queue): 支持任务完成状态正确落盘
 完整流程、命令和常见误区见 `docs/分支流程.md`，本节只列出必须遵守的结论。
 
 - **`develop`**：仓库默认分支，日常开发与外部 PR 的默认落点。新功能、多 node 流程改动和需要验证的新逻辑都先合入这里。
-- **`main`**：稳定发布线，禁止直接提交。变更只能来自 `develop` 的发布合并或 `hotfix/*` 分支的修复合并，且都必须通过 GitHub PR 合并（本地合并后直接 push 会被拒绝），正式版在此打 tag。
+- **`main`**：稳定发布线，禁止直接提交。变更只能来自 `develop` 的发布合并或 `hotfix/*` 分支的修复合并，且都必须通过 GitHub PR 合并（本地合并后直接 push 会被拒绝）；所有版本均在此打 tag。
 - **`feat/<feature-name>`**：复杂功能从 `develop` 切出，验证后合并回 `develop`。
 - **`fix/<scope>`**：常规缺陷修复从 `develop` 切出，合并回 `develop`。
 - **`hotfix/<scope>`**：已发布版本的紧急修复从 `main` 切出，修完必须同时合回 `main` 和 `develop`，只合一边会让修复在下一个版本丢失。
-- 测试版 tag 打在 `develop` 上，正式版 tag 打在 `main` 上。测试版不合并 `main`，直接在 `develop` 打 tag 发布；正式版必须先用 GitHub PR 把 `develop` 合并进 `main`，再在 `main` 上打 tag。测试版因此不必每个版本都开一次 PR。
-- 每个正式版发布后（含 `hotfix/*` 合回）`main` 与 `develop` 必须回到同一提交，避免长期分叉；测试版期间允许 `develop` 领先于 `main`。
+- 所有版本的 tag 都打在 `main` 上。测试版和正式版发布前都通过 GitHub PR 将 `develop` 合入 `main`，测试版 tag 使用 `-beta.N` 后缀。
+- 每次版本发布后（含测试版、正式版与 `hotfix/*` 合回）`main` 与 `develop` 必须回到同一提交，避免长期分叉；开发期间允许 `develop` 暂时领先于 `main`。
 - MirrorChyan 依据 tag 名推断发布频道，发布 tag 必须与 `pack_all.ps1 -Version` 传入的版本一致。
 - 分支保护：`main` 禁止直接 push，必须通过 PR 合并；`develop` 只禁止 force push 和删除。当前不要求 review，因为 GitHub 不允许批准自己开的 PR，等有第二个协作者后再把 Required approvals 设为 1。
 
@@ -394,13 +394,13 @@ All version numbers follow [Semantic Versioning](https://semver.org/lang/zh-CN/)
 - 资源包中只保留一份当前版本更新公告，统一使用 `0-` 前缀，内容汇总上一个正式版到当前版本的全部改动；测试版之间不新增独立公告。长期公告单独保留，新增或调整长期公告时按现有序号顺延，并使用 `git mv` 保留重命名历史。
 - 打包脚本必须在临时目录中移除 `assets/resource/announcement/` 下文件名匹配 `N-vX.Y.Z 更新公告.md` 的版本更新公告；版本公告由发布页提供，不随安装包分发。长期公告必须保留。
 - MirrorChyan 上传按 tag 推断频道，发布 tag 必须与 `pack_all.ps1 -Version` 传入的版本一致，并与包内 `assets/interface.json` 的 `version` 一致；三项不一致时用户端判定没有更新，发布等于没发出去
-- 发布前把版本号提交推送到远端属于推荐做法而非前提：分发只读 tag 名与 Release 产物，推送只影响源码可复现与 CI 覆盖面
+- 发布前必须把版本号、公告和待发布改动提交推送到 `develop`，再通过发布 PR 合入 `main`；发布 tag 指向 `main` 上的合并提交，保证源码与 Release 产物对应
 
 ## Release Process
 
-正式版：先通过 GitHub PR 把 `develop` 合并进 `main`（使用 Merge commit），合并后本地执行 `git switch main` 与 `git pull --ff-only`，再打包并在 `main` 上打 tag。`main` 已开启分支保护，本地合并后直接 `git push` 会被拒绝。
+测试版和正式版：都先通过 GitHub PR 把 `develop` 合并进 `main`（使用 Merge commit），合并后本地执行 `git switch main` 与 `git pull --ff-only`，再将 `develop` 快进同步到 `main` 的合并提交，最后在 `main` 上打 tag 并打包。`main` 已开启分支保护，本地合并后直接 `git push` 会被拒绝。
 
-测试版：不合并 `main`，直接在 `develop` 上打 tag、打包并创建 GitHub Release（勾选 pre-release），省掉每个测试版一次 PR；等下一个正式版发布时再一次性把 `develop` 合并进 `main`。测试版首次走该路径后，要在 MirrorChyan 后台确认该版本进入测试版频道。
+测试版 tag 格式为 `vX.Y.Z-beta.N`，在 `main` 上打 tag 并创建 GitHub Release 时勾选 pre-release；正式版使用 `vX.Y.Z`，不勾选 pre-release。测试版发布后确认 MirrorChyan 将其识别为测试版频道。每次发布完成后确保 `main` 与 `develop` 同步。
 
 **Local one-command packaging is the release flow** (since 2026-08-29; the GitHub Actions release workflow has been removed):
 
