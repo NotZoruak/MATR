@@ -123,7 +123,7 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["EC_CaptainHub"]
+    "next": ["E_CheckTimerExpired", "EC_CaptainHub"]
   },
   "EC_IsEventPage": {
     "recognition": {

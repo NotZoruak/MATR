@@ -83,7 +83,7 @@
       "time": 100,
       "target": [297, 160, 133, 369]
     },
-    "next": ["ConfirmSelectSlot", "SelectRepairSlot"],
+    "next": ["ConfirmSelectSlot", "ConfirmSelectSlot2", "SelectRepairSlot"],
     "on_error": ["LogNoDamagedSword"]
   },
   "ConfirmSelectSlot": {
@@ -99,7 +99,22 @@
       "time": 200,
       "target": [262, 307, 147, 46]
     },
-    "next": ["CheckAccel", "ClickAccel"]
+    "next": ["CheckAccel", "ClickAccel", "CaptureRepairInfo"]
+  },
+  "ConfirmSelectSlot2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1040, 234, 50, 72],
+        "expected": "选"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [262, 307, 147, 46]
+    },
+    "next": ["CheckAccel", "ClickAccel", "CaptureRepairInfo"]
   },
   "CheckAccel": {
     "recognition": {

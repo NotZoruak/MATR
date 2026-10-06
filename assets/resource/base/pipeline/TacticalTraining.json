@@ -387,7 +387,7 @@
         "expected": "部队选择"
       }
     },
-    "next": ["TT_ClickTargetTeam"],
+    "next": ["E_CheckTimerExpired", "TT_ClickTargetTeam"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ClickTargetTeam": {

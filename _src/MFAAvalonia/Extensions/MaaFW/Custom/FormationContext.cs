@@ -134,5 +134,15 @@ public static class FormationContext
         return SwordTypeMap.TryGetValue(swordName, out var type) ? type : null;
     }
 
+    /// <summary>按刀帐标准名称唯一解析 OCR 刀名，未命中或存在歧义时返回 null</summary>
+    public static string? ResolveSwordName(string? recognizedName)
+    {
+        if (string.IsNullOrWhiteSpace(recognizedName))
+            return null;
+
+        SwordTypeMap ??= LoadSwordTypeMap();
+        return SwordNameMatcher.FindUniqueMatchedName(recognizedName, SwordTypeMap.Keys);
+    }
+
     private sealed record SwordBookCatalogItem(string Number, string Type, string Name, bool TypeOnly = false);
 }

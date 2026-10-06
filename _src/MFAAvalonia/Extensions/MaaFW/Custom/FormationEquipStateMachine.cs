@@ -321,7 +321,6 @@ public class FormationEquipStateMachine : IMaaCustomAction
             if (IsTextAt(context, EquipListConfirmRoi, "刀装"))
                 return true;
         }
-        LoggerHelper.Warning($"[FormationEquipStateMachine] 刀装列表未确认（槽 {index + 1}），视为无此刀装槽");
         return false;
     }
 

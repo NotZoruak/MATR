@@ -28,7 +28,7 @@ public class NaibanFindSwordAction : IMaaCustomAction
 
             if (NaibanOutfitSelectionContext.TryGetTarget(slot, out var target)
                 && ListOcrScan.ScanAndClick(context, target.Name, SwordListRoi, SwordScroll,
-                    box => ClickSword(context, box[1]), "NaibanFindSword"))
+                    (image, box) => ClickSword(context, box[1]), "NaibanFindSword"))
                 return true;
 
             LoggerHelper.Warning($"[后勤] 第{slot}位未找到优先目标，将选择任意可用刀剑");

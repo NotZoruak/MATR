@@ -63,9 +63,11 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
             }
 
             var currentRoster = ReadRoster(context, team, stopOnError: false);
+            if (currentRoster == null)
+                return Fail(context, $"部队{team}成员无法可靠识别，为避免误解散，本次不修改队伍");
             if (IsConfiguredRoster(currentRoster, configured))
             {
-                var alreadyMatched = $"部队{team}成员已符合配置，无需重编：{FormatRoster(currentRoster!)}";
+                var alreadyMatched = $"部队{team}成员已符合配置，无需重编";
                 LoggerHelper.Info($"[远征编队] {alreadyMatched}");
                 AddTaskLog(context, alreadyMatched);
                 return true;
@@ -81,6 +83,8 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
             {
                 ActionParamHelper.ThrowIfStopping(context);
                 currentRoster = ReadRoster(context, team, stopOnError: false);
+                if (currentRoster == null)
+                    return Fail(context, $"部队{team}成员无法可靠识别，为避免误解散，本次不修改队伍");
                 if (currentRoster != null && currentRoster.All(string.IsNullOrWhiteSpace))
                 {
                     LoggerHelper.Info($"[远征编队] 部队{team}当前为空，跳过解散并直接编队");
@@ -131,9 +135,11 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
                 }
 
                 var finalRoster = ReadRoster(context, team, stopOnError: false);
+                if (finalRoster == null)
+                    return Fail(context, $"部队{team}编队后成员无法可靠识别，为避免再次解散，本次停止复核");
                 if (IsConfiguredRoster(finalRoster, configured))
                 {
-                    var successMessage = $"部队{team}编队完成，复核通过：{FormatRoster(finalRoster!)}";
+                    var successMessage = $"部队{team}编队完成，复核通过";
                     LoggerHelper.Info($"[远征编队] {successMessage}");
                     AddTaskLog(context, successMessage);
                     return true;
@@ -246,7 +252,7 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
         }
         var members = ReadMembers(context, image);
         var unreadable = members.Where(name => !string.IsNullOrWhiteSpace(name))
-            .Where(name => FormationContext.GetSwordType(name) == null)
+            .Where(name => FormationContext.ResolveSwordName(name) == null)
             .ToList();
         if (unreadable.Count > 0)
         {
@@ -256,7 +262,9 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
                 LoggerHelper.Warning($"[远征编队] 部队{team}成员 OCR 出现无法确认的文本：{string.Join("、", unreadable)}");
             return null;
         }
-        return members;
+        return members
+            .Select(name => string.IsNullOrWhiteSpace(name) ? string.Empty : FormationContext.ResolveSwordName(name) ?? name)
+            .ToList();
     }
 
     private static bool OpenSwordSelector<T>(T context, int[] target) where T : IMaaContext
@@ -377,7 +385,7 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
     }
 
     private static void AddTaskLog<T>(T context, string message) where T : IMaaContext
-        => MaaProcessor.ResolveByTasker(context.Tasker)?.AddLog($"[本丸后勤] {message}");
+        => MaaProcessor.ResolveByTasker(context.Tasker)?.AddLog($"[远征编队校验] {message}");
 
     private static void ClickAndWait<T>(T context, int x, int y) where T : IMaaContext
     {
@@ -428,7 +436,7 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
             LoggerHelper.Error("[远征编队] 无法定位当前任务处理器，错误已记录到运行日志");
             return false;
         }
-        processor.AddLog($"[本丸后勤] 本次远征编队未完成：{reason}；不主动停止任务队列");
+        processor.AddLog($"[远征编队校验] 本次远征编队未完成：{reason}；不主动停止任务队列");
         return false;
     }
 }
