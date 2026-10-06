@@ -542,7 +542,20 @@
       }
     },
     "anchor": {"RB_RoundDone": "RB_TerminateRound"},
-    "next": ["RB_TrySwitchTeam", "RB_CheckCaptainDamage", "RB_ClickContinueBattle", "RB_DetectWhereAmI"]
+    "next": ["RB_TrySwitchTeam", "RB_CheckCaptainDamage", "RB_ClickContinueBattle", "RB_ExitTeamSwitch", "RB_DetectWhereAmI"]
+  },
+  "RB_ExitTeamSwitch": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [918, 337, 31, 35],
+        "template": "Activity/离开部队交替.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["RB_DetectWhereAmI"]
   },
   "RB_TrySwitchTeam": {
     "enabled": false,
