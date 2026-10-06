@@ -115,8 +115,14 @@ public partial class MFATask : ObservableObject
                 var iterationDecision = TaskIterationDecision.Resolve(EarlyCompletionRequest);
                 if (!iterationDecision.ShouldContinueRepeating)
                 {
+                    var taskName = string.IsNullOrWhiteSpace(SourceItem?.Name)
+                        ? LanguageHelper.GetLocalizedString(Name)
+                        : SourceItem.Name;
+                    OwnerViewModel?.Processor.RecordExternalNotificationEvent(
+                        "特殊情况",
+                        $"{taskName}：{iterationDecision.Reason ?? "提前结束"}");
                     OwnerViewModel?.AddLog(
-                        $"[{LanguageHelper.GetLocalizedString(Name)}] 任务结束 原因：{iterationDecision.Reason}",
+                        $"[{taskName}] 任务结束 原因：{iterationDecision.Reason}",
                         recordAsWarning: true);
                     break;
                 }

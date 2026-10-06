@@ -184,7 +184,14 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["RB_CloseImmediateSortiePopup", "RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"]
+    "next": [
+      "E_CheckTimerExpired",
+      "RB_CloseImmediateSortiePopup",
+      "RB_DisableAutoMarch",
+      "RB_EnableAutoMarch",
+      "RB_ClickAutoMarchConfirm",
+      "RB_CaptainHub"
+    ]
   },
   "RB_CloseImmediateSortiePopup": {
     "recognition": {
@@ -517,14 +524,6 @@
         "expected": "完成|撤退"
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1117, 671, 2, 2]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 800,
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[海陆联队] 完成一圈",

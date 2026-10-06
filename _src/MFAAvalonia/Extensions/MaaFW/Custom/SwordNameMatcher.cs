@@ -133,6 +133,20 @@ public static class SwordNameMatcher
         return null;
     }
 
+    /// <summary>将 OCR 文本解析为候选名单中的唯一标准名称，存在歧义时返回 null</summary>
+    public static string? FindUniqueMatchedName(string? ocrText, IEnumerable<string>? candidates)
+    {
+        if (string.IsNullOrEmpty(ocrText) || candidates == null)
+            return null;
+
+        var matches = candidates
+            .Distinct(StringComparer.Ordinal)
+            .Where(name => IsExactMatch(ocrText, name))
+            .Take(2)
+            .ToList();
+        return matches.Count == 1 ? matches[0] : null;
+    }
+
     /// <summary>
     /// 关键词包含匹配：先按原文包含，再做字形归一后包含，只增加形近字容错，不会减少原文命中。
     /// </summary>

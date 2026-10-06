@@ -308,7 +308,7 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["S_DisableAutoMarch", "S_EnableAutoMarch", "S_ClickAutoMarchNoOrYesDelegate", "S_CaptainHub"]
+    "next": ["E_CheckTimerExpired", "S_DisableAutoMarch", "S_EnableAutoMarch", "S_ClickAutoMarchNoOrYesDelegate", "S_CaptainHub"]
   },
   "S_DisableAutoMarch": {
     "enabled": true,
@@ -587,7 +587,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_NavigateToSortie"]
+    "next": ["E_CheckTimerExpired", "S_NavigateToSortie"]
   },
   "S_NavigateToSortie": {
     "next": ["S_ClickMenu"],

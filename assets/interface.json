@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.0-beta.1",
+  "version": "v0.15.0-beta.3",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.0-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.0-beta.3 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -3015,7 +3015,6 @@
               "next": ["RB_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "enabled": true,
               "next": ["E_GoHome"]
             }
           }
@@ -3511,7 +3510,6 @@
               "next": ["HP_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "enabled": true,
               "next": ["E_GoHome"]
             },
             "HP_WaitRefresh": {"enabled": true}
@@ -3812,7 +3810,6 @@
               "next": ["EC_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "enabled": true,
               "next": ["E_GoHome"]
             },
             "EC_WaitRefresh": {"enabled": true}
@@ -4021,9 +4018,8 @@
           "name": "无加速符修刀",
           "DisplayName": "无加速符修刀",
           "pipeline_override": {
-            "ConfirmSelectSlot": {
-              "next": ["CaptureRepairInfo"]
-            },
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
             "S_StopOnDamagePopup": {"enabled": false},
@@ -4157,12 +4153,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "S_IsHome": {
-              "next": ["E_CheckTimerExpired", "S_NavigateToSortie"]
-            },
             "E_CheckTimerExpired": {
-              "enabled": true,
-              "next": ["Expedition"]
+              "next": ["E_CheckHomeBrightness", "E_GoHome"]
             },
             "E_SelectMap1": {
               "action": {
@@ -4391,11 +4383,22 @@
           "name": "无加速符修刀",
           "DisplayName": "无加速符修刀",
           "pipeline_override": {
-            "IsPreDamage": {"enabled": true},
-            "ConfirmSelectSlot": {
-              "next": ["U_ClickRepairandStop"]
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "U_StopOnDamagePopup": {"enabled": false},
+            "LogRepairDone": {
+              "focus": {
+                "Node.Action.Succeeded": {
+                  "content": "[重伤检测] 修刀后停止任务",
+                  "display": "log"
+                }
+              }
             },
-            "U_StopOnDamagePopup": {"enabled": false}
+            "LogRepairCost": {
+              "next": ["U_CompleteCurrentTaskAfterDamageRepair"]
+            }
           }
         },
         {
@@ -6524,7 +6527,6 @@
               "next": ["U_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "enabled": true,
               "next": ["U_ReturnHomeAfterMarch"]
             },
             "U_ReturnHomeAfterMarch": {"enabled": true},
@@ -6622,7 +6624,6 @@
               "next": ["TT_NavigateToActivity"]
             },
             "E_CheckTimerExpired": {
-              "enabled": true,
               "next": ["E_GoHome"]
             },
             "TT_WaitRefresh": {"enabled": true}
@@ -6922,21 +6923,6 @@
           "name": "Yes",
           "label": "开启",
           "pipeline_override": {
-            "RB_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired", "RB_DisableAutoMarch", "RB_EnableAutoMarch", "RB_ClickAutoMarchConfirm", "RB_CaptainHub"]
-            },
-            "EC_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired", "EC_IsTeamSelect"]
-            },
-            "TT_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired", "TT_ClickTargetTeam"]
-            },
-            "U_CheckRoundComplete": {
-              "next": ["E_CheckTimerExpired", "U_GoHomeAfterRound", "U_ContinueNextRound"]
-            },
-            "HP_IsTeamSelect": {
-              "next": ["E_CheckTimerExpired", "HP_EnableAutoMarch", "HP_CaptainHub"]
-            },
             "E_CheckTimerExpired": {"enabled": true},
             "E_AllTeamsBusy": {
               "action": "DoNothing",
@@ -7325,9 +7311,8 @@
           "name": "无加速符修刀",
           "DisplayName": "无加速符修刀",
           "pipeline_override": {
-            "ConfirmSelectSlot": {
-              "next": ["CaptureRepairInfo"]
-            },
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
             "LogRepairDone": {
@@ -7793,10 +7778,7 @@
           "name": "Yes",
           "label": "开启",
           "pipeline_override": {
-            "E_NaibanVerifyTodayTable": {"enabled": true},
-            "E_NaibanClickEntry": {
-              "next": ["E_NaibanClickCompost", "E_NaibanVerifyTodayTable", "E_NaibanClickEntry"]
-            }
+            "E_NaibanVerifyTodayTable": {"enabled": true}
           }
         }
       ]
@@ -8802,14 +8784,11 @@
           "name": "修刀并停止",
           "DisplayName": "修刀并停止",
           "pipeline_override": {
-            "ConfirmSelectSlot": {
-              "next": ["CaptureRepairInfo"]
-            },
-            "IsPreDamage": {"enabled": true},
+            "CheckAccel": {"enabled": false},
+            "ClickAccel": {"enabled": false},
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
             "HV_StopOnDamagePopup": {"enabled": false},
-            "HV_DetectWhereAmI": {
-              "anchor": {"RepairDone": "HV_CompleteCurrentTaskAfterDamageRepair"}
-            },
             "LogRepairDone": {
               "focus": {
                 "Node.Action.Succeeded": {
@@ -8817,6 +8796,9 @@
                   "display": "log"
                 }
               }
+            },
+            "LogRepairCost": {
+              "next": ["HV_CompleteCurrentTaskAfterDamageRepair"]
             }
           }
         },

@@ -37,7 +37,7 @@ public sealed class ExpeditionConfiguredMembersRecognition : IMaaCustomRecogniti
 
             var current = ReadMembers(context, image);
             var unreadable = current.Where(name => !string.IsNullOrWhiteSpace(name))
-                .Where(name => FormationContext.GetSwordType(name) == null)
+                .Where(name => FormationContext.ResolveSwordName(name) == null)
                 .ToList();
             if (unreadable.Count > 0)
             {
@@ -45,7 +45,12 @@ public sealed class ExpeditionConfiguredMembersRecognition : IMaaCustomRecogniti
                 return false;
             }
 
-            var currentMembers = current.Where(name => !string.IsNullOrWhiteSpace(name)).ToList();
+            var currentMembers = current
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Select(FormationContext.ResolveSwordName)
+                .Where(name => name != null)
+                .Cast<string>()
+                .ToList();
             bool matches = currentMembers.Count == configured.Count
                 && configured.All(name => currentMembers.Contains(name, StringComparer.Ordinal));
             if (matches)
