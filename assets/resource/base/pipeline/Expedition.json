@@ -679,8 +679,20 @@
     "on_error": ["Expedition"]
   },
   "E_ExpSubHub5": {
-    "next": ["E_SkipTeam5", "E_CheckTeam5", "E_WorkshopHub", "[Anchor]E_NaibanHub", "E_AllTeamsBusy"],
+    "next": [
+      "E_NaibanAnchorInit",
+      "E_SkipTeam5",
+      "E_CheckTeam5",
+      "E_WorkshopHub",
+      "[Anchor]E_NaibanHub",
+      "E_AllTeamsBusy"
+    ],
     "on_error": ["Expedition"]
+  },
+  "E_NaibanAnchorInit": {
+    "max_hit": 1,
+    "anchor": {"E_NaibanHub": "E_NaibanHub"},
+    "next": ["E_SkipTeam5", "E_CheckTeam5", "E_WorkshopHub", "[Anchor]E_NaibanHub", "E_AllTeamsBusy"]
   },
   "E_SkipTeam1": {
     "recognition": {
@@ -1795,7 +1807,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200},
-    "next": ["E_NaibanCheckFullHub", "E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanClickEntry"],
+    "next": ["E_NaibanCheckFullHub", "E_NaibanVerifyTodayTable", "E_NaibanClickCompost", "E_NaibanVerifyTable", "E_NaibanClickEntry"],
     "on_error": ["E_AllTeamsBusy"]
   },
   "E_NaibanVerifyTodayTable": {
@@ -1823,8 +1835,8 @@
       "E_NaibanSkipSurvivalFull",
       "E_NaibanSkipEitherFull",
       "E_NaibanSkipBothFull",
-      "E_NaibanClickCompost",
       "E_NaibanVerifyTodayTable",
+      "E_NaibanClickCompost",
       "E_NaibanVerifyTable"
     ],
     "on_error": ["E_NaibanClickEntry"]

@@ -7793,10 +7793,7 @@
           "name": "Yes",
           "label": "开启",
           "pipeline_override": {
-            "E_NaibanVerifyTodayTable": {"enabled": true},
-            "E_NaibanClickEntry": {
-              "next": ["E_NaibanClickCompost", "E_NaibanVerifyTodayTable", "E_NaibanClickEntry"]
-            }
+            "E_NaibanVerifyTodayTable": {"enabled": true}
           }
         }
       ]
