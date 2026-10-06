@@ -250,7 +250,7 @@ public static class WorkRecordBuilder
 
         string[] taskEntries = prefix switch
         {
-            "远征计时" or "后勤" or "本丸后勤" => ["Expedition"],
+            "远征计时" or "后勤计时" or "后勤" or "本丸后勤" => ["Expedition"],
             "地下城" or "大阪挖地" => ["Underground"],
             "合战场" or "常驻作战" => ["Sortie"],
             "联队战" or "海陆联队" => ["RegimentBattle"],
@@ -433,9 +433,11 @@ public static class WorkRecordBuilder
                     record.SpecialEvents.Add(new SpecialEvent(time, "遭遇检非违使，重启游戏"));
                 break;
             default:
-                if (prefix == "远征计时" && action == "倒计时结束")
+                if ((prefix is "远征计时" or "后勤计时")
+                    && (action is "倒计时结束" or "后勤倒计时结束"))
                 {
-                    record.LogisticsCounts[action] = record.LogisticsCounts.GetValueOrDefault(action) + 1;
+                    const string logisticsAction = "倒计时结束";
+                    record.LogisticsCounts[logisticsAction] = record.LogisticsCounts.GetValueOrDefault(logisticsAction) + 1;
                 }
                 else if (prefix == "后勤")
                 {
