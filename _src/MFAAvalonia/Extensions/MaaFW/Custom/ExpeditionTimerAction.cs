@@ -7,8 +7,8 @@ using System;
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>
-/// 远征后台计时器动作：记录倒计时起点，供 ExpeditionTimerRecognition 检查。
-/// 当全局开关"远征智能调度"开启时，自动 OCR 部队面板计算最早归队时间。
+/// 后勤后台计时器动作：记录倒计时起点，供 ExpeditionTimerRecognition 检查。
+/// 当全局开关"远征智能调度"开启时，自动 OCR 远征和已启用内番的最早完成时间。
 /// </summary>
 public class ExpeditionTimerAction : IMaaCustomAction
 {
@@ -24,32 +24,40 @@ public class ExpeditionTimerAction : IMaaCustomAction
             int configuredInterval = (int?)json["interval"] ?? 600;
             int intervalSeconds = configuredInterval;
 
-            // 智能调度：OCR 部队面板剩余时间，动态调整计时器间隔
+            // 智能调度：OCR 后勤事项剩余时间，动态调整计时器间隔
             if (ExpeditionTimeTracker.IsSmartSchedulingEnabled())
             {
                 try
                 {
                     var earliest = ExpeditionTimeTracker.ScanAndStore(context);
-                    if (earliest.HasValue && earliest.Value > 0)
+                    if (earliest.HasValue)
                     {
-                        intervalSeconds = Math.Min(earliest.Value, configuredInterval);
-                        LoggerHelper.Info($"[远征计时] 最早 {earliest.Value}s, 实际 {intervalSeconds}s");
+                        intervalSeconds = GetEffectiveIntervalSeconds(earliest, configuredInterval);
+                        if (earliest.Value == 0)
+                        {
+                            ExpeditionReturnTracker.Reset();
+                            LoggerHelper.Info($"[后勤计时] 最早目标已到期，按刷新间隔等待 {intervalSeconds}s");
+                        }
+                        else
+                        {
+                            LoggerHelper.Info($"[后勤计时] 最早目标完成 {earliest.Value}s, 实际等待 {intervalSeconds}s");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LoggerHelper.Warning($"[远征计时] 智能 OCR 失败，回退固定间隔 {configuredInterval}秒: {ex.Message}");
+                    LoggerHelper.Warning($"[后勤计时] 智能 OCR 失败，回退固定间隔 {configuredInterval}秒: {ex.Message}");
                 }
                 // 始终关闭队伍状态面板（E_AllTeamsBusy 被改为 DoNothing，不点的话面板不会关）
                 try { context.Click(ExpeditionTimeTracker.ClosePanelX, ExpeditionTimeTracker.ClosePanelY); }
-                catch (Exception ex) { LoggerHelper.Warning($"[远征计时] 关闭面板失败: {ex.Message}"); }
+                catch (Exception ex) { LoggerHelper.Warning($"[后勤计时] 关闭面板失败: {ex.Message}"); }
 
                 ExpeditionTimerRecognition.StartTimer(intervalSeconds);
                 var display = intervalSeconds >= 60
                     ? $"{intervalSeconds / 60}分{intervalSeconds % 60}s"
                     : $"{intervalSeconds}s";
-                var fileMessage = $"[远征计时] 倒计时开始：{display}";
-                var guiMessage = $"[远征计时] {display}";
+                var fileMessage = $"[后勤计时] 倒计时开始：{display}";
+                var guiMessage = $"[后勤计时] {display}";
                 // 文件日志保留词表格式，供工作记录解析器识别。
                 LoggerHelper.Info(fileMessage);
                 try { ActionParamHelper.ResolveOwnerProcessor(context)?.AddLog(guiMessage); } catch { }
@@ -58,7 +66,7 @@ public class ExpeditionTimerAction : IMaaCustomAction
             {
                 // 智能调度关闭：只关面板，不启计时器
                 try { context.Click(ExpeditionTimeTracker.ClosePanelX, ExpeditionTimeTracker.ClosePanelY); }
-                catch (Exception ex) { LoggerHelper.Warning($"[远征计时] 关闭面板失败: {ex.Message}"); }
+                catch (Exception ex) { LoggerHelper.Warning($"[后勤计时] 关闭面板失败: {ex.Message}"); }
             }
 
             return true;
@@ -69,8 +77,12 @@ public class ExpeditionTimerAction : IMaaCustomAction
         }
         catch (Exception e)
         {
-            LoggerHelper.Error($"[远征计时] 错误: {e.Message}");
+            LoggerHelper.Error($"[后勤计时] 错误: {e.Message}");
             return false;
         }
     }
+
+    /// <summary>计算调度等待间隔；已到期或无目标时回退到配置间隔，避免零秒空转。</summary>
+    public static int GetEffectiveIntervalSeconds(int? earliestSeconds, int configuredInterval)
+        => earliestSeconds is > 0 ? Math.Min(earliestSeconds.Value, configuredInterval) : configuredInterval;
 }

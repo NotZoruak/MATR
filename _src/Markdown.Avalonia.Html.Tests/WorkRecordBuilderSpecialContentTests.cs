@@ -7,6 +7,22 @@ namespace Markdown.Avalonia.Html.Tests;
 public class WorkRecordBuilderSpecialContentTests
 {
     [Fact]
+    public void Build_后勤计时前缀记录倒计时结束()
+    {
+        var start = new DateTime(2026, 9, 20, 10, 0, 0);
+        var records = WorkRecordBuilder.Build(
+        [
+            new LogEntry(start, "INF", "开始任务：后勤"),
+            new LogEntry(start.AddSeconds(1), "INF", "[Record] [后勤计时] 倒计时结束"),
+            new LogEntry(start.AddSeconds(2), "INF", "停止前状态：SUCCEEDED"),
+        ]);
+
+        var record = Assert.Single(records);
+
+        Assert.Equal(1, record.LogisticsCounts["倒计时结束"]);
+    }
+
+    [Fact]
     public void Build_Info级特殊记录归入特殊情况()
     {
         var start = new DateTime(2026, 9, 19, 10, 0, 0);

@@ -6,8 +6,8 @@ using System;
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>
-/// 远征后台计时器识别：返回 true 表示倒计时已归零（或从未设置），应检查远征；
-/// 返回 false 表示倒计时未到，跳过远征检查。
+/// 后勤后台计时器识别：返回 true 表示倒计时已归零（或从未设置），应检查后勤；
+/// 返回 false 表示倒计时未到，跳过后勤检查。
 /// </summary>
 public class ExpeditionTimerRecognition : IMaaCustomRecognition
 {
@@ -44,7 +44,7 @@ public class ExpeditionTimerRecognition : IMaaCustomRecognition
 
             var expired = IsExpired();
             if (expired && ExpeditionTimeTracker.IsSmartSchedulingEnabled())
-                Log(context, "[远征计时] 倒计时结束");
+                Log(context, "[后勤计时] 倒计时结束");
 
             return expired;
         }
@@ -54,7 +54,7 @@ public class ExpeditionTimerRecognition : IMaaCustomRecognition
         }
         catch (Exception exception)
         {
-            LoggerHelper.Error($"[远征计时] 识别失败: {exception.Message}");
+            LoggerHelper.Error($"[后勤计时] 识别失败: {exception.Message}");
             return false;
         }
     }

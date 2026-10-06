@@ -39,6 +39,20 @@ public static class ExpeditionOptionResolver
         return plan?.Index == 1 ? plan : null;
     }
 
+    /// <summary>检查本丸后勤任务中的内番开关是否开启。</summary>
+    public static bool IsNaibanEnabled(IEnumerable<MaaInterface.MaaInterfaceTask> tasks)
+    {
+        var logistics = tasks.FirstOrDefault(task => task.Name == "后勤" && task.Entry == "Expedition");
+        return logistics?.Option?.FirstOrDefault(option => option.Name == "内番")?.Index == 1;
+    }
+
+    /// <summary>检查本丸后勤任务中的远征开关是否开启。</summary>
+    public static bool IsExpeditionEnabled(IEnumerable<MaaInterface.MaaInterfaceTask> tasks)
+    {
+        var logistics = tasks.FirstOrDefault(task => task.Name == "后勤" && task.Entry == "Expedition");
+        return logistics?.Option?.FirstOrDefault(option => option.Name == "远征")?.Index == 0;
+    }
+
     /// <summary>
     /// 获取同步后勤需要读取的远征选项名称。新配置从「远征」上级选项进入，
     /// 由常规 option 合并递归处理队伍地图及长期计划；旧配置仍按顶层队伍选项处理。

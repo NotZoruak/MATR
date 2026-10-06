@@ -24,8 +24,8 @@
       "files": ["assets/interface.json", "_src/MFAAvalonia/Extensions/MaaFW/TaskLoader.cs", "_src/MFAAvalonia/Extensions/MaaFW/ExpeditionOptionMigration.cs", "_src/MFAAvalonia/Extensions/MaaFW/ExpeditionOptionResolver.cs"],
       "baseline_upstream": "2.16.1",
       "last_verified_upstream": "2.16.1",
-      "migration_strategy": "远征目的地与长期计划配置归本丸后勤任务；旧 GlobalOptionItems 中的长期计划开关与疲劳阈值仅迁移一次，已有任务内远征设置优先。远征智能调度保留原全局 option 名、状态和 pipeline 注入，仅将显示 label 改为后勤智能调度。",
-      "verification": ["全局设置继续包含远征智能调度内部选项", "长期计划及阈值从旧全局设置迁移", "已存在的任务内远征配置不会被旧值覆盖", "桌面项目构建成功"],
+      "migration_strategy": "远征目的地与长期计划配置归本丸后勤任务；旧 GlobalOptionItems 中的长期计划开关与疲劳阈值仅迁移一次，已有任务内远征设置优先。内番耕作加成跳过条件改为开关加嵌套选择时，旧索引按原 case 名迁移为等价配置。远征智能调度保留原全局 option 名、状态和 pipeline 注入，仅将显示 label 改为后勤智能调度。",
+      "verification": ["全局设置继续包含远征智能调度内部选项", "长期计划及阈值从旧全局设置迁移", "旧内番耕作跳过条件完整迁移到新嵌套选项", "已存在的任务内远征配置不会被旧值覆盖", "桌面项目构建成功"],
       "notes": "不得把远征智能调度迁入本丸后勤任务树，否则会改变 GlobalOptionItems 的恢复路径和跨任务注入语义。"
     },
     {

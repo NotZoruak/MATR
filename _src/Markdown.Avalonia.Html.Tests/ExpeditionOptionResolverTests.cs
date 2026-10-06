@@ -7,6 +7,48 @@ namespace Markdown.Avalonia.Html.Tests;
 public class ExpeditionOptionResolverTests
 {
     [Fact]
+    public void 应识别后勤任务中的远征选项是否开启()
+    {
+        var enabledLogistics = new MaaInterface.MaaInterfaceTask
+        {
+            Name = "后勤",
+            Entry = "Expedition",
+            Option = [new MaaInterface.MaaInterfaceSelectOption { Name = "远征", Index = 0 }]
+        };
+        var disabledLogistics = new MaaInterface.MaaInterfaceTask
+        {
+            Name = "后勤",
+            Entry = "Expedition",
+            Option = [new MaaInterface.MaaInterfaceSelectOption { Name = "远征", Index = 1 }]
+        };
+
+        Assert.True(ExpeditionOptionResolver.IsExpeditionEnabled([enabledLogistics]));
+        Assert.False(ExpeditionOptionResolver.IsExpeditionEnabled([disabledLogistics]));
+        Assert.False(ExpeditionOptionResolver.IsExpeditionEnabled([]));
+    }
+
+    [Fact]
+    public void 应识别后勤任务中的内番选项是否开启()
+    {
+        var enabledLogistics = new MaaInterface.MaaInterfaceTask
+        {
+            Name = "后勤",
+            Entry = "Expedition",
+            Option = [new MaaInterface.MaaInterfaceSelectOption { Name = "内番", Index = 1 }]
+        };
+        var disabledLogistics = new MaaInterface.MaaInterfaceTask
+        {
+            Name = "后勤",
+            Entry = "Expedition",
+            Option = [new MaaInterface.MaaInterfaceSelectOption { Name = "内番", Index = 0 }]
+        };
+
+        Assert.True(ExpeditionOptionResolver.IsNaibanEnabled([enabledLogistics]));
+        Assert.False(ExpeditionOptionResolver.IsNaibanEnabled([disabledLogistics]));
+        Assert.False(ExpeditionOptionResolver.IsNaibanEnabled([]));
+    }
+
+    [Fact]
     public void 应从开启的远征设置中读取长期计划()
     {
         var longTermPlan = new MaaInterface.MaaInterfaceSelectOption { Name = "长期远征计划", Index = 1 };

@@ -8,7 +8,7 @@ using System.Threading;
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>
-/// 智能等待：读取 ExpeditionReturnTracker 的最早归队时间与全局 RefreshInterval，
+/// 智能等待：读取 ExpeditionReturnTracker 的最早后勤完成时间与全局 RefreshInterval，
 /// 取较小值 sleep 后继续流水线。替代固定 post_delay 的 E_WaitRefresh。
 /// </summary>
 public class SmartWaitAction : IMaaCustomAction
@@ -30,17 +30,17 @@ public class SmartWaitAction : IMaaCustomAction
             if (remainingSeconds > 0)
             {
                 waitSeconds = Math.Min(remainingSeconds, intervalSeconds);
-                startMsg = $"[远征计时] 最早归队 {FormatSeconds(remainingSeconds)}，实际等待 {FormatSeconds(waitSeconds)}";
+                startMsg = $"[后勤计时] 最早目标完成 {FormatSeconds(remainingSeconds)}，实际等待 {FormatSeconds(waitSeconds)}";
             }
             else if (remainingSeconds == 0)
             {
                 waitSeconds = 0;
-                startMsg = "[远征计时] 检测到队伍已归队";
+                startMsg = "[后勤计时] 检测到后勤计时目标已完成";
             }
             else
             {
                 waitSeconds = intervalSeconds;
-                startMsg = $"[远征计时] 无进行中的远征，间隔 {FormatSeconds(waitSeconds)}";
+                startMsg = $"[后勤计时] 无进行中的远征或内番，间隔 {FormatSeconds(waitSeconds)}";
             }
 
             Log(context, startMsg);
@@ -67,17 +67,17 @@ public class SmartWaitAction : IMaaCustomAction
                 }
             }
 
-            Log(context, "[远征计时] 倒计时结束");
+            Log(context, "[后勤计时] 倒计时结束");
             return true;
         }
         catch (MaaStopException)
         {
-            Log(context, "[远征计时] 检测到手动停止");
+            Log(context, "[后勤计时] 检测到手动停止");
             return false;
         }
         catch (Exception e)
         {
-            Log(context, $"[远征计时] 错误: {e.Message}");
+            Log(context, $"[后勤计时] 错误: {e.Message}");
             return false;
         }
     }
