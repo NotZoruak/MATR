@@ -8,6 +8,33 @@ namespace MFAAvalonia.Extensions.MaaFW;
 /// </summary>
 public static class ExpeditionOptionMigration
 {
+    /// <summary>将旧版内番耕作加成跳过选项迁移到开关及嵌套条件。</summary>
+    public static bool MigrateLegacyNaibanSkipCondition(MaaInterface.MaaInterfaceSelectOption option)
+    {
+        if (option.Name != "耕作加成满值时跳过内番"
+            || option.SubOptions?.Any(subOption => subOption.Name == "内番耕作加成跳过条件") == true
+            || option.Index is not int legacyIndex
+            || legacyIndex is < 0 or > 4)
+        {
+            return false;
+        }
+
+        if (legacyIndex == 0)
+        {
+            option.Index = 0;
+            return true;
+        }
+
+        option.Index = 1;
+        option.SubOptions ??= [];
+        option.SubOptions.Add(new MaaInterface.MaaInterfaceSelectOption
+        {
+            Name = "内番耕作加成跳过条件",
+            Index = legacyIndex - 1
+        });
+        return true;
+    }
+
     /// <summary>
     /// 将旧全局长期计划开关与疲劳阈值迁入本丸后勤的远征设置。
     /// </summary>

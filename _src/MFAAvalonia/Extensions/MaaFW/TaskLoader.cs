@@ -588,6 +588,9 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
 
                 if (existingDict.TryGetValue(optName, out var existing))
                 {
+                    if (ExpeditionOptionMigration.MigrateLegacyNaibanSkipCondition(existing))
+                        LoggerHelper.Info("[配置迁移] 已迁移内番耕作加成跳过条件");
+
                     // 保留原有对象，只更新必要的属性（如果interface 定义变了需要调整）
                     // 这样 UI 控件的事件处理器仍然引用同一个对象，用户的修改能正确反映
                     if ((maaInterface?.Option?.TryGetValue(optName, out var io) ?? false) && io.Cases is { Count: > 0 })
