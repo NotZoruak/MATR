@@ -7,7 +7,6 @@ namespace Markdown.Avalonia.Html.Tests;
 public class ExpeditionSettingsMigrationTests
 {
     [Theory]
-    [InlineData(0, 0, -1)]
     [InlineData(1, 1, 0)]
     [InlineData(2, 1, 1)]
     [InlineData(3, 1, 2)]
@@ -29,6 +28,20 @@ public class ExpeditionSettingsMigrationTests
             Assert.Null(condition);
         else
             Assert.Equal(expectedConditionIndex, condition?.Index);
+    }
+
+    [Fact]
+    public void 旧内番不跳过设置保持关闭且无需迁移()
+    {
+        var option = new MaaInterface.MaaInterfaceSelectOption
+        {
+            Name = "耕作加成满值时跳过内番",
+            Index = 0
+        };
+
+        Assert.False(ExpeditionOptionMigration.MigrateLegacyNaibanSkipCondition(option));
+        Assert.Equal(0, option.Index);
+        Assert.Empty(option.SubOptions ?? []);
     }
 
     [Fact]

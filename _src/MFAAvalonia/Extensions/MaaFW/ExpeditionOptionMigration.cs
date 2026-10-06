@@ -14,15 +14,9 @@ public static class ExpeditionOptionMigration
         if (option.Name != "耕作加成满值时跳过内番"
             || option.SubOptions?.Any(subOption => subOption.Name == "内番耕作加成跳过条件") == true
             || option.Index is not int legacyIndex
-            || legacyIndex is < 0 or > 4)
+            || legacyIndex is < 1 or > 4)
         {
             return false;
-        }
-
-        if (legacyIndex == 0)
-        {
-            option.Index = 0;
-            return true;
         }
 
         option.Index = 1;
