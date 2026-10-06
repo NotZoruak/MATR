@@ -21,11 +21,11 @@ public static class ExpeditionReturnTracker
         _earliestReturn = null;
     }
 
-    /// <summary>获取最早目标的剩余秒数，无目标或已过期时返回 0</summary>
+    /// <summary>获取最早目标的剩余秒数；无目标返回 -1，已过期返回 0。</summary>
     public static int GetRemainingSeconds()
     {
         if (_earliestReturn == null)
-            return 0;
+            return -1;
 
         var remaining = (_earliestReturn.Value - DateTime.Now).TotalSeconds;
         return remaining > 0 ? (int)Math.Ceiling(remaining) : 0;

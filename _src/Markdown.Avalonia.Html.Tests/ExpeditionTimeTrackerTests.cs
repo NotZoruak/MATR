@@ -1,10 +1,29 @@
 using MFAAvalonia.Extensions.MaaFW.Custom;
+using System;
 using Xunit;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class ExpeditionTimeTrackerTests
 {
+    [Fact]
+    public void 无目标时返回负数以便按配置间隔等待()
+    {
+        ExpeditionReturnTracker.Reset();
+
+        Assert.Equal(-1, ExpeditionReturnTracker.GetRemainingSeconds());
+    }
+
+    [Fact]
+    public void 已到期目标返回零秒()
+    {
+        ExpeditionReturnTracker.SetEarliestReturn(DateTime.Now.AddSeconds(-5));
+
+        Assert.Equal(0, ExpeditionReturnTracker.GetRemainingSeconds());
+
+        ExpeditionReturnTracker.Reset();
+    }
+
     [Theory]
     [InlineData("(14:04:00", 50640)]
     [InlineData("14:04:00)", 50640)]
