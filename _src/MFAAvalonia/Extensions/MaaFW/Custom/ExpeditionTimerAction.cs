@@ -30,10 +30,18 @@ public class ExpeditionTimerAction : IMaaCustomAction
                 try
                 {
                     var earliest = ExpeditionTimeTracker.ScanAndStore(context);
-                    if (earliest.HasValue && earliest.Value >= 0)
+                    if (earliest.HasValue)
                     {
-                        intervalSeconds = Math.Min(earliest.Value, configuredInterval);
-                        LoggerHelper.Info($"[后勤计时] 最早目标完成 {earliest.Value}s, 实际等待 {intervalSeconds}s");
+                        intervalSeconds = GetEffectiveIntervalSeconds(earliest, configuredInterval);
+                        if (earliest.Value == 0)
+                        {
+                            ExpeditionReturnTracker.Reset();
+                            LoggerHelper.Info($"[后勤计时] 最早目标已到期，按刷新间隔等待 {intervalSeconds}s");
+                        }
+                        else
+                        {
+                            LoggerHelper.Info($"[后勤计时] 最早目标完成 {earliest.Value}s, 实际等待 {intervalSeconds}s");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -73,4 +81,8 @@ public class ExpeditionTimerAction : IMaaCustomAction
             return false;
         }
     }
+
+    /// <summary>计算调度等待间隔；已到期或无目标时回退到配置间隔，避免零秒空转。</summary>
+    public static int GetEffectiveIntervalSeconds(int? earliestSeconds, int configuredInterval)
+        => earliestSeconds is > 0 ? Math.Min(earliestSeconds.Value, configuredInterval) : configuredInterval;
 }

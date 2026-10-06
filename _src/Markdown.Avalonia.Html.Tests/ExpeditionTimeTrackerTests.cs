@@ -56,4 +56,14 @@ public class ExpeditionTimeTrackerTests
 
         Assert.Null(result);
     }
+
+    [Theory]
+    [InlineData(0, 600, 600)]
+    [InlineData(300, 600, 300)]
+    [InlineData(900, 600, 600)]
+    [InlineData(null, 600, 600)]
+    public void 零秒或无目标时应回退刷新间隔(int? earliestSeconds, int configuredInterval, int expectedInterval)
+    {
+        Assert.Equal(expectedInterval, ExpeditionTimerAction.GetEffectiveIntervalSeconds(earliestSeconds, configuredInterval));
+    }
 }
