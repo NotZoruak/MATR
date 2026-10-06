@@ -21,6 +21,22 @@ public class SwordNameMatcherTests
         Assert.True(SwordNameMatcher.IsExactMatch(ocrText, target));
     }
 
+    [Fact]
+    public void 成员复核应把漏识喰的刀名解析为唯一标准名()
+    {
+        var resolved = SwordNameMatcher.FindUniqueMatchedName("骨藤四郎", ["骨喰藤四郎", "骨太刀"]);
+
+        Assert.Equal("骨喰藤四郎", resolved);
+    }
+
+    [Fact]
+    public void 成员复核遇到多个匹配候选时应保持无法确认()
+    {
+        var resolved = SwordNameMatcher.FindUniqueMatchedName("骨藤四郎", ["骨喰藤四郎", "骨藤四郎"]);
+
+        Assert.Null(resolved);
+    }
+
     [Theory]
     [InlineData("蜻蛉切", "髭切")]
     [InlineData("石切丸", "髭切")]
