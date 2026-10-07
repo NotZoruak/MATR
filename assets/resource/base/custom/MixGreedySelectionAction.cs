@@ -6,6 +6,7 @@ using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -30,6 +31,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
 
     private const int RarityX = 246;
     private const int RarityY = 211;
+    private static readonly int[] RarityNameRoi = [293, 240, 140, 28];
     private const int LevelX = 415;
     private const int LevelY = 299;
     private const int LevelWidth = 20;
@@ -335,6 +337,54 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 ActionParamHelper.SleepWithStopCheck(context, ScreenReadyIntervalMilliseconds);
         }
 
+        if (TryReadRarityFromSwordName(context, out rarity))
+            return true;
+
+        rarity = 0;
+        return false;
+    }
+
+    /// <summary>取色失败后，使用刀名 OCR 识别已知稀有度的刀剑。</summary>
+    private static bool TryReadRarityFromSwordName<T>(T context, out int rarity) where T : IMaaContext
+    {
+        using var image = context.GetImage();
+        if (image == null)
+        {
+            rarity = 0;
+            return false;
+        }
+
+        var node = new MaaNode
+        {
+            Name = "MixRaritySwordNameOcr",
+            Recognition = "OCR",
+            OnlyRec = true,
+            Roi = new List<int>(RarityNameRoi),
+        };
+        var detail = context.RunRecognition(node, image);
+        var query = string.IsNullOrWhiteSpace(detail?.Detail)
+            ? null
+            : Newtonsoft.Json.JsonConvert.DeserializeObject<MaaExtensions.RecognitionQuery>(detail.Detail);
+        var text = query?.Best?.Text ?? string.Empty;
+
+        if (text.Contains("石切丸", StringComparison.Ordinal)
+            || text.Contains("太郎太刀", StringComparison.Ordinal)
+            || text.Contains("次郎太刀", StringComparison.Ordinal)
+            || text.Contains("称称切丸", StringComparison.Ordinal))
+        {
+            rarity = 3;
+            LoggerHelper.Info($"[习合] 刀名 OCR 识别为{text}，按稀有度3处理");
+            return true;
+        }
+
+        if (text.Contains("萤丸", StringComparison.Ordinal))
+        {
+            rarity = 4;
+            LoggerHelper.Info($"[习合] 刀名 OCR 识别为{text}，按稀有度4处理");
+            return true;
+        }
+
+        LoggerHelper.Warning($"[习合] 稀有度取色失败，刀名 OCR 未匹配已知刀剑：{text}");
         rarity = 0;
         return false;
     }

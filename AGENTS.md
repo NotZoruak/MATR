@@ -27,6 +27,12 @@ MATR/
 
 > The following directories are auto-generated at runtime and excluded in `.gitignore`: `config/`, `debug/`, `logs/`, `temp/`, `backup/`, `libs/`, `plugins/`.
 
+## Terminology
+
+- **MaaFramework / MaaFW** 指自动化任务框架，包括 Pipeline 协议、原生运行库及其 .NET 封装（如 `Maa.Framework`、`Maa.Framework.Runtimes`）。用户提到“更新框架”时，默认指更新 MaaFramework 及相关运行库。
+- **MFAAvalonia** 指本项目使用的 Avalonia 桌面应用/UI 上游，不是 MaaFramework。只有用户明确提到 MFAAvalonia、UI 框架或 Avalonia 时，才按应用/UI 上游或 Avalonia 依赖升级处理。
+- 两者升级是不同工作：更新 MaaFramework 时重点核对 MaaFW 协议、托管封装与原生运行库的版本兼容；更新 MFAAvalonia 时重点核对 `_src/` 的上游定制。不得将两种升级混称或互相替代。
+
 ### Upstream Source Customizations
 
 `_src/` is a second-development fork of [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia). The following lists MATR's customizations over upstream:
@@ -400,7 +406,7 @@ All version numbers follow [Semantic Versioning](https://semver.org/lang/zh-CN/)
 
 测试版和正式版：都先通过 GitHub PR 把 `develop` 合并进 `main`（使用 Merge commit），合并后本地执行 `git switch main` 与 `git pull --ff-only`，再将 `develop` 快进同步到 `main` 的合并提交，最后在 `main` 上打 tag 并打包。`main` 已开启分支保护，本地合并后直接 `git push` 会被拒绝。
 
-测试版 tag 格式为 `vX.Y.Z-beta.N`，在 `main` 上打 tag 并创建 GitHub Release 时勾选 pre-release；正式版使用 `vX.Y.Z`，不勾选 pre-release。测试版发布后确认 MirrorChyan 将其识别为测试版频道。每次发布完成后确保 `main` 与 `develop` 同步。
+测试版 tag 格式为 `vX.Y.Z-beta.N`，正式版使用 `vX.Y.Z`；两者都创建普通 GitHub Release，不勾选 pre-release。测试版发布后确认 MirrorChyan 根据 tag 将其识别为测试版频道。每次发布完成后确保 `main` 与 `develop` 同步。
 
 **Local one-command packaging is the release flow** (since 2026-08-29; the GitHub Actions release workflow has been removed):
 
