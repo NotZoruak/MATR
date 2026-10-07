@@ -461,11 +461,15 @@ public partial class TimerModel : ViewModelBase
             get => _timerAction;
             set
             {
-                SetProperty(ref _timerAction, value);
+                if (!SetProperty(ref _timerAction, value)) return;
+                OnPropertyChanged(nameof(TimerActionIndex));
+                OnPropertyChanged(nameof(ShowStopTaskOptions));
                 GlobalConfiguration.SetTimerAction(TimerId, ((int)value).ToString());
                 PlatformTimerScheduler.RequestReschedule();
             }
         }
+
+        public bool ShowStopTaskOptions => TimerAction == TimerActionType.StopTask;
 
         public int TimerActionIndex
         {

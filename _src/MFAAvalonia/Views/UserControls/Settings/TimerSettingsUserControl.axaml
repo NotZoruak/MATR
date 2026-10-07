@@ -181,7 +181,7 @@
                                             VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DockPanel>
-                                <StackPanel IsVisible="{calcBinding:Binding 'TimerActionIndex == 1'}"
+                                <StackPanel IsVisible="{Binding ShowStopTaskOptions}"
                                             Spacing="8">
                                     <DockPanel>
                                         <ToggleSwitch
