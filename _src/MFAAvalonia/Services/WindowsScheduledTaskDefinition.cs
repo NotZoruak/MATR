@@ -40,7 +40,8 @@ public sealed record WindowsScheduledTaskContext(
     string WorkingDirectory,
     bool ForceScheduledStart,
     IReadOnlyCollection<string> ValidInstanceIds,
-    DateTime Now);
+    DateTime Now,
+    bool FinishCurrentTaskRoundOnScheduledStart = false);
 
 /// <summary>已生成完成、可以直接写入系统任务计划程序的计划任务定义。</summary>
 public sealed record WindowsScheduledTaskDefinition(
@@ -109,10 +110,19 @@ public static class WindowsScheduledTaskDefinitionBuilder
     }
 
     /// <summary>生成启动 MATR 的命令行参数。</summary>
-    public static string BuildArguments(string instanceId, bool forceScheduledStart)
+    public static string BuildArguments(
+        string instanceId,
+        bool forceScheduledStart,
+        bool finishCurrentTaskRoundOnScheduledStart = false)
     {
         var arguments = $"--autostart --instance \"{instanceId}\"";
-        return forceScheduledStart ? $"{arguments} --forceStart" : arguments;
+        if (!forceScheduledStart)
+            return arguments;
+
+        arguments += " --forceStart";
+        return finishCurrentTaskRoundOnScheduledStart
+            ? $"{arguments} --finish-current-round"
+            : arguments;
     }
 
     /// <summary>判断定时器的重复规则是否至少命中一天，未命中时不会创建计划任务。</summary>
@@ -199,7 +209,10 @@ public static class WindowsScheduledTaskDefinitionBuilder
                     new XElement(TaskNamespace + "Exec",
                         new XElement(TaskNamespace + "Command", context.ExecutablePath),
                         new XElement(TaskNamespace + "Arguments",
-                            BuildArguments(timer.InstanceId ?? string.Empty, context.ForceScheduledStart)),
+                            BuildArguments(
+                                timer.InstanceId ?? string.Empty,
+                                context.ForceScheduledStart,
+                                context.FinishCurrentTaskRoundOnScheduledStart)),
                         new XElement(TaskNamespace + "WorkingDirectory", context.WorkingDirectory)))));
 
         return document.ToString();

@@ -44,6 +44,7 @@ public partial class MFATask : ObservableObject
     public DragItemViewModel? SourceItem { get; set; }
     public long RunId { get; set; }
     public bool ContinueOnError { get; set; }
+    public bool IsOrdinaryTask { get; set; }
     public TaskEarlyCompletionRequest EarlyCompletionRequest { get; } = new();
 
     /// <summary>

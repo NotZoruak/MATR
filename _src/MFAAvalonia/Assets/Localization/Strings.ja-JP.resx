@@ -991,6 +991,12 @@
   <data name="ForceScheduledStartTip" xml:space="preserve">
         <value>現在のタスクを停止し、停止が完了したら新しいタスクを開始します</value>
     </data>
+  <data name="FinishCurrentTaskRoundOnScheduledStart" xml:space="preserve">
+        <value>スケジュール時のスムーズな切り替え</value>
+    </data>
+  <data name="FinishCurrentTaskRoundOnScheduledStartTip" xml:space="preserve">
+        <value>強制スケジュール開始が適用されると、実行中の通常タスクは現在の1周を完了してからキューを停止し、予定タスクを開始します</value>
+    </data>
   <data name="GameResourceUpdated" xml:space="preserve">
         <value>ゲームリソースが更新されました。ソフトウェアを再起動してください。</value>
     </data>

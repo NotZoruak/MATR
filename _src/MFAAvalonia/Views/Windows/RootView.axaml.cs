@@ -434,7 +434,11 @@ public partial class RootView : SukiWindow
                 // 命令行自动启动同样算本分钟的定时触发：程序刚启动时应用内计时器的首次 tick
                 // 仍可能落在同一分钟（例如 15:29:51 启动、15:30:51 首次 tick），必须回写标记。
                 TimerModel.Instance.MarkScheduledStartHandled(vm.Processor.InstanceId);
-                StartCommandLineAutoRun(vm, AppRuntime.QuitAfterRun, AppRuntime.ForceStart);
+                StartCommandLineAutoRun(
+                    vm,
+                    AppRuntime.QuitAfterRun,
+                    AppRuntime.ForceStart,
+                    AppRuntime.FinishCurrentTaskRound);
                 return;
             }
 
@@ -944,7 +948,11 @@ public partial class RootView : SukiWindow
 
         var viewModel = manager.GetViewModel(targetId);
         if (viewModel != null)
-            StartCommandLineAutoRun(viewModel, command.QuitAfterRun, command.ForceStart);
+            StartCommandLineAutoRun(
+                viewModel,
+                command.QuitAfterRun,
+                command.ForceStart,
+                command.FinishCurrentTaskRound);
     }
 
     private async Task BringToForegroundAsync()
@@ -1023,7 +1031,8 @@ public partial class RootView : SukiWindow
     private static void StartCommandLineAutoRun(
         TaskQueueViewModel viewModel,
         bool quitAfterRun,
-        bool forceStart = false)
+        bool forceStart = false,
+        bool finishCurrentTaskRound = false)
     {
         if (viewModel.IsRunning)
         {
@@ -1033,12 +1042,20 @@ public partial class RootView : SukiWindow
                 return;
             }
 
-            LoggerHelper.Info($"命令行强制启动：正在停止实例 {viewModel.Processor.InstanceId} 的现有任务");
-            viewModel.StopTask(() => DispatcherHelper.PostOnMainThread(async () =>
+            Action continueStart = () => DispatcherHelper.PostOnMainThread(async () =>
             {
                 await Task.Delay(100);
                 StartCommandLineAutoRun(viewModel, quitAfterRun);
-            }));
+            });
+            if (finishCurrentTaskRound
+                && viewModel.RequestStopAfterCurrentOrdinaryTask(continueStart))
+            {
+                LoggerHelper.Info($"计划任务强制启动：普通任务完成当前一圈后停止实例 {viewModel.Processor.InstanceId} 的任务队列");
+                return;
+            }
+
+            LoggerHelper.Info($"命令行强制启动：正在停止实例 {viewModel.Processor.InstanceId} 的现有任务");
+            viewModel.StopTask(continueStart);
             return;
         }
 

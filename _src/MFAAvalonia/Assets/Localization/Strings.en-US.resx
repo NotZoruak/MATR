@@ -534,6 +534,12 @@
     <data name="ForceScheduledStartTip" xml:space="preserve">
         <value>Stop current task, then start new tasks after stopping completes</value>
     </data>
+    <data name="FinishCurrentTaskRoundOnScheduledStart" xml:space="preserve">
+        <value>Smooth scheduled handoff</value>
+    </data>
+    <data name="FinishCurrentTaskRoundOnScheduledStartTip" xml:space="preserve">
+        <value>When forced scheduled start takes effect, a running regular task finishes its current round before the queue stops and the scheduled task starts</value>
+    </data>
     <data name="GameResourceUpdated" xml:space="preserve">
         <value>Game resources updated, please restart software.</value>
     </data>

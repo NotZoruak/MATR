@@ -3717,6 +3717,8 @@ public class MaaProcessor
     private DateTime? _startTime;
     private List<DragItemViewModel> _tempTasks = [];
     private MFATask? _activeQueueTask;
+    private int _stopQueueAfterActiveTaskRequested;
+    private Action? _stopQueueAfterActiveTaskAction;
     private ExternalNotificationRunSummary? _externalNotificationRunSummary;
     private ExternalNotificationRunSession? _externalNotificationRunSession;
 
@@ -3803,6 +3805,18 @@ public class MaaProcessor
         return activeTask?.RequestEarlyCompletion(reason) == true;
     }
 
+    public bool RequestStopAfterCurrentOrdinaryTask(Action action)
+    {
+        var activeTask = Volatile.Read(ref _activeQueueTask);
+        if (activeTask?.IsOrdinaryTask != true)
+            return false;
+
+        Interlocked.Exchange(ref _stopQueueAfterActiveTaskAction, action);
+        Volatile.Write(ref _stopQueueAfterActiveTaskRequested, 1);
+        activeTask.RequestEarlyCompletion("定时强制启动：完成当前任务一圈后停止任务队列");
+        return true;
+    }
+
     /// <summary>
     /// 读取当前正在执行的队列项的任务定义，供资源侧 action 解析任务级配置。
     /// </summary>
@@ -3867,7 +3881,7 @@ public class MaaProcessor
             await TaskManager.RunTaskAsync(async () =>
             {
                 var queueResult = await ExecuteTasks(token);
-                Stop(Status, true, onlyStart, queueCompleted: queueResult.QueueCompleted);
+                Stop(Status, true, onlyStart, action: queueResult.StopAction, queueCompleted: queueResult.QueueCompleted);
             }, name: "启动任务");
         }
         finally
@@ -3881,7 +3895,7 @@ public class MaaProcessor
 
     }
 
-    private readonly record struct TaskQueueResult(bool QueueCompleted);
+    private readonly record struct TaskQueueResult(bool QueueCompleted, Action? StopAction = null);
 
     async private Task<TaskQueueResult> ExecuteTasks(CancellationToken token)
     {
@@ -3906,6 +3920,12 @@ public class MaaProcessor
             finally
             {
                 Interlocked.CompareExchange(ref _activeQueueTask, null, task);
+            }
+            if (Interlocked.Exchange(ref _stopQueueAfterActiveTaskRequested, 0) == 1)
+            {
+                Status = MFATask.MFATaskStatus.STOPPED;
+                var stopAction = Interlocked.Exchange(ref _stopQueueAfterActiveTaskAction, null);
+                return new TaskQueueResult(false, stopAction);
             }
             if (result.Status == MFATask.MFATaskStatus.SUCCEEDED && task.SourceItem != null)
             {
@@ -5206,7 +5226,7 @@ public class MaaProcessor
                     // if (task.Tasks != null)
                     //     NodeDictionary = task.Tasks;
                     return await TryRunTasksAsync(MaaTasker, task.Entry, task.Param, token);
-                }, task.Count ?? 1, task.SourceItem, task.RunId
+                }, task.Count ?? 1, task.SourceItem, task.RunId, isOrdinaryTask: true
             ));
 
             // 最后一个任务后不插入；MFAA 特殊任务不需要先回本丸；同一任务展开出的后续项之间同样不需要。
@@ -5343,13 +5363,14 @@ public class MaaProcessor
     }
 
     private MFATask CreateMaaFWTask(string? name, Func<Task<MaaJobStatus>> action, int count = 1,
-        DragItemViewModel? sourceItem = null, long runId = 0)
+        DragItemViewModel? sourceItem = null, long runId = 0, bool isOrdinaryTask = false)
     {
         return new MFATask
         {
             Name = name,
             Count = count,
             Type = MFATask.MFATaskType.MAAFW,
+            IsOrdinaryTask = isOrdinaryTask,
             MaaAction = action,
             OwnerViewModel = ViewModel,
             SourceItem = sourceItem,
