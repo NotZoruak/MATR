@@ -33,6 +33,7 @@
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAdvertisementPopup",
       "[JumpBack]IsGameIcon",
+      "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
       "[JumpBack]IsGameUpdatePopup",
       "[JumpBack]IsInGameUpdatePopup",

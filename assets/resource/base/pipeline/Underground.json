@@ -35,6 +35,7 @@
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
       "[JumpBack]IsGameIcon",
+      "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
       "[JumpBack]IsGameUpdatePopup",
       "[JumpBack]IsInGameUpdatePopup",

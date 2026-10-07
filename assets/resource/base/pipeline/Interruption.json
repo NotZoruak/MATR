@@ -317,5 +317,20 @@
       }
     }
   },
+  "IsServerSelection": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [565, 303, 151, 36],
+        "expected": "请选择服务器"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [606, 448, 67, 38]
+      }
+    }
+  },
   "FallbackWait": {}
 }
