@@ -2004,8 +2004,33 @@
       "time": 200,
       "target": [182, 380, 55, 27]
     },
-    "next": ["E_NaibanVerifySwordSelector1", "E_NaibanOpenSwordSelector1"],
+    "next": ["E_NaibanVerifySwordSelector1", "E_NaibanDetectAccidentalAssignment1", "E_NaibanOpenSwordSelector1"],
     "on_error": ["E_NaibanPrepareSwordSelection"]
+  },
+  "E_NaibanDetectAccidentalAssignment1": {
+    "recognition": {
+      "type": "And",
+      "param": {
+        "all_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "roi": [560, 0, 170, 50],
+              "expected": "今日内番表"
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "roi": [300, 365, 45, 40],
+              "template": "Common/移除内番安排.png",
+              "threshold": [0.9]
+            }
+          }
+        ]
+      }
+    },
+    "next": ["E_NaibanRemoveAssignedHub"]
   },
   "E_NaibanVerifySwordSelector1": {
     "recognition": {
@@ -2142,8 +2167,33 @@
       "time": 200,
       "target": [178, 473, 66, 30]
     },
-    "next": ["E_NaibanVerifySwordSelector2", "E_NaibanOpenSwordSelector2"],
+    "next": ["E_NaibanVerifySwordSelector2", "E_NaibanDetectAccidentalAssignment2", "E_NaibanOpenSwordSelector2"],
     "on_error": ["E_NaibanFindSword1"]
+  },
+  "E_NaibanDetectAccidentalAssignment2": {
+    "recognition": {
+      "type": "And",
+      "param": {
+        "all_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "roi": [560, 0, 170, 50],
+              "expected": "今日内番表"
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "roi": [300, 457, 45, 40],
+              "template": "Common/移除内番安排.png",
+              "threshold": [0.9]
+            }
+          }
+        ]
+      }
+    },
+    "next": ["E_NaibanRemoveAssignedHub"]
   },
   "E_NaibanVerifySwordSelector2": {
     "recognition": {
