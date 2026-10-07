@@ -780,6 +780,15 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         Processor.Stop(MFATask.MFATaskStatus.STOPPED, action: action);
     }
 
+    public bool RequestStopAfterCurrentOrdinaryTask(Action action)
+    {
+        if (!Processor.RequestStopAfterCurrentOrdinaryTask(action))
+            return false;
+
+        IsRunning = false;
+        return true;
+    }
+
     private static string? ValidateOptionsRecursive(IEnumerable<MaaInterface.MaaInterfaceSelectOption> options)
     {
         foreach (var selectOption in options)

@@ -212,7 +212,8 @@ public static class WindowsScheduledTaskSyncService
                 Path.GetDirectoryName(executablePath) ?? AppContext.BaseDirectory,
                 timerModel.ForceScheduledStart,
                 instances.Select(instance => instance.Id).ToList(),
-                DateTime.Now);
+                DateTime.Now,
+                timerModel.FinishCurrentTaskRoundOnScheduledStart);
 
             return new SyncSnapshot(timers, context);
         });

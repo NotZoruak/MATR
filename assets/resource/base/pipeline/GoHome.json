@@ -14,6 +14,9 @@
       "G_IsInMenu",
       "G_ClickMenu",
       "G_LeaveTroopRecord",
+      "G_RBExitTeamSwitch",
+      "G_RBRoundDone",
+      "G_ECRoundDone",
       "[JumpBack]IsAnnouncementPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -152,6 +155,48 @@
         "target": [63, 28, 17, 17]
       }
     },
+    "next": ["G_DetectWhereAmI"]
+  },
+  "G_RBExitTeamSwitch": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [918, 337, 31, 35],
+        "template": "Activity/离开部队交替.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["G_DetectWhereAmI"]
+  },
+  "G_RBRoundDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [149, 204, 967, 175],
+        "expected": "完成|撤退"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1117, 671, 2, 2]
+      }
+    },
+    "next": ["G_DetectWhereAmI"]
+  },
+  "G_ECRoundDone": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [468, 188, 313, 41],
+        "template": "Activity/江户城_特殊掉落.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {"type": "Click"},
     "next": ["G_DetectWhereAmI"]
   },
   "G_RestartGame": {

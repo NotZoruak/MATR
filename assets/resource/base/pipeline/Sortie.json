@@ -502,6 +502,7 @@
       }
     },
     "next": ["S_IsIsekaiRegionEnd"],
+    "on_error": ["S_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[常驻作战] 完成一圈",

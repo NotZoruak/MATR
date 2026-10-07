@@ -13,6 +13,7 @@ public static class ConfigurationKeys
     public const string WelcomeAnnouncementSnapshot = "AnnouncementInfo.WelcomeSnapshot";
     public const string DoNotShowChangelogAgain = "Changelog.DoNotShowAgain";
     public const string ForceScheduledStart = "ForceScheduledStart";
+    public const string FinishCurrentTaskRoundOnScheduledStart = "FinishCurrentTaskRoundOnScheduledStart";
     public const string CustomConfig = "CustomConfig";
     /// <summary>上一次同步 Windows 计划任务时的安装目录归属令牌</summary>
     public const string WindowsScheduledTaskScope = "Timer.WindowsScheduledTaskScope";

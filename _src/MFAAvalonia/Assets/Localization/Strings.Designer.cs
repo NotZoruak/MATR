@@ -1480,6 +1480,24 @@ namespace MFAAvalonia.Assets.Localization {
                 return ResourceManager.GetString("ForceScheduledStartTip", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 平滑定时切换.
+        /// </summary>
+        public static string FinishCurrentTaskRoundOnScheduledStart {
+            get {
+                return ResourceManager.GetString("FinishCurrentTaskRoundOnScheduledStart", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to 强制定时启动生效时，正在执行的普通任务会完成当前一圈，再停止任务队列并启动定时任务.
+        /// </summary>
+        public static string FinishCurrentTaskRoundOnScheduledStartTip {
+            get {
+                return ResourceManager.GetString("FinishCurrentTaskRoundOnScheduledStartTip", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to 游戏资源已更新，请重启软件。.

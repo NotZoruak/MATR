@@ -30,6 +30,7 @@ public partial class TimerModel : ViewModelBase
 
     [ObservableProperty] private bool _customConfig;
     [ObservableProperty] private bool _forceScheduledStart;
+    [ObservableProperty] private bool _finishCurrentTaskRoundOnScheduledStart;
 
     /// <summary>
     /// 实例列表，供 UI ComboBox 绑定（UI 上仍显示为"配置"）
@@ -48,10 +49,18 @@ public partial class TimerModel : ViewModelBase
         PlatformTimerScheduler.RequestReschedule();
     }
 
+    partial void OnFinishCurrentTaskRoundOnScheduledStartChanged(bool value)
+    {
+        GlobalConfiguration.SetValue(ConfigurationKeys.FinishCurrentTaskRoundOnScheduledStart, value.ToString());
+        PlatformTimerScheduler.RequestReschedule();
+    }
+
     private TimerModel()
     {
         CustomConfig = GlobalConfiguration.GetValue(ConfigurationKeys.CustomConfig, bool.FalseString) == bool.TrueString;
         ForceScheduledStart = GlobalConfiguration.GetValue(ConfigurationKeys.ForceScheduledStart, bool.FalseString) == bool.TrueString;
+        FinishCurrentTaskRoundOnScheduledStart = GlobalConfiguration.GetValue(
+            ConfigurationKeys.FinishCurrentTaskRoundOnScheduledStart, bool.FalseString) == bool.TrueString;
 
         var count = GlobalConfiguration.GetTimerCount(8);
         for (var i = 0; i < count; i++)
@@ -342,7 +351,11 @@ public partial class TimerModel : ViewModelBase
         else
         {
             if (ForceScheduledStart && vm.IsRunning)
-                vm.StopTask(vm.StartTask);
+            {
+                if (!FinishCurrentTaskRoundOnScheduledStart
+                    || !vm.RequestStopAfterCurrentOrdinaryTask(vm.StartTask))
+                    vm.StopTask(vm.StartTask);
+            }
             else
                 vm.StartTask();
         }
@@ -461,11 +474,15 @@ public partial class TimerModel : ViewModelBase
             get => _timerAction;
             set
             {
-                SetProperty(ref _timerAction, value);
+                if (!SetProperty(ref _timerAction, value)) return;
+                OnPropertyChanged(nameof(TimerActionIndex));
+                OnPropertyChanged(nameof(ShowStopTaskOptions));
                 GlobalConfiguration.SetTimerAction(TimerId, ((int)value).ToString());
                 PlatformTimerScheduler.RequestReschedule();
             }
         }
+
+        public bool ShowStopTaskOptions => TimerAction == TimerActionType.StopTask;
 
         public int TimerActionIndex
         {

@@ -1515,7 +1515,8 @@
       "HV_IsPostSwordDrop",
       "HV_IsPreSortieConfirm",
       "HV_SortieSuccess"
-    ]
+    ],
+    "on_error": ["HV_DetectWhereAmI"]
   },
   "HV_PostKebiishi1": {
     "recognition": {

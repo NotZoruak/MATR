@@ -189,6 +189,8 @@ public static class LangKeys
 	public static readonly string FollowingSystem = "FollowingSystem";
 	public static readonly string ForceScheduledStart = "ForceScheduledStart";
 	public static readonly string ForceScheduledStartTip = "ForceScheduledStartTip";
+	public static readonly string FinishCurrentTaskRoundOnScheduledStart = "FinishCurrentTaskRoundOnScheduledStart";
+	public static readonly string FinishCurrentTaskRoundOnScheduledStartTip = "FinishCurrentTaskRoundOnScheduledStartTip";
 	public static readonly string GameResourceUpdated = "GameResourceUpdated";
 	public static readonly string General = "General";
 	public static readonly string GettingLatestMaaFW = "GettingLatestMaaFW";

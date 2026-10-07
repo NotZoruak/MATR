@@ -20,7 +20,8 @@ public static class AppRuntime
         bool AutoStart,
         bool QuitAfterRun,
         bool ForceStart,
-        string? InstanceSelector);
+        string? InstanceSelector,
+        bool FinishCurrentTaskRound = false);
 
     public static Dictionary<string, string> Args { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -47,6 +48,10 @@ public static class AppRuntime
         IsAutoStart
         && RequestedInstance != null
         && Args.ContainsKey("force-start");
+
+    public static bool FinishCurrentTaskRound =>
+        ForceStart
+        && Args.ContainsKey("finish-current-round");
 
     public static string? RequestedInstance =>
         Args.TryGetValue("instance", out var value) && !string.IsNullOrWhiteSpace(value)
@@ -102,6 +107,7 @@ public static class AppRuntime
             "c" or "i" => "instance",
             "q" => "quit-after-run",
             "f" or "forcestart" => "force-start",
+            "finishcurrentround" => "finish-current-round",
             "h" => "help",
             _ => key.ToLowerInvariant()
         };
@@ -138,6 +144,9 @@ MFAAvalonia 命令行参数
   -f, --forceStart
       仅与 --autostart 和 -i/-c/--instance 同时使用时生效
       如果目标实例正在运行，先停止其当前任务，再重新启动
+
+  --finish-current-round
+      仅用于计划任务的强制启动；普通任务完成当前一圈后停止队列并启动计划任务
 
 示例:
   {executableName} --instance "日常任务"
@@ -204,7 +213,12 @@ MFAAvalonia 命令行参数
         if (IsNewInstance || string.IsNullOrEmpty(_pipeName))
             return false;
 
-        var command = new LaunchCommand(IsAutoStart, QuitAfterRun, ForceStart, RequestedInstance);
+        var command = new LaunchCommand(
+            IsAutoStart,
+            QuitAfterRun,
+            ForceStart,
+            RequestedInstance,
+            FinishCurrentTaskRound);
         var deadline = Environment.TickCount64 + timeoutMilliseconds;
 
         while (Environment.TickCount64 < deadline)

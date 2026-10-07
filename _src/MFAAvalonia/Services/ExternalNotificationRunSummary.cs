@@ -8,6 +8,7 @@ namespace MFAAvalonia.Services;
 public sealed class ExternalNotificationRunSummary
 {
     private readonly Dictionary<string, ExternalNotificationTaskSummary> _tasks = new(StringComparer.Ordinal);
+    private readonly List<ExternalNotificationFailedTaskSummary> _failedTasks = [];
     private readonly Dictionary<string, int> _resources = new(StringComparer.Ordinal);
     private readonly Dictionary<string, Dictionary<string, int>> _swordDrops = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _logisticsCounts = new(StringComparer.Ordinal);
@@ -25,6 +26,7 @@ public sealed class ExternalNotificationRunSummary
     public string InstanceName { get; }
     public DateTime StartedAt { get; }
     public IReadOnlyDictionary<string, ExternalNotificationTaskSummary> Tasks => new ReadOnlyDictionary<string, ExternalNotificationTaskSummary>(_tasks);
+    public IReadOnlyList<ExternalNotificationFailedTaskSummary> FailedTasks => _failedTasks;
     public IReadOnlyDictionary<string, int> Resources => new ReadOnlyDictionary<string, int>(_resources);
     public IReadOnlyDictionary<string, Dictionary<string, int>> SwordDrops => new ReadOnlyDictionary<string, Dictionary<string, int>>(_swordDrops);
     public IReadOnlyDictionary<string, int> LogisticsCounts => new ReadOnlyDictionary<string, int>(_logisticsCounts);
@@ -45,6 +47,12 @@ public sealed class ExternalNotificationRunSummary
         }
 
         task.Add(Math.Max(1, repeatCount), elapsed);
+    }
+
+    public void RecordFailedTask(string taskName, int repeatCount, TimeSpan elapsed, string? errorMessage)
+    {
+        if (!string.IsNullOrWhiteSpace(taskName))
+            _failedTasks.Add(new ExternalNotificationFailedTaskSummary(taskName, Math.Max(1, repeatCount), elapsed, errorMessage));
     }
 
     public void RecordResource(string resourceName, int count)
@@ -103,6 +111,9 @@ public sealed class ExternalNotificationTaskSummary(string taskName)
         Elapsed += elapsed;
     }
 }
+
+/// <summary>保存失败任务项的名称、配置重复次数、耗时和失败原因。</summary>
+public sealed record ExternalNotificationFailedTaskSummary(string TaskName, int RepeatCount, TimeSpan Elapsed, string? ErrorMessage);
 
 /// <summary>保存切换实例后连续运行的全部实例分段。</summary>
 public sealed class ExternalNotificationRunSession(DateTime startedAt)

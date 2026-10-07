@@ -534,6 +534,12 @@
     <data name="ForceScheduledStartTip" xml:space="preserve">
         <value>停止當前任務，並在停止完成後開始新任務</value>
     </data>
+    <data name="FinishCurrentTaskRoundOnScheduledStart" xml:space="preserve">
+        <value>平順定時切換</value>
+    </data>
+    <data name="FinishCurrentTaskRoundOnScheduledStartTip" xml:space="preserve">
+        <value>強制定時啟動生效時，正在執行的一般任務會完成目前一輪，再停止任務佇列並開始定時任務</value>
+    </data>
     <data name="GameResourceUpdated" xml:space="preserve">
         <value>遊戲資源已更新，請重啟軟體。</value>
     </data>
