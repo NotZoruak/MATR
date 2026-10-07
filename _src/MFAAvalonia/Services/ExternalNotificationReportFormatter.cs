@@ -13,7 +13,8 @@ public static class ExternalNotificationReportFormatter
     public static string Format(ExternalNotificationRunSession session, ExternalNotificationReportOptions options)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("任务已全部完成");
+        var hasFailures = session.Segments.Any(segment => segment.Summary.FailedTasks.Count > 0);
+        builder.AppendLine(hasFailures ? "任务执行结束（存在失败）" : "任务已全部完成");
         builder.Append("总用时：").AppendLine(FormatDuration(session.CompletedAt - session.StartedAt));
 
         var showInstanceName = session.Segments.Count > 1;
@@ -25,6 +26,18 @@ public static class ExternalNotificationReportFormatter
 
             foreach (var task in summary.Tasks.Values)
                 builder.Append(task.TaskName).Append(" ×").Append(task.RepeatCount).Append("：").AppendLine(FormatDuration(task.Elapsed));
+
+            if (summary.FailedTasks.Count > 0)
+            {
+                builder.AppendLine().AppendLine("失败任务");
+                foreach (var task in summary.FailedTasks)
+                {
+                    builder.Append(task.TaskName).Append(" ×").Append(task.RepeatCount).Append("：").Append(FormatDuration(task.Elapsed));
+                    if (!string.IsNullOrWhiteSpace(task.ErrorMessage))
+                        builder.Append("，原因：").Append(task.ErrorMessage);
+                    builder.AppendLine();
+                }
+            }
 
             if (options.IncludeTaskHarvest)
                 AppendHarvest(builder, summary);

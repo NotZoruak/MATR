@@ -30,7 +30,7 @@ public partial class MFATask : ObservableObject
         FAILED
     }
 
-    public readonly record struct RunResult(MFATaskStatus Status, bool ContinueQueue = false);
+    public readonly record struct RunResult(MFATaskStatus Status, bool ContinueQueue = false, string? ErrorMessage = null);
 
     [ObservableProperty] private string? _name = string.Empty;
     [ObservableProperty] private MFATaskType _type = MFATaskType.MFA;
@@ -57,11 +57,11 @@ public partial class MFATask : ObservableObject
         if (instanceId != null)
             TelemetryService.StartTask(instanceId, this);
 
-        RunResult Complete(MFATaskStatus status, bool continueQueue = false)
+        RunResult Complete(MFATaskStatus status, bool continueQueue = false, string? errorMessage = null)
         {
             if (instanceId != null)
                 TelemetryService.FinishTask(instanceId, this, status, status == MFATaskStatus.FAILED);
-            return new RunResult(status, continueQueue);
+            return new RunResult(status, continueQueue, errorMessage);
         }
 
         void MarkFailed(string? detail = null)
@@ -103,7 +103,7 @@ public partial class MFATask : ObservableObject
                         if (!ContinueOnError)
                         {
                             MarkFailed(failureMessage);
-                            return Complete(MFATaskStatus.FAILED);
+                            return Complete(MFATaskStatus.FAILED, errorMessage: failureMessage);
                         }
                     }
                 }
@@ -145,7 +145,7 @@ public partial class MFATask : ObservableObject
             if (hasFailed)
             {
                 MarkFailed(failureMessage);
-                return Complete(MFATaskStatus.FAILED, ContinueOnError);
+                return Complete(MFATaskStatus.FAILED, ContinueOnError, failureMessage);
             }
             else
                 OwnerViewModel?.MarkTaskSucceeded(SourceItem, RunId);
@@ -160,7 +160,7 @@ public partial class MFATask : ObservableObject
         {
             MarkFailed(ex.Message);
             LoggerHelper.Error($"任务执行失败：{LanguageHelper.GetLocalizedString(Name)}");
-            return Complete(MFATaskStatus.FAILED, ContinueOnError);
+            return Complete(MFATaskStatus.FAILED, ContinueOnError, ex.Message);
         }
         catch (OperationCanceledException)
         {
@@ -172,13 +172,13 @@ public partial class MFATask : ObservableObject
         {
             MarkFailed(ex.Message);
             LoggerHelper.Warning($"连接任务已在重试耗尽后结束：任务={LanguageHelper.GetLocalizedString(Name)}");
-            return Complete(MFATaskStatus.FAILED, ContinueOnError);
+            return Complete(MFATaskStatus.FAILED, ContinueOnError, ex.Message);
         }
         catch (Exception ex)
         {
             MarkFailed(ex.Message);
             LoggerHelper.Error($"任务执行异常：任务={LanguageHelper.GetLocalizedString(Name)}，原因={ex.Message}", ex);
-            return Complete(MFATaskStatus.FAILED, ContinueOnError);
+            return Complete(MFATaskStatus.FAILED, ContinueOnError, ex.Message);
         }
     }
 }

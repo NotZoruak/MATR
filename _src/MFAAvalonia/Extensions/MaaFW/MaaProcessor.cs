@@ -3912,6 +3912,15 @@ public class MaaProcessor
                 var taskName = task.SourceItem.Name ?? task.Name ?? "未知任务";
                 _externalNotificationRunSummary?.RecordTask(taskName, configuredRepeatCount, DateTime.Now - taskStartedAt);
             }
+            else if (result.Status == MFATask.MFATaskStatus.FAILED)
+            {
+                var taskName = task.SourceItem?.Name ?? task.Name ?? "未知任务";
+                _externalNotificationRunSummary?.RecordFailedTask(
+                    taskName,
+                    configuredRepeatCount,
+                    DateTime.Now - taskStartedAt,
+                    result.ErrorMessage ?? task.SourceItem?.RunErrorMessage);
+            }
             if (result.Status == MFATask.MFATaskStatus.FAILED)
             {
                 completedWithFailures = true;
@@ -5551,7 +5560,20 @@ public class MaaProcessor
             ToastNotification.Show(LangKeys.TaskFailed.ToLocalization());
             ToastHelper.Info(LangKeys.TaskFailed.ToLocalization());
             AddLogByKey(LangKeys.TaskFailed, (IBrush?)null);
-            ExternalNotificationHelper.ExternalNotificationAsync(LangKeys.TaskFailed.ToLocalization());
+            var failureMessage = LangKeys.TaskFailed.ToLocalization();
+            if (!onlyStart && _externalNotificationRunSummary is { FailedTasks.Count: > 0 } summary)
+            {
+                var session = _externalNotificationRunSession ?? new ExternalNotificationRunSession(summary.StartedAt);
+                session.AddCompletedSegment(summary, DateTime.Now);
+                var settings = Instances.ExternalNotificationSettingsUserControlModel;
+                failureMessage = ExternalNotificationReportFormatter.Format(session, new ExternalNotificationReportOptions
+                {
+                    IncludeTaskHarvest = settings.IncludeTaskHarvest,
+                    IncludeLogistics = settings.IncludeLogistics,
+                    IncludeSpecialCases = settings.IncludeSpecialCases,
+                });
+            }
+            ExternalNotificationHelper.ExternalNotificationAsync(failureMessage);
 
             if (!onlyStart)
                 HandleAfterTaskOperation();
