@@ -532,7 +532,7 @@
         <value>Force scheduled execution</value>
     </data>
     <data name="ForceScheduledStartTip" xml:space="preserve">
-        <value>When triggered, stop any running task on the target instance or same device, then start the scheduled task.</value>
+        <value>Stop current task, then start new tasks after stopping completes</value>
     </data>
     <data name="FinishCurrentTaskRoundOnScheduledStart" xml:space="preserve">
         <value>Smooth scheduled handoff</value>

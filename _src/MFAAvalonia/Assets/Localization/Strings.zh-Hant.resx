@@ -532,7 +532,7 @@
         <value>強制定時執行</value>
     </data>
     <data name="ForceScheduledStartTip" xml:space="preserve">
-        <value>定時觸發時，停止目標實例或同裝置上正在執行的任務，並啟動定時任務。</value>
+        <value>停止當前任務，並在停止完成後開始新任務</value>
     </data>
     <data name="FinishCurrentTaskRoundOnScheduledStart" xml:space="preserve">
         <value>平順定時切換</value>

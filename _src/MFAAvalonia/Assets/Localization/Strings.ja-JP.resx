@@ -989,7 +989,7 @@
         <value>スケジュール実行を強制する</value>
     </data>
   <data name="ForceScheduledStartTip" xml:space="preserve">
-        <value>定時実行時、対象インスタンスまたは同じデバイスで実行中のタスクを停止し、定時タスクを開始します。</value>
+        <value>現在のタスクを停止し、停止が完了したら新しいタスクを開始します</value>
     </data>
   <data name="FinishCurrentTaskRoundOnScheduledStart" xml:space="preserve">
         <value>スケジュール時のスムーズな切り替え</value>

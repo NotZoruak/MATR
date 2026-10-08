@@ -1473,7 +1473,7 @@ namespace MFAAvalonia.Assets.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 定时触发时，停止目标实例或同设备上正在运行的任务，并启动定时任务。
+        ///   Looks up a localized string similar to 停止当前任务，并在停止完成后开始新任务.
         /// </summary>
         public static string ForceScheduledStartTip {
             get {
