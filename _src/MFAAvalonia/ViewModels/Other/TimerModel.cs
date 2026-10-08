@@ -8,6 +8,7 @@ using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.ValueType;
 using MFAAvalonia.ViewModels.Pages;
+using MFAAvalonia.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -222,7 +223,7 @@ public partial class TimerModel : ViewModelBase
     /// 记录一次由外部发起的定时启动（Windows 计划任务或命令行 --autostart）。
     /// 外部启动不经过 TriggerTimer，若不回写标记，应用内计时器会在同一分钟内把同一个定时器再触发一次：
     /// 2026-09-13 15:30 实测出现「计划任务先启动、应用内 tick 在 15:30:51 又触发」，
-    /// 配合强制定时启动把正在运行的任务停掉重启，表现为同一分钟内启动两次任务。
+    /// 配合强制定时执行把正在运行的任务停掉重启，表现为同一分钟内启动两次任务。
     /// </summary>
     /// <param name="instanceId">本次外部启动的实例 ID。</param>
     /// <param name="triggeredAt">本次外部启动的时间，默认取当前时间。</param>
@@ -350,14 +351,15 @@ public partial class TimerModel : ViewModelBase
         }
         else
         {
-            if (ForceScheduledStart && vm.IsRunning)
-            {
-                if (!FinishCurrentTaskRoundOnScheduledStart
-                    || !vm.RequestStopAfterCurrentOrdinaryTask(vm.StartTask))
-                    vm.StopTask(vm.StartTask);
-            }
-            else
-                vm.StartTask();
+            _ = ScheduledTaskHandoffService.ExecuteAsync(
+                vm,
+                ForceScheduledStart,
+                FinishCurrentTaskRoundOnScheduledStart,
+                () =>
+                {
+                    vm.StartTask();
+                    return Task.CompletedTask;
+                });
         }
     }
 

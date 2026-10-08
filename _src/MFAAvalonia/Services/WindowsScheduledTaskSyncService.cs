@@ -64,7 +64,7 @@ public static class WindowsScheduledTaskSyncService
 
     /// <summary>
     /// 初始化同步服务。在 Windows 上接管应用内定时器的重新排程请求，
-    /// 让修改时间、重复规则、实例或强制定时启动开关后立即同步系统计划任务。
+    /// 让修改时间、重复规则、实例或强制定时执行开关后立即同步系统计划任务。
     /// </summary>
     public static void Initialize()
     {

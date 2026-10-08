@@ -12,6 +12,7 @@ using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Helper.ValueType;
+using MFAAvalonia.Services;
 using MFAAvalonia.ViewModels.Other;
 using MFAAvalonia.ViewModels.Pages;
 using MFAAvalonia.ViewModels.Windows;
@@ -1034,31 +1035,15 @@ public partial class RootView : SukiWindow
         bool forceStart = false,
         bool finishCurrentTaskRound = false)
     {
-        if (viewModel.IsRunning)
-        {
-            if (!forceStart)
-            {
-                LoggerHelper.Info($"命令行自动启动已跳过：实例 {viewModel.Processor.InstanceId} 正在运行");
-                return;
-            }
+        _ = ScheduledTaskHandoffService.ExecuteAsync(
+            viewModel,
+            forceStart,
+            finishCurrentTaskRound,
+            () => StartCommandLineTaskAfterHandoff(viewModel, quitAfterRun));
+    }
 
-            Action continueStart = () => DispatcherHelper.PostOnMainThread(async () =>
-            {
-                await Task.Delay(100);
-                StartCommandLineAutoRun(viewModel, quitAfterRun);
-            });
-            if (finishCurrentTaskRound
-                && viewModel.RequestStopAfterCurrentOrdinaryTask(continueStart))
-            {
-                LoggerHelper.Info($"计划任务强制启动：普通任务完成当前一圈后停止实例 {viewModel.Processor.InstanceId} 的任务队列");
-                return;
-            }
-
-            LoggerHelper.Info($"命令行强制启动：正在停止实例 {viewModel.Processor.InstanceId} 的现有任务");
-            viewModel.StopTask(continueStart);
-            return;
-        }
-
+    private static async Task StartCommandLineTaskAfterHandoff(TaskQueueViewModel viewModel, bool quitAfterRun)
+    {
         var hasStarted = viewModel.IsRunning;
         System.ComponentModel.PropertyChangedEventHandler? handler = null;
 
@@ -1081,9 +1066,9 @@ public partial class RootView : SukiWindow
             viewModel.PropertyChanged += handler;
         }
 
-        DispatcherHelper.RunOnMainThread(async () =>
+        await Task.Delay(500);
+        await DispatcherHelper.RunOnMainThreadAsync(() =>
         {
-            await Task.Delay(500);
             viewModel.StartTask();
             hasStarted |= viewModel.IsRunning;
         });

@@ -143,10 +143,10 @@ MFAAvalonia 命令行参数
 
   -f, --forceStart
       仅与 --autostart 和 -i/-c/--instance 同时使用时生效
-      如果目标实例正在运行，先停止其当前任务，再重新启动
+      启用强制定时执行，按定时交接规则处理同实例或同设备的冲突任务
 
   --finish-current-round
-      仅用于计划任务的强制启动；普通任务完成当前一圈后停止队列并启动计划任务
+      与 --autostart 和 --forceStart 同用时，普通任务完成当前一圈后停止队列；特殊任务立即停止
 
 示例:
   {executableName} --instance "日常任务"
