@@ -24,7 +24,9 @@
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsAdvertisementPopup",
       "[JumpBack]IsGameIcon",
+      "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
+      "[JumpBack]IsSystemErrorFeedback",
       "[JumpBack]IsGameUpdatePopup",
       "[JumpBack]IsInGameUpdatePopup",
       "[JumpBack]IsNetworkRequestTimeout",
@@ -83,7 +85,7 @@
       "time": 200,
       "target": [1037, 169, 110, 44]
     },
-    "next": ["WH_CheckHomeBrightness"],
+    "next": ["WH_CheckHomeBrightness", "WH_IsInMenu"],
     "on_error": ["WH_MainHub"]
   },
   "WH_CheckHomeBrightness": {

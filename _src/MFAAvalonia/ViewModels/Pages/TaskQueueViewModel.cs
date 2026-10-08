@@ -85,7 +85,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         };
         _taskRunElapsedTimer.Tick += OnTaskRunElapsedTimerTick;
 
-        IsRunning = _processorField.TaskQueue.Count > 0;
+        IsRunning = _processorField.TaskQueue.Count > 0 || _processorField.IsTaskRunActive;
         _processorField.TaskQueue.CountChanged += OnTaskQueueCountChanged;
         LanguageHelper.LanguageChanged += OnLanguageChanged;
 
@@ -154,8 +154,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
     {
         DispatcherHelper.RunOnMainThread(() =>
         {
-            var stopRequested = Processor.CancellationTokenSource?.IsCancellationRequested == true;
-            IsRunning = e.NewValue > 0 || (Processor.IsTaskRunActive && !stopRequested);
+            IsRunning = e.NewValue > 0 || Processor.IsTaskRunActive;
         });
     }
 
@@ -773,10 +772,7 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
 
     public void StopTask(Action? action = null)
     {
-        // Reflect the user's stop request immediately.  The processor still owns the
-        // actual cancellation/cleanup and prevents another run from starting until its
-        // task chain has unwound.
-        IsRunning = false;
+        // 保持运行态，直到处理器完成取消与清理，避免队列计数先归零时 UI 显示空闲。
         Processor.Stop(MFATask.MFATaskStatus.STOPPED, action: action);
     }
 
@@ -785,7 +781,6 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
         if (!Processor.RequestStopAfterCurrentOrdinaryTask(action))
             return false;
 
-        IsRunning = false;
         return true;
     }
 

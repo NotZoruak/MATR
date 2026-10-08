@@ -31,7 +31,9 @@
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
       "[JumpBack]IsGameIcon",
+      "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
+      "[JumpBack]IsSystemErrorFeedback",
       "[JumpBack]IsGameUpdatePopup",
       "[JumpBack]IsInGameUpdatePopup",
       "[JumpBack]IsInternalReport",
@@ -659,7 +661,9 @@
       "FB_CheckPostHomeBright",
       "[JumpBack]IsAdvertisementPopup",
       "[JumpBack]IsGameIcon",
+      "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
+      "[JumpBack]IsSystemErrorFeedback",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["FB_DetectWhereAmI"]

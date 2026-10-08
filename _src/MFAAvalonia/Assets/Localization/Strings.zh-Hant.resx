@@ -529,7 +529,7 @@
         <value>跟隨系統</value>
     </data>
     <data name="ForceScheduledStart" xml:space="preserve">
-        <value>強制定時啟動</value>
+        <value>強制定時執行</value>
     </data>
     <data name="ForceScheduledStartTip" xml:space="preserve">
         <value>停止當前任務，並在停止完成後開始新任務</value>
@@ -538,7 +538,7 @@
         <value>平順定時切換</value>
     </data>
     <data name="FinishCurrentTaskRoundOnScheduledStartTip" xml:space="preserve">
-        <value>強制定時啟動生效時，正在執行的一般任務會完成目前一輪，再停止任務佇列並開始定時任務</value>
+        <value>目前任務完成一輪後切換；不再執行該任務的後續輪次及佇列中的後續任務。</value>
     </data>
     <data name="GameResourceUpdated" xml:space="preserve">
         <value>遊戲資源已更新，請重啟軟體。</value>

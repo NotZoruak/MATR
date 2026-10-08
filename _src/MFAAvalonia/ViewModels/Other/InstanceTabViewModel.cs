@@ -44,11 +44,9 @@ public partial class InstanceTabViewModel : ViewModelBase
         UpdateName();
         LanguageHelper.LanguageChanged += OnLanguageChanged;
 
-        IsRunning = processor.TaskQueue.Count > 0;
-        processor.TaskQueue.CountChanged += OnTaskCountChanged;
-
         if (TaskQueueViewModel != null)
         {
+            IsRunning = TaskQueueViewModel.IsRunning;
             TaskQueueViewModel.PropertyChanged += OnTaskQueueViewModelPropertyChanged;
             SubscribeTaskItems(TaskQueueViewModel.TaskItemViewModels);
         }
@@ -61,17 +59,17 @@ public partial class InstanceTabViewModel : ViewModelBase
         DispatcherHelper.RunOnMainThread(RefreshBadges);
     }
 
-    private void OnTaskCountChanged(object? sender, ObservableQueue<MFATask>.CountChangedEventArgs e)
-    {
-        DispatcherHelper.RunOnMainThread(() =>
-        {
-            IsRunning = e.NewValue > 0;
-            RefreshBadges();
-        });
-    }
-
     private void OnTaskQueueViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(TaskQueueViewModel.IsRunning))
+        {
+            DispatcherHelper.RunOnMainThread(() =>
+            {
+                IsRunning = TaskQueueViewModel.IsRunning;
+                RefreshBadges();
+            });
+        }
+
         if (e.PropertyName is nameof(TaskQueueViewModel.CurrentController)
             or nameof(TaskQueueViewModel.CurrentResource)
             or nameof(TaskQueueViewModel.IsConnected))

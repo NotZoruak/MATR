@@ -64,6 +64,7 @@ public class MaaProcessor
         [1210, 144, 29, 70], [1211, 255, 30, 71], [1212, 361, 30, 71], [1211, 470, 30, 71], [1210, 577, 30, 71],
     ];
     private int _isTaskRunActive;
+    private int _isStopInProgress;
     private readonly BlockingCollection<Func<Task>> _commandQueue = new();
     private readonly object _commandThreadLock = new();
     private readonly CancellationTokenSource _commandThreadCts = new();
@@ -551,7 +552,7 @@ public class MaaProcessor
         {
             DispatcherHelper.PostOnMainThread(() =>
             {
-                Instances.RootViewModel.IsRunning = Processors.Any(p => p.TaskQueue.Count > 0);
+                Instances.RootViewModel.IsRunning = Processors.Any(p => p.TaskQueue.Count > 0 || p.IsTaskRunActive);
             });
 
             if (_taskQueueTotal <= 0)
@@ -1355,7 +1356,10 @@ public class MaaProcessor
     private readonly SemaphoreSlim _connectionGate = new(1, 1);
     private bool _suppressConnectionAttemptErrorToast;
     public bool IsConnecting => _isConnecting != 0;
-    public bool IsTaskRunActive => Volatile.Read(ref _isTaskRunActive) != 0;
+    public bool IsTaskRunActive => Volatile.Read(ref _isTaskRunActive) != 0 || Volatile.Read(ref _isStopInProgress) != 0;
+    public long TaskRunGeneration => Interlocked.Read(ref _taskRunGeneration);
+    public bool HasActiveOrdinaryTask => Volatile.Read(ref _activeQueueTask)?.IsOrdinaryTask == true;
+    public bool HasActiveSpecialTask => Volatile.Read(ref _activeQueueTask) is { IsOrdinaryTask: false };
 
     private MaaController? GetScreenshotController(bool test)
     {
@@ -3454,16 +3458,25 @@ public class MaaProcessor
         }
     }
 
-    private void EnqueueCommand(Func<Task> command)
+    private bool EnqueueCommand(Func<Task> command)
     {
         if (_commandThreadCts.IsCancellationRequested || _commandQueue.IsAddingCompleted)
         {
             LoggerHelper.Info("命令队列已停止，已忽略本次请求。");
-            return;
+            return false;
         }
 
-        EnsureCommandThread();
-        _commandQueue.Add(command);
+        try
+        {
+            EnsureCommandThread();
+            _commandQueue.Add(command);
+            return true;
+        }
+        catch (InvalidOperationException)
+        {
+            LoggerHelper.Info("命令队列已停止，已忽略本次请求。");
+            return false;
+        }
     }
 
     private void StopCommandThread()
@@ -3640,8 +3653,19 @@ public class MaaProcessor
 
     private bool TryBeginTaskRun()
     {
+        if (Volatile.Read(ref _isStopInProgress) != 0)
+            return false;
+
         if (Interlocked.CompareExchange(ref _isTaskRunActive, 1, 0) != 0)
             return false;
+
+        if (Volatile.Read(ref _isStopInProgress) != 0)
+        {
+            Interlocked.Exchange(ref _isTaskRunActive, 0);
+            return false;
+        }
+
+        Interlocked.Increment(ref _taskRunGeneration);
 
         DispatcherHelper.PostOnMainThread(() =>
         {
@@ -3657,7 +3681,10 @@ public class MaaProcessor
         DispatcherHelper.PostOnMainThread(() =>
         {
             if (ViewModel != null)
-                ViewModel.IsRunning = TaskQueue.Count > 0;
+                ViewModel.IsRunning = TaskQueue.Count > 0 || IsTaskRunActive;
+
+            Instances.RootViewModel.IsRunning = Processors.Any(processor =>
+                processor.TaskQueue.Count > 0 || processor.IsTaskRunActive);
         });
     }
 
@@ -3717,6 +3744,7 @@ public class MaaProcessor
     private DateTime? _startTime;
     private List<DragItemViewModel> _tempTasks = [];
     private MFATask? _activeQueueTask;
+    private long _taskRunGeneration;
     private int _stopQueueAfterActiveTaskRequested;
     private Action? _stopQueueAfterActiveTaskAction;
     private ExternalNotificationRunSummary? _externalNotificationRunSummary;
@@ -3813,7 +3841,7 @@ public class MaaProcessor
 
         Interlocked.Exchange(ref _stopQueueAfterActiveTaskAction, action);
         Volatile.Write(ref _stopQueueAfterActiveTaskRequested, 1);
-        activeTask.RequestEarlyCompletion("定时强制启动：完成当前任务一圈后停止任务队列");
+        activeTask.RequestEarlyCompletion("定时强制执行：完成当前任务一圈后停止任务队列");
         return true;
     }
 
@@ -3836,7 +3864,9 @@ public class MaaProcessor
 
         _startTime = DateTime.Now;
         if (!onlyStart)
-            _externalNotificationRunSummary = new ExternalNotificationRunSummary(InstanceId, _startTime.Value);
+            _externalNotificationRunSummary = new ExternalNotificationRunSummary(
+                MaaProcessorManager.Instance.GetInstanceName(InstanceId),
+                _startTime.Value);
 
         var token = CancellationTokenSource.Token;
 
@@ -5427,7 +5457,11 @@ public class MaaProcessor
     public void Stop(MFATask.MFATaskStatus status, bool finished = false, bool onlyStart = false,
         Action? action = null, bool queueCompleted = false)
     {
-        EnqueueCommand(() => StopInternal(status, finished, onlyStart, queueCompleted, action));
+        if (Interlocked.CompareExchange(ref _isStopInProgress, 1, 0) != 0)
+            return;
+
+        if (!EnqueueCommand(() => StopInternal(status, finished, onlyStart, queueCompleted, action)))
+            CompleteStopOperation();
     }
 
     private Task StopInternal(MFATask.MFATaskStatus status, bool finished, bool onlyStart,
@@ -5442,7 +5476,10 @@ public class MaaProcessor
         {
             LoggerHelper.Info("停止前状态：" + Status);
             if (Status == MFATask.MFATaskStatus.STOPPING)
+            {
+                CompleteStopOperation();
                 return Task.CompletedTask;
+            }
             Status = MFATask.MFATaskStatus.STOPPING;
             ViewModel?.SetAdbRecoverySelectionLock(false);
             DispatcherHelper.PostOnMainThread(() =>
@@ -5458,6 +5495,7 @@ public class MaaProcessor
                     ToastHelper.Warn(LangKeys.NoTaskToStop.ToLocalization());
 
                     TaskQueue.Clear();
+                    CompleteStopOperation();
                     return Task.CompletedTask;
                 }
 
@@ -5465,7 +5503,7 @@ public class MaaProcessor
 
                 TaskQueue.Clear();
 
-                ExecuteStopCore(finished, async () =>
+                return ExecuteStopCore(finished, async () =>
                 {
                     var stopResult = MaaJobStatus.Succeeded;
 
@@ -5503,6 +5541,7 @@ public class MaaProcessor
                     if (ViewModel != null) ViewModel.ToggleEnable = true;
                 });
                 HandleStopException(ex);
+                CompleteStopOperation();
             }
         }
 
@@ -5523,16 +5562,37 @@ public class MaaProcessor
             || finished;
     }
 
-    private void ExecuteStopCore(bool finished, Action stopAction)
+    private Task ExecuteStopCore(bool finished, Func<Task> stopAction)
     {
-        TaskManager.RunTaskAsync(() =>
+        return TaskManager.RunTaskAsync(async () =>
         {
-            if (!finished) DispatcherHelper.PostOnMainThread(() => AddLogByKey(LangKeys.Stopping, (IBrush?)null));
+            try
+            {
+                if (!finished) DispatcherHelper.PostOnMainThread(() => AddLogByKey(LangKeys.Stopping, (IBrush?)null));
 
-            stopAction.Invoke();
+                await stopAction();
 
-            DispatcherHelper.PostOnMainThread(() => Instances.RootViewModel.Idle = true);
+                DispatcherHelper.PostOnMainThread(() => Instances.RootViewModel.IsRunning = Processors.Any(processor =>
+                    processor.TaskQueue.Count > 0 || processor.IsTaskRunActive));
+            }
+            finally
+            {
+                CompleteStopOperation();
+            }
         }, null, "停止maafw任务");
+    }
+
+    private void CompleteStopOperation()
+    {
+        Interlocked.Exchange(ref _isStopInProgress, 0);
+        DispatcherHelper.PostOnMainThread(() =>
+        {
+            if (ViewModel != null)
+                ViewModel.IsRunning = TaskQueue.Count > 0 || IsTaskRunActive;
+
+            Instances.RootViewModel.IsRunning = Processors.Any(processor =>
+                processor.TaskQueue.Count > 0 || processor.IsTaskRunActive);
+        });
     }
 
     private MaaJobStatus AbortCurrentTasker()

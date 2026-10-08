@@ -118,7 +118,8 @@ MFAAvalonia.exe [options]
 | `-c <instance>`, `-i <instance>`, `--instance <instance>` | Select an instance by name or ID. Name matching is case-insensitive, and an exact instance ID match takes priority |
 | `--autostart` | Run the tasks currently configured and selected in the target instance. If no instance is specified, the active instance is used |
 | `-q`, `--quit-after-run` | Exit MFAAvalonia after the task started by this command finishes. Only effective with `--autostart` |
-| `-f`, `--forceStart` | If the target instance is already running, stop its current task and start it again. Only effective with `--autostart` and an instance option |
+| `-f`, `--forceStart` | Enable forced scheduled execution and apply handoff rules to conflicting tasks on the target instance or same device. Only effective with `--autostart` and an instance option |
+| `--finish-current-round` | When used with `--forceStart`, stop the queue after an ordinary task finishes its current round; stop special tasks immediately |
 
 ### Examples
 

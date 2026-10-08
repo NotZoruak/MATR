@@ -1464,7 +1464,7 @@ namespace MFAAvalonia.Assets.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 强制定时启动.
+        ///   Looks up a localized string similar to 强制定时执行.
         /// </summary>
         public static string ForceScheduledStart {
             get {
@@ -1473,7 +1473,7 @@ namespace MFAAvalonia.Assets.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 停止当前任务，重启游戏并开始新任务.
+        ///   Looks up a localized string similar to 停止当前任务，并在停止完成后开始新任务.
         /// </summary>
         public static string ForceScheduledStartTip {
             get {
@@ -1491,7 +1491,7 @@ namespace MFAAvalonia.Assets.Localization {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to 强制定时启动生效时，正在执行的普通任务会完成当前一圈，再停止任务队列并启动定时任务.
+        ///   Looks up a localized string similar to 当前任务完成一轮后切换；不再执行该任务的后续轮次及队列中的后续任务.
         /// </summary>
         public static string FinishCurrentTaskRoundOnScheduledStartTip {
             get {
