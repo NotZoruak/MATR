@@ -3864,7 +3864,9 @@ public class MaaProcessor
 
         _startTime = DateTime.Now;
         if (!onlyStart)
-            _externalNotificationRunSummary = new ExternalNotificationRunSummary(InstanceId, _startTime.Value);
+            _externalNotificationRunSummary = new ExternalNotificationRunSummary(
+                MaaProcessorManager.Instance.GetInstanceName(InstanceId),
+                _startTime.Value);
 
         var token = CancellationTokenSource.Token;
 
