@@ -84,7 +84,8 @@
       "time": 200,
       "target": [1037, 169, 110, 44]
     },
-    "next": ["WH_CheckHomeBrightness", "WH_IsInMenu", "WH_MainHub"]
+    "next": ["WH_CheckHomeBrightness", "WH_IsInMenu"],
+    "on_error": ["WH_MainHub"]
   },
   "WH_CheckHomeBrightness": {
     "recognition": {
