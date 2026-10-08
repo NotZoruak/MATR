@@ -72,6 +72,7 @@
       "[JumpBack]IsGameIcon",
       "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
+      "[JumpBack]IsSystemErrorFeedback",
       "[JumpBack]IsGameUpdatePopup",
       "[JumpBack]IsInGameUpdatePopup",
       "[JumpBack]IsInternalReport",

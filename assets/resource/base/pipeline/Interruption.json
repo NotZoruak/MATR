@@ -332,5 +332,20 @@
       }
     }
   },
+  "IsSystemErrorFeedback": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [519, 267, 248, 37],
+        "expected": "系统错误，请反馈客服"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [591, 449, 102, 37]
+      }
+    }
+  },
   "FallbackWait": {}
 }
