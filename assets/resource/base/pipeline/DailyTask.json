@@ -544,7 +544,12 @@
       }
     },
     "action": {"type": "Click"},
-    "next": ["DT_MixEntry"]
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1186, 129, 65, 486]
+    },
+    "next": ["DT_MixMaterialPage", "DT_MixFindSelectSword"],
+    "on_error": ["DT_MixEntry"]
   },
   "DT_MixMaterialPage": {
     "recognition": {
