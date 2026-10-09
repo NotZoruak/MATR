@@ -4435,6 +4435,9 @@
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
             },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
             "SelectRecordSlot": {
               "target": [1209, 140, 30, 71]
             }
@@ -4457,6 +4460,9 @@
               "target": [282, 94, 1, 1]
             },
             "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
             },
             "SelectRecordSlot": {
@@ -4483,6 +4489,9 @@
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
             },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
             "SelectRecordSlot": {
               "target": [1209, 360, 30, 71]
             }
@@ -4507,6 +4516,9 @@
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
             },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
             "SelectRecordSlot": {
               "target": [1209, 465, 30, 71]
             }
@@ -4529,6 +4541,9 @@
               "target": [635, 91, 1, 1]
             },
             "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
             },
             "SelectRecordSlot": {
