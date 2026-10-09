@@ -27,6 +27,10 @@ MATR/
 
 > The following directories are auto-generated at runtime and excluded in `.gitignore`: `config/`, `debug/`, `logs/`, `temp/`, `backup/`, `libs/`, `plugins/`.
 
+## 文档目录访问限制
+
+在项目维护者收到其他开发者提出的加入开发申请之前，AI 必须忽略 `docs/` 目录及其全部内容：不得读取、搜索、引用、创建或修改其中的文件。此限制优先于本文其余所有指向 `docs/` 的说明；收到其他开发者的加入开发申请后，方可恢复使用该目录。
+
 ## Terminology
 
 - **MaaFramework / MaaFW** 指自动化任务框架，包括 Pipeline 协议、原生运行库及其 .NET 封装（如 `Maa.Framework`、`Maa.Framework.Runtimes`）。用户提到“更新框架”时，默认指更新 MaaFramework 及相关运行库。
