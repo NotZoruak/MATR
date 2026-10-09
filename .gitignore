@@ -60,9 +60,8 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
-# 本地项目文档(仅 docs/分支流程.md 随仓库分发)
-/docs/*
-!/docs/分支流程.md
+# 文档目录整体忽略
+/docs/
 
 # 本地参考仓库（仅供开发时查阅）
 /_reference/

@@ -82,7 +82,10 @@ public class FormationEquipSelectAction : IMaaCustomAction
                 return false;
             },
             // 默认精确匹配：只允许字形容错，不允许一字之差命中异种刀装
-            "FormationEquipSelect");
+            "FormationEquipSelect",
+            (ocrText, expected) =>
+                !ocrText.Contains("新", StringComparison.Ordinal)
+                && SwordNameMatcher.IsExactMatch(ocrText, expected));
     }
 
 }

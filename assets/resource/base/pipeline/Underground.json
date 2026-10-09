@@ -1,5 +1,6 @@
 {
   "Underground": {
+    "anchor": {"U_MoreClick": ""},
     "next": ["U_DetectWhereAmI"]
   },
   "U_DetectWhereAmI": {
@@ -18,6 +19,7 @@
       "U_IsResourcePoint",
       "U_IsSpecialDrop",
       "U_IsFormationSelect",
+      "U_CloseImmediateSortiePopup",
       "U_IsTeamSelect",
       "U_IsSortie",
       "U_IsEventPage",
@@ -43,9 +45,26 @@
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[Anchor]U_MoreClick",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["U_RestartGame"]
+  },
+  "U_CloseImmediateSortiePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [597, 54, 82, 38],
+        "expected": "出阵"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1127, 26, 41, 39]
+      }
+    },
+    "next": ["U_IsTeamSelect", "U_DetectWhereAmI"]
   },
   "U_IsTutorial": {
     "recognition": {
@@ -225,7 +244,83 @@
     },
     "repeat": 2,
     "repeat_delay": 300,
-    "next": ["U_CaptainHub"],
+    "next": ["U_DisableAutoMarch", "U_EnableAutoMarch", "U_ClickAutoMarchNoOrYesDelegate", "U_CaptainHub"],
+    "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_DisableAutoMarch": {
+    "enabled": true,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1173, 373, 57, 23],
+        "template": "Common/自动行军_委托中.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1151, 396, 105, 28]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1151, 396, 105, 28]
+    },
+    "next": ["U_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_EnableAutoMarch": {
+    "enabled": false,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1176, 390, 1, 2],
+        "lower": [221, 107, 14],
+        "upper": [223, 109, 16]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1176, 390, 1, 2]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1176, 390, 1, 2]
+    },
+    "next": ["U_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_ClickAutoMarchNoOrYesDelegate": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [440, 584, 110, 38],
+        "expected": ["委托"]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [440, 584, 110, 38]
+    },
+    "next": ["U_ReturnFromAutoMarch"]
+  },
+  "U_ReturnFromAutoMarch": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1024, 30, 35, 36]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1024, 30, 35, 36]
+    },
+    "next": ["U_IsTeamSelect"],
     "on_error": ["U_DetectWhereAmI"]
   },
   "U_IsSortie": {
@@ -334,6 +429,16 @@
         "display": "file"
       }
     }
+  },
+  "U_ClickMore": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1067, 558, 120, 79]
+      }
+    },
+    "anchor": {"U_MoreClick": ""},
+    "next": ["U_DetectWhereAmI"]
   },
   "U_CheckBeforeMarch": {
     "pre_delay": 0,
