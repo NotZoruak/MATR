@@ -2684,10 +2684,6 @@
                   "roi": [713, 580, 150, 50]
                 }
               }
-            },
-            "RB_TerminateRound": {
-              "repeat": 1,
-              "repeat_delay": 0
             }
           }
         }
