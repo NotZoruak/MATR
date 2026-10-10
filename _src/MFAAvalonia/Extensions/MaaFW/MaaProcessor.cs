@@ -2166,9 +2166,14 @@ public class MaaProcessor
         if (args.Message.StartsWith(MaaMsg.Node.Action.Succeeded, StringComparison.Ordinal))
         {
             var details = jObject["action_details"];
-            if (details?["box"] is JArray box && box.Count >= 2)
-                _recoveryMonitor.FeedAction(callbackName, details["action"]?.ToString() ?? string.Empty,
-                    (int)Math.Round(box[0].Value<double>()), (int)Math.Round(box[1].Value<double>()));
+            var action = details?["action"]?.ToString() ?? string.Empty;
+            if (action == "Click")
+            {
+                var box = details?["box"] as JArray;
+                var x = box is { Count: >= 2 } ? (int)Math.Round(box[0].Value<double>()) : 0;
+                var y = box is { Count: >= 2 } ? (int)Math.Round(box[1].Value<double>()) : 0;
+                _recoveryMonitor.FeedAction(callbackName, action, x, y, _recoveryClock.Elapsed);
+            }
         }
         var shouldTraceNodeEvent = ShouldTraceNodeEvent(jObject, args.Message);
         if (CancellationTokenSource?.IsCancellationRequested != true

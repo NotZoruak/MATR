@@ -2,7 +2,7 @@ using System;
 
 namespace MFAAvalonia.Helper;
 
-/// <summary>独立于底层任务等待，记录回调静默和重复动作；每个执行器独立持有。</summary>
+/// <summary>独立于底层任务等待，记录回调静默、无点击和重复动作；每个执行器独立持有。</summary>
 public sealed class TaskRecoveryMonitor
 {
     /// <summary>模拟器无响应（无回调）类原因的固定前缀，供恢复流程区分恢复力度。</summary>
@@ -11,6 +11,7 @@ public sealed class TaskRecoveryMonitor
     private readonly object _gate = new();
     private readonly LoopDetector _loopDetector = new();
     private TimeSpan _lastCallback;
+    private TimeSpan _lastClick;
     private bool _active;
     private string? _loopReason;
 
@@ -20,6 +21,7 @@ public sealed class TaskRecoveryMonitor
         {
             _active = true;
             _lastCallback = now;
+            _lastClick = now;
             _loopReason = null;
             _loopDetector.Reset();
         }
@@ -38,12 +40,16 @@ public sealed class TaskRecoveryMonitor
         }
     }
 
-    public void FeedAction(string name, string action, int x, int y)
+    public void FeedAction(string name, string action, int x, int y, TimeSpan now)
     {
         lock (_gate)
         {
+            if (!_active) return;
+
+            if (action == "Click") _lastClick = now;
+
             // 只累计真正的点击动作，避免等待、识别和自定义动作被当作冻结画面。
-            if (_active && action == "Click" && !string.IsNullOrWhiteSpace(name)
+            if (action == "Click" && !string.IsNullOrWhiteSpace(name)
                 && _loopDetector.Feed(name, action, x, y))
                 _loopReason = $"画面冻结：重复点击 {name}，坐标 ({x},{y})";
         }
@@ -57,13 +63,19 @@ public sealed class TaskRecoveryMonitor
             if (!enabled || waiting)
             {
                 _lastCallback = now;
+                _lastClick = now;
                 _loopReason = null;
                 _loopDetector.Reset();
                 return null;
             }
-            return _loopReason ?? (now - _lastCallback >= timeout
-                ? $"{EmulatorUnresponsiveReasonPrefix}：超过 {timeout.TotalSeconds:0} 秒没有任务回调"
-                : null);
+
+            if (_loopReason != null) return _loopReason;
+            if (now - _lastCallback >= timeout)
+                return $"{EmulatorUnresponsiveReasonPrefix}：超过 {timeout.TotalSeconds:0} 秒没有任务回调";
+            if (now - _lastClick >= timeout)
+                return $"任务无点击：超过 {timeout.TotalSeconds:0} 秒没有成功点击";
+
+            return null;
         }
     }
 
