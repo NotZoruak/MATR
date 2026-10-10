@@ -471,6 +471,10 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [301, 169, 115, 50]
+    },
     "next": ["HP_FatigueCheck", "HP_IsPreSortieConfirm"],
     "on_error": ["HP_DetectWhereAmI"]
   },

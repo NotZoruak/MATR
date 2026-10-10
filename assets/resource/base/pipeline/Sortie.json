@@ -2368,6 +2368,10 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [301, 169, 115, 50]
+    },
     "next": ["S_FatigueCheck", "S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
   },

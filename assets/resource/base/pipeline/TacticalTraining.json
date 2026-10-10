@@ -422,6 +422,10 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [301, 169, 115, 50]
+    },
     "next": ["TT_FatigueCheck", "TT_IsPreSortieConfirm"],
     "on_error": ["TT_DetectWhereAmI"]
   },

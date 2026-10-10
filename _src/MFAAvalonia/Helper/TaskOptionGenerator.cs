@@ -709,6 +709,18 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             Margin = new Thickness(0, 0, 0, 4),
         });
         var presetList = new StackPanel { Spacing = 4 };
+        var presetListOverlay = new Canvas { IsHitTestVisible = false };
+        var insertionMarker = new Border
+        {
+            Height = 2,
+            IsVisible = false,
+            IsHitTestVisible = false,
+        };
+        insertionMarker.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SukiPrimaryColor"));
+        presetListOverlay.Children.Add(insertionMarker);
+        var presetListContainer = new Grid();
+        presetListContainer.Children.Add(presetList);
+        presetListContainer.Children.Add(presetListOverlay);
         RenderFormationPresets(
             presetList,
             () => GetPresetIds(option),
@@ -717,8 +729,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 SetPresetIds(option, presetIds);
                 saveConfigurationAction();
             },
-            source);
-        panel.Children.Add(presetList);
+            source,
+            insertionMarker);
+        panel.Children.Add(presetListContainer);
         return panel;
     }
 
@@ -765,21 +778,53 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         StackPanel presetList,
         Func<List<int>> getSelectedIds,
         Action<List<int>> setSelectedIds,
-        DragItemViewModel dragItem)
+        DragItemViewModel dragItem,
+        Border insertionMarker)
     {
         presetList.Children.Clear();
         var presets = LoadFormationPresets();
         var selectedIds = getSelectedIds();
 
-        void Refresh() => RenderFormationPresets(presetList, getSelectedIds, setSelectedIds, dragItem);
+        void Refresh() => RenderFormationPresets(presetList, getSelectedIds, setSelectedIds, dragItem, insertionMarker);
 
+        var presetRows = new List<Grid>(presets.Count);
+        int FindTargetIndex(Point position)
+        {
+            var targetIndex = 0;
+            var nearestDistance = double.MaxValue;
+            for (var index = 0; index < presetRows.Count; index++)
+            {
+                var row = presetRows[index];
+                var rowCenter = row.Bounds.Top + row.Bounds.Height / 2;
+                var distance = Math.Abs(position.Y - rowCenter);
+                if (distance >= nearestDistance) continue;
+                nearestDistance = distance;
+                targetIndex = index;
+            }
+            return targetIndex;
+        }
+
+        void HideInsertionMarker() => insertionMarker.IsVisible = false;
         foreach (var preset in presets)
         {
             var capturedPreset = preset;
+            var sourceIndex = presetRows.Count;
             var row = new Grid
             {
                 VerticalAlignment = VerticalAlignment.Center,
             };
+            var rowHighlight = new Border
+            {
+                CornerRadius = new CornerRadius(6),
+                BorderThickness = new Thickness(1),
+                IsVisible = false,
+                IsHitTestVisible = false,
+            };
+            rowHighlight.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SukiPrimaryColor5"));
+            rowHighlight.Bind(Border.BorderBrushProperty, new DynamicResourceExtension("SukiPrimaryColor"));
+            var rowContainer = new Grid();
+            rowContainer.Children.Add(rowHighlight);
+            rowContainer.Children.Add(row);
             row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
             row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
             row.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
@@ -803,7 +848,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 Refresh();
             };
             row.Children.Add(checkBox);
-            row.Children.Add(new TextBlock
+            var presetHandle = new TextBlock
             {
                 Text = $"预设{capturedPreset.Id}",
                 FontSize = 13,
@@ -811,8 +856,79 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 VerticalAlignment = VerticalAlignment.Center,
                 MinWidth = 48,
                 Margin = new Thickness(8, 0, 8, 0),
+                Cursor = new Cursor(StandardCursorType.SizeAll),
+            };
+            Grid.SetColumn(presetHandle, 1);
+            row.Children.Add(presetHandle);
+
+            Point? dragStart = null;
+            var dragStarted = false;
+            presetHandle.PointerPressed += (_, eventArgs) =>
+            {
+                if (!eventArgs.GetCurrentPoint(presetHandle).Properties.IsLeftButtonPressed)
+                    return;
+                dragStart = eventArgs.GetPosition(presetList);
+                dragStarted = false;
+                eventArgs.Pointer.Capture(presetHandle);
+                eventArgs.Handled = true;
+            };
+            presetHandle.PointerMoved += (_, eventArgs) =>
+            {
+                if (dragStart == null || !eventArgs.GetCurrentPoint(presetHandle).Properties.IsLeftButtonPressed)
+                    return;
+                var position = eventArgs.GetPosition(presetList);
+                var deltaX = position.X - dragStart.Value.X;
+                var deltaY = position.Y - dragStart.Value.Y;
+                if (!dragStarted && deltaX * deltaX + deltaY * deltaY < 36)
+                    return;
+                dragStarted = true;
+                rowHighlight.IsVisible = true;
+                var targetIndex = FindTargetIndex(position);
+                var targetRow = presetRows[targetIndex];
+                var markerY = targetRow.Bounds.Top;
+                if (targetIndex > sourceIndex)
+                    markerY += targetRow.Bounds.Height;
+                else if (targetIndex == sourceIndex && position.Y >= targetRow.Bounds.Top + targetRow.Bounds.Height / 2)
+                    markerY += targetRow.Bounds.Height;
+                insertionMarker.Width = presetList.Bounds.Width;
+                Canvas.SetLeft(insertionMarker, 0);
+                Canvas.SetTop(insertionMarker, markerY - insertionMarker.Height / 2);
+                insertionMarker.IsVisible = true;
+                eventArgs.Handled = true;
+            };
+            presetHandle.PointerReleased += (_, eventArgs) =>
+            {
+                if (dragStart == null)
+                    return;
+                var position = eventArgs.GetPosition(presetList);
+                var shouldReorder = dragStarted;
+                var targetIndex = shouldReorder ? FindTargetIndex(position) : sourceIndex;
+                eventArgs.Pointer.Capture(null);
+                dragStart = null;
+                rowHighlight.IsVisible = false;
+                HideInsertionMarker();
+                eventArgs.Handled = true;
+                if (!shouldReorder || sourceIndex >= presetRows.Count)
+                    return;
+
+                if (targetIndex == sourceIndex)
+                    return;
+
+                var movedPreset = presets[sourceIndex];
+                presets.RemoveAt(sourceIndex);
+                presets.Insert(targetIndex, movedPreset);
+                ReindexFormationPresets(presets);
+                SaveFormationPresets(presets);
+                saveConfigurationAction();
+                Refresh();
+            };
+            presetHandle.AddHandler(InputElement.PointerCaptureLostEvent, (_, _) =>
+            {
+                dragStart = null;
+                dragStarted = false;
+                rowHighlight.IsVisible = false;
+                HideInsertionMarker();
             });
-            Grid.SetColumn(row.Children[^1], 1);
             var nameBox = new TextBox
             {
                 Text = capturedPreset.Name,
@@ -865,9 +981,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             deleteItem.Click += (_, _) =>
             {
                 presets.Remove(capturedPreset);
-                RemapPresetIdsAfterDelete(capturedPreset.Id, presets);
+                ReindexFormationPresets(presets);
                 SaveFormationPresets(presets);
-                RemapPresetReferences(capturedPreset.Id);
+                saveConfigurationAction();
                 Refresh();
             };
             var copyItem = new MenuItem { Header = "复制" };
@@ -890,7 +1006,8 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             menu.Items.Add(pasteItem);
             moreButton.Click += (_, _) => menu.Open(moreButton);
             row.Children.Add(moreButton);
-            presetList.Children.Add(row);
+            presetList.Children.Add(rowContainer);
+            presetRows.Add(rowContainer);
         }
 
         var addButton = new Button { Content = "＋ 新增预设", HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(0, 6, 0, 0) };
@@ -930,20 +1047,25 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
     private static void SaveFormationPresets(List<FormationPreset> presets)
         => ConfigurationManager.CurrentInstance.SetValue(ConfigurationKeys.FormationPresets, presets);
 
-    /// <summary>删除预设后将后续编号和默认名称连续化。</summary>
-    private static void RemapPresetIdsAfterDelete(int removedId, List<FormationPreset> presets)
+    /// <summary>按显示顺序重编号预设，并同步更新所有任务中的预设引用。</summary>
+    private void ReindexFormationPresets(List<FormationPreset> presets)
     {
-        foreach (var preset in presets)
+        var idMap = new Dictionary<int, int>(presets.Count);
+        for (var index = 0; index < presets.Count; index++)
         {
-            if (preset.Id <= removedId) continue;
-            if (preset.Name == $"预设{preset.Id}") preset.Name = $"预设{preset.Id - 1}";
-            preset.Id--;
+            idMap[presets[index].Id] = index + 1;
         }
-    }
 
-    /// <summary>同步删除预设后的任务引用。</summary>
-    private void RemapPresetReferences(int removedId)
-    {
+        for (var index = 0; index < presets.Count; index++)
+        {
+            var preset = presets[index];
+            var oldId = preset.Id;
+            var newId = index + 1;
+            if (preset.Name == $"预设{oldId}")
+                preset.Name = $"预设{newId}";
+            preset.Id = newId;
+        }
+
         foreach (var item in viewModel.TaskItemViewModels)
         {
             var interfaceItem = item.InterfaceItem;
@@ -954,11 +1076,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 if (!option.Data.ContainsKey("preset_ids") && !option.Data.ContainsKey("preset_id")) continue;
 
                 SetPresetIds(option, GetPresetIds(option)
-                    .Where(id => id != removedId)
-                    .Select(id => id > removedId ? id - 1 : id));
+                    .Where(id => idMap.ContainsKey(id))
+                    .Select(id => idMap[id]));
             }
         }
-        saveConfigurationAction();
     }
 
     /// <summary>返回预设的显示名称。</summary>
