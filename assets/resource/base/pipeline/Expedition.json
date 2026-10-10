@@ -1179,7 +1179,7 @@
     },
     "post_wait_freezes": {
       "time": 200,
-      "target": [301, 127, 112, 177]
+      "target": [301, 169, 115, 50]
     },
     "next": ["E_FlowerCheckCaptain", "E_FlowerDissolve"]
   },

@@ -880,6 +880,10 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [301, 169, 115, 50]
+    },
     "next": ["U_FatigueCheck", "U_IsPreSortieConfirm"],
     "on_error": ["U_DetectWhereAmI"]
   },

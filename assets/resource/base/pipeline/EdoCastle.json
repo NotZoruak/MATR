@@ -514,6 +514,10 @@
       "type": "Custom",
       "custom_action": "DragCaptainAction"
     },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [301, 169, 115, 50]
+    },
     "next": ["EC_FatigueCheck", "EC_IsPreSortieConfirm"],
     "on_error": ["EC_DetectWhereAmI"]
   },
