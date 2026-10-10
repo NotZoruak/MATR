@@ -437,7 +437,6 @@
         "target": [1067, 558, 120, 79]
       }
     },
-    "anchor": {"U_MoreClick": ""},
     "next": ["U_DetectWhereAmI"]
   },
   "U_CheckBeforeMarch": {
