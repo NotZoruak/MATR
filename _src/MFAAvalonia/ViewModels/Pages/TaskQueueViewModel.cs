@@ -3469,6 +3469,13 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
             }
             if (!IsLiveViewExpanded)
                 return;
+
+            if (!IsConnected && IsRunning && !Processor.IsGameRecoveryRunning && Processor.IsMainControllerConnected())
+            {
+                LoggerHelper.Info("主任务控制器已恢复连接，重新启用实时画面。");
+                SetConnected(true);
+            }
+
             if (EnableLiveView && IsConnected)
             {
                 // 流水线：非阻塞提交下一帧截图（若上一帧仍在执行则复用，避免任务堆积），
