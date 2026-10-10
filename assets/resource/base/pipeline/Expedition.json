@@ -1958,8 +1958,15 @@
     }
   },
   "E_NaibanRemoveAssignedHub": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [554, 7, 177, 42],
+        "expected": "今日内番表"
+      }
+    },
     "next": ["E_NaibanRemoveAssignedComplete", "E_NaibanRemoveAssigned", "E_NaibanRemoveAssignedHub"],
-    "on_error": ["E_NaibanClickEntry"]
+    "on_error": ["E_GoHome"]
   },
   "E_NaibanRemoveAssignedComplete": {
     "recognition": {
@@ -1970,8 +1977,7 @@
         "threshold": [0.9]
       }
     },
-    "next": ["E_NaibanPrepareSwordSelection"],
-    "on_error": ["E_NaibanRemoveAssignedHub"]
+    "next": ["E_NaibanPrepareSwordSelection"]
   },
   "E_NaibanRemoveAssigned": {
     "recognition": {
@@ -1984,8 +1990,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200},
-    "next": ["E_NaibanRemoveAssignedHub"],
-    "on_error": ["E_NaibanRemoveAssignedHub"]
+    "next": ["E_NaibanRemoveAssignedHub"]
   },
   "E_NaibanPrepareSwordSelection": {
     "action": {

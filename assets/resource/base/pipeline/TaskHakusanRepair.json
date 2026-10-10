@@ -830,7 +830,24 @@
       }
     },
     "post_wait_freezes": {"time": 100},
-    "next": ["THR_NavigateBack", "THR_UseRecord_Step4"],
+    "next": ["THR_UseRecord_Step5", "THR_NavigateBack", "THR_UseRecord_Step4"],
+    "on_error": ["THR_Hub"]
+  },
+  "THR_UseRecord_Step5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [577, 35, 127, 39],
+        "expected": "记录确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1049, 524, 52, 42]
+      }
+    },
+    "next": ["THR_UseRecord_Step5", "THR_NavigateBack"],
     "on_error": ["THR_Hub"]
   },
   "THR_NavigateBack": {
