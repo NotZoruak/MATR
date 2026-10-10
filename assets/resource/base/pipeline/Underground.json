@@ -434,7 +434,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [1067, 558, 120, 79]
+        "target": [947, 533, 67, 75]
       }
     },
     "next": ["U_DetectWhereAmI"]
