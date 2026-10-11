@@ -60,6 +60,7 @@
       "THR_IsFormationSelect",
       "THR_ClickRetreat",
       "THR_CheckHomeBrightness",
+      "THR_IsSwordDrop",
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsExpeditionReturn_Exp",
