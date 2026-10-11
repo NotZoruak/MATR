@@ -83,6 +83,8 @@ Current custom actions are located in `assets/resource/base/custom/`, 29 in tota
 
 Follow the naming and structure of existing files when adding a custom action: one file per action class.
 
+自定义动作中的所有游戏输入操作都必须报告任务活动，避免恢复监控将持续运行的动作误判为卡死：通过 `IMaaContext` 操作时使用 `ActionParamHelper` 提供的 `ClickWithProgress`、`SwipeWithProgress`、`TouchDownWithProgress`、`TouchMoveWithProgress`、`TouchUpWithProgress`；确实需要直接调用 `context.Tasker` 时，在每次输入成功后调用 `ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity()`。新增或修改自定义动作时检查没有绕过活动记录的点击、滑动或触摸调用。
+
 ### Pipeline Task List
 
 | File | Task |
