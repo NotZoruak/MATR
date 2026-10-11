@@ -127,7 +127,7 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
             var targetX = box[0] + box[2] / 2;
             var targetY = box[1] + box[3] / 2;
             LoggerHelper.Info($"[日课 锻刀] 选择可刀解刀剑「{candidate.Text}」");
-            context.Click(targetX, targetY);
+            context.ClickWithProgress(targetX, targetY);
             ActionParamHelper.SleepWithStopCheck(context, 500);
         }
     }

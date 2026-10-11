@@ -31,6 +31,19 @@ public sealed class SwordBookScanAction : IMaaCustomAction
 
     public bool Run<T>(T context, in RunArgs args, in RunResults results) where T : IMaaContext
     {
+        try
+        {
+            return RunCore(context);
+        }
+        catch (MaaStopException)
+        {
+            LoggerHelper.Info("[刀帐] 检测到 MaaFW 停止请求，已结束本轮扫描");
+            return false;
+        }
+    }
+
+    private static bool RunCore<T>(T context) where T : IMaaContext
+    {
         var draft = LoadDraft();
         var startNumber = ReadStartNumber(context);
         if (startNumber == null)
@@ -108,7 +121,7 @@ public sealed class SwordBookScanAction : IMaaCustomAction
         for (var attempt = 0; attempt < MaxClickAttempts; attempt++)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            context.Click(NextPage[0] + NextPage[2] / 2, NextPage[1] + NextPage[3] / 2);
+            context.ClickWithProgress(NextPage[0] + NextPage[2] / 2, NextPage[1] + NextPage[3] / 2);
             var number = WaitForNumberChange(context, previous, startNumber);
             if (number.HasValue)
                 return number.Value;

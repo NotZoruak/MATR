@@ -23,10 +23,13 @@ public class PageScrollAndHoldAction : IMaaCustomAction
 
             // swipe 滚动页面，500ms
             tasker.Swipe(874, 664, 874, 168, 500);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
             // 在终点按住保持 1s
             tasker.TouchDown(0, 874, 168, 1);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
             Thread.Sleep(1000);
             tasker.TouchUp(0);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
 
             return true;
         }

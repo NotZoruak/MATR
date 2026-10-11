@@ -44,7 +44,7 @@ public class DungeonFloorSelectAction : IMaaCustomAction
                 LoggerHelper.Info($"[DungeonFloorSelect] 十位 {currentTens}→{targetTens}，{(goDown ? "减" : "加")}{realClicks}次");
                 for (int i = 0; i < realClicks; i++)
                 {
-                    context.Click(btnX, btnY);
+                    context.ClickWithProgress(btnX, btnY);
                     ActionParamHelper.SleepWithStopCheck(context, 500);
                 }
                 ActionParamHelper.SleepWithStopCheck(context, 300);
@@ -60,7 +60,7 @@ public class DungeonFloorSelectAction : IMaaCustomAction
                 LoggerHelper.Info($"[DungeonFloorSelect] 个位 {currentOnes}→{targetOnes}，{(goDown ? "减" : "加")}{realClicks}次");
                 for (int i = 0; i < realClicks; i++)
                 {
-                    context.Click(btnX, btnY);
+                    context.ClickWithProgress(btnX, btnY);
                     ActionParamHelper.SleepWithStopCheck(context, 500);
                 }
                 ActionParamHelper.SleepWithStopCheck(context, 300);
@@ -174,7 +174,7 @@ public class DungeonFloorSelectAction : IMaaCustomAction
             int clickY = button[1] + button[3] / 2;
             LoggerHelper.Info($"[DungeonFloorSelect] 层数 {current}→{target}，点击 {(goDown ? "减" : "加")} ({clickX}, {clickY})");
 
-                context.Click(clickX, clickY);
+                context.ClickWithProgress(clickX, clickY);
             ActionParamHelper.SleepWithStopCheck(context, 500);
         }
 

@@ -55,6 +55,14 @@ public sealed class TaskRecoveryMonitor
         }
     }
 
+    public void RecordActivity(TimeSpan now)
+    {
+        lock (_gate)
+        {
+            if (_active) _lastClick = now;
+        }
+    }
+
     public string? GetReason(TimeSpan now, TimeSpan timeout, bool enabled, bool waiting)
     {
         lock (_gate)

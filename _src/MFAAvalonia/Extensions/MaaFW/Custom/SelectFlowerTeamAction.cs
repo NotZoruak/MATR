@@ -51,12 +51,14 @@ public class SelectFlowerTeamAction : IMaaCustomAction
                 var clickPoint = GetEquipRemoveClickPoint(team)!.Value;
                 LoggerHelper.Info($"[刷花装备解除] 点击部队{team}的解除选项");
                 context.Tasker.Click(clickPoint.X, clickPoint.Y);
+                ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
                 return true;
             }
 
             var t = TeamTargets[team - 1];
             LoggerHelper.Info($"[选队刷花] 选择部队{team}，点击 ({t[0]}, {t[1]})");
             context.Tasker.Click(t[0], t[1]);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
             return true;
         }
         catch (MaaStopException) { return false; }

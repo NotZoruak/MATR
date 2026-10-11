@@ -117,7 +117,7 @@ public class TeamSwitchCheckAction : IMaaCustomAction
 
     /// <summary>点击矩形中心，与 pipeline 里 target 的取值方式一致。</summary>
     private static void ClickCenter<T>(T context, int[] rect) where T : IMaaContext
-        => context.Click(rect[0] + rect[2] / 2, rect[1] + rect[3] / 2);
+        => context.ClickWithProgress(rect[0] + rect[2] / 2, rect[1] + rect[3] / 2);
 
     /// <summary>读取剩余轮次，OCR 抖动时最多重试 8 次，失败返回 -1。</summary>
     private static int ReadRemaining<T>(T context) where T : IMaaContext

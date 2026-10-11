@@ -15,6 +15,36 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 /// </summary>
 public static class ActionParamHelper
 {
+    public static void ClickWithProgress<T>(this T context, int x, int y) where T : IMaaContext
+    {
+        context.Click(x, y);
+        ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
+    }
+
+    public static void SwipeWithProgress<T>(this T context, int x1, int y1, int x2, int y2, int duration) where T : IMaaContext
+    {
+        context.Swipe(x1, y1, x2, y2, duration);
+        ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
+    }
+
+    public static void TouchDownWithProgress<T>(this T context, int contact, int x, int y, int pressure) where T : IMaaContext
+    {
+        context.TouchDown(contact, x, y, pressure);
+        ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
+    }
+
+    public static void TouchMoveWithProgress<T>(this T context, int contact, int x, int y, int pressure) where T : IMaaContext
+    {
+        context.TouchMove(contact, x, y, pressure);
+        ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
+    }
+
+    public static void TouchUpWithProgress<T>(this T context, int contact) where T : IMaaContext
+    {
+        context.TouchUp(contact);
+        ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
+    }
+
     /// <summary>
     /// 取当前任务所属的处理器。多实例下「当前激活实例」可能不是执行任务的实例，
     /// 日志与工作记录必须写到真正执行任务的实例，取不到时退回当前激活实例。

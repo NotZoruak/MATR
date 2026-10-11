@@ -27,9 +27,9 @@ MATR/
 
 > The following directories are auto-generated at runtime and excluded in `.gitignore`: `config/`, `debug/`, `logs/`, `temp/`, `backup/`, `libs/`, `plugins/`.
 
-## 文档目录访问限制
+## 文档目录访问说明
 
-在项目维护者收到其他开发者提出的加入开发申请之前，AI 必须忽略 `docs/` 目录及其全部内容：不得读取、搜索、引用、创建或修改其中的文件。此限制优先于本文其余所有指向 `docs/` 的说明；收到其他开发者的加入开发申请后，方可恢复使用该目录。
+`docs/` 目录由 `.gitignore` 忽略，不纳入版本控制；这不构成 AI 读取、搜索、引用、创建或修改其中内容的限制。根据用户任务需要正常使用该目录，并注意其中的本地文件不会随 Git 提交或推送。
 
 ## Terminology
 

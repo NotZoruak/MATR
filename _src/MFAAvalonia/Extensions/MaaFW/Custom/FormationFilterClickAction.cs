@@ -54,7 +54,7 @@ public class FormationFilterClickAction : IMaaCustomAction
             LoggerHelper.Info($"[FormationFilter] 槽位{slot}「{swordName}」→ 刀种「{type}」→ 点击 [{string.Join(",", coords)}]");
             int cx = coords[0] + coords[2] / 2;
             int cy = coords[1] + coords[3] / 2;
-            context.Click(cx, cy);
+            context.ClickWithProgress(cx, cy);
             return true;
         }
         catch (MaaStopException)

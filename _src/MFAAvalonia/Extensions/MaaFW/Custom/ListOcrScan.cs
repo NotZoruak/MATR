@@ -169,11 +169,11 @@ public static class ListOcrScan
             int cx = hit.Box[0] + hit.Box[2] / 2;
             int cy = hit.Box[1] + hit.Box[3] / 2;
             LoggerHelper.Info($"[ListOcrScan] 点击「确定」box=[{string.Join(",", hit.Box)}]");
-            context.Click(cx, cy);
+            context.ClickWithProgress(cx, cy);
             if (doubleClick)
             {
                 ActionParamHelper.SleepWithStopCheck(context, 500);
-                context.Click(cx, cy);
+                context.ClickWithProgress(cx, cy);
             }
             ActionParamHelper.SleepWithStopCheck(context, 500);
             return true;
@@ -234,7 +234,7 @@ public static class ListOcrScan
     {
         var x = scroll[0];
         var startY = scroll[1];
-        context.TouchDown(0, x, startY, 1);
+        context.TouchDownWithProgress(0, x, startY, 1);
         // 短暂停顿：确保按下被识别为拖拽起点而不是点击
         Thread.Sleep(TouchDownDelayMilliseconds);
 
@@ -242,11 +242,11 @@ public static class ListOcrScan
         for (var i = 0; i < path.Count; i++)
         {
             var (currentX, currentY) = path[i];
-            context.TouchMove(0, currentX, currentY, 1);
+            context.TouchMoveWithProgress(0, currentX, currentY, 1);
             Thread.Sleep(i < VerticalScrollSteps ? VerticalStepDelayMilliseconds : HorizontalStepDelayMilliseconds);
         }
 
-        context.TouchUp(0);
+        context.TouchUpWithProgress(0);
     }
 
     /// <summary>双击指定坐标中心，两次点击同位置，首次点击后冻结 200ms（第二次不识别）</summary>
@@ -254,9 +254,9 @@ public static class ListOcrScan
     {
         int cx = box[0] + box[2] / 2;
         int cy = box[1] + box[3] / 2;
-        context.Click(cx, cy);
+        context.ClickWithProgress(cx, cy);
         ActionParamHelper.SleepWithStopCheck(context, 500);
-        context.Click(cx, cy);
+        context.ClickWithProgress(cx, cy);
         ActionParamHelper.SleepWithStopCheck(context, 500);
     }
 }

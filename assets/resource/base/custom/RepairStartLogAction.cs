@@ -140,7 +140,7 @@ public class RepairStartLogAction : IMaaCustomAction
     {
         var x = rectangle[0] + (rectangle[2] > 0 ? Random.Shared.Next(rectangle[2]) : 0);
         var y = rectangle[1] + (rectangle[3] > 0 ? Random.Shared.Next(rectangle[3]) : 0);
-        context.Click(x, y);
+        context.ClickWithProgress(x, y);
     }
 
     private static int[] ParseRoi(JArray? value, string name)

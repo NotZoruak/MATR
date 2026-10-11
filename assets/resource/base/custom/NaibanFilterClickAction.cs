@@ -42,7 +42,7 @@ public class NaibanFilterClickAction : IMaaCustomAction
                 return false;
             }
 
-            context.Click(coords[0] + coords[2] / 2, coords[1] + coords[3] / 2);
+            context.ClickWithProgress(coords[0] + coords[2] / 2, coords[1] + coords[3] / 2);
             LoggerHelper.Info($"[后勤] 第{slot}位筛选「{target.Type}」：{target.Name}");
             return true;
         }

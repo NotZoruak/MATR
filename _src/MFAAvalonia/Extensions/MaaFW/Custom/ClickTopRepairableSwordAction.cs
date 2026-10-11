@@ -124,7 +124,7 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
             if (hit != null)
             {
                 LoggerHelper.Info($"[修刀选刀] 找到可修复刀剑(第 {attempt} 屏),点击 ({hit.Value.X},{hit.Value.Y})");
-                context.Click(hit.Value.X, hit.Value.Y);
+                context.ClickWithProgress(hit.Value.X, hit.Value.Y);
 
                 if (WaitForRepairConfirmColor(context))
                     return true;
@@ -171,7 +171,7 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
 
             if (RecognizeText(context, FilterButtonRoi, "筛选"))
             {
-                context.Click(filterButtonX, filterButtonY);
+                context.ClickWithProgress(filterButtonX, filterButtonY);
                 Thread.Sleep(FilterRecognizeIntervalMs);
             }
             else
@@ -188,7 +188,7 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
             return false;
         }
 
-        context.Click(filterEntryX, filterEntryY);
+        context.ClickWithProgress(filterEntryX, filterEntryY);
         Thread.Sleep(200);
 
         var flags = new Dictionary<string, bool>();
@@ -215,7 +215,7 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
             return false;
         }
 
-        context.Click(
+        context.ClickWithProgress(
             FilterConfirmRoi[0] + FilterConfirmRoi[2] / 2,
             FilterConfirmRoi[1] + FilterConfirmRoi[3] / 2);
         FreezeRepairList(context);
@@ -253,7 +253,7 @@ public class ClickTopRepairableSwordAction : IMaaCustomAction
     private static void ClickFilterOption<T>(T context, int x, int y, string name) where T : IMaaContext
     {
         ActionParamHelper.ThrowIfStopping(context);
-        context.Click(x, y);
+        context.ClickWithProgress(x, y);
         Thread.Sleep(500);
         LoggerHelper.Info($"[修刀选刀] 已选择筛选条件：{name}");
     }
