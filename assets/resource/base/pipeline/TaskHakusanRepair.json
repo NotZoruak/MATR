@@ -503,7 +503,7 @@
       "type": "OCR",
       "param": {
         "roi": [381, 11, 84, 28],
-        "expected": "五之二",
+        "expected": "之二",
         "only_rec": true
       }
     },
