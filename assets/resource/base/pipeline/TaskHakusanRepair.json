@@ -23,7 +23,7 @@
     "next": ["THR_NavigateClickMenu"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "special:[白山修刀] 检测到刀剑男士重伤，进入白山修刀流程",
+        "content": "special:[白山修刀] 检测到刀剑男士重伤，开始白山修刀",
         "display": "log"
       }
     }
@@ -748,7 +748,7 @@
     "next": ["THR_UseRecord_Step1"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "special:[白山修刀] 未检测到重伤刀剑男士，结束白山修刀流程",
+        "content": "special:[白山修刀] 未检测到重伤刀剑男士，结束白山修刀",
         "display": "log"
       }
     }
