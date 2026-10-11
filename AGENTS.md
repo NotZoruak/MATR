@@ -27,9 +27,9 @@ MATR/
 
 > The following directories are auto-generated at runtime and excluded in `.gitignore`: `config/`, `debug/`, `logs/`, `temp/`, `backup/`, `libs/`, `plugins/`.
 
-## 文档目录访问限制
+## 文档目录访问说明
 
-在项目维护者收到其他开发者提出的加入开发申请之前，AI 必须忽略 `docs/` 目录及其全部内容：不得读取、搜索、引用、创建或修改其中的文件。此限制优先于本文其余所有指向 `docs/` 的说明；收到其他开发者的加入开发申请后，方可恢复使用该目录。
+`docs/` 目录由 `.gitignore` 忽略，不纳入版本控制；这不构成 AI 读取、搜索、引用、创建或修改其中内容的限制。根据用户任务需要正常使用该目录，并注意其中的本地文件不会随 Git 提交或推送。
 
 ## Terminology
 
@@ -82,6 +82,8 @@ Current custom actions are located in `assets/resource/base/custom/`, 29 in tota
 队伍交替逻辑由 `TeamSwitchCheckAction.cs` 承担，旧联队战的 `TeamSwitchAction.cs`、`TeamSwitchNeededRecognition.cs` 与资源侧 `TeamSwitchDecision.cs` 已删除；`_src/MFAAvalonia/Extensions/MaaFW/Custom/TeamSwitchDecision.cs` 是应用侧静态辅助类，仍被 `TeamSwitchCheckAction` 使用，不要一起删除。
 
 Follow the naming and structure of existing files when adding a custom action: one file per action class.
+
+自定义动作中的所有游戏输入操作都必须报告任务活动，避免恢复监控将持续运行的动作误判为卡死：通过 `IMaaContext` 操作时使用 `ActionParamHelper` 提供的 `ClickWithProgress`、`SwipeWithProgress`、`TouchDownWithProgress`、`TouchMoveWithProgress`、`TouchUpWithProgress`；确实需要直接调用 `context.Tasker` 时，在每次输入成功后调用 `ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity()`。新增或修改自定义动作时检查没有绕过活动记录的点击、滑动或触摸调用。
 
 ### Pipeline Task List
 

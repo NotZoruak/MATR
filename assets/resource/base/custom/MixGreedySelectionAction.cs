@@ -206,7 +206,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         var selectPosition = MixGreedySelectionDecision.CancelPositions[index];
         for (var attempt = 1; attempt <= MixGreedySelectionDecision.ManualClickAttempts; attempt++)
         {
-            context.Click(selectPosition.X, selectPosition.Y);
+            context.ClickWithProgress(selectPosition.X, selectPosition.Y);
             ActionParamHelper.SleepWithStopCheck(context, 200);
             if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
                 return true;
@@ -231,7 +231,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                     continue;
 
                 var cancelPosition = MixGreedySelectionDecision.CancelPositions[index];
-                context.Click(cancelPosition.X, cancelPosition.Y);
+                context.ClickWithProgress(cancelPosition.X, cancelPosition.Y);
                 ActionParamHelper.SleepWithStopCheck(context, 200);
                 if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
                 {
@@ -450,7 +450,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
     {
         var x = region[0] + region[2] / 2;
         var y = region[1] + region[3] / 2;
-        context.Click(x, y);
+        context.ClickWithProgress(x, y);
         LoggerHelper.Info($"[习合] {description}：({x},{y})");
         if (delayMilliseconds > 0)
             ActionParamHelper.SleepWithStopCheck(context, delayMilliseconds);

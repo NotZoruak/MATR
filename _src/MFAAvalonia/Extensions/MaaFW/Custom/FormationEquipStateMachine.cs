@@ -386,7 +386,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
             {
                 var cx = box[0] + box[2] / 2;
                 var cy = box[1] + box[3] / 2;
-                context.Click(cx, cy);
+                context.ClickWithProgress(cx, cy);
                 ActionParamHelper.SleepWithStopCheck(context, 500);
                 return ListOcrScan.ClickConfirm(context, doubleClick: true);
             },
@@ -465,6 +465,6 @@ public class FormationEquipStateMachine : IMaaCustomAction
     {
         int cx = coords[0] + coords[2] / 2;
         int cy = coords[1] + coords[3] / 2;
-        context.Click(cx, cy);
+        context.ClickWithProgress(cx, cy);
     }
 }

@@ -58,7 +58,7 @@ public class FormationFindSwordAction : IMaaCustomAction
                     }
 
                     // 点击行右侧按钮：x 固定 1191，y 取命中文字左上角 y，单点
-                    context.Click(1191, box[1]);
+                    context.ClickWithProgress(1191, box[1]);
                     return true;
                 },
                 // 默认精确匹配：一字之差不得命中，避免「太郎太刀/次郎太刀」近似名误选

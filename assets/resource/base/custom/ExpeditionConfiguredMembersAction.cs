@@ -389,7 +389,7 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
 
     private static void ClickAndWait<T>(T context, int x, int y) where T : IMaaContext
     {
-        context.Click(x, y);
+        context.ClickWithProgress(x, y);
         ActionParamHelper.SleepWithStopCheck(context, 500);
     }
 

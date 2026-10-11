@@ -63,7 +63,7 @@ public class NaibanFindSwordAction : IMaaCustomAction
 
     private static bool ClickSword<T>(T context, int y) where T : IMaaContext
     {
-        context.Click(1214, y);
+        context.ClickWithProgress(1214, y);
         return true;
     }
 }

@@ -428,6 +428,11 @@ public class MaaProcessor
     public void LogAutoRecovery(string reason)
         => LogRestartEvent("重启游戏", $"检测到游戏疑似卡死：{TaskRecoveryMonitor.GetDisplayReason(reason)}", true);
 
+    public void RecordCustomActionActivity()
+    {
+        _recoveryMonitor.RecordActivity(_recoveryClock.Elapsed);
+    }
+
     /// <summary>记录重启阶段事件，同时写入文件日志和实时日志面板。</summary>
     public void LogRestartEvent(string category, string message, bool isWarning)
     {

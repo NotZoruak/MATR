@@ -139,7 +139,7 @@ public sealed class EdoActionSelectAction : IMaaCustomAction
                 $"路线={string.Join("→", plan.PlannedRoute)}");
 
             ActionParamHelper.SleepWithStopCheck(context, ActionWaitMilliseconds);
-            context.Click(
+            context.ClickWithProgress(
                 targetRoi[0] + targetRoi[2] / 2,
                 targetRoi[1] + targetRoi[3] / 2);
 

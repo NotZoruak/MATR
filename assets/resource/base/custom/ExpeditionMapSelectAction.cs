@@ -60,7 +60,7 @@ public class ExpeditionMapSelectAction : IMaaCustomAction
             int eraX = eraTarget[0] + eraTarget[2] / 2;
             int eraY = eraTarget[1] + eraTarget[3] / 2;
             LoggerHelper.Info($"[ExpeditionMapSelect] {teamLabel} → {mapLabel}，点击时代{era} ({eraX}, {eraY})");
-            context.Click(eraX, eraY);
+            context.ClickWithProgress(eraX, eraY);
             ActionParamHelper.SleepWithStopCheck(context, 300);
 
             // 点击小地图区域
@@ -68,7 +68,7 @@ public class ExpeditionMapSelectAction : IMaaCustomAction
             int regionX = regionTarget[0] + regionTarget[2] / 2;
             int regionY = regionTarget[1] + regionTarget[3] / 2;
             LoggerHelper.Info($"[ExpeditionMapSelect] {teamLabel} → {mapLabel}，点击地域{region} ({regionX}, {regionY})");
-            context.Click(regionX, regionY);
+            context.ClickWithProgress(regionX, regionY);
 
             LoggerHelper.Info($"[ExpeditionMapSelect] {teamLabel} 地图选择完成: {mapLabel}");
             return true;

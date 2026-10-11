@@ -153,7 +153,7 @@ public class ExpeditionTimeTracker : IMaaCustomAction
             ScanAndStore(context);
 
             // 点击关闭队伍状态面板
-            context.Click(ClosePanelX, ClosePanelY);
+            context.ClickWithProgress(ClosePanelX, ClosePanelY);
             LoggerHelper.Info("[后勤计时] 已点击关闭面板");
 
             return true;

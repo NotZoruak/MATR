@@ -47,7 +47,7 @@ public sealed class EquipmentFallbackAction : IMaaCustomAction
 
             var target = EquipmentFallbackDecision.GetOneClickEquipButtonTarget(box[1]);
             LoggerHelper.Info($"[EquipmentFallback] 缺装标记=[{string.Join(",", box)}]，点击一键装备 [{target.X},{target.Y}]");
-            context.Click(target.X, target.Y);
+            context.ClickWithProgress(target.X, target.Y);
             return true;
         }
         catch (MaaStopException)

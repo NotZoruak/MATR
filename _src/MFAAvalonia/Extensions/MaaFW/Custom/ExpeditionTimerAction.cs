@@ -49,7 +49,7 @@ public class ExpeditionTimerAction : IMaaCustomAction
                     LoggerHelper.Warning($"[后勤计时] 智能 OCR 失败，回退固定间隔 {configuredInterval}秒: {ex.Message}");
                 }
                 // 始终关闭队伍状态面板（E_AllTeamsBusy 被改为 DoNothing，不点的话面板不会关）
-                try { context.Click(ExpeditionTimeTracker.ClosePanelX, ExpeditionTimeTracker.ClosePanelY); }
+                try { context.ClickWithProgress(ExpeditionTimeTracker.ClosePanelX, ExpeditionTimeTracker.ClosePanelY); }
                 catch (Exception ex) { LoggerHelper.Warning($"[后勤计时] 关闭面板失败: {ex.Message}"); }
 
                 ExpeditionTimerRecognition.StartTimer(intervalSeconds);
@@ -65,7 +65,7 @@ public class ExpeditionTimerAction : IMaaCustomAction
             else
             {
                 // 智能调度关闭：只关面板，不启计时器
-                try { context.Click(ExpeditionTimeTracker.ClosePanelX, ExpeditionTimeTracker.ClosePanelY); }
+                try { context.ClickWithProgress(ExpeditionTimeTracker.ClosePanelX, ExpeditionTimeTracker.ClosePanelY); }
                 catch (Exception ex) { LoggerHelper.Warning($"[后勤计时] 关闭面板失败: {ex.Message}"); }
             }
 

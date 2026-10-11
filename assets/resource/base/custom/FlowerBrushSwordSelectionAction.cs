@@ -100,7 +100,7 @@ public sealed class FlowerBrushSwordSelectionAction : IMaaCustomAction
 
         ClickAndWait(context, 1010, 454);
         ActionParamHelper.ThrowIfStopping(context);
-        context.Click(640, 625);
+        context.ClickWithProgress(640, 625);
         ActionParamHelper.SleepWithStopCheck(context, ClickWaitMilliseconds);
         WaitForRegionFreeze(context, FilterConfirmButtonRoi, ConfirmFreezeMilliseconds);
 
@@ -195,7 +195,7 @@ public sealed class FlowerBrushSwordSelectionAction : IMaaCustomAction
     private static void ClickAndWait<T>(T context, int x, int y) where T : IMaaContext
     {
         ActionParamHelper.ThrowIfStopping(context);
-        context.Click(x, y);
+        context.ClickWithProgress(x, y);
         ActionParamHelper.SleepWithStopCheck(context, ClickWaitMilliseconds);
     }
 
@@ -290,7 +290,7 @@ public sealed class FlowerBrushSwordSelectionAction : IMaaCustomAction
 
     private static void ScrollList<T>(T context) where T : IMaaContext
     {
-        context.TouchDown(0, 596, 624, 100);
+        context.TouchDownWithProgress(0, 596, 624, 100);
         try
         {
             ActionParamHelper.SleepWithStopCheck(context, 20);
@@ -299,7 +299,7 @@ public sealed class FlowerBrushSwordSelectionAction : IMaaCustomAction
         }
         finally
         {
-            context.TouchUp(0);
+            context.TouchUpWithProgress(0);
         }
     }
 
@@ -311,7 +311,7 @@ public sealed class FlowerBrushSwordSelectionAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
             var x = startX + (endX - startX) * step / steps;
             var y = startY + (endY - startY) * step / steps;
-            context.TouchMove(0, x, y, 100);
+            context.TouchMoveWithProgress(0, x, y, 100);
             ActionParamHelper.SleepWithStopCheck(context, durationMilliseconds / steps);
         }
     }

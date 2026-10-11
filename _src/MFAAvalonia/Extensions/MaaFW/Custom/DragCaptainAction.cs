@@ -108,9 +108,11 @@ public class DragCaptainAction : IMaaCustomAction
 
             // 长按 1s
             tasker.TouchDown(0, srcX, srcY, 1);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
             Thread.Sleep(1000);
             // 拖拽 500ms
             tasker.Swipe(srcX, srcY, dstX, dstY, 500);
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
 
             return true;
         }

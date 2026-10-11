@@ -60,7 +60,7 @@ public class FormationHorseSelectAction : IMaaCustomAction
                 int cy = box[1] + box[3] / 2;
                 for (int attempt = 0; attempt < 8; attempt++)
                 {
-                    context.Click(cx, cy);
+                    context.ClickWithProgress(cx, cy);
                     ActionParamHelper.SleepWithStopCheck(context, 500);
 
                     // 第二次点击：OCR 找到「确定」后双击确认按钮

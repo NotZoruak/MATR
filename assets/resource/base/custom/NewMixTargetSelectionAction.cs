@@ -75,7 +75,7 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
             }
 
             var target = SelectTargets[plan.Position - 1];
-            context.Click(target[0], target[1]);
+            context.ClickWithProgress(target[0], target[1]);
             LoggerHelper.Info($"[新习合] 点击第 {plan.Position} 位选择按钮：({target[0]},{target[1]})");
             return true;
         }

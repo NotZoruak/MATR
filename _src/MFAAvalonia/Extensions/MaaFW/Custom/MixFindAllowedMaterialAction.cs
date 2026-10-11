@@ -44,7 +44,7 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
                 {
                     LoggerHelper.Info($"[日课 合成] 第 {swipeCount} 次滑动后找到可用素材");
                     ActionParamHelper.SleepWithStopCheck(context, 200);
-                    context.Click(1201, 629);
+                    context.ClickWithProgress(1201, 629);
                     return true;
                 }
 
@@ -109,7 +109,7 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
 
             var selectX = box[0] + SelectOffsetX;
             LoggerHelper.Info($"[日课 合成] 选择许可素材「{candidate.Text}」，点击 ({selectX},{box[1]})");
-            context.Click(selectX, box[1]);
+            context.ClickWithProgress(selectX, box[1]);
             return true;
         }
 
@@ -149,21 +149,21 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
         const int endY = 127;
         const int steps = 20;
 
-        context.TouchDown(0, x, startY, 1);
+        context.TouchDownWithProgress(0, x, startY, 1);
         try
         {
             ActionParamHelper.SleepWithStopCheck(context, 500);
             for (var step = 1; step <= steps; step++)
             {
                 var y = startY + (endY - startY) * step / steps;
-                context.TouchMove(0, x, y, 1);
+                context.TouchMoveWithProgress(0, x, y, 1);
                 ActionParamHelper.SleepWithStopCheck(context, 500 / steps);
             }
             ActionParamHelper.SleepWithStopCheck(context, 500);
         }
         finally
         {
-            context.TouchUp(0);
+            context.TouchUpWithProgress(0);
         }
     }
 }
