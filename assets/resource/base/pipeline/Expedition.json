@@ -1372,7 +1372,7 @@
     "next": ["E_GoHome"],
     "focus": {
       "Node.Recognition.Succeeded": {
-        "content": "[远征疲劳检测]刀剑疲劳值恢复完毕，结束刷花",
+        "content": "[远征疲劳检测] 刀剑疲劳值恢复完毕，结束刷花",
         "display": "log"
       }
     }

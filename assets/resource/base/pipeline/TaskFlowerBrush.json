@@ -77,7 +77,7 @@
     "next": ["TF_Hub"],
     "focus": {
       "Node.Recognition.Succeeded": {
-        "content": "special:[出阵疲劳检测]有刀剑疲劳低于阈值，开始刷花。",
+        "content": "special:[出阵疲劳检测] 有刀剑疲劳低于阈值，开始刷花",
         "display": "log"
       }
     }
@@ -199,7 +199,7 @@
     "on_error": ["TF_Hub"],
     "focus": {
       "Node.Recognition.Succeeded": {
-        "content": "[出阵疲劳检测]刀剑疲劳值恢复完毕，结束刷花",
+        "content": "special:[出阵疲劳检测] 刀剑疲劳值恢复完毕，结束刷花",
         "display": "log"
       }
     }
