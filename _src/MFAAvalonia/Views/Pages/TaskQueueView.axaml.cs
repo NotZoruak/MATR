@@ -1548,11 +1548,15 @@ public partial class TaskQueueView : UserControl
                     {
                         new ColumnDefinition
                         {
-                            Width = new GridLength(5, GridUnitType.Star)
+                            Width = input.InlineLabel
+                                ? GridLength.Auto
+                                : new GridLength(5, GridUnitType.Star)
                         },
                         new ColumnDefinition
                         {
-                            Width = new GridLength(6, GridUnitType.Star)
+                            Width = input.InlineLabel
+                                ? new GridLength(1, GridUnitType.Star)
+                                : new GridLength(6, GridUnitType.Star)
                         }
                     },
                     Margin = interfaceOption.Inputs.Count == 1 ? new Thickness(10, 6, 10, 6) : new Thickness(0, 3, 0, 3)
@@ -1663,7 +1667,8 @@ public partial class TaskQueueView : UserControl
 
                 var stackPanel = new StackPanel
                 {
-                    MinWidth = 180,
+                    MinWidth = input.InlineLabel ? 0 : 180,
+                    Margin = input.InlineLabel ? new Thickness(0, 0, 8, 0) : default,
                     Orientation = Orientation.Horizontal,
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Left,
@@ -1710,7 +1715,7 @@ public partial class TaskQueueView : UserControl
                     var totalMinWidth = currentGrid.Children.Sum(c => c.MinWidth);
                     var availableWidth = currentGrid.Bounds.Width;
 
-                    if (availableWidth < totalMinWidth * 0.8)
+                    if (!input.InlineLabel && availableWidth < totalMinWidth * 0.8)
                     {
                         currentGrid.ColumnDefinitions.Clear();
                         currentGrid.RowDefinitions.Clear();
@@ -1733,11 +1738,15 @@ public partial class TaskQueueView : UserControl
                         currentGrid.ColumnDefinitions.Clear();
                         currentGrid.ColumnDefinitions.Add(new ColumnDefinition
                         {
-                            Width = new GridLength(5, GridUnitType.Star)
+                            Width = input.InlineLabel
+                                ? GridLength.Auto
+                                : new GridLength(5, GridUnitType.Star)
                         });
                         currentGrid.ColumnDefinitions.Add(new ColumnDefinition
                         {
-                            Width = new GridLength(6, GridUnitType.Star)
+                            Width = input.InlineLabel
+                                ? new GridLength(1, GridUnitType.Star)
+                                : new GridLength(6, GridUnitType.Star)
                         });
                         Grid.SetRow(stackPanel, 0);
                         Grid.SetRow(textBox, 0);

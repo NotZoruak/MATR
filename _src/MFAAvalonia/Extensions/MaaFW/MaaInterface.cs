@@ -126,6 +126,10 @@ public partial class MaaInterface
         [JsonProperty("label")]
         public string? Label { get; set; }
 
+        /// <summary>是否强制标签与输入控件同行显示。</summary>
+        [JsonProperty("inline_label")]
+        public bool InlineLabel { get; set; }
+
         // /// <summary>输入字段详细描述，支持 Markdown</summary>
         [JsonProperty("description")]
         public string? Description { get; set; }

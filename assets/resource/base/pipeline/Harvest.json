@@ -3559,18 +3559,29 @@
     "next": ["HV_FatigueCheck", "HV_IsPreSortieConfirm"],
     "on_error": "HV_DetectWhereAmI"
   },
-  "HV_FatigueCheck": {
+  "HV_CompleteCurrentTaskAfterFatigue": {
     "enabled": false,
     "action": {
       "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 30
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "疲劳停止"}
+    },
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_FatigueCheck": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "FatigueCheckRecognition",
+        "custom_recognition_param": {
+          "mode": "check_sortie_first",
+          "threshold": 30
+        }
       }
     },
-    "next": ["HV_IsPreSortieConfirm"],
-    "on_error": "TF_EnterFromTeamSelect"
+    "next": ["HV_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"],
+    "on_error": ["HV_DetectWhereAmI"]
   },
   "HV_LogMarchingDamageWord": {
     "next": ["HV_LogMarchingDamage"],
