@@ -1673,7 +1673,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["DT_DrillClickSortie", "DT_DrillBattleHub"]
   },
   "DT_DrillClickSortie": {

@@ -231,7 +231,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["FC_IsTeamOnExpedition", "FC_IsTeamEmpty", "FC_DissolveTeam"]
   },
   "FC_IsTeamOnExpedition": {

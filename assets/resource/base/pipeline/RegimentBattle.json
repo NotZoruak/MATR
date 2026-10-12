@@ -185,7 +185,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": [
       "E_CheckTimerExpired",
       "RB_CloseImmediateSortiePopup",

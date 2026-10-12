@@ -400,7 +400,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["TT_CheckCaptainColor"],
     "on_error": ["TT_DetectWhereAmI"]
   },

@@ -456,7 +456,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["FB_Dissolve"]
   },
   "FB_Dissolve": {

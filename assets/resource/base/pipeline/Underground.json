@@ -243,7 +243,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["U_DisableAutoMarch", "U_EnableAutoMarch", "U_ClickAutoMarchNoOrYesDelegate", "U_CaptainHub"],
     "on_error": ["U_DetectWhereAmI"]
   },

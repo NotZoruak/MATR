@@ -280,7 +280,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["THR_IsDamagedSword", "THR_LogNoDamagedSword"]
   },
   "THR_IsDamagedSword": {

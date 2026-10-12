@@ -309,7 +309,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["E_CheckTimerExpired", "S_DisableAutoMarch", "S_EnableAutoMarch", "S_ClickAutoMarchNoOrYesDelegate", "S_CaptainHub"]
   },
   "S_DisableAutoMarch": {

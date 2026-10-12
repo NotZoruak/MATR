@@ -1597,7 +1597,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["HV_DisableAutoMarch", "HV_EnableAutoMarch", "HV_ClickAutoMarchNoOrYesDelegate", "HV_CaptainHub"]
   },
   "HV_DisableAutoMarch": {

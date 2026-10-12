@@ -128,7 +128,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["E_CheckTimerExpired", "HP_EnableAutoMarch", "HP_CaptainHub"]
   },
   "HP_EnableAutoMarch": {
