@@ -36,6 +36,7 @@
       "default_check": false,
       "repeatable": false,
       "repeat_count": 0,
+      "option": ["WH_游戏已运行时不重启"],
       "label": "唤醒本丸",
       "description": "启动游戏，处理启动期间的已知弹窗，直至进入本丸。请确保在全局设置中正确配置了游戏客户端。"
     },
@@ -9295,6 +9296,32 @@
           "pipeline_override": {
             "EC_FatigueCheck": {"enabled": true},
             "EC_CompleteCurrentTaskAfterFatigue": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "WH_游戏已运行时不重启": {
+      "name": "WH_游戏已运行时不重启",
+      "label": "游戏已运行时不重启",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "WH_RestartGame": {
+              "action": {
+                "custom_action_param": {
+                  "log_auto_recovery": false,
+                  "skip_if_running": true
+                }
+              }
+            }
           }
         }
       ]

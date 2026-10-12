@@ -7,7 +7,10 @@
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction",
-      "custom_action_param": {"log_auto_recovery": false}
+      "custom_action_param": {
+        "log_auto_recovery": false,
+        "skip_if_running": false
+      }
     },
     "next": ["WH_MainHub"],
     "on_error": ["WH_RestartGame"]
