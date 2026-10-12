@@ -250,7 +250,7 @@ public static class WorkRecordBuilder
 
         string[] taskEntries = prefix switch
         {
-            "远征计时" or "后勤计时" or "后勤" or "本丸后勤" => ["Expedition"],
+            "远征疲劳检测" or "远征计时" or "后勤计时" or "后勤" or "本丸后勤" => ["Expedition"],
             "地下城" or "大阪挖地" => ["Underground"],
             "合战场" or "常驻作战" => ["Sortie"],
             "联队战" or "海陆联队" => ["RegimentBattle"],
@@ -330,15 +330,6 @@ public static class WorkRecordBuilder
         {
             record.HasInterrupt = true;
             record.SpecialEvents.Add(new SpecialEvent(time, action));
-            return;
-        }
-
-        // 出阵疲劳检测：进入刷花计一次刷花次数，刷花结束只作为普通记录行。
-        // 文案形如「检测到首位疲劳低于30，进入刷花」，整句会成为词条，因此按包含关系判断。
-        if (prefix == "出阵疲劳检测")
-        {
-            if (action.Contains("进入刷花", StringComparison.Ordinal))
-                record.FlowerBrushCount++;
             return;
         }
 

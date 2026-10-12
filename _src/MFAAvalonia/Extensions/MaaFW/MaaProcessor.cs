@@ -2483,6 +2483,10 @@ public class MaaProcessor
                 }
 
                 var screenCap = Config.AdbDevice.ScreenCap;
+                var agentPath = ResolveMaaAgentBinaryPath();
+                if (logConfig)
+                    LoggerHelper.Info($"MaaAgentBinary 路径：{agentPath}");
+
                 try
                 {
                     return new MaaAdbController(
@@ -2490,7 +2494,7 @@ public class MaaProcessor
                         Config.AdbDevice.AdbSerial,
                         screenCap, Config.AdbDevice.Input,
                         !string.IsNullOrWhiteSpace(Config.AdbDevice.Config) ? Config.AdbDevice.Config : "{}",
-                        Path.Combine(AppPaths.InstallRoot, "libs", "MaaAgentBinary")
+                        agentPath
                     );
                 }
                 catch (Exception ex) when (MaaAdbConnectionFallback.GetFallbackScreenCap(screenCap) != screenCap)
@@ -2505,7 +2509,7 @@ public class MaaProcessor
                         Config.AdbDevice.AdbSerial,
                         fallbackScreenCap, Config.AdbDevice.Input,
                         !string.IsNullOrWhiteSpace(Config.AdbDevice.Config) ? Config.AdbDevice.Config : "{}",
-                        Path.Combine(AppPaths.InstallRoot, "libs", "MaaAgentBinary")
+                        agentPath
                     );
                 }
 
@@ -2581,6 +2585,18 @@ public class MaaProcessor
                     Config.DesktopWindow.Link,
                     Config.DesktopWindow.Check);
         }
+    }
+
+    private static string ResolveMaaAgentBinaryPath()
+    {
+        var candidates = new[]
+        {
+            Path.Combine(AppPaths.InstallRoot, "runtimes", "libs", "MaaAgentBinary"),
+            Path.Combine(AppPaths.InstallRoot, "MaaAgentBinary"),
+            Path.Combine(AppPaths.InstallRoot, "libs", "MaaAgentBinary"),
+        };
+
+        return candidates.FirstOrDefault(Directory.Exists) ?? candidates[0];
     }
 
 
@@ -6133,7 +6149,6 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.SmartWaitAction());
             tasker.Resource.Register(new Custom.ComputerOperationAction());
             tasker.Resource.Register(new Custom.WebhookAction());
-            tasker.Resource.Register(new Custom.FatigueCheckAction());
             tasker.Resource.Register(new Custom.FatigueCheckRecognition());
             tasker.Resource.Register(new Custom.PageScrollAndHoldAction());
             tasker.Resource.Register(new Custom.SelectFlowerTeamAction());

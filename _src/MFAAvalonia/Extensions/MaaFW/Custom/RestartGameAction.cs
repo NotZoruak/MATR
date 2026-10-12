@@ -640,6 +640,47 @@ public class RestartGameAction : IMaaCustomAction
         return true;
     }
 
+    private bool IsGameRunning(string package)
+    {
+        if (RunAdbCommand(_adbPath!, _adbSerial ?? "", $"shell pidof {package} || true", out var processIds))
+        {
+            var processId = processIds
+                .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault(value => int.TryParse(value, out _));
+            if (processId != null)
+            {
+                LoggerHelper.Info($"[RestartGameAction] pidof 检测到游戏进程：{processId}");
+                return true;
+            }
+        }
+
+        if (!RunAdbCommand(_adbPath!, _adbSerial ?? "", "shell ps -A", out var processList)
+            || string.IsNullOrWhiteSpace(processList))
+        {
+            LoggerHelper.Warning("[RestartGameAction] 无法确认游戏进程状态，将继续重启游戏");
+            return false;
+        }
+
+        var matchingProcess = processList
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault(line =>
+            {
+                var processName = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+                return processName != null
+                    && (string.Equals(processName, package, StringComparison.OrdinalIgnoreCase)
+                        || processName.StartsWith($"{package}:", StringComparison.OrdinalIgnoreCase));
+            });
+
+        if (matchingProcess != null)
+        {
+            LoggerHelper.Info($"[RestartGameAction] ps 检测到游戏进程：{matchingProcess.Trim()}");
+            return true;
+        }
+
+        LoggerHelper.Info($"[RestartGameAction] pidof 与 ps 均未发现游戏进程：{package}");
+        return false;
+    }
+
     private bool TryRestartGame(string package, out bool adbTimedOut)
     {
         adbTimedOut = false;
@@ -685,9 +726,10 @@ public class RestartGameAction : IMaaCustomAction
     /// 供 pipeline node 与 MATR 层卡死循环检测恢复复用。
     /// emulatorUnresponsive 为 true 表示模拟器已判定无响应（Maa 回调静默超时），
     /// 此时先强制重启模拟器再启动游戏，避免在挂起的实例上白等 ADB 超时。
+    /// skipIfRunning 为 true 时，检测到游戏进程已运行则跳过重启。
     /// </summary>
     public static void RestartAndReloadGame(bool logAutoRecovery = true, MaaProcessor? processor = null,
-        CancellationToken token = default, bool emulatorUnresponsive = false)
+        CancellationToken token = default, bool emulatorUnresponsive = false, bool skipIfRunning = false)
     {
         token.ThrowIfCancellationRequested();
         processor ??= MaaProcessorManager.Instance.Current;
@@ -703,6 +745,12 @@ public class RestartGameAction : IMaaCustomAction
             action.EnsureEmulatorEnvironment(processor);
 
             var package = GetPackageName();
+
+            if (skipIfRunning && !emulatorUnresponsive && action.IsGameRunning(package))
+            {
+                LoggerHelper.Info("[RestartGameAction] 游戏已运行，根据设置跳过重启");
+                return;
+            }
 
             if (emulatorUnresponsive)
             {
@@ -759,7 +807,10 @@ public class RestartGameAction : IMaaCustomAction
             ActionParamHelper.ThrowIfStopping(context);
             var parameters = ActionParamHelper.Parse(args.ActionParam);
             var logAutoRecovery = (bool?)parameters["log_auto_recovery"] ?? true;
-            RestartAndReloadGame(logAutoRecovery, processor: _owner);
+            var skipIfRunning = (bool?)parameters["skip_if_running"] ?? false;
+            if (skipIfRunning)
+                LoggerHelper.Info("[RestartGameAction] 已启用游戏运行检测");
+            RestartAndReloadGame(logAutoRecovery, processor: _owner, skipIfRunning: skipIfRunning);
             return true;
         }
         catch (MaaStopException)

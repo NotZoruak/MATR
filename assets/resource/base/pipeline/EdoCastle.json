@@ -124,7 +124,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["E_CheckTimerExpired", "EC_CaptainHub"]
   },
   "EC_IsEventPage": {
@@ -521,18 +521,29 @@
     "next": ["EC_FatigueCheck", "EC_IsPreSortieConfirm"],
     "on_error": ["EC_DetectWhereAmI"]
   },
-  "EC_FatigueCheck": {
+  "EC_CompleteCurrentTaskAfterFatigue": {
     "enabled": false,
     "action": {
       "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 30
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "疲劳停止"}
+    },
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_FatigueCheck": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "FatigueCheckRecognition",
+        "custom_recognition_param": {
+          "mode": "check_sortie_first",
+          "threshold": 30
+        }
       }
     },
-    "next": ["EC_IsPreSortieConfirm"],
-    "on_error": ["TF_EnterFromTeamSelect"]
+    "next": ["EC_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_WaitRefresh": {
     "enabled": false,

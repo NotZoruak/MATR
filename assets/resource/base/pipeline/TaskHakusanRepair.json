@@ -23,7 +23,7 @@
     "next": ["THR_NavigateClickMenu"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "special:[白山修刀] 检测到刀剑男士重伤，进入白山修刀流程",
+        "content": "special:[白山修刀] 检测到刀剑男士重伤，开始白山修刀",
         "display": "log"
       }
     }
@@ -60,6 +60,7 @@
       "THR_IsFormationSelect",
       "THR_ClickRetreat",
       "THR_CheckHomeBrightness",
+      "THR_IsSwordDrop",
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsExpeditionReturn_Exp",
@@ -279,7 +280,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["THR_IsDamagedSword", "THR_LogNoDamagedSword"]
   },
   "THR_IsDamagedSword": {
@@ -503,7 +504,7 @@
       "type": "OCR",
       "param": {
         "roi": [381, 11, 84, 28],
-        "expected": "五之二",
+        "expected": "之二",
         "only_rec": true
       }
     },
@@ -747,7 +748,7 @@
     "next": ["THR_UseRecord_Step1"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "special:[白山修刀] 未检测到重伤刀剑男士，结束白山修刀流程",
+        "content": "special:[白山修刀] 未检测到重伤刀剑男士，结束白山修刀",
         "display": "log"
       }
     }

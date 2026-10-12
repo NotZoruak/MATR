@@ -309,7 +309,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["E_CheckTimerExpired", "S_DisableAutoMarch", "S_EnableAutoMarch", "S_ClickAutoMarchNoOrYesDelegate", "S_CaptainHub"]
   },
   "S_DisableAutoMarch": {
@@ -2375,18 +2375,29 @@
     "next": ["S_FatigueCheck", "S_IsPreSortieConfirm"],
     "on_error": ["S_DetectWhereAmI"]
   },
-  "S_FatigueCheck": {
+  "S_CompleteCurrentTaskAfterFatigue": {
     "enabled": false,
     "action": {
       "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 30
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "疲劳停止"}
+    },
+    "on_error": ["S_DetectWhereAmI"]
+  },
+  "S_FatigueCheck": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "FatigueCheckRecognition",
+        "custom_recognition_param": {
+          "mode": "check_sortie_first",
+          "threshold": 30
+        }
       }
     },
-    "next": ["S_IsPreSortieConfirm"],
-    "on_error": ["TF_EnterFromTeamSelect"]
+    "next": ["S_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"],
+    "on_error": ["S_DetectWhereAmI"]
   },
   "S_LogMarchingDamageWord": {
     "next": ["S_LogMarchingDamage"],

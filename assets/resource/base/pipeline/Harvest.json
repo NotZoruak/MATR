@@ -277,7 +277,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代1收获物已获取",
+        "content": "[刷收获物] 时代1收获物已获取",
         "display": "log"
       }
     }
@@ -430,7 +430,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代2收获物已获取",
+        "content": "[刷收获物] 时代2收获物已获取",
         "display": "log"
       }
     }
@@ -583,7 +583,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代3收获物已获取",
+        "content": "[刷收获物] 时代3收获物已获取",
         "display": "log"
       }
     }
@@ -736,7 +736,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代4收获物已获取",
+        "content": "[刷收获物] 时代4收获物已获取",
         "display": "log"
       }
     }
@@ -889,7 +889,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代5收获物已获取",
+        "content": "[刷收获物] 时代5收获物已获取",
         "display": "log"
       }
     }
@@ -1042,7 +1042,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代6收获物已获取",
+        "content": "[刷收获物] 时代6收获物已获取",
         "display": "log"
       }
     }
@@ -1195,7 +1195,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代7收获物已获取",
+        "content": "[刷收获物] 时代7收获物已获取",
         "display": "log"
       }
     }
@@ -1348,7 +1348,7 @@
     "next": ["HV_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
-        "content": "[刷收获物]时代8收获物已获取",
+        "content": "[刷收获物] 时代8收获物已获取",
         "display": "log"
       }
     }
@@ -1597,7 +1597,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["HV_DisableAutoMarch", "HV_EnableAutoMarch", "HV_ClickAutoMarchNoOrYesDelegate", "HV_CaptainHub"]
   },
   "HV_DisableAutoMarch": {
@@ -3559,18 +3559,29 @@
     "next": ["HV_FatigueCheck", "HV_IsPreSortieConfirm"],
     "on_error": "HV_DetectWhereAmI"
   },
-  "HV_FatigueCheck": {
+  "HV_CompleteCurrentTaskAfterFatigue": {
     "enabled": false,
     "action": {
       "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 30
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "疲劳停止"}
+    },
+    "on_error": ["HV_DetectWhereAmI"]
+  },
+  "HV_FatigueCheck": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "FatigueCheckRecognition",
+        "custom_recognition_param": {
+          "mode": "check_sortie_first",
+          "threshold": 30
+        }
       }
     },
-    "next": ["HV_IsPreSortieConfirm"],
-    "on_error": "TF_EnterFromTeamSelect"
+    "next": ["HV_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"],
+    "on_error": ["HV_DetectWhereAmI"]
   },
   "HV_LogMarchingDamageWord": {
     "next": ["HV_LogMarchingDamage"],

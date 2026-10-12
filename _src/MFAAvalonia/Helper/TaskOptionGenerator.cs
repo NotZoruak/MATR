@@ -1569,7 +1569,8 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         var labelPanel = CreateLabelPanel(label, input.Name, input.Description);
 
         var isExpeditionInlineSetting = IsExpeditionInlineSetting(interfaceOption);
-        var useCompactLabelColumn = isExpeditionMemberNamesInput || isExpeditionInlineSetting;
+        var useInlineLabel = input.InlineLabel || isExpeditionInlineSetting;
+        var useCompactLabelColumn = isExpeditionMemberNamesInput || useInlineLabel;
         if (isExpeditionMemberNamesInput)
         {
             grid.ColumnDefinitions.Clear();
@@ -1584,13 +1585,20 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
             labelPanel.Width = ExpeditionInlineLabelColumnWidth;
         }
+        else if (input.InlineLabel)
+        {
+            grid.ColumnDefinitions.Clear();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            labelPanel.Width = ExpeditionInlineLabelColumnWidth;
+        }
 
         if (useCompactLabelColumn)
         {
             labelPanel.MinWidth = 0;
             labelPanel.Margin = new Thickness(0, 0, 8, 0);
             inputControl.HorizontalAlignment = HorizontalAlignment.Stretch;
-            if (isExpeditionInlineSetting)
+            if (useInlineLabel)
                 inputControl.MinWidth = 0;
         }
 
@@ -1605,7 +1613,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         Grid.SetColumn(labelPanel, 0);
         Grid.SetColumn(inputControl, 1);
         
-        if (!isExpeditionInlineSetting)
+        if (!useInlineLabel)
             AddResponsiveBehavior(grid, labelPanel, inputControl, useCompactLabelColumn);
         
         grid.Children.Add(labelPanel);

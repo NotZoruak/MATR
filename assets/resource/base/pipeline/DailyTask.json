@@ -500,6 +500,7 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "DT_MixIsInMenu",
+      "DT_MixCancelSwordSelection",
       "DT_MixIsSelectSword",
       "DT_MixMaterialPage",
       "DT_MixClickCombine",
@@ -532,7 +533,26 @@
         "expected": "刀剑"
       }
     },
-    "next": ["DT_MixFindSelectSword", "DT_MixNoAllowedMaterial"]
+    "next": ["DT_MixHideUnmixableSword", "DT_MixFindSelectSword", "DT_MixNoAllowedMaterial"]
+  },
+  "DT_MixHideUnmixableSword": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [132, 93, 20, 20],
+        "lower": [255, 255, 255],
+        "upper": [255, 255, 255],
+        "count": 300
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [169, 98, 11, 8]
+      }
+    },
+    "next": ["DT_MixIsSelectSword"],
+    "on_error": ["DT_MixEntry"]
   },
   "DT_MixFindSelectSword": {
     "recognition": {
@@ -548,8 +568,24 @@
       "time": 200,
       "target": [1186, 129, 65, 486]
     },
-    "next": ["DT_MixMaterialPage", "DT_MixFindSelectSword"],
+    "next": ["DT_MixCancelSwordSelection", "DT_MixMaterialPage", "DT_MixFindSelectSword"],
     "on_error": ["DT_MixEntry"]
+  },
+  "DT_MixCancelSwordSelection": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [421, 105, 430, 44],
+        "expected": "是否确认使用下列刀剑进行合成"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [452, 611, 83, 31]
+      }
+    },
+    "next": ["DT_MixCancelSwordSelection", "DT_MixEntry"]
   },
   "DT_MixMaterialPage": {
     "recognition": {
@@ -1673,7 +1709,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["DT_DrillClickSortie", "DT_DrillBattleHub"]
   },
   "DT_DrillClickSortie": {

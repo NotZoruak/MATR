@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.1",
+  "version": "v0.15.2-beta.1",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.2-beta.1 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -36,6 +36,7 @@
       "default_check": false,
       "repeatable": false,
       "repeat_count": 0,
+      "option": ["WH_游戏已运行时不重启"],
       "label": "唤醒本丸",
       "description": "启动游戏，处理启动期间的已知弹窗，直至进入本丸。请确保在全局设置中正确配置了游戏客户端。"
     },
@@ -325,7 +326,7 @@
       "name": "派遣前校验编队",
       "label": "派遣前校验编队",
       "type": "switch",
-      "description": "开启后，派遣前校验队伍成员是否与名单完全一致；不一致且队伍非空时先解散部队，确认二至六号位清空后，再按名单顺序从一号位开始编入；队伍已空时直接编入。名单在对应部队的远征地图选项中设置，仅选择远征地图时显示。只需输入刀剑名称，多个名称用中文或英文逗号分隔；留空表示不校验该部队。",
+      "description": "派遣前按名单校验成员；不一致时解散并重新编队。",
       "default_case": "No",
       "cases": [
         {
@@ -3404,6 +3405,7 @@
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "HP_FatigueCheck": {"enabled": true}
           }
@@ -3411,14 +3413,14 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "HP_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
-            }
+            "HP_FatigueCheck": {"enabled": true},
+            "HP_CompleteCurrentTaskAfterFatigue": {"enabled": true}
           }
         }
-      ]
+      ],
+      "inline_sub_options": true
     },
     "HP_换队长": {
       "name": "HP_换队长",
@@ -4088,6 +4090,7 @@
     "S_疲劳处理": {
       "name": "S_疲劳处理",
       "label": "疲劳处理",
+      "inline_sub_options": true,
       "default_case": "无",
       "cases": [
         {
@@ -4097,6 +4100,7 @@
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "S_FatigueCheck": {"enabled": true}
           }
@@ -4104,11 +4108,10 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "S_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
-            }
+            "S_FatigueCheck": {"enabled": true},
+            "S_CompleteCurrentTaskAfterFatigue": {"enabled": true}
           }
         }
       ]
@@ -4750,6 +4753,7 @@
     "U_疲劳处理": {
       "name": "U_疲劳处理",
       "label": "疲劳处理",
+      "inline_sub_options": true,
       "default_case": "无",
       "cases": [
         {
@@ -4759,16 +4763,16 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "U_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
-            }
+            "U_FatigueCheck": {"enabled": true},
+            "U_CompleteCurrentTaskAfterFatigue": {"enabled": true}
           }
         },
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "U_FatigueCheck": {"enabled": true}
           }
@@ -6571,7 +6575,7 @@
                   "target": [1037, 169, 110, 44]
                 }
               },
-              "next": ["U_WaitRefresh"],
+              "next": ["U_WaitRefresh", "E_VerifyMenuDir"],
               "on_error": ["U_DetectWhereAmI"]
             },
             "E_AllTeamsBusy": {
@@ -7406,6 +7410,109 @@
           "pipeline_type": "int"
         }
       ]
+    },
+    "疲劳处理刷花阈值": {
+      "name": "疲劳处理刷花阈值",
+      "label": "疲劳阈值",
+      "type": "input",
+      "default_case": "30",
+      "inputs": [
+        {
+          "name": "threshold",
+          "label": "疲劳阈值",
+          "inline_label": true,
+          "default": "30",
+          "pipeline_type": "int",
+          "verify": "^(100|[1-9][0-9]?)$",
+          "pattern_msg": "请输入 1–100 之间的整数"
+        }
+      ],
+      "pipeline_override": {
+        "HP_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "S_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "U_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "HV_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "RB_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "TT_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "EC_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        }
+      }
     },
     "临时部队记录槽": {
       "name": "临时部队记录槽",
@@ -8883,6 +8990,7 @@
     "HV_疲劳处理": {
       "name": "HV_疲劳处理",
       "label": "疲劳处理",
+      "inline_sub_options": true,
       "default_case": "无",
       "cases": [
         {
@@ -8892,6 +9000,7 @@
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "HV_FatigueCheck": {"enabled": true}
           }
@@ -8899,11 +9008,10 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "HV_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
-            }
+            "HV_FatigueCheck": {"enabled": true},
+            "HV_CompleteCurrentTaskAfterFatigue": {"enabled": true}
           }
         }
       ]
@@ -9108,6 +9216,7 @@
     "RB_疲劳处理": {
       "name": "RB_疲劳处理",
       "label": "疲劳处理",
+      "inline_sub_options": true,
       "default_case": "无",
       "cases": [
         {
@@ -9117,6 +9226,7 @@
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "RB_FatigueCheck": {"enabled": true}
           }
@@ -9124,11 +9234,10 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "RB_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
-            }
+            "RB_FatigueCheck": {"enabled": true},
+            "RB_CompleteCurrentTaskAfterFatigue": {"enabled": true}
           }
         }
       ]
@@ -9136,6 +9245,7 @@
     "TT_疲劳处理": {
       "name": "TT_疲劳处理",
       "label": "疲劳处理",
+      "inline_sub_options": true,
       "default_case": "无",
       "cases": [
         {
@@ -9145,6 +9255,7 @@
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "TT_FatigueCheck": {"enabled": true}
           }
@@ -9152,11 +9263,10 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "TT_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
-            }
+            "TT_FatigueCheck": {"enabled": true},
+            "TT_CompleteCurrentTaskAfterFatigue": {"enabled": true}
           }
         }
       ]
@@ -9164,6 +9274,7 @@
     "EC_疲劳处理": {
       "name": "EC_疲劳处理",
       "label": "疲劳处理",
+      "inline_sub_options": true,
       "default_case": "无",
       "cases": [
         {
@@ -9173,6 +9284,7 @@
         {
           "name": "刷花",
           "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
             "EC_FatigueCheck": {"enabled": true}
           }
@@ -9180,10 +9292,35 @@
         {
           "name": "停止",
           "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
           "pipeline_override": {
-            "EC_FatigueCheck": {
-              "enabled": true,
-              "on_error": []
+            "EC_FatigueCheck": {"enabled": true},
+            "EC_CompleteCurrentTaskAfterFatigue": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "WH_游戏已运行时不重启": {
+      "name": "WH_游戏已运行时不重启",
+      "label": "游戏已运行时不重启",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "WH_RestartGame": {
+              "action": {
+                "custom_action_param": {
+                  "log_auto_recovery": false,
+                  "skip_if_running": true
+                }
+              }
             }
           }
         }
