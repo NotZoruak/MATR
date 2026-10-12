@@ -27,6 +27,7 @@
       "U_IsMenuDirectory",
       "U_LeaveTroopRecord",
       "U_IsTutorial",
+      "[JumpBack]IsInMenu",
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsExpeditionReturn_Exp",
@@ -582,18 +583,6 @@
     "next": ["IsEquipmentShortagePopup"],
     "on_error": ["U_ClickTeam"]
   },
-  "U_ClickSortieInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_VerifyMenuClosed", "U_DetectWhereAmI"]
-  },
   "U_ClickSortieNow": {
     "action": {
       "type": "Click",
@@ -642,8 +631,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["U_NavigateToActivity"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_NavigateToActivity", "U_DetectWhereAmI"]
   },
   "U_IsMarchingDamage": {
     "recognition": {
@@ -674,9 +662,6 @@
     },
     "next": ["U_ClickSortieNow"]
   },
-  "U_PostClickMenuHub": {
-    "next": ["U_VerifyMenuSortie", "U_CheckNavDirForRetry", "U_DetectWhereAmI"]
-  },
   "U_PostSortieHub": {
     "pre_delay": 0,
     "next": [
@@ -706,21 +691,7 @@
       "time": 200,
       "target": [369, 287, 546, 238]
     },
-    "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "U_DetectWhereAmI"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_TryClickSortie": {
-    "next": ["U_ClickSortieInMenu", "U_DetectWhereAmI"]
-  },
-  "U_VerifyMenuClosed": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
-      }
-    },
-    "next": ["U_TryClickSortie", "U_DetectWhereAmI"]
+    "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "U_DetectWhereAmI"]
   },
   "U_WaitRefresh": {
     "recognition": {
@@ -732,7 +703,6 @@
         "threshold": [0.98]
       }
     },
-    "post_delay": 3000,
     "next": ["U_DetectWhereAmI"]
   },
   "U_NavigateToActivity": {
@@ -744,25 +714,7 @@
       }
     },
     "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [1183, 18, 87, 40]
-    },
-    "next": ["U_PostClickMenuHub"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
-  "U_CheckNavDirForRetry": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {"time": 100},
-    "next": ["U_PostClickMenuHub"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_DetectWhereAmI"]
   },
   "U_CompleteCurrentTaskAfterDamageRepair": {
     "action": {
@@ -796,17 +748,6 @@
         "display": "file"
       }
     }
-  },
-  "U_VerifyMenuSortie": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
-      }
-    },
-    "next": ["U_ClickSortieInMenu"],
-    "on_error": ["U_DetectWhereAmI"]
   },
   "U_StopOnEquipmentPopup": {
     "recognition": {

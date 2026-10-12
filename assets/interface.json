@@ -6574,7 +6574,7 @@
                   "target": [1037, 169, 110, 44]
                 }
               },
-              "next": ["U_WaitRefresh"],
+              "next": ["U_WaitRefresh", "E_VerifyMenuDir"],
               "on_error": ["U_DetectWhereAmI"]
             },
             "E_AllTeamsBusy": {
