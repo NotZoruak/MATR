@@ -74,7 +74,13 @@
         "expected": "目录"
       }
     },
-    "next": ["TF_Hub"]
+    "next": ["TF_Hub"],
+    "focus": {
+      "Node.Recognition.Succeeded": {
+        "content": "special:[出阵疲劳检测]有刀剑疲劳低于阈值，开始刷花。",
+        "display": "log"
+      }
+    }
   },
   "TF_IsEraSelect": {
     "recognition": {
@@ -165,7 +171,7 @@
     "next": ["TF_DissolveHub"]
   },
   "TF_DissolveHub": {
-    "next": ["TF_DissolveCheck", "TF_CheckFatigue"],
+    "next": ["TF_DissolveCheck", "TF_CheckFatigue", "TF_ClickSortieNow"],
     "on_error": ["TF_Hub"]
   },
   "TF_DissolveCheck": {
@@ -182,17 +188,21 @@
     "on_error": ["TF_Hub"]
   },
   "TF_CheckFatigue": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "FatigueCheckAction",
-      "custom_action_param": {
-        "mode": "check_first",
-        "threshold": 100,
-        "reversed": true
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [344, 190, 31, 18],
+        "expected": "100"
       }
     },
-    "next": ["TF_ClickSortieNow"],
-    "on_error": ["TF_UseRecord_Step1"]
+    "next": ["TF_UseRecord_Step1"],
+    "on_error": ["TF_Hub"],
+    "focus": {
+      "Node.Recognition.Succeeded": {
+        "content": "[出阵疲劳检测]刀剑疲劳值恢复完毕，结束刷花",
+        "display": "log"
+      }
+    }
   },
   "TF_ClickSortieNow": {
     "recognition": {
