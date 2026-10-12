@@ -532,7 +532,26 @@
         "expected": "刀剑"
       }
     },
-    "next": ["DT_MixFindSelectSword", "DT_MixNoAllowedMaterial"]
+    "next": ["DT_MixHideUnmixableSword", "DT_MixFindSelectSword", "DT_MixNoAllowedMaterial"]
+  },
+  "DT_MixHideUnmixableSword": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [132, 93, 20, 20],
+        "lower": [255, 255, 255],
+        "upper": [255, 255, 255],
+        "count": 300
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [169, 98, 11, 8]
+      }
+    },
+    "next": ["DT_MixIsSelectSword"],
+    "on_error": ["DT_MixEntry"]
   },
   "DT_MixFindSelectSword": {
     "recognition": {
