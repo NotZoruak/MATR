@@ -7,7 +7,7 @@ using System.Linq;
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>
-/// 请求提前结束当前队列项的剩余重复次数。
+/// 提前结束当前队列项，或在当前队列项结束后停止整个任务队列。
 /// </summary>
 public class CompleteCurrentTaskAction : IMaaCustomAction
 {
@@ -22,10 +22,18 @@ public class CompleteCurrentTaskAction : IMaaCustomAction
             return false;
         }
 
-        var reason = (string?)ActionParamHelper.Parse(args.ActionParam)["reason"];
-        if (!processor.RequestEarlyCompletionForActiveTask(reason))
+        var parameters = ActionParamHelper.Parse(args.ActionParam);
+        var reason = (string?)parameters["reason"];
+        var stopQueue = bool.TryParse(parameters["stop_queue"]?.ToString(), out var stopQueueValue)
+            && stopQueueValue;
+        var requestAccepted = stopQueue
+            ? processor.RequestStopAfterActiveTask(reason)
+            : processor.RequestEarlyCompletionForActiveTask(reason);
+        if (!requestAccepted)
         {
-            LoggerHelper.Warning("[提前结束任务] 当前没有可结束的队列项");
+            LoggerHelper.Warning(stopQueue
+                ? "[提前结束任务] 当前没有可停止的队列项"
+                : "[提前结束任务] 当前没有可结束的队列项");
             return false;
         }
 

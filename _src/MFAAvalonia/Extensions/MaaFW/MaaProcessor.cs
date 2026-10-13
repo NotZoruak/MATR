@@ -3872,6 +3872,20 @@ public class MaaProcessor
     }
 
     /// <summary>
+    /// 请求当前队列项结束后停止本实例的整个任务队列。
+    /// </summary>
+    public bool RequestStopAfterActiveTask(string? reason)
+    {
+        var activeTask = Volatile.Read(ref _activeQueueTask);
+        if (activeTask == null)
+            return false;
+
+        activeTask.RequestEarlyCompletion(string.IsNullOrWhiteSpace(reason) ? "停止整个任务队列" : reason);
+        Interlocked.Exchange(ref _stopQueueAfterActiveTaskRequested, 1);
+        return true;
+    }
+
+    /// <summary>
     /// 读取当前正在执行的队列项的任务定义，供资源侧 action 解析任务级配置。
     /// </summary>
     public MaaInterface.MaaInterfaceTask? GetActiveTaskDefinition()

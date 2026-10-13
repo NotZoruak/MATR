@@ -69,7 +69,6 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
             {
                 var alreadyMatched = $"部队{team}成员已符合配置，无需重编";
                 LoggerHelper.Info($"[远征编队] {alreadyMatched}");
-                AddTaskLog(context, alreadyMatched);
                 return true;
             }
 
