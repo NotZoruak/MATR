@@ -24,6 +24,7 @@
       "[JumpBack]IsGameIcon",
       "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
+      "[JumpBack]IsOtherDeviceLogin",
       "[JumpBack]IsSystemErrorFeedback",
       "[JumpBack]IsGameUpdatePopup",
       "[JumpBack]IsInGameUpdatePopup",

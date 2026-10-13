@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.2-beta.1",
+  "version": "v0.15.2-beta.2",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.2-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.2-beta.2 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -283,7 +283,7 @@
       "description": "后勤（远征+修刀+内番）任务自动化。推荐通过其它任务的「同步后勤」选项调用，而非单独运行。\n\n* **远征**：定时检查并派遣部队远征，点击齿轮设置各部队远征地图和配置长期远征计划。\n* **修刀**：检查远征队伍后，启用空闲工坊自动修复受损刀剑（会自动避开编入队伍的刀剑），不使用加速符。可自定义使用的工坊和筛选条件。\n* **内番**：检查远征队伍后，若内番位置空闲，自动进入今日内番表指派内番。点击右侧齿轮可设置「联动本丸刀帐」等功能。"
     }
   ],
-  "global_option": ["客户端类型", "远征智能调度", "卡死重启"],
+  "global_option": ["客户端类型", "远征智能调度", "卡死重启", "检测到顶号后结束任务"],
   "option": {
     "远征": {
       "name": "远征",
@@ -6961,6 +6961,34 @@
             },
             "DT_MailCloseMailboxHub": {
               "on_error": ["DT_RestartGame"]
+            }
+          }
+        },
+        {
+          "name": "No",
+          "label": "关闭"
+        }
+      ]
+    },
+    "检测到顶号后结束任务": {
+      "name": "检测到顶号后结束任务",
+      "label": "检测到顶号后结束任务",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "IsOtherDeviceLogin": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "CompleteCurrentTaskAction",
+                "custom_action_param": {
+                  "stop_queue": true,
+                  "reason": "检测到账号已在其它设备登录，停止整个任务队列"
+                }
+              }
             }
           }
         },
