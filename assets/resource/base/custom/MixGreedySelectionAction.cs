@@ -27,7 +27,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
     private static readonly int[] SelectAll = [1145, 460, 111, 40];
     private static readonly int[] ClearAllSelection = [1151, 361, 101, 30];
     /// <summary>素材列表上滑坐标：x, 起点 y, x, 终点 y</summary>
-    private static readonly int[] MaterialPageScroll = [1100, 617, 1100, 212];
+    private static readonly int[] MaterialPageScroll = [700, 617, 700, 212];
 
     private const int RarityX = 246;
     private const int RarityY = 211;
