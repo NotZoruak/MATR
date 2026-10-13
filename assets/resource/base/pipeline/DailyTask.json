@@ -500,7 +500,6 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "DT_MixIsInMenu",
-      "DT_MixCancelSwordSelection",
       "DT_MixIsSelectSword",
       "DT_MixMaterialPage",
       "DT_MixClickCombine",
