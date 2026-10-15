@@ -120,12 +120,13 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [414, 285, 38, 37],
-        "template": "Activity/小判箱掉落.png",
+        "roi": [334, 267, 135, 92],
+        "template": ["Activity/小判箱掉落.png", "Activity/小判箱掉落2.png"],
         "green_mask": true,
         "threshold": [0.8]
       }
     },
+    "timeout": 15000,
     "next": ["U_IsKobanChestGone"]
   },
   "U_IsKobanChestGone": {
@@ -133,13 +134,12 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [414, 285, 38, 37],
-        "template": "Activity/小判箱掉落.png",
+        "template": ["Activity/小判箱掉落.png", "Activity/小判箱掉落2.png"],
         "green_mask": true,
         "threshold": [0.8]
       }
     },
     "inverse": true,
-    "timeout": 15000,
     "next": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -392,8 +392,7 @@
         "expected": "目录"
       }
     },
-    "next": ["U_ClickUndergroundInMenu"],
-    "on_error": ["U_DetectWhereAmI"]
+    "next": ["U_ClickUndergroundInMenu", "U_DetectWhereAmI"]
   },
   "U_ClickUndergroundInMenu": {
     "recognition": {
@@ -415,6 +414,7 @@
         "upper": [40, 155, 30]
       }
     },
+    "anchor": {"U_MoreClick": ""},
     "next": ["U_IsHome", "U_DetectWhereAmI"]
   },
   "U_ClickMarching": {
