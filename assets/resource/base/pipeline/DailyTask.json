@@ -1658,8 +1658,7 @@
         "target": [134, 6, 33, 37]
       }
     },
-    "next": ["DT_DrillStrongLog"],
-    "on_error": ["DT_DrillEntry"]
+    "next": ["DT_DrillStrongLog"]
   },
   "DT_DrillStrongLog": {
     "next": ["DT_DrillOpponentSelectCheck"],
@@ -1747,7 +1746,7 @@
       }
     },
     "repeat": 2,
-    "repeat_delay": 300,
+    "repeat_delay": 500,
     "next": ["DT_DrillBattleHub"]
   },
   "DT_DrillBattleFinished": {
@@ -1762,10 +1761,28 @@
   },
   "DT_DrillIsBattleResult": {
     "recognition": {
-      "type": "OCR",
+      "type": "Or",
       "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
+        "any_of": [
+          {
+            "recognition": {
+              "type": "OCR",
+              "param": {
+                "roi": [558, 1, 162, 52],
+                "expected": "战斗结果"
+              }
+            }
+          },
+          {
+            "recognition": {
+              "type": "OCR",
+              "param": {
+                "roi": [388, 59, 54, 25],
+                "expected": "经验"
+              }
+            }
+          }
+        ]
       }
     },
     "action": {
