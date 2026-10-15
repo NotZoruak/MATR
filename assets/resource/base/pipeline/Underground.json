@@ -72,8 +72,8 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [856, 387, 35, 30],
-        "template": "Activity/地下城教程.png",
+        "roi": [349, 395, 63, 39],
+        "template": "Activity/活动教程.png",
         "green_mask": true,
         "threshold": [0.98]
       }
