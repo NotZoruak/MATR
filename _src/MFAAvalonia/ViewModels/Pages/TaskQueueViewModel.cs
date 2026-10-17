@@ -649,6 +649,14 @@ public partial class TaskQueueViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty] private ObservableCollection<DragItemViewModel> _taskItemViewModels = [];
 
+    partial void OnIsCommonChanged(bool value)
+    {
+        if (!value)
+        {
+            CloseSubPage();
+        }
+    }
+
     [RelayCommand]
     private void CloseSubPage()
     {
