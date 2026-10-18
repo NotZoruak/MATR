@@ -1830,7 +1830,7 @@
       "type": "OCR",
       "param": {
         "roi": [915, 297, 296, 43],
-        "expected": "待机中"
+        "expected": "机"
       }
     },
     "pre_delay": 0,

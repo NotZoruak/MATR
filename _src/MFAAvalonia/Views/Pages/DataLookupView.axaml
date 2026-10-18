@@ -45,7 +45,7 @@
                                     <NumericUpDown Value="{Binding CurrentExp}" Minimum="0" Maximum="999999999"
                                                    Increment="1000" MinWidth="150" />
                                     <TextBlock Text="目标等级:" VerticalAlignment="Center" />
-                                    <NumericUpDown Value="{Binding TargetLevel}" Minimum="1" Maximum="100"
+                                    <NumericUpDown Value="{Binding TargetLevel}" Minimum="1" Maximum="199"
                                                    MinWidth="108" />
                                     <Button Content="计算" Command="{Binding CalculateExpCommand}"
                                             Classes="Accent" MinWidth="98" />

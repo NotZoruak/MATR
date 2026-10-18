@@ -602,6 +602,7 @@
       }
     },
     "action": {"type": "Click"},
+    "post_delay": 500,
     "next": ["THR_IsSwordSelect", "THR_ClickReplaceSlot1"],
     "on_error": ["THR_Hub"],
     "focus": {

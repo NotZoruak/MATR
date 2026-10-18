@@ -65,7 +65,7 @@ public partial class DataLookupViewModel : ViewModelBase
     {
         var swordType = SwordExpCurves.SwordTypes[SelectedSwordTypeIndex];
         var curve = SwordExpCurves.GetCurve(swordType);
-        var maxLv = 100;
+        var maxLv = 199;
 
         ExpTableItems.Clear();
         for (int lv = 1; lv <= maxLv; lv++)

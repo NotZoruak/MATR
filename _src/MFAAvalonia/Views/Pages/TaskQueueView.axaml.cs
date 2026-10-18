@@ -657,7 +657,10 @@ public partial class TaskQueueView : UserControl
         if (DataContext is not TaskQueueViewModel vm) return;
 
         if (!init)
+        {
+            vm.CloseSubPageCommand.Execute(null);
             vm.IsCommon = true;
+        }
 
         // 竖屏模式下，打开 Popup 而不是在左侧面板显示
         if (vm.IsCompactMode && value && !init)
