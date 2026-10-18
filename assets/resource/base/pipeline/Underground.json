@@ -584,20 +584,6 @@
     "next": ["IsEquipmentShortagePopup"],
     "on_error": ["U_ClickTeam"]
   },
-  "U_ClickSortieNow": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1204, 629, 1, 1]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 100,
-      "target": [392, 249, 487, 307]
-    },
-    "next": ["U_PostSortieHub"],
-    "on_error": ["U_DetectWhereAmI"]
-  },
   "U_ConfirmEnterUnderground": {
     "recognition": {
       "type": "TemplateMatch",
@@ -614,7 +600,9 @@
         "target": [706, 582, 154, 42]
       }
     },
-    "next": ["U_PostSortieHub"],
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[大阪挖地] 出阵",
@@ -663,6 +651,19 @@
     },
     "next": ["U_ClickSortieNow"]
   },
+  "U_ClickSortieNow": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1204, 629, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [392, 249, 487, 307]
+    },
+    "next": ["U_PostSortieHub"]
+  },
   "U_PostSortieHub": {
     "pre_delay": 0,
     "next": [
@@ -671,8 +672,9 @@
       "THR_IsPreDamage",
       "U_StopOnDamagePopup",
       "U_CheckEquipmentPopup",
-      "U_DetectWhereAmI"
-    ]
+      "U_IsPreSortieConfirm"
+    ],
+    "on_error": ["U_DetectWhereAmI"]
   },
   "U_ReturnHomeAfterMarch": {
     "recognition": {
