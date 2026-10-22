@@ -2538,6 +2538,14 @@
             },
             "U_ConfirmEnterUnderground": {
               "anchor": {"U_MoreClick": "U_ClickMore"}
+            },
+            "U_IsSwordDropColor": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [947, 533, 67, 75]
+                }
+              }
             }
           }
         }
