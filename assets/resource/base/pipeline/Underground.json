@@ -468,14 +468,37 @@
   },
   "U_ContinueNextRound": {
     "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [947, 148, 101, 34],
+        "expected": "传送凭证"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
         "target": [1067, 558, 120, 79]
       }
     },
-    "next": [],
+    "next": ["U_ContinueNextRoundDone", "U_ContinueNextRound"],
     "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_ContinueNextRoundDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [947, 148, 101, 34],
+        "expected": "传送凭证"
+      }
+    },
+    "inverse": true,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1067, 558, 120, 79]
+      }
+    }
   },
   "U_GoHomeAfterRound": {
     "enabled": false,
