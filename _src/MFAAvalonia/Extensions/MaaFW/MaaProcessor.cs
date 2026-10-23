@@ -5363,7 +5363,30 @@ public class MaaProcessor
                         _isWaitingForModal || Custom.SmartWaitTracker.IsInWaitWindow() || IsGameRecoveryRunning);
                     if (reason != null) break;
                 }
-                if (reason == null) return await completion;
+                if (reason == null)
+                {
+                    var completionStatus = await completion;
+                    if (completionStatus != MaaJobStatus.Succeeded)
+                    {
+                        try
+                        {
+                            if (maa.GetTaskDetail(job.Id, out _, out _, out var nativeStatus)
+                                && nativeStatus == MaaJobStatus.Succeeded)
+                            {
+                                LoggerHelper.Warning(
+                                    $"MaaFramework 任务状态不一致：Wait 返回 {completionStatus}，任务详情确认成功，按成功处理。任务={task}，taskId={job.Id}");
+                                return MaaJobStatus.Succeeded;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LoggerHelper.Warning(
+                                $"读取 MaaFramework 任务最终状态失败：任务={task}，taskId={job.Id}，原因={ex.Message}");
+                        }
+                    }
+
+                    return completionStatus;
+                }
 
                 _recoveryMonitor.Stop();
                 token.ThrowIfCancellationRequested();
