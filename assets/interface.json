@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.3-beta.1",
+  "version": "v0.15.3-beta.3",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.3-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.3-beta.3 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -2538,6 +2538,14 @@
             },
             "U_ConfirmEnterUnderground": {
               "anchor": {"U_MoreClick": "U_ClickMore"}
+            },
+            "U_IsSwordDropColor": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [947, 533, 67, 75]
+                }
+              }
             }
           }
         }
