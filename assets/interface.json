@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.3-beta.3",
+  "version": "v0.15.3",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.3-beta.3 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.3 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -206,7 +206,7 @@
         "EC_同步后勤"
       ],
       "label": "江户潜入",
-      "description": "江户城潜入调查 活动自动化出阵。\n\n* **难度**：固定使用 E4（超难）。\n* **行动策略**：直奔王点：字面意思；保守：优先保证能进王点；均衡：比保守激进一点；激进：战至最后一刻，自刎归天！\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "江户城潜入调查 活动自动化出阵。\n\n* **难度**：固定使用 E4（超难）。\n* **行动策略**：自动行军（默认）：使用游戏内委托功能；直奔王点：字面意思；保守：优先保证能进王点；均衡：比保守激进一点；激进：战至最后一刻，自刎归天！\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "战术强化",
@@ -3570,50 +3570,155 @@
     "EC_行动策略": {
       "name": "EC_行动策略",
       "label": "行动策略",
-      "default_case": "均衡",
+      "default_case": "自动行军",
       "cases": [
+        {
+          "name": "自动行军",
+          "pipeline_override": {
+            "EC_DisableAutoMarch": {"enabled": false},
+            "EC_EnableAutoMarch": {"enabled": true},
+            "EC_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [713, 580, 150, 50],
+                  "expected": ["委托", "不委托"]
+                }
+              },
+              "post_wait_freezes": {
+                "target": [713, 580, 150, 50]
+              }
+            },
+            "EC_ClickEnterBattle": {
+              "next": ["EC_DetectWhereAmI"]
+            },
+            "EC_IsActionSelect": {"enabled": false},
+            "EC_ShouldRetreatOnLastAction": {"enabled": false},
+            "EC_ActionSelect": {"enabled": false},
+            "EC_WaitActionSelectAfterEnter": {"enabled": false}
+          }
+        },
         {
           "name": "直奔王点",
           "pipeline_override": {
+            "EC_DisableAutoMarch": {"enabled": true},
+            "EC_EnableAutoMarch": {"enabled": false},
+            "EC_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [440, 584, 110, 38],
+                  "expected": ["委托"]
+                }
+              },
+              "post_wait_freezes": {
+                "target": [440, 584, 110, 38]
+              }
+            },
+            "EC_ClickEnterBattle": {
+              "next": ["EC_WaitActionSelectAfterEnter"]
+            },
+            "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
+              "enabled": true,
               "custom_recognition_param": {"strategy": "directboss"}
             },
             "EC_ActionSelect": {
+              "enabled": true,
               "custom_action_param": {"strategy": "directboss"}
-            }
+            },
+            "EC_WaitActionSelectAfterEnter": {"enabled": true}
           }
         },
         {
           "name": "保守",
           "pipeline_override": {
+            "EC_DisableAutoMarch": {"enabled": true},
+            "EC_EnableAutoMarch": {"enabled": false},
+            "EC_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [440, 584, 110, 38],
+                  "expected": ["委托"]
+                }
+              },
+              "post_wait_freezes": {
+                "target": [440, 584, 110, 38]
+              }
+            },
+            "EC_ClickEnterBattle": {
+              "next": ["EC_WaitActionSelectAfterEnter"]
+            },
+            "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
+              "enabled": true,
               "custom_recognition_param": {"strategy": "conservative"}
             },
             "EC_ActionSelect": {
+              "enabled": true,
               "custom_action_param": {"strategy": "conservative"}
-            }
+            },
+            "EC_WaitActionSelectAfterEnter": {"enabled": true}
           }
         },
         {
           "name": "均衡",
           "pipeline_override": {
+            "EC_DisableAutoMarch": {"enabled": true},
+            "EC_EnableAutoMarch": {"enabled": false},
+            "EC_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [440, 584, 110, 38],
+                  "expected": ["委托"]
+                }
+              },
+              "post_wait_freezes": {
+                "target": [440, 584, 110, 38]
+              }
+            },
+            "EC_ClickEnterBattle": {
+              "next": ["EC_WaitActionSelectAfterEnter"]
+            },
+            "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
+              "enabled": true,
               "custom_recognition_param": {"strategy": "balanced"}
             },
             "EC_ActionSelect": {
+              "enabled": true,
               "custom_action_param": {"strategy": "balanced"}
-            }
+            },
+            "EC_WaitActionSelectAfterEnter": {"enabled": true}
           }
         },
         {
           "name": "激进",
           "pipeline_override": {
+            "EC_DisableAutoMarch": {"enabled": true},
+            "EC_EnableAutoMarch": {"enabled": false},
+            "EC_ClickAutoMarchNoOrYesDelegate": {
+              "recognition": {
+                "param": {
+                  "roi": [440, 584, 110, 38],
+                  "expected": ["委托"]
+                }
+              },
+              "post_wait_freezes": {
+                "target": [440, 584, 110, 38]
+              }
+            },
+            "EC_ClickEnterBattle": {
+              "next": ["EC_WaitActionSelectAfterEnter"]
+            },
+            "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
+              "enabled": true,
               "custom_recognition_param": {"strategy": "aggressive"}
             },
             "EC_ActionSelect": {
+              "enabled": true,
               "custom_action_param": {"strategy": "aggressive"}
-            }
+            },
+            "EC_WaitActionSelectAfterEnter": {"enabled": true}
           }
         }
       ]
@@ -3763,9 +3868,19 @@
         {
           "name": "",
           "pipeline_override": {
-            "EC_HandleTicketPopup": {
-              "next": ["EC_ReplenishTicket", "EC_TerminateNoTicket"]
-            }
+            "EC_IsTicketShortagePopup": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [452, 452, 88, 34]
+                }
+              },
+              "post_wait_freezes": {
+                "time": 100,
+                "target": [452, 452, 88, 34]
+              }
+            },
+            "EC_CompleteCurrentTaskAfterNoTicket": {"enabled": false}
           }
         }
       ],
