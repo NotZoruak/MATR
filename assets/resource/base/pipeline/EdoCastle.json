@@ -125,7 +125,85 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_CheckTimerExpired", "EC_CaptainHub"]
+    "next": ["E_CheckTimerExpired", "EC_DisableAutoMarch", "EC_EnableAutoMarch", "EC_ClickAutoMarchNoOrYesDelegate", "EC_CaptainHub"]
+  },
+  "EC_DisableAutoMarch": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1173, 373, 57, 23],
+        "template": "Common/自动行军_委托中.png",
+        "green_mask": true,
+        "threshold": [0.98]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1151, 396, 105, 28]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1151, 396, 105, 28]
+    },
+    "next": ["EC_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_EnableAutoMarch": {
+    "enabled": true,
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1176, 390, 1, 2],
+        "lower": [221, 107, 14],
+        "upper": [223, 109, 16]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1176, 390, 1, 2]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1176, 390, 1, 2]
+    },
+    "next": ["EC_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_ClickAutoMarchNoOrYesDelegate": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [713, 580, 150, 50],
+        "expected": ["委托", "不委托"]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [713, 580, 150, 50]
+    },
+    "next": ["EC_ReturnFromAutoMarch"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_ReturnFromAutoMarch": {
+    "pre_delay": 100,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1024, 30, 35, 36]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1024, 30, 35, 36]
+    },
+    "next": ["EC_IsTeamSelect"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_IsEventPage": {
     "recognition": {
@@ -367,6 +445,7 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_IsActionSelect": {
+    "enabled": false,
     "recognition": {
       "type": "TemplateMatch",
       "param": {
@@ -382,6 +461,7 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ShouldRetreatOnLastAction": {
+    "enabled": false,
     "recognition": {
       "type": "Custom",
       "param": {
@@ -392,6 +472,7 @@
     "next": ["EC_BeginRetreat"]
   },
   "EC_ActionSelect": {
+    "enabled": false,
     "action": {
       "type": "Custom",
       "custom_action": "EdoActionSelectAction",
@@ -439,7 +520,7 @@
         "target": [590, 593, 84, 17]
       }
     },
-    "next": ["EC_WaitActionSelectAfterEnter"],
+    "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -449,6 +530,7 @@
     }
   },
   "EC_WaitActionSelectAfterEnter": {
+    "enabled": false,
     "recognition": {
       "type": "TemplateMatch",
       "param": {
