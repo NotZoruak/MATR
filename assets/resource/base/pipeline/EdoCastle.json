@@ -17,8 +17,7 @@
       "EC_IsEventPage",
       "EC_IsActionSelect",
       "EC_CheckHomeBrightness",
-      "EC_IsTicketPopup",
-      "EC_IsReplenishDone",
+      "EC_IsTicketShortagePopup",
       "EC_IsTeamSelect",
       "EC_IsSwordDropColor",
       "EC_IsSpecialDrop",
@@ -171,24 +170,6 @@
     "action": {"type": "Click"},
     "next": ["EC_CheckMoreSpecialDrops"]
   },
-  "EC_ReplenishTicket": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [480, 468, 1, 1]
-      }
-    },
-    "next": ["EC_ClickRestore3"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_TerminateNoTicket": {
-    "action": {
-      "type": "Custom",
-      "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "通行令牌不足"}
-    }
-  },
   "EC_ClickMenu": {
     "recognition": {
       "type": "OCR",
@@ -298,19 +279,87 @@
     },
     "next": ["EC_TerminateRetreat"]
   },
-  "EC_IsTicketPopup": {
+  "EC_IsTicketShortagePopup": {
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [524, 196, 248, 67],
+        "roi": [526, 202, 231, 56],
         "expected": "通行令牌不足"
       }
     },
-    "next": ["EC_HandleTicketPopup"]
-  },
-  "EC_HandleTicketPopup": {
-    "next": ["EC_CloseTicketPopup", "EC_TerminateNoTicket"],
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [750, 448, 75, 40]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [750, 448, 75, 40]
+    },
+    "next": ["EC_CompleteCurrentTaskAfterNoTicket", "EC_ReplenishTicket"],
     "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_ReplenishTicket": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [578, 61, 127, 34],
+        "expected": "通行令牌"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [792, 509, 1, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["EC_ClickTicketConfirm"]
+  },
+  "EC_ClickTicketConfirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [604, 588, 66, 42]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [604, 588, 66, 42]
+    },
+    "next": ["EC_IsConfirmPurchase"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_IsConfirmPurchase": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 58, 78, 36],
+        "expected": "确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [729, 581, 101, 43]
+      }
+    },
+    "next": ["EC_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[江户潜入] 补充门票",
+        "display": "log"
+      }
+    }
+  },
+  "EC_CompleteCurrentTaskAfterNoTicket": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "通行令牌不足"}
+    }
   },
   "EC_CheckMoreSpecialDrops": {
     "timeout": 10000,
@@ -372,79 +421,8 @@
     }
   },
   "EC_PostSortieHub": {
-    "next": ["EC_IsTicketPopup", "IsPreDamage", "IsEquipmentShortagePopup", "EC_ClickEnterBattle"],
+    "next": ["EC_IsTicketShortagePopup", "IsPreDamage", "IsEquipmentShortagePopup", "EC_ClickEnterBattle"],
     "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_AfterCaptain": {
-    "pre_delay": 500,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1153, 584, 96, 89]
-      }
-    },
-    "post_delay": 500,
-    "next": ["EC_DetectTicket"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_DetectTicket": {
-    "next": ["EC_HandleNoTicket", "EC_ConfirmEnterMap"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_HandleNoTicket": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [524, 196, 248, 67],
-        "expected": "通行令牌不足"
-      }
-    },
-    "next": ["EC_ReplenishOrTerminate"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_ReplenishOrTerminate": {
-    "next": ["EC_CloseTicketPopup", "EC_TerminateNoTicket"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_ClickRestore3": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [580, 535, 115, 47],
-        "expected": "恢复3个"
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["EC_ClickReplenishConfirm"],
-    "on_error": ["EC_ClickRestore3"]
-  },
-  "EC_ClickReplenishConfirm": {
-    "pre_delay": 500,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [603, 449, 78, 38]
-      }
-    },
-    "next": ["EC_AfterCaptain"],
-    "on_error": ["EC_DetectWhereAmI"],
-    "focus": {
-      "Node.Action.Succeeded": {
-        "content": "[江户潜入] 补充门票",
-        "display": "file"
-      }
-    }
-  },
-  "EC_ConfirmEnterMap": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [599, 582, 81, 41]
-      }
-    },
-    "next": ["EC_DetectWhereAmI"]
   },
   "EC_ClickEnterBattle": {
     "recognition": {
@@ -485,22 +463,6 @@
     "timeout": 5000,
     "next": ["EC_ActionSelect"],
     "on_error": ["EC_DetectWhereAmI"]
-  },
-  "EC_IsReplenishDone": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [517, 285, 242, 76],
-        "expected": "通行令牌补充完毕"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [623, 459, 32, 15]
-      }
-    },
-    "next": ["EC_DetectWhereAmI"]
   },
   "EC_RestartGame": {
     "action": {
@@ -563,15 +525,5 @@
   },
   "EC_NavigateToActivity": {
     "next": ["EC_ClickMenu", "EC_DetectWhereAmI"]
-  },
-  "EC_CloseTicketPopup": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [782, 465, 1, 1]
-      }
-    },
-    "next": ["EC_TerminateNoTicket"]
   }
 }

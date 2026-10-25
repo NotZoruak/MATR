@@ -3763,9 +3763,19 @@
         {
           "name": "",
           "pipeline_override": {
-            "EC_HandleTicketPopup": {
-              "next": ["EC_ReplenishTicket", "EC_TerminateNoTicket"]
-            }
+            "EC_IsTicketShortagePopup": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [452, 452, 88, 34]
+                }
+              },
+              "post_wait_freezes": {
+                "time": 100,
+                "target": [452, 452, 88, 34]
+              }
+            },
+            "EC_CompleteCurrentTaskAfterNoTicket": {"enabled": false}
           }
         }
       ],
