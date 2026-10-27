@@ -1026,6 +1026,9 @@
     <data name="TaskCompleted" xml:space="preserve">
         <value>任务已完成</value>
     </data>
+    <data name="TaskNamedCompleted" xml:space="preserve">
+        <value>任务完成: {0}</value>
+    </data>
     <data name="TaskDescription" xml:space="preserve">
         <value>任务说明</value>
     </data>
