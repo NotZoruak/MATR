@@ -2060,18 +2060,23 @@
       "param": {
         "all_of": [
           {
-            "type": "OCR",
-            "param": {
-              "roi": [560, 0, 170, 50],
-              "expected": "今日内番表"
+            "recognition": {
+              "type": "OCR",
+              "param": {
+                "roi": [560, 0, 170, 50],
+                "expected": "今日内番表"
+              }
             }
           },
           {
-            "type": "TemplateMatch",
-            "param": {
-              "roi": [300, 365, 45, 40],
-              "template": "Common/移除内番安排.png",
-              "threshold": [0.9]
+            "recognition": {
+              "type": "TemplateMatch",
+              "param": {
+                "roi": [300, 365, 45, 40],
+                "template": "Common/移除内番安排.png",
+                "green_mask": false,
+                "threshold": [0.9]
+              }
             }
           }
         ]
@@ -2098,12 +2103,7 @@
         "expected": "升"
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1013, 83, 26, 25]
-    },
-    "next": ["E_NaibanVerifySwordSelector1"],
+    "next": ["E_NaibanOpenFilter1"],
     "on_error": ["E_NaibanOpenSwordSelector1"]
   },
   "E_NaibanSortDescending1": {
@@ -2114,7 +2114,12 @@
         "expected": "降"
       }
     },
-    "next": ["E_NaibanOpenFilter1"],
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1013, 83, 26, 25]
+    },
+    "next": ["E_NaibanVerifySwordSelector1"],
     "on_error": ["E_NaibanOpenSwordSelector1"]
   },
   "E_NaibanOpenFilter1": {
@@ -2141,8 +2146,7 @@
         "expected": "筛选"
       }
     },
-    "next": ["E_NaibanClickFilterCondition1_1"],
-    "on_error": ["E_NaibanOpenSwordSelector1"]
+    "next": ["E_NaibanClickFilterCondition1_1"]
   },
   "E_NaibanClickFilterCondition1_1": {
     "action": {
@@ -2152,8 +2156,7 @@
       }
     },
     "post_delay": 500,
-    "next": ["E_NaibanClickFilterCondition1_2"],
-    "on_error": ["E_NaibanOpenSwordSelector1"]
+    "next": ["E_NaibanClickFilterCondition1_2"]
   },
   "E_NaibanClickFilterCondition1_2": {
     "action": {
@@ -2163,8 +2166,7 @@
       }
     },
     "post_delay": 500,
-    "next": ["E_NaibanClickFilterCondition1_3"],
-    "on_error": ["E_NaibanOpenSwordSelector1"]
+    "next": ["E_NaibanClickFilterCondition1_3"]
   },
   "E_NaibanClickFilterCondition1_3": {
     "action": {
@@ -2173,8 +2175,24 @@
       "custom_action_param": {"slot": 1}
     },
     "post_delay": 500,
-    "next": ["E_NaibanConfirmFilter1"],
+    "next": ["E_NaibanClickAcquisitionOrder1"],
     "on_error": ["E_NaibanOpenSwordSelector1"]
+  },
+  "E_NaibanClickAcquisitionOrder1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [496, 66, 77, 37],
+        "expected": "筛选"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [960, 291, 102, 27]
+      }
+    },
+    "next": ["E_NaibanConfirmFilter1"]
   },
   "E_NaibanConfirmFilter1": {
     "recognition": {
@@ -2223,18 +2241,23 @@
       "param": {
         "all_of": [
           {
-            "type": "OCR",
-            "param": {
-              "roi": [560, 0, 170, 50],
-              "expected": "今日内番表"
+            "recognition": {
+              "type": "OCR",
+              "param": {
+                "roi": [560, 0, 170, 50],
+                "expected": "今日内番表"
+              }
             }
           },
           {
-            "type": "TemplateMatch",
-            "param": {
-              "roi": [300, 457, 45, 40],
-              "template": "Common/移除内番安排.png",
-              "threshold": [0.9]
+            "recognition": {
+              "type": "TemplateMatch",
+              "param": {
+                "roi": [300, 457, 45, 40],
+                "template": "Common/移除内番安排.png",
+                "green_mask": false,
+                "threshold": [0.9]
+              }
             }
           }
         ]
@@ -2261,12 +2284,7 @@
         "expected": "升"
       }
     },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1013, 83, 26, 25]
-    },
-    "next": ["E_NaibanVerifySwordSelector2"],
+    "next": ["E_NaibanOpenFilter2"],
     "on_error": ["E_NaibanOpenSwordSelector2"]
   },
   "E_NaibanSortDescending2": {
@@ -2277,7 +2295,12 @@
         "expected": "降"
       }
     },
-    "next": ["E_NaibanOpenFilter2"],
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1013, 83, 26, 25]
+    },
+    "next": ["E_NaibanVerifySwordSelector2"],
     "on_error": ["E_NaibanOpenSwordSelector2"]
   },
   "E_NaibanOpenFilter2": {
@@ -2304,8 +2327,7 @@
         "expected": "筛选"
       }
     },
-    "next": ["E_NaibanClickFilterCondition2_1"],
-    "on_error": ["E_NaibanOpenSwordSelector2"]
+    "next": ["E_NaibanClickFilterCondition2_1"]
   },
   "E_NaibanClickFilterCondition2_1": {
     "action": {
@@ -2315,8 +2337,7 @@
       }
     },
     "post_delay": 500,
-    "next": ["E_NaibanClickFilterCondition2_2"],
-    "on_error": ["E_NaibanOpenSwordSelector2"]
+    "next": ["E_NaibanClickFilterCondition2_2"]
   },
   "E_NaibanClickFilterCondition2_2": {
     "action": {
@@ -2326,8 +2347,7 @@
       }
     },
     "post_delay": 500,
-    "next": ["E_NaibanClickFilterCondition2_3"],
-    "on_error": ["E_NaibanOpenSwordSelector2"]
+    "next": ["E_NaibanClickFilterCondition2_3"]
   },
   "E_NaibanClickFilterCondition2_3": {
     "action": {
@@ -2336,8 +2356,24 @@
       "custom_action_param": {"slot": 2}
     },
     "post_delay": 500,
-    "next": ["E_NaibanConfirmFilter2"],
+    "next": ["E_NaibanClickAcquisitionOrder2"],
     "on_error": ["E_NaibanOpenSwordSelector2"]
+  },
+  "E_NaibanClickAcquisitionOrder2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [496, 66, 77, 37],
+        "expected": "筛选"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [960, 291, 102, 27]
+      }
+    },
+    "next": ["E_NaibanConfirmFilter2"]
   },
   "E_NaibanConfirmFilter2": {
     "recognition": {

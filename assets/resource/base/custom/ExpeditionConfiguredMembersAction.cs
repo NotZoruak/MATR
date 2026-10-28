@@ -346,7 +346,8 @@ public sealed class ExpeditionConfiguredMembersAction : IMaaCustomAction
             },
             "ExpeditionConfiguredMembers",
             hitFilter: (image, box) => context.ColorMatch(190, 190, 190, 190, 190, 190, image, out _,
-                threshold: 1.0, x: 1191, y: box[1], w: 1, h: 1, count: 1) == false);
+                threshold: 1.0, x: 1191, y: box[1], w: 1, h: 1, count: 1) == false,
+            minScore: ListOcrScan.SwordNameMinScore);
     }
 
     private static bool WaitForTitle<T>(T context, int[] roi, string expected, int attempts = 5) where T : IMaaContext
