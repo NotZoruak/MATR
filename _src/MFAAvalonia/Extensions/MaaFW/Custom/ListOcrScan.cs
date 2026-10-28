@@ -22,6 +22,9 @@ public static class ListOcrScan
     /// </summary>
     public const double MinScore = 0.8;
 
+    /// <summary>刀名 OCR 得分门槛，兼容「笹贯」被识别成「链贯」时约 0.739 的得分。</summary>
+    public const double SwordNameMinScore = 0.7;
+
     /// <summary>上滑后到下一次截图之间的等待（毫秒）。L 形收尾正常时列表应已停稳，这里只用于避开滑动前的旧帧</summary>
     public const int ScrollSettleMilliseconds = 150;
 
@@ -65,7 +68,8 @@ public static class ListOcrScan
     public static bool ScanAndClick<T>(T context, string target, int[] roi, int[] scroll,
         Func<IMaaImageBuffer, List<int>, bool> clickAction,
         string logTag, Func<string, string, bool>? matcher = null,
-        Func<IMaaImageBuffer, List<int>, bool>? hitFilter = null) where T : IMaaContext
+        Func<IMaaImageBuffer, List<int>, bool>? hitFilter = null,
+        double minScore = MinScore) where T : IMaaContext
     {
         var isMatch = matcher ?? SwordNameMatcher.IsExactMatch;
         string lastOcr = string.Empty;
@@ -109,7 +113,7 @@ public static class ListOcrScan
 
             // 命中多个时取最上方（y 最小）的匹配
             var hit = all
-                .Where(r => r.Score >= MinScore && r.Text != null && isMatch(r.Text, target))
+                .Where(r => r.Score >= minScore && r.Text != null && isMatch(r.Text, target))
                 .Where(r => r.Box is { Count: >= 4 })
                 .Where(r => hitFilter == null || hitFilter(image, r.Box!))
                 .OrderBy(r => r.Box![1])

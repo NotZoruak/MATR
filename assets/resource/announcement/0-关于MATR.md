@@ -30,3 +30,4 @@ MATR 仍在持续完善中，欢迎分享使用体验、反馈问题、提出建
 - [GitHub 仓库](https://github.com/NotZoruak/MATR)
 - [MaaFramework](https://github.com/MaaXYZ/MaaFramework)
 - [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia)
+- [MaaPazugiri](https://github.com/NotZoruak/MaaPazugiri)

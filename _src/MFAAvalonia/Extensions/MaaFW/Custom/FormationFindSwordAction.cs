@@ -64,7 +64,8 @@ public class FormationFindSwordAction : IMaaCustomAction
                 // 默认精确匹配：一字之差不得命中，避免「太郎太刀/次郎太刀」近似名误选
                 "FormationFindSword",
                 hitFilter: (image, box) => context.ColorMatch(212, 173, 31, 212, 173, 31, image, out _,
-                    threshold: 1.0, x: 18, y: box[1], w: 1, h: 1, count: 1));
+                    threshold: 1.0, x: 18, y: box[1], w: 1, h: 1, count: 1),
+                minScore: ListOcrScan.SwordNameMinScore);
         }
         catch (MaaStopException)
         {
