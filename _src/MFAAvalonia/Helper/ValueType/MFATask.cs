@@ -130,8 +130,8 @@ public partial class MFATask : ObservableObject
 
                 if (iterationDecision.ShouldCountIteration)
                     OwnerViewModel?.MarkTaskIterationCompleted(SourceItem, RunId);
-                // 有限重复任务每轮成功后输出完成进度；无限任务与单次任务不重复输出。
-                if (!infinite && Count > 1 && Type == MFATaskType.MAAFW)
+                // 多次或无限重复任务每轮成功后输出进度；无限任务以无穷符号表示总轮数。
+                if (Type == MFATaskType.MAAFW && (infinite || Count > 1))
                 {
                     OwnerViewModel?.AddLogByKey(
                         LangKeys.TaskRoundComplete,
@@ -140,7 +140,7 @@ public partial class MFATask : ObservableObject
                         true,
                         LanguageHelper.GetLocalizedString(Name),
                         (i + 1).ToString(),
-                        Count.ToString());
+                        infinite ? "∞" : Count.ToString());
                 }
             }
             if (hasFailed)
@@ -149,7 +149,18 @@ public partial class MFATask : ObservableObject
                 return Complete(MFATaskStatus.FAILED, ContinueOnError, failureMessage);
             }
             else
+            {
                 OwnerViewModel?.MarkTaskSucceeded(SourceItem, RunId);
+                if (Type == MFATaskType.MAAFW)
+                {
+                    OwnerViewModel?.AddLogByKey(
+                        LangKeys.TaskNamedCompleted,
+                        (Avalonia.Media.IBrush?)null,
+                        true,
+                        true,
+                        LanguageHelper.GetLocalizedString(Name));
+                }
+            }
             return Complete(MFATaskStatus.SUCCEEDED);
         }
         catch (Exception) when (token.IsCancellationRequested)

@@ -9,8 +9,7 @@
       "Hub": "U_DetectWhereAmI",
       "PublicFlowDone": "U_DetectWhereAmI",
       "SupplyDone": "U_IsPreSortieConfirm",
-      "GrindDone": "U_DetectWhereAmI",
-      "U_EqBreakExit": ""
+      "GrindDone": "U_DetectWhereAmI"
     },
     "timeout": 120000,
     "next": [
@@ -425,7 +424,6 @@
         "target": [1067, 558, 120, 79]
       }
     },
-    "anchor": {"U_EqBreakExit": ""},
     "next": ["U_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -456,7 +454,6 @@
         "expected": "传送凭证"
       }
     },
-    "anchor": {"U_EqBreakExit": ""},
     "next": ["E_CheckTimerExpired", "U_GoHomeAfterRound", "U_ContinueNextRound"],
     "on_error": ["U_DetectWhereAmI"],
     "focus": {
@@ -720,7 +717,7 @@
       "time": 200,
       "target": [369, 287, 546, 238]
     },
-    "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "[Anchor]U_EqBreakExit", "U_DetectWhereAmI"]
+    "next": ["U_ConfirmReturnHome", "U_ReturnHomeAfterMarch", "U_DetectWhereAmI"]
   },
   "U_WaitRefresh": {
     "recognition": {
@@ -785,7 +782,18 @@
       "time": 500,
       "target": [490, 469, 10, 10]
     },
-    "next": ["[Anchor]U_EqBreakExit"],
+    "next": ["U_EndAfterReturnHome", "U_ConfirmReturnHome"],
+    "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_EndAfterReturnHome": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
+      }
+    },
+    "inverse": true,
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[大阪挖地] 返回本丸",
@@ -808,6 +816,7 @@
       "time": 200,
       "target": [427, 269, 426, 130]
     },
+    "next": ["U_CompleteCurrentTaskAfterEquipmentBreak"],
     "on_error": ["U_ClickTeam"]
   },
   "U_StopOnDamagePopup": {
@@ -925,7 +934,6 @@
   },
   "U_EqCheck": {
     "enabled": false,
-    "anchor": {"U_EqBreakExit": "U_CompleteCurrentTaskAfterEquipmentBreak"},
     "next": [
       "U_EqCheckTemplate",
       "U_EqCheckC_R0C0",

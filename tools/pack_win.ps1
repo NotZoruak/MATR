@@ -1,5 +1,5 @@
 ﻿param(
-[string]$Version = "v0.14.5",
+[string]$Version = "v0.15.4-beta.1",
     [string]$PublishDir = ""
 )
 
@@ -11,6 +11,16 @@ $TempDir = "$TempBase\MATR"
 $Platform = "win-x64"
 $ZipFile = "$Root\MATR-$Version-$Platform.zip"
 $SourceDir = if ([string]::IsNullOrWhiteSpace($PublishDir)) { $Root } else { (Resolve-Path $PublishDir).Path }
+$PatchedMaaFramework = Join-Path $Root 'runtimes\win-x64\native\MaaFramework.dll'
+$ExpectedPatchedMaaFrameworkHash = 'A27D305F5462E93E81EB11F961DA01575724EE450F4D9540B59EED866F164298'
+
+if (-not (Test-Path -LiteralPath $PatchedMaaFramework -PathType Leaf)) {
+    throw "缺少 MaaFW 5.14.3 CPU OCR 补丁运行库：$PatchedMaaFramework。请按 tools/patches 中的说明重新构建并放置。"
+}
+$ActualPatchedMaaFrameworkHash = (Get-FileHash -LiteralPath $PatchedMaaFramework -Algorithm SHA256).Hash
+if ($ActualPatchedMaaFrameworkHash -ne $ExpectedPatchedMaaFrameworkHash) {
+    throw "MaaFW 补丁运行库哈希不匹配，拒绝打包。期望：$ExpectedPatchedMaaFrameworkHash；实际：$ActualPatchedMaaFrameworkHash"
+}
 
 # Clean old temp dir and zip
 if (Test-Path $TempBase) { Remove-Item -Recurse -Force $TempBase }
@@ -37,6 +47,15 @@ Copy-Item "$Root\README.md" $TempDir
 Copy-Item "$Root\LICENSE" $TempDir
 Copy-Item "$Root\assets\interface.json" "$TempDir\assets\interface.json"
 Copy-Item "$SourceDir\runtimes" -Recurse -Destination "$TempDir\runtimes"
+$PackageMaaFramework = Join-Path $TempDir 'runtimes\win-x64\native\MaaFramework.dll'
+if (-not (Test-Path -LiteralPath $PackageMaaFramework -PathType Leaf)) {
+    throw "Windows 发布目录缺少 MaaFramework.dll：$PackageMaaFramework"
+}
+Copy-Item -LiteralPath $PatchedMaaFramework -Destination $PackageMaaFramework -Force
+if ((Get-FileHash -LiteralPath $PackageMaaFramework -Algorithm SHA256).Hash -ne $ExpectedPatchedMaaFrameworkHash) {
+    throw '打包暂存区中的 MaaFramework.dll 校验失败。'
+}
+Write-Host '已注入并校验 MaaFW 5.14.3 CPU OCR 补丁。'
 $KeepDirs = @("libs", "plugins", $Platform)
 Get-ChildItem "$TempDir\runtimes" -Directory | ForEach-Object {
     if ($KeepDirs -notcontains $_.Name) { Remove-Item -Recurse -Force $_.FullName }

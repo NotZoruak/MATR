@@ -1017,6 +1017,9 @@
     <data name="TaskCompleted" xml:space="preserve">
         <value>Task has been completed</value>
     </data>
+    <data name="TaskNamedCompleted" xml:space="preserve">
+        <value>Task completed: {0}</value>
+    </data>
     <data name="TaskDescription" xml:space="preserve">
         <value>Task Description</value>
     </data>
