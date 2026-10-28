@@ -346,6 +346,7 @@ public static class LangKeys
 	public static readonly string TaskAllCompleted = "TaskAllCompleted";
 	public static readonly string TaskAllCompletedWithTime = "TaskAllCompletedWithTime";
 	public static readonly string TaskCompleted = "TaskCompleted";
+	public static readonly string TaskNamedCompleted = "TaskNamedCompleted";
 	public static readonly string TaskDescription = "TaskDescription";
 	public static readonly string TaskList = "TaskList";
 	public static readonly string TaskNotFoundError = "TaskNotFoundError";

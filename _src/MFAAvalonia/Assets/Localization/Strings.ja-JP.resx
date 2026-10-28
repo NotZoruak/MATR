@@ -790,6 +790,9 @@
   <data name="TaskCompleted" xml:space="preserve">
     <value>タスクが完了しました</value>
   </data>
+  <data name="TaskNamedCompleted" xml:space="preserve">
+    <value>タスク完了: {0}</value>
+  </data>
   <data name="TaskAddedToast" xml:space="preserve">
     <value>タスク {0} を追加しました</value>
   </data>

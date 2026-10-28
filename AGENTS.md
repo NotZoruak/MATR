@@ -335,7 +335,7 @@ feat(queue): 支持任务完成状态正确落盘
 - **`develop`**：仓库默认分支，日常开发与外部 PR 的默认落点。新功能、多 node 流程改动和需要验证的新逻辑都先合入这里。
 - **`main`**：稳定发布线，禁止直接提交。变更只能来自 `develop` 的发布合并或 `hotfix/*` 分支的修复合并，且都必须通过 GitHub PR 合并（本地合并后直接 push 会被拒绝）；所有版本均在此打 tag。
 - **`feat/<feature-name>`**：复杂功能从 `develop` 切出，验证后合并回 `develop`。
-- **`fix/<scope>`**：常规缺陷修复从 `develop` 切出，合并回 `develop`。
+- **`fix/<scope>`**：常规缺陷修复的可选工作分支，集成目标为 `develop`。
 - **`hotfix/<scope>`**：已发布版本的紧急修复从 `main` 切出，修完必须同时合回 `main` 和 `develop`，只合一边会让修复在下一个版本丢失。
 - 所有版本的 tag 都打在 `main` 上。测试版和正式版发布前都通过 GitHub PR 将 `develop` 合入 `main`，测试版 tag 使用 `-beta.N` 后缀。
 - 每次版本发布后（含测试版、正式版与 `hotfix/*` 合回）`main` 与 `develop` 必须回到同一提交，避免长期分叉；开发期间允许 `develop` 暂时领先于 `main`。

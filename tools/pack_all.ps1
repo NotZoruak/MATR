@@ -1,5 +1,5 @@
 ﻿# 一键打包 win-x64 与 macos-arm64 两个发布包（本地手动发布用）
-# 用法: pwsh tools/pack_all.ps1 -Version v0.15.3
+# 用法: pwsh tools/pack_all.ps1 -Version v0.15.4-beta.1
 # 产物: MATR-$Version-win-x64.zip 与 MATR-$Version-macos-arm64.zip（仓库根目录）
 param(
     [Parameter(Mandatory = $true)]
@@ -24,6 +24,7 @@ Invoke-Dotnet @('publish', $Project, '-c', 'Release', '-p:Platform=AnyCPU', '-r'
 pwsh (Join-Path $Root "tools\pack_win.ps1") -Version $Version -PublishDir (Join-Path $PublishBase 'win-x64\publish')
 
 Write-Host "== macOS arm64 交叉发布 =="
+Write-Host "提示：当前只有 Windows MaaFramework.dll 已应用 CPU OCR 补丁；macOS 包暂使用 MaaFW 5.14.3 官方 dylib。"
 if (Test-Path (Join-Path $PublishBase 'osx-arm64\publish')) {
     Remove-Item -LiteralPath (Join-Path $PublishBase 'osx-arm64\publish') -Recurse -Force
 }
