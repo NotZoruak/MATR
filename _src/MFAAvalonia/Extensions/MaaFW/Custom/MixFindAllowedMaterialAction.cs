@@ -79,7 +79,7 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
 
         var query = ListOcrScan.OcrAll(context, image, ListRoi);
         var candidates = query?.All
-            .Where(item => item.Score >= ListOcrScan.MinScore
+            .Where(item => item.Score >= ListOcrScan.SwordNameMinScore
                 && item.Text != null
                 && item.Box is { Count: >= 4 }
                 && SwordNameMatcher.FindMatchedName(item.Text, allowList) != null)
