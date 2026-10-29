@@ -22,9 +22,10 @@ Write-Host "== Windows x64 发布 =="
 Invoke-Dotnet @('publish', $Project, '-c', 'Release', '-p:Platform=AnyCPU', '-r', 'win-x64',
     "-p:PublishDir=$(Join-Path $PublishBase 'win-x64\publish')", '--self-contained', 'false')
 pwsh (Join-Path $Root "tools\pack_win.ps1") -Version $Version -PublishDir (Join-Path $PublishBase 'win-x64\publish')
+if ($LASTEXITCODE -ne 0) { throw "Windows 打包失败（退出码 $LASTEXITCODE），停止后续发布。" }
 
 Write-Host "== macOS arm64 交叉发布 =="
-Write-Host "提示：当前只有 Windows MaaFramework.dll 已应用 CPU OCR 补丁；macOS 包暂使用 MaaFW 5.14.3 官方 dylib。"
+Write-Host "提示：Windows 使用 MaaFW 5.14.3 双线程 CPU OCR 关闭自旋补丁；macOS 包使用 MaaFW 5.14.3 官方 dylib，尚未适配该补丁。"
 if (Test-Path (Join-Path $PublishBase 'osx-arm64\publish')) {
     Remove-Item -LiteralPath (Join-Path $PublishBase 'osx-arm64\publish') -Recurse -Force
 }
@@ -35,6 +36,7 @@ Invoke-Dotnet @('publish', $Project, '-c', 'Release', '-p:Platform=AnyCPU', '-r'
     "-p:PublishDir=$(Join-Path $PublishBase 'osx-arm64\publish')",
     '--self-contained', 'true', '--no-restore')
 pwsh (Join-Path $Root "tools\pack_mac.ps1") -Version $Version -PublishDir (Join-Path $PublishBase 'osx-arm64\publish')
+if ($LASTEXITCODE -ne 0) { throw "macOS 打包失败（退出码 $LASTEXITCODE）。" }
 
 Write-Host "全部完成:"
 Write-Host "  $(Join-Path $Root "MATR-$Version-win-x64.zip")"
