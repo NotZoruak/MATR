@@ -11,15 +11,31 @@ $TempDir = "$TempBase\MATR"
 $Platform = "win-x64"
 $ZipFile = "$Root\MATR-$Version-$Platform.zip"
 $SourceDir = if ([string]::IsNullOrWhiteSpace($PublishDir)) { $Root } else { (Resolve-Path $PublishDir).Path }
-$PatchedMaaFramework = Join-Path $Root 'runtimes\win-x64\native\MaaFramework.dll'
-$ExpectedPatchedMaaFrameworkHash = 'A27D305F5462E93E81EB11F961DA01575724EE450F4D9540B59EED866F164298'
-
-if (-not (Test-Path -LiteralPath $PatchedMaaFramework -PathType Leaf)) {
-    throw "缺少 MaaFW 5.14.3 CPU OCR 补丁运行库：$PatchedMaaFramework。请按 tools/patches 中的说明重新构建并放置。"
+$CpuPatchRuntime = Join-Path $Root 'runtimes\win-x64\native'
+$ExpectedCpuPatchHashes = [ordered]@{
+    'MaaFramework.dll' = '1018F1719EEAC20657BB8AC3BB357374DE9C33678DC0D9DF182B18DB513821E1'
+    'fastdeploy_ppocr_maa.dll' = 'A7D12E9B0E7BB6257A67B56051823502DCB474A40E5911D4CBBBDD50F0606085'
+    'onnxruntime_maa.dll' = '56E9D7D3BEAAD24E2CE79885201FE19F1B4DBDF511CF1D4BCB03549999C604DC'
+    'opencv_world4_maa.dll' = '132C00F39772159EC6F3586E662F9996F725429F72AE42AF603B97AA80ACACEB'
 }
-$ActualPatchedMaaFrameworkHash = (Get-FileHash -LiteralPath $PatchedMaaFramework -Algorithm SHA256).Hash
-if ($ActualPatchedMaaFrameworkHash -ne $ExpectedPatchedMaaFrameworkHash) {
-    throw "MaaFW 补丁运行库哈希不匹配，拒绝打包。期望：$ExpectedPatchedMaaFrameworkHash；实际：$ActualPatchedMaaFrameworkHash"
+foreach ($name in $ExpectedCpuPatchHashes.Keys) {
+    $path = Join-Path $CpuPatchRuntime $name
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "缺少 MaaFW 5.14.3 CPU OCR 补丁运行库：$path。请按 tools/patches 中的说明构建并放置。"
+    }
+    $actualHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+    if ($actualHash -ne $ExpectedCpuPatchHashes[$name]) {
+        throw "MaaFW 5.14.3 补丁依赖校验失败：$name；实际摘要：$actualHash"
+    }
+}
+
+$SourceFramework = Join-Path $SourceDir 'runtimes\win-x64\native\MaaFramework.dll'
+if (-not (Test-Path -LiteralPath $SourceFramework -PathType Leaf)) {
+    throw "发布目录缺少 MaaFramework.dll：$SourceFramework"
+}
+$SourceFrameworkHash = (Get-FileHash -LiteralPath $SourceFramework -Algorithm SHA256).Hash
+if ($SourceFrameworkHash -notin @('7085FEDCAAE06D7521020EDFE8C3A3F9545986877E1B4A4BB8CF0188B39F97BE', $ExpectedCpuPatchHashes['MaaFramework.dll'])) {
+    throw '发布目录不是预期的官方 5.14.3 或当前双线程补丁构建，拒绝混入其他版本控制器。'
 }
 
 # Clean old temp dir and zip
@@ -47,15 +63,18 @@ Copy-Item "$Root\README.md" $TempDir
 Copy-Item "$Root\LICENSE" $TempDir
 Copy-Item "$Root\assets\interface.json" "$TempDir\assets\interface.json"
 Copy-Item "$SourceDir\runtimes" -Recurse -Destination "$TempDir\runtimes"
-$PackageMaaFramework = Join-Path $TempDir 'runtimes\win-x64\native\MaaFramework.dll'
-if (-not (Test-Path -LiteralPath $PackageMaaFramework -PathType Leaf)) {
-    throw "Windows 发布目录缺少 MaaFramework.dll：$PackageMaaFramework"
+$PackageNative = Join-Path $TempDir 'runtimes\win-x64\native'
+foreach ($name in $ExpectedCpuPatchHashes.Keys) {
+    $packagePath = Join-Path $PackageNative $name
+    if (-not (Test-Path -LiteralPath $packagePath -PathType Leaf)) {
+        throw "Windows 发布目录缺少原生运行库：$packagePath"
+    }
+    Copy-Item -LiteralPath (Join-Path $CpuPatchRuntime $name) -Destination $packagePath -Force
+    if ((Get-FileHash -LiteralPath $packagePath -Algorithm SHA256).Hash -ne $ExpectedCpuPatchHashes[$name]) {
+        throw "打包暂存区运行库校验失败：$name"
+    }
 }
-Copy-Item -LiteralPath $PatchedMaaFramework -Destination $PackageMaaFramework -Force
-if ((Get-FileHash -LiteralPath $PackageMaaFramework -Algorithm SHA256).Hash -ne $ExpectedPatchedMaaFrameworkHash) {
-    throw '打包暂存区中的 MaaFramework.dll 校验失败。'
-}
-Write-Host '已注入并校验 MaaFW 5.14.3 CPU OCR 补丁。'
+Write-Host '已校验 MaaFW 5.14.3 配套依赖，并注入双线程 CPU OCR 关闭自旋补丁。'
 $KeepDirs = @("libs", "plugins", $Platform)
 Get-ChildItem "$TempDir\runtimes" -Directory | ForEach-Object {
     if ($KeepDirs -notcontains $_.Name) { Remove-Item -Recurse -Force $_.FullName }

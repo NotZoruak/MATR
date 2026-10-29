@@ -1,0 +1,14 @@
+--- a/fastdeploy/runtime/backends/ort/ort_backend.cc
++++ b/fastdeploy/runtime/backends/ort/ort_backend.cc
+@@ -53,6 +53,11 @@
+ 
+ bool OrtBackend::BuildOption(const OrtBackendOption& option) {
+   option_ = option;
++  if (option.device == Device::CPU) {
++    // 保留旧版线程数与推理配置，仅关闭 CPU 会话的空闲自旋。
++    session_options_.AddConfigEntry("session.intra_op.allow_spinning", "0");
++    session_options_.AddConfigEntry("session.inter_op.allow_spinning", "0");
++  }
+   if (option.graph_optimization_level >= 0) {
+     session_options_.SetGraphOptimizationLevel(
+         GraphOptimizationLevel(option.graph_optimization_level));
