@@ -5354,8 +5354,8 @@ public class MaaProcessor
                     token.ThrowIfCancellationRequested();
                     if (completion.IsCompleted) break;
                     var option = Interface?.GlobalSelectOptions?.FirstOrDefault(o => o.Name == "卡死重启");
-                    // 卡死等待时间固定 120 秒：与各枢纽 pipeline 里写死的 timeout 保持一致，不再提供自定义选项
-                    const int stallTimeoutSeconds = 120;
+                    // 卡死等待时间固定 180 秒，不再提供自定义选项
+                    const int stallTimeoutSeconds = 180;
                     reason = _recoveryMonitor.GetReason(_recoveryClock.Elapsed, TimeSpan.FromSeconds(stallTimeoutSeconds),
                         option?.Index == 0 && ViewModel?.CurrentController == MaaControllerTypes.Adb
                         && !PlatformControllerFactory.CanInitializeWithoutDevice
