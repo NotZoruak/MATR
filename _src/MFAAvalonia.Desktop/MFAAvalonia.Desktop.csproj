@@ -43,6 +43,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="11.3.12"/>
+        <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.12"/>
         <PackageReference Include="nulastudio.NetBeauty" Version="2.1.5" />
     </ItemGroup>
