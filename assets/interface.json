@@ -3588,13 +3588,9 @@
                 "target": [713, 580, 150, 50]
               }
             },
-            "EC_ClickEnterBattle": {
-              "next": ["EC_DetectWhereAmI"]
-            },
             "EC_IsActionSelect": {"enabled": false},
             "EC_ShouldRetreatOnLastAction": {"enabled": false},
-            "EC_ActionSelect": {"enabled": false},
-            "EC_WaitActionSelectAfterEnter": {"enabled": false}
+            "EC_ActionSelect": {"enabled": false}
           }
         },
         {
@@ -3613,9 +3609,6 @@
                 "target": [440, 584, 110, 38]
               }
             },
-            "EC_ClickEnterBattle": {
-              "next": ["EC_WaitActionSelectAfterEnter"]
-            },
             "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
               "enabled": true,
@@ -3624,8 +3617,7 @@
             "EC_ActionSelect": {
               "enabled": true,
               "custom_action_param": {"strategy": "directboss"}
-            },
-            "EC_WaitActionSelectAfterEnter": {"enabled": true}
+            }
           }
         },
         {
@@ -3644,9 +3636,6 @@
                 "target": [440, 584, 110, 38]
               }
             },
-            "EC_ClickEnterBattle": {
-              "next": ["EC_WaitActionSelectAfterEnter"]
-            },
             "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
               "enabled": true,
@@ -3655,8 +3644,7 @@
             "EC_ActionSelect": {
               "enabled": true,
               "custom_action_param": {"strategy": "conservative"}
-            },
-            "EC_WaitActionSelectAfterEnter": {"enabled": true}
+            }
           }
         },
         {
@@ -3675,9 +3663,6 @@
                 "target": [440, 584, 110, 38]
               }
             },
-            "EC_ClickEnterBattle": {
-              "next": ["EC_WaitActionSelectAfterEnter"]
-            },
             "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
               "enabled": true,
@@ -3686,8 +3671,7 @@
             "EC_ActionSelect": {
               "enabled": true,
               "custom_action_param": {"strategy": "balanced"}
-            },
-            "EC_WaitActionSelectAfterEnter": {"enabled": true}
+            }
           }
         },
         {
@@ -3706,9 +3690,6 @@
                 "target": [440, 584, 110, 38]
               }
             },
-            "EC_ClickEnterBattle": {
-              "next": ["EC_WaitActionSelectAfterEnter"]
-            },
             "EC_IsActionSelect": {"enabled": true},
             "EC_ShouldRetreatOnLastAction": {
               "enabled": true,
@@ -3717,8 +3698,7 @@
             "EC_ActionSelect": {
               "enabled": true,
               "custom_action_param": {"strategy": "aggressive"}
-            },
-            "EC_WaitActionSelectAfterEnter": {"enabled": true}
+            }
           }
         }
       ]

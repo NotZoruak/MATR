@@ -105,7 +105,7 @@ public static class VersionChecker
             if (!File.Exists(packagePath) || !IsSupportedLocalResourcePackage(packagePath))
                 return new(false, false, string.Empty, currentVersion, string.Empty, string.Empty);
 
-            using var archive = ArchiveFactory.Open(packagePath);
+            using var archive = ArchiveFactory.OpenArchive(packagePath);
             var entries = archive.Entries
                 .Where(entry => !entry.IsDirectory)
                 .Select(entry => new

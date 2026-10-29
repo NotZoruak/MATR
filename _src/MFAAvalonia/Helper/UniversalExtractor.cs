@@ -53,7 +53,7 @@ public class UniversalExtractor
     // 解压ZIP文件
     private static void ExtractZip(string zipFilePath, string destinationDirectory)
     {
-        using (var archive = ArchiveFactory.Open(zipFilePath))
+        using (var archive = ArchiveFactory.OpenArchive(zipFilePath))
         {
             foreach (var entry in archive.Entries)
             {
@@ -74,7 +74,7 @@ public class UniversalExtractor
     private static void ExtractTgz(string tgzFilePath, string destinationDirectory)
     {
         using Stream stream = File.OpenRead(tgzFilePath);
-        using var reader = ReaderFactory.Open(stream);
+        using var reader = ReaderFactory.OpenReader(stream);
 
         while (reader.MoveToNextEntry())
         {
@@ -93,7 +93,7 @@ public class UniversalExtractor
     // 解压TAR文件
     private static void ExtractTar(string tarFilePath, string destinationDirectory)
     {
-        using (var archive = TarArchive.Open(tarFilePath))
+        using (var archive = TarArchive.OpenArchive(tarFilePath))
         {
             foreach (var entry in archive.Entries)
             {
@@ -113,7 +113,7 @@ public class UniversalExtractor
     // 解压RAR文件
     private static void ExtractRar(string rarFilePath, string destinationDirectory)
     {
-        using (var archive = ArchiveFactory.Open(rarFilePath))
+        using (var archive = ArchiveFactory.OpenArchive(rarFilePath))
         {
             foreach (var entry in archive.Entries)
             {
@@ -146,8 +146,7 @@ public class UniversalExtractor
                     break;
                 case ".gz":
                 case ".tgz":
-                    await ExtractTgzAsync(compressedFilePath, destinationDirectory, progressBar);
-                    break;
+                    return await TryExtractWithReaderFactoryAsync(compressedFilePath, destinationDirectory, progressBar);
                 case ".tar":
                     await ExtractTarAsync(compressedFilePath, destinationDirectory, progressBar);
                     break;
@@ -170,7 +169,7 @@ public class UniversalExtractor
     // 异步解压ZIP文件（带进度）
     async private static Task ExtractZipAsync(string zipFilePath, string destinationDirectory, ProgressBar? progressBar = null)
     {
-        using (var archive = ArchiveFactory.Open(zipFilePath))
+        using (var archive = ArchiveFactory.OpenArchive(zipFilePath))
         {
             var totalEntries = archive.Entries.Count();
             int processedEntries = 0;
@@ -197,43 +196,12 @@ public class UniversalExtractor
         }
     }
 
-    // 异步解压TarGz文件（带进度）
-    async private static Task ExtractTgzAsync(string tgzFilePath, string destinationDirectory, ProgressBar? progressBar = null)
-    {
-        using (var archive = TarArchive.Open(tgzFilePath))
-        {
-            var totalEntries = archive.Entries.Count;
-            int processedEntries = 0;
-
-            foreach (var entry in archive.Entries)
-            {
-                if (!entry.IsDirectory)
-                {
-                    _ = GetSafeOutputPath(destinationDirectory, entry.Key);
-                    entry.WriteToDirectory(destinationDirectory, new ExtractionOptions
-                    {
-                        ExtractFullPath = true,
-                        Overwrite = true
-                    });
-                }
-
-                processedEntries++;
-                double progress = (double)processedEntries / totalEntries * 100;
-                SetProgress(progressBar, progress);
-
-                // 允许UI线程更新
-                await Task.Yield();
-            }
-        }
-    }
-
-
     // 异步解压Tar文件（带进度）
     private static async Task ExtractTarAsync(string tarFilePath, string destinationDirectory, ProgressBar? progressBar = null)
     {
-        using (var archive = TarArchive.Open(tarFilePath))
+        using (var archive = TarArchive.OpenArchive(tarFilePath))
         {
-            var totalEntries = archive.Entries.Count;
+            var totalEntries = archive.Entries.Count();
             int processedEntries = 0;
 
             foreach (var entry in archive.Entries)
@@ -261,7 +229,7 @@ public class UniversalExtractor
     // 异步解压RAR文件（带进度）
     private static async Task ExtractRarAsync(string rarFilePath, string destinationDirectory, ProgressBar? progressBar = null)
     {
-        using (var archive = ArchiveFactory.Open(rarFilePath))
+        using (var archive = ArchiveFactory.OpenArchive(rarFilePath))
         {
             var totalEntries = archive.Entries.Count();
             int processedEntries = 0;
@@ -301,7 +269,7 @@ public class UniversalExtractor
             // 第一次遍历：获取总条目数（用于进度计算）
             int totalEntries = 0;
             using (Stream stream = File.OpenRead(compressedFilePath))
-            using (var reader = ReaderFactory.Open(stream))
+            using (var reader = ReaderFactory.OpenReader(stream))
             {
                 while (reader.MoveToNextEntry())
                 {
@@ -311,7 +279,7 @@ public class UniversalExtractor
 
             // 第二次遍历：实际解压并更新进度
             using (Stream stream = File.OpenRead(compressedFilePath))
-            using (var reader = ReaderFactory.Open(stream))
+            using (var reader = ReaderFactory.OpenReader(stream))
             {
                 int processedEntries = 0;
                 while (reader.MoveToNextEntry())
@@ -359,7 +327,7 @@ public class UniversalExtractor
             // 第一次遍历：获取总条目数（用于进度计算）
             int totalEntries = 0;
             using (Stream stream = File.OpenRead(compressedFilePath))
-            using (var reader = ReaderFactory.Open(stream))
+            using (var reader = ReaderFactory.OpenReader(stream))
             {
                 while (reader.MoveToNextEntry())
                 {
@@ -369,7 +337,7 @@ public class UniversalExtractor
 
             // 第二次遍历：实际解压并更新进度
             using (Stream stream = File.OpenRead(compressedFilePath))
-            using (var reader = ReaderFactory.Open(stream))
+            using (var reader = ReaderFactory.OpenReader(stream))
             {
                 int processedEntries = 0;
                 while (reader.MoveToNextEntry())

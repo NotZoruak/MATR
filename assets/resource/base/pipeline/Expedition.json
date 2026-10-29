@@ -105,8 +105,7 @@
       "time": 100,
       "target": [374, 42, 39, 108]
     },
-    "timeout": 5000,
-    "next": ["E_VerifyScreen1"],
+    "next": ["E_VerifyScreen1", "E_SelectTeam1"],
     "on_error": ["Expedition"]
   },
   "E_VerifyScreen1": {
@@ -196,7 +195,7 @@
     },
     "pre_delay": 100,
     "action": {"type": "Click"},
-    "next": ["E_VerifyScreen2"],
+    "next": ["E_VerifyScreen2", "E_SelectTeam2"],
     "on_error": ["Expedition"]
   },
   "E_VerifyScreen2": {
@@ -286,7 +285,7 @@
     },
     "pre_delay": 100,
     "action": {"type": "Click"},
-    "next": ["E_VerifyScreen3"],
+    "next": ["E_VerifyScreen3", "E_SelectTeam3"],
     "on_error": ["Expedition"]
   },
   "E_VerifyScreen3": {
@@ -376,7 +375,7 @@
     },
     "pre_delay": 100,
     "action": {"type": "Click"},
-    "next": ["E_VerifyScreen4"],
+    "next": ["E_VerifyScreen4", "E_SelectTeam4"],
     "on_error": ["Expedition"]
   },
   "E_VerifyScreen4": {
@@ -509,7 +508,7 @@
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn5"],
+    "next": ["E_SelectTeamBtn5", "E_SelectTeam5"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn5": {
@@ -531,7 +530,6 @@
     "on_error": ["E_DetectExpeditionScreen"]
   },
   "E_AllTeamsBusy": {
-    "pre_delay": 0,
     "action": {
       "type": "Click",
       "param": {
@@ -542,7 +540,6 @@
       "time": 200,
       "target": [0, 610, 148, 110]
     },
-    "post_delay": 0,
     "next": ["E_GoHome"]
   },
   "E_TrackerOCR": {
@@ -590,7 +587,15 @@
     "next": ["E_LogDispatch"]
   },
   "E_GoHome": {
-    "next": ["E_UseItem", "E_ClickDirectoryTop", "E_LeaveTroopRecord", "E_VerifyMenuDir", "E_CloseBlackButton"],
+    "next": [
+      "E_UseItem",
+      "E_ClickDirectoryTop",
+      "E_LeaveTroopRecord",
+      "E_VerifyMenuDir",
+      "E_CloseBlackButton",
+      "E_ClickRetreat",
+      "E_CheckHomeBrightness"
+    ],
     "on_error": ["Expedition"]
   },
   "E_UseItem": {
@@ -639,6 +644,46 @@
       }
     },
     "next": ["E_WaitRefresh"]
+  },
+  "E_ClickRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1164, 407, 88, 40],
+        "expected": "返回"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1173, 416, 70, 68]
+      }
+    },
+    "post_delay": 200,
+    "next": ["E_ConfirmRetreat", "E_ClickRetreat", "E_GoHome"]
+  },
+  "E_ConfirmRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [480, 459, 20, 20]
+    },
+    "next": ["E_CheckHomeBrightness", "E_ConfirmRetreat"],
+    "on_error": ["E_GoHome"]
   },
   "E_WaitRefresh": {
     "post_delay": 60000,

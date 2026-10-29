@@ -18,6 +18,7 @@
   "WH_MainHub": {
     "timeout": 120000,
     "next": [
+      "WH_ClickRetreat",
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]WH_IsSwordDrop",
       "[JumpBack]IsAnnouncementPopup",
@@ -40,6 +41,46 @@
       "WH_IsInMenu"
     ],
     "on_error": ["WH_RestartGame"]
+  },
+  "WH_ClickRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1164, 407, 88, 40],
+        "expected": "返回"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1173, 416, 70, 68]
+      }
+    },
+    "post_delay": 200,
+    "next": ["WH_ConfirmRetreat", "WH_ClickRetreat", "WH_MainHub"]
+  },
+  "WH_ConfirmRetreat": {
+    "enabled": true,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [490, 469, 1, 1]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [480, 459, 20, 20]
+    },
+    "next": ["WH_CheckHomeBrightness", "WH_ConfirmRetreat"],
+    "on_error": ["WH_MainHub"]
   },
   "WH_IsSwordDrop": {
     "recognition": {

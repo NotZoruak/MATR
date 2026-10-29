@@ -62,7 +62,7 @@
         <PackageReference Include="Maa.AgentBinary" Version="1.2.0" />
         <PackageReference Include="Maa.Framework" Version="5.10.0" />
         <PackageReference Include="Maa.Framework.Runtimes" Version="5.14.3" />
-        <PackageReference Include="MailKit" Version="4.14.1" />
+        <PackageReference Include="MailKit" Version="4.16.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
@@ -81,7 +81,7 @@
         <PackageReference Include="Serilog" Version="4.3.1-dev-02373" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <PackageReference Include="SharpCompress" Version="0.42.1" />
+        <PackageReference Include="SharpCompress" Version="0.49.0" />
         <PackageReference Include="SharpHook" Version="7.1.1" Condition="'$(TargetFramework)' == 'net10.0'" />
         <PackageReference Include="SkiaSharp" Version="3.119.1" />
         <PackageReference Include="SoundFlow" Version="1.4.0" />
@@ -89,6 +89,7 @@
         <PackageReference Include="System.Management" Version="10.0.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
         <PackageReference Include="WindowsAPICodePack" Version="8.0.14" />
