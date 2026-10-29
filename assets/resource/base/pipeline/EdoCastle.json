@@ -1,5 +1,6 @@
 {
   "EdoCastle": {
+    "anchor": {"EC_RoundComplete": ""},
     "next": ["EC_DetectWhereAmI"],
     "on_error": ["EC_RestartGame"]
   },
@@ -13,14 +14,18 @@
     },
     "timeout": 120000,
     "next": [
+      "EC_ClickEnterBattle",
+      "EC_IsTicketShortagePopup",
+      "[Anchor]EC_RoundComplete",
+      "EC_ContinueNextRound",
       "EC_DeclineUmeboshiUse",
       "EC_IsEventPage",
       "EC_IsActionSelect",
       "EC_CheckHomeBrightness",
-      "EC_IsTicketShortagePopup",
       "EC_IsTeamSelect",
       "EC_IsSwordDropColor",
       "EC_IsSpecialDrop",
+      "EC_RecognizeResourcePoint",
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInSortie",
@@ -62,6 +67,22 @@
       }
     },
     "next": ["EC_TerminateRound"]
+  },
+  "EC_RecognizeResourcePoint": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [112, 594, 196, 30],
+        "expected": "获得"
+      }
+    },
+    "pre_delay": 0,
+    "action": {
+      "type": "Custom",
+      "custom_action": "ResourcePointLogAction",
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"江户潜入\"}"
+    },
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_CheckHomeBrightness": {
     "recognition": {
@@ -245,8 +266,13 @@
         "threshold": [0.98]
       }
     },
-    "action": {"type": "Click"},
-    "next": ["EC_CheckMoreSpecialDrops"]
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [993, 634, 32, 34]
+      }
+    },
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_ClickMenu": {
     "recognition": {
@@ -281,12 +307,55 @@
     "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_TerminateRound": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1171, 411, 73, 35],
+        "expected": "返回"
+      }
+    },
+    "inverse": true,
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[江户潜入] 完成一圈",
         "display": "file"
       }
     }
+  },
+  "EC_RoundComplete": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1087, 548, 80, 38],
+        "expected": "继续"
+      }
+    },
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[江户潜入] 完成一圈",
+        "display": "file"
+      }
+    }
+  },
+  "EC_ContinueNextRound": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1087, 548, 80, 38],
+        "expected": "继续"
+      }
+    },
+    "next": ["E_CheckTimerExpired", "EC_ClickContinueNextRound"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_ClickContinueNextRound": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1087, 548, 80, 38]
+      }
+    },
+    "next": ["EC_DetectWhereAmI"]
   },
   "EC_BeginRetreat": {
     "action": {
@@ -439,11 +508,6 @@
       "custom_action_param": {"reason": "通行令牌不足"}
     }
   },
-  "EC_CheckMoreSpecialDrops": {
-    "timeout": 10000,
-    "next": ["EC_IsSpecialDrop", "EC_WaitForEventPage", "EC_IsActionSelect", "EC_DeclineUmeboshiUse"],
-    "on_error": ["EC_DetectWhereAmI"]
-  },
   "EC_IsActionSelect": {
     "enabled": false,
     "recognition": {
@@ -456,6 +520,7 @@
       }
     },
     "pre_delay": 100,
+    "anchor": {"EC_RoundComplete": "EC_RoundComplete"},
     "post_delay": 100,
     "next": ["EC_ShouldRetreatOnLastAction", "EC_ActionSelect"],
     "on_error": ["EC_DetectWhereAmI"]
@@ -480,18 +545,6 @@
     },
     "next": ["EC_DetectWhereAmI"]
   },
-  "EC_WaitForEventPage": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/江户城.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "next": ["EC_TerminateRound"]
-  },
   "EC_TerminateRetreat": {
     "next": ["EC_TerminateRound"],
     "focus": {
@@ -509,42 +562,39 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [567, 51, 149, 40],
-        "expected": "出阵确认"
+        "roi": [602, 59, 78, 37],
+        "expected": "出阵"
       }
     },
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [590, 593, 84, 17]
       }
     },
+    "anchor": {"EC_RoundComplete": "EC_RoundComplete"},
+    "next": ["EC_ClickEnterBattleDone", "EC_ClickEnterBattle"],
+    "on_error": ["EC_DetectWhereAmI"]
+  },
+  "EC_ClickEnterBattleDone": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1228, 533, 39, 34],
+        "expected": "行"
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [590, 593, 84, 17]
+    },
     "next": ["EC_DetectWhereAmI"],
-    "on_error": ["EC_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[江户潜入] 出阵",
         "display": "file"
       }
     }
-  },
-  "EC_WaitActionSelectAfterEnter": {
-    "enabled": false,
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [59, 647, 141, 26],
-        "template": "Activity/江户潜入_行动选择页面.png",
-        "green_mask": true,
-        "threshold": [0.98]
-      }
-    },
-    "pre_delay": 0,
-    "post_delay": 0,
-    "timeout": 5000,
-    "next": ["EC_ActionSelect"],
-    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_RestartGame": {
     "action": {
@@ -606,6 +656,10 @@
     "next": ["EC_DetectWhereAmI"]
   },
   "EC_NavigateToActivity": {
+    "pre_wait_freezes": {
+      "time": 200,
+      "target": [1182, 10, 91, 518]
+    },
     "next": ["EC_ClickMenu", "EC_DetectWhereAmI"]
   }
 }
