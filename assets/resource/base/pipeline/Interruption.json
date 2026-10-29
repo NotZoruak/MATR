@@ -9,7 +9,7 @@
         "threshold": [0.98]
       }
     },
-    "next": ["E_ExpSubHub1"]
+    "next": ["E_AllTeamsBusy"]
   },
   "IsAnnouncementPopup": {
     "recognition": {
