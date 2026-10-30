@@ -267,7 +267,8 @@
     },
     "repeat": 10,
     "repeat_delay": 500,
-    "next": ["ClickTrainingApplication", "CancelTrainingApplication"]
+    "next": ["ClickTrainingApplication", "CancelTrainingApplication"],
+    "on_error": ["[Anchor]Hub"]
   },
   "ClickTrainingApplication": {
     "recognition": {
@@ -285,7 +286,8 @@
         "target": [96, 558, 54, 38]
       }
     },
-    "next": ["CancelTrainingApplication", "ClickTrainingApplication"]
+    "next": ["CancelTrainingApplication", "ClickTrainingApplication"],
+    "on_error": ["[Anchor]Hub"]
   },
   "CancelTrainingApplication": {
     "recognition": {
