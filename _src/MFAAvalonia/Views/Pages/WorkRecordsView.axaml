@@ -50,8 +50,9 @@
             </Style>
         </Grid.Styles>
         <!-- 左侧记录卡片 -->
-        <Grid RowDefinitions="*,Auto"
-              RowSpacing="0">
+        <Grid x:Name="RecordsColumn"
+              RowDefinitions="*,Auto"
+              RowSpacing="10">
             <Border Background="{DynamicResource SukiCardBackground}"
                     BorderBrush="{DynamicResource SukiControlBorderBrush}"
                     BorderThickness="1"
@@ -196,9 +197,9 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1"
+            <Border x:Name="SavedRecordsCard"
+                    Grid.Row="1"
                     IsVisible="{Binding HasSavedRecords}"
-                    Margin="0,10,0,0"
                     MaxHeight="300"
                     Background="{DynamicResource SukiCardBackground}"
                     BorderBrush="{DynamicResource SukiControlBorderBrush}"
