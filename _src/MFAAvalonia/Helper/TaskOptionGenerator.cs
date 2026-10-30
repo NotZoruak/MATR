@@ -40,7 +40,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
     private static readonly Thickness OptionRowMargin = new(10, 3, 10, 3);
     private static readonly Thickness NestedOptionMargin = new(14, 2, 4, 4);
     private static readonly Thickness NestedOptionPadding = new(8, 4, 6, 4);
-    private FormationPreset? _formationClipboard;
+    private static FormationPreset? _formationClipboard;
     public void GeneratePanelContent(StackPanel panel, DragItemViewModel dragItem)
     {
         // 检测是否为特殊任务，如果是则生成特殊任务选项面板
@@ -988,7 +988,8 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             };
             var copyItem = new MenuItem { Header = "复制" };
             copyItem.Click += (_, _) => _formationClipboard = ClonePreset(capturedPreset);
-            var pasteItem = new MenuItem { Header = "粘贴", IsEnabled = _formationClipboard != null };
+            var pasteItem = new MenuItem { Header = "粘贴" };
+            menu.Opening += (_, _) => pasteItem.IsEnabled = _formationClipboard != null;
             pasteItem.Click += (_, _) =>
             {
                 if (_formationClipboard == null) return;
