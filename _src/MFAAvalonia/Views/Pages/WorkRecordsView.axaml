@@ -451,7 +451,7 @@
                             <StackPanel Spacing="6"
                                         IsVisible="{Binding SelectedHasSwordDrops}"
                                         Margin="0,8,0,0">
-                                <TextBlock Classes="RecordSectionTitle" Text="刀剑掉落" />
+                                <TextBlock Classes="RecordSectionTitle" Text="{Binding SelectedSwordDropTotalText}" />
                                 <ItemsControl ItemsSource="{Binding SelectedSwordDropGroups}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="pages:SwordDropGroupDisplay">
