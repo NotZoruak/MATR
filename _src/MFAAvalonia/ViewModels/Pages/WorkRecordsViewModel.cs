@@ -55,6 +55,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropsText))]
     [NotifyPropertyChangedFor(nameof(SelectedHasSwordDrops))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropGroups))]
+    [NotifyPropertyChangedFor(nameof(SelectedSwordDropTotalText))]
     [NotifyPropertyChangedFor(nameof(SelectedHasOutcomes))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsSummaryText))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchCountText))]
@@ -495,6 +496,11 @@ public partial class WorkRecordsViewModel : ViewModelBase
 
     /// <summary>是否有刀剑掉落</summary>
     public bool SelectedHasSwordDrops => SelectedRecord?.SwordDrops.Count > 0;
+
+    /// <summary>刀剑掉落总数标题文本</summary>
+    public string SelectedSwordDropTotalText => SelectedRecord is null
+        ? "刀剑掉落"
+        : $"刀剑掉落（共 {SelectedRecord.SwordDrops.Count} 把）";
 
     /// <summary>是否有出阵收获</summary>
     public bool SelectedHasOutcomes => SelectedHasResources || SelectedHasSwordDrops;

@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using MFAAvalonia.ViewModels.Pages;
 using MFAAvalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
 using Avalonia.Controls.Selection;
 
@@ -17,6 +18,11 @@ public partial class WorkRecordsView : UserControl
     {
         InitializeComponent();
         DataContext = App.Services.GetRequiredService<WorkRecordsViewModel>();
+        RecordsColumn.SizeChanged += (_, args) =>
+        {
+            if (args.NewSize.Height > 0)
+                SavedRecordsCard.MaxHeight = Math.Max(0, (args.NewSize.Height - 10) / 2);
+        };
     }
 
     private void LogRecordsSelectionChanged(object? sender, SelectionChangedEventArgs e)
