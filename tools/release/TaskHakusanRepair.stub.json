@@ -5,7 +5,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [233, 128, 71, 549],
-        "template": "Common/Status/重伤.png",
+        "template": "Common/重伤.png",
         "green_mask": true,
         "threshold": [0.9]
       }

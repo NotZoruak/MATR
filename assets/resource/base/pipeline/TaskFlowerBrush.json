@@ -88,7 +88,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [104, 331, 49, 235],
-        "template": "Common/Navigation/时代选择.png",
+        "template": "Common/时代选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -117,7 +117,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [848, 607, 257, 63],
-        "template": "Common/Navigation/地域选择.png",
+        "template": "Common/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -180,7 +180,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1074, 211, 37, 421],
-        "template": "Common/Formation/移除队员.png",
+        "template": "Common/移除队员.png",
         "threshold": [0.98]
       }
     },
@@ -225,7 +225,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [233, 128, 71, 549],
-        "template": "Common/Status/重伤.png",
+        "template": "Common/重伤.png",
         "green_mask": true,
         "threshold": [0.9]
       }
@@ -247,7 +247,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 484, 145, 56],
-        "template": "Common/Equipment/整备刀装.png",
+        "template": "Common/整备刀装.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -280,7 +280,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1067, 558, 120, 79],
-        "template": "Common/Battle/合战场_行军.png",
+        "template": "Common/合战场_行军.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -293,7 +293,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [570, 1, 139, 45],
-        "template": "Common/Battle/阵形选择.png",
+        "template": "Common/阵形选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -359,7 +359,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1139, 132, 124, 41],
-        "template": "Common/Formation/部队记录.png",
+        "template": "Common/部队记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -374,7 +374,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/Formation/使用记录.png",
+        "template": "Common/使用记录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -396,7 +396,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/Formation/使用记录.png",
+        "template": "Common/使用记录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -449,7 +449,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -472,7 +472,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [0, 302, 49, 86],
-        "template": "Common/Navigation/活动选中.png",
+        "template": "Common/活动选中.png",
         "green_mask": true,
         "threshold": [0.98]
       }

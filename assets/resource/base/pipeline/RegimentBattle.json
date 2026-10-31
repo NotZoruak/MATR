@@ -69,7 +69,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": ["Activity/Rentaisen/陆联.png", "Activity/Rentaisen/海联.png"],
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -82,7 +82,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [122, 137, 245, 53],
-        "template": "Activity/Common/特别合战场开放.png",
+        "template": "Activity/特别合战场开放.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -124,7 +124,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": ["Activity/Rentaisen/陆联.png", "Activity/Rentaisen/海联.png"],
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -218,7 +218,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1173, 373, 57, 23],
-        "template": "Common/Battle/自动行军_委托中.png",
+        "template": "Common/自动行军_委托中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -374,7 +374,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": ["Activity/Rentaisen/陆联.png", "Activity/Rentaisen/海联.png"],
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -388,7 +388,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": ["Activity/Rentaisen/陆联.png", "Activity/Rentaisen/海联.png"],
+        "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -554,7 +554,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [780, 12, 51, 30],
-        "template": "Activity/Rentaisen/海陆联队_行动选择.png",
+        "template": "Activity/海陆联队_行动选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -567,7 +567,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [918, 337, 31, 35],
-        "template": "Activity/Rentaisen/离开部队交替.png",
+        "template": "Activity/离开部队交替.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -651,7 +651,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }

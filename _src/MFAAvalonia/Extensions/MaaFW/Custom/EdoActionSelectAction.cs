@@ -217,7 +217,7 @@ public sealed class EdoActionSelectAction : IMaaCustomAction
         {
             var roi = pair.Value;
             if (context.TemplateMatch(
-                    "Activity/EdoCastle/江户潜入_旗帜.png",
+                    "Activity/江户潜入_旗帜.png",
                     image,
                     out _,
                     FlagThreshold,

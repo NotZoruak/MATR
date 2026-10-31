@@ -100,7 +100,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -154,7 +154,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1173, 373, 57, 23],
-        "template": "Common/Battle/自动行军_委托中.png",
+        "template": "Common/自动行军_委托中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -231,7 +231,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/EdoCastle/江户城.png",
+        "template": "Activity/江户城.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -243,7 +243,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/EdoCastle/江户城.png",
+        "template": "Activity/江户城.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -261,7 +261,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [468, 188, 313, 41],
-        "template": "Activity/EdoCastle/江户城_特殊掉落.png",
+        "template": "Activity/江户城_特殊掉落.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -406,7 +406,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [468, 188, 313, 41],
-        "template": "Activity/EdoCastle/江户城_特殊掉落.png",
+        "template": "Activity/江户城_特殊掉落.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -419,7 +419,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/EdoCastle/江户城.png",
+        "template": "Activity/江户城.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -514,7 +514,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [59, 647, 141, 26],
-        "template": "Activity/EdoCastle/江户潜入_行动选择页面.png",
+        "template": "Activity/江户潜入_行动选择页面.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -646,7 +646,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }

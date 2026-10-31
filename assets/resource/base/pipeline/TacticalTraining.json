@@ -66,7 +66,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -103,7 +103,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [429, 69, 289, 52],
-        "template": "Activity/TacticalTraining/战术强化训练.png",
+        "template": "Activity/战术强化训练.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -122,7 +122,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [3, 164, 43, 92],
-        "template": "Common/Navigation/合战场选中.png",
+        "template": "Common/合战场选中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -156,7 +156,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [429, 69, 289, 52],
-        "template": "Activity/TacticalTraining/战术强化训练.png",
+        "template": "Activity/战术强化训练.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -179,7 +179,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [429, 69, 289, 52],
-        "template": "Activity/TacticalTraining/战术强化训练.png",
+        "template": "Activity/战术强化训练.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -570,7 +570,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }

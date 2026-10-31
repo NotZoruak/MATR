@@ -31,7 +31,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -580,7 +580,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }

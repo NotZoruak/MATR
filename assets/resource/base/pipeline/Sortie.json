@@ -57,7 +57,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1125, 577, 33, 26],
-        "template": "Common/Battle/资源点.png",
+        "template": "Common/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -88,7 +88,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1067, 558, 120, 79],
-        "template": "Common/Battle/合战场_行军.png",
+        "template": "Common/合战场_行军.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -122,7 +122,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [570, 1, 139, 45],
-        "template": "Common/Battle/阵形选择.png",
+        "template": "Common/阵形选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -173,7 +173,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [522, 93, 79, 64],
-        "template": "Common/Battle/检非.png",
+        "template": "Common/检非.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -186,7 +186,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [106, 573, 35, 33],
-        "template": "Common/Battle/检非2.png",
+        "template": "Common/检非2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -319,7 +319,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1173, 373, 57, 23],
-        "template": "Common/Battle/自动行军_委托中.png",
+        "template": "Common/自动行军_委托中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -394,7 +394,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [104, 331, 49, 235],
-        "template": "Common/Navigation/时代选择.png",
+        "template": "Common/时代选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -406,7 +406,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [104, 331, 49, 235],
-        "template": "Common/Navigation/时代选择_异去.png",
+        "template": "Common/时代选择_异去.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -456,7 +456,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [848, 607, 257, 63],
-        "template": "Common/Navigation/地域选择.png",
+        "template": "Common/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -468,7 +468,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [833, 617, 152, 41],
-        "template": "Common/Navigation/地域选择_异去.png",
+        "template": "Common/地域选择_异去.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -480,7 +480,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [610, 331, 52, 26],
-        "template": "Common/Battle/异去结算_1.png",
+        "template": "Common/异去结算_1.png",
         "green_mask": true,
         "threshold": [0.8]
       }
@@ -499,7 +499,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [610, 331, 52, 26],
-        "template": "Common/Battle/异去结算_5.png",
+        "template": "Common/异去结算_5.png",
         "green_mask": true,
         "threshold": [0.8]
       }
@@ -518,7 +518,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [833, 617, 152, 41],
-        "template": "Common/Navigation/地域选择_异去.png",
+        "template": "Common/地域选择_异去.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -567,7 +567,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [0, 302, 49, 86],
-        "template": "Common/Navigation/活动选中.png",
+        "template": "Common/活动选中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -586,7 +586,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -680,7 +680,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1160, 265, 11, 14],
-        "template": "Sortie/Map/4/王点_4_1.png",
+        "template": "Sortie_boss/王点_4_1.png",
         "threshold": [0.98]
       }
     },
@@ -698,7 +698,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1144, 307, 11, 16],
-        "template": "Sortie/Map/4/王点_4_2.png",
+        "template": "Sortie_boss/王点_4_2.png",
         "threshold": [0.98]
       }
     },
@@ -716,7 +716,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1149, 220, 12, 17],
-        "template": "Sortie/Map/4/王点_4_3.png",
+        "template": "Sortie_boss/王点_4_3.png",
         "threshold": [0.98]
       }
     },
@@ -734,7 +734,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1152, 282, 11, 15],
-        "template": "Sortie/Map/4/王点_4_4.png",
+        "template": "Sortie_boss/王点_4_4.png",
         "threshold": [0.98]
       }
     },
@@ -752,7 +752,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1156, 275, 11, 15],
-        "template": "Sortie/Map/5/王点_5_1.png",
+        "template": "Sortie_boss/王点_5_1.png",
         "threshold": [0.98]
       }
     },
@@ -770,7 +770,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1115, 312, 9, 15],
-        "template": "Sortie/Map/5/王点_5_2.png",
+        "template": "Sortie_boss/王点_5_2.png",
         "threshold": [0.98]
       }
     },
@@ -788,7 +788,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1142, 294, 12, 16],
-        "template": "Sortie/Map/5/王点_5_3_1.png",
+        "template": "Sortie_boss/王点_5_3_1.png",
         "threshold": [0.98]
       }
     },
@@ -806,7 +806,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1160, 299, 16, 23],
-        "template": "Sortie/Map/5/王点_5_4.png",
+        "template": "Sortie_boss/王点_5_4.png",
         "threshold": [0.98]
       }
     },
@@ -824,7 +824,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1148, 301, 12, 18],
-        "template": "Sortie/Map/5/王点_5_4_2.png",
+        "template": "Sortie_boss/王点_5_4_2.png",
         "threshold": [0.98]
       }
     },
@@ -842,7 +842,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1080, 242, 10, 15],
-        "template": "Sortie/Map/4/道中_4_1_1.png",
+        "template": "Sortie_boss/道中_4_1_1.png",
         "threshold": [0.98]
       }
     },
@@ -860,7 +860,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1031, 303, 10, 14],
-        "template": "Sortie/Map/4/道中_4_1_2.png",
+        "template": "Sortie_boss/道中_4_1_2.png",
         "threshold": [0.98]
       }
     },
@@ -878,7 +878,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [972, 229, 11, 15],
-        "template": "Sortie/Map/6/道中_6_1_1.png",
+        "template": "Sortie_boss/道中_6_1_1.png",
         "threshold": [0.98]
       }
     },
@@ -896,7 +896,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [983, 204, 10, 13],
-        "template": "Sortie/Map/6/王点_6_1_1.png",
+        "template": "Sortie_boss/王点_6_1_1.png",
         "threshold": [0.98]
       }
     },
@@ -914,7 +914,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1103, 224, 11, 16],
-        "template": "Sortie/Map/6/王点_6_1_2.png",
+        "template": "Sortie_boss/王点_6_1_2.png",
         "threshold": [0.98]
       }
     },
@@ -932,7 +932,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [969, 200, 11, 16],
-        "template": "Sortie/Map/6/王点_6_2.png",
+        "template": "Sortie_boss/王点_6_2.png",
         "threshold": [0.98]
       }
     },
@@ -950,7 +950,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1170, 259, 13, 17],
-        "template": "Sortie/Map/6/王点_6_3.png",
+        "template": "Sortie_boss/王点_6_3.png",
         "threshold": [0.98]
       }
     },
@@ -968,7 +968,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [985, 223, 9, 14],
-        "template": "Sortie/Map/6/王点_6_4.png",
+        "template": "Sortie_boss/王点_6_4.png",
         "threshold": [0.98]
       }
     },
@@ -986,7 +986,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [997, 218, 9, 15],
-        "template": "Sortie/Map/7/王点_7_1.png",
+        "template": "Sortie_boss/王点_7_1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1005,7 +1005,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [994, 230, 11, 15],
-        "template": "Sortie/Map/7/王点_7_2_1.png",
+        "template": "Sortie_boss/王点_7_2_1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1024,7 +1024,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1009, 230, 9, 14],
-        "template": "Sortie/Map/7/王点_7_2_2.png",
+        "template": "Sortie_boss/王点_7_2_2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1043,7 +1043,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1076, 200, 9, 15],
-        "template": "Sortie/Map/7/王点_7_3_1.png",
+        "template": "Sortie_boss/王点_7_3_1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1062,7 +1062,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1061, 200, 12, 16],
-        "template": "Sortie/Map/7/王点_7_3_2.png",
+        "template": "Sortie_boss/王点_7_3_2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1081,7 +1081,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1076, 232, 11, 15],
-        "template": "Sortie/Map/7/王点_7_4.png",
+        "template": "Sortie_boss/王点_7_4.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1100,7 +1100,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1032, 198, 10, 15],
-        "template": "Sortie/Map/8/王点_8_1.png",
+        "template": "Sortie_boss/王点_8_1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1119,7 +1119,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [963, 191, 11, 17],
-        "template": "Sortie/Map/8/王点_8_2.png",
+        "template": "Sortie_boss/王点_8_2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1138,7 +1138,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1118, 186, 11, 15],
-        "template": "Sortie/Map/8/王点_8_3.png",
+        "template": "Sortie_boss/王点_8_3.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1157,7 +1157,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1204, 278, 11, 15],
-        "template": "Sortie/Map/8/王点_8_4.png",
+        "template": "Sortie_boss/王点_8_4.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1221,7 +1221,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [229, 116, 90, 569],
-        "template": "Common/Status/重伤.png",
+        "template": "Common/重伤.png",
         "green_mask": true,
         "threshold": [0.85]
       }
@@ -1241,7 +1241,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [254, 154, 31, 502],
-        "template": ["Common/Status/重疲劳.png", "Common/Status/疲劳.png"],
+        "template": ["Common/重疲劳.png", "Common/疲劳.png"],
         "green_mask": true,
         "threshold": [0.9]
       }
@@ -1293,7 +1293,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [576, 135, 162, 529],
-        "template": "Common/Equipment/刀装破坏.png",
+        "template": "Common/刀装破坏.png",
         "green_mask": true,
         "threshold": [0.85]
       }
@@ -1798,7 +1798,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [564, 305, 152, 33],
-        "template": "Common/Battle/合战场_确认返回本丸.png",
+        "template": "Common/合战场_确认返回本丸.png",
         "green_mask": true,
         "threshold": [0.9]
       }
@@ -1824,7 +1824,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/Home/本丸.png",
+        "template": "Common/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1838,7 +1838,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [522, 93, 79, 64],
-        "template": "Common/Battle/检非.png",
+        "template": "Common/检非.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1851,7 +1851,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [106, 573, 35, 33],
-        "template": "Common/Battle/检非2.png",
+        "template": "Common/检非2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1878,7 +1878,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [96, 558, 54, 38],
-        "template": "Common/Growth/修行申请_狐之助.png",
+        "template": "Common/修行申请_狐之助.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1914,7 +1914,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1164, 218, 10, 15],
-        "template": "Sortie/Map/5/王点_5_3_2.png",
+        "template": "Sortie_boss/王点_5_3_2.png",
         "threshold": [0.98]
       }
     },
@@ -1932,7 +1932,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1039, 320, 15, 19],
-        "template": "Sortie/Map/2/王点_2_1.png",
+        "template": "Sortie_boss/王点_2_1.png",
         "threshold": [0.98]
       }
     },
@@ -1950,7 +1950,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1139, 216, 14, 17],
-        "template": "Sortie/Map/2/王点_2_2_1.png",
+        "template": "Sortie_boss/王点_2_2_1.png",
         "threshold": [0.98]
       }
     },
@@ -1968,7 +1968,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1078, 269, 12, 15],
-        "template": "Sortie/Map/2/王点_2_2_2.png",
+        "template": "Sortie_boss/王点_2_2_2.png",
         "threshold": [0.98]
       }
     },
@@ -1986,7 +1986,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1015, 300, 12, 17],
-        "template": "Sortie/Map/2/王点_2_3_1.png",
+        "template": "Sortie_boss/王点_2_3_1.png",
         "threshold": [0.98]
       }
     },
@@ -2004,7 +2004,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1115, 219, 13, 19],
-        "template": "Sortie/Map/2/王点_2_3_2.png",
+        "template": "Sortie_boss/王点_2_3_2.png",
         "threshold": [0.98]
       }
     },
@@ -2022,7 +2022,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1029, 299, 10, 16],
-        "template": "Sortie/Map/2/王点_2_3_3.png",
+        "template": "Sortie_boss/王点_2_3_3.png",
         "threshold": [0.98]
       }
     },
@@ -2040,7 +2040,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1058, 276, 11, 17],
-        "template": "Sortie/Map/2/王点_2_4.png",
+        "template": "Sortie_boss/王点_2_4.png",
         "threshold": [0.98]
       }
     },
@@ -2058,7 +2058,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1135, 287, 12, 16],
-        "template": "Sortie/Map/3/王点_3_1.png",
+        "template": "Sortie_boss/王点_3_1.png",
         "threshold": [0.98]
       }
     },
@@ -2076,7 +2076,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1075, 223, 11, 16],
-        "template": "Sortie/Map/3/王点_3_2.png",
+        "template": "Sortie_boss/王点_3_2.png",
         "threshold": [0.98]
       }
     },
@@ -2094,7 +2094,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1032, 322, 12, 16],
-        "template": "Sortie/Map/3/王点_3_3.png",
+        "template": "Sortie_boss/王点_3_3.png",
         "threshold": [0.98]
       }
     },
@@ -2112,7 +2112,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1040, 249, 11, 15],
-        "template": "Sortie/Map/3/王点_3_4.png",
+        "template": "Sortie_boss/王点_3_4.png",
         "threshold": [0.98]
       }
     },
@@ -2128,7 +2128,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "template": "Common/Login/登录奖励.png",
+        "template": "Common/登录奖励.png",
         "green_mask": true,
         "threshold": [0.98],
         "target": [816, 577, 182, 59]
@@ -2173,7 +2173,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1066, 221, 10, 16],
-        "template": "Sortie/Map/8/道中_8_1.png",
+        "template": "Sortie_boss/道中_8_1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -2192,7 +2192,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1038, 261, 11, 15],
-        "template": "Sortie/Map/8/道中_8_2.png",
+        "template": "Sortie_boss/道中_8_2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -2211,7 +2211,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1118, 217, 9, 16],
-        "template": "Sortie/Map/8/道中_8_3.png",
+        "template": "Sortie_boss/道中_8_3.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -2230,7 +2230,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1151, 238, 11, 16],
-        "template": "Sortie/Map/8/道中_8_4.png",
+        "template": "Sortie_boss/道中_8_4.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -2259,7 +2259,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 484, 145, 56],
-        "template": "Common/Equipment/整备刀装.png",
+        "template": "Common/整备刀装.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -2282,7 +2282,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [233, 128, 71, 549],
-        "template": "Common/Status/重伤.png",
+        "template": "Common/重伤.png",
         "green_mask": true,
         "threshold": [0.9]
       }
