@@ -2300,15 +2300,6 @@
     },
     "next": ["S_LogStopOnDamage"]
   },
-  "S_LogMarchingDamage": {
-    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
-    "focus": {
-      "Node.Action.Succeeded": {
-        "content": "[重伤检测] 检测到刀剑男士重伤，撤退撤退",
-        "display": "log"
-      }
-    }
-  },
   "S_LogStopOnDamage": {
     "next": ["S_CompleteCurrentTaskAfterDamage"],
     "focus": {
@@ -2402,7 +2393,7 @@
     "on_error": ["S_DetectWhereAmI"]
   },
   "S_LogMarchingDamageWord": {
-    "next": ["S_LogMarchingDamage"],
+    "next": ["S_ClickRetreat", "S_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "special:[常驻作战] 重伤撤退",
