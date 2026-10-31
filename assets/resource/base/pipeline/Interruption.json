@@ -4,7 +4,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -16,7 +16,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1056, 463, 63, 193],
-        "template": "Common/公告弹窗.png",
+        "template": "Common/Login/公告弹窗.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -29,7 +29,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1037, 438, 206, 76],
-        "template": "Common/修行书信.png",
+        "template": "Common/Growth/修行书信.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -41,7 +41,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [816, 577, 182, 59],
-        "template": "Common/登录奖励.png",
+        "template": "Common/Login/登录奖励.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -80,10 +80,12 @@
   },
   "IsExpeditionReturn_Title": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "远征结果"
+        "roi": [569, 8, 144, 35],
+        "template": "Common/Expedition/远征结果.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -128,7 +130,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1017, 101, 62, 21],
-        "template": "Common/广告.png",
+        "template": "Common/Login/广告.png",
         "threshold": [0.8]
       }
     },
@@ -144,7 +146,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [0, 0, 1280, 720],
-        "template": "Common/游戏图标.png",
+        "template": "Common/Login/游戏图标.png",
         "green_mask": true,
         "threshold": [0.8]
       }
@@ -156,7 +158,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [665, 529, 124, 78],
-        "template": "Common/登录.png",
+        "template": "Common/Login/登录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -183,7 +185,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [443, 431, 120, 46],
-        "template": "Common/游戏更新.png",
+        "template": "Common/Login/游戏更新.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -210,7 +212,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [3, 164, 43, 92],
-        "template": "Common/合战场选中.png",
+        "template": "Common/Navigation/合战场选中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -242,7 +244,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [569, 322, 138, 31],
-        "template": "Common/内番报告.png",
+        "template": "Common/Naiban/内番报告.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -254,7 +256,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
+        "template": "Common/Battle/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -275,7 +277,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
+        "template": "Common/Growth/修行申请_狐之助.png",
         "green_mask": true,
         "threshold": [0.98]
       }

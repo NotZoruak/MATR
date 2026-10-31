@@ -30,7 +30,7 @@ public sealed class EquipmentFallbackAction : IMaaCustomAction
             {
                 Name = "EquipmentFallbackMissingCheck",
                 Recognition = "TemplateMatch",
-                Template = ["Common/刀装不足.png"],
+                Template = ["Common/Equipment/刀装不足.png"],
                 Roi = new List<int>(EquipmentListRoi),
                 Threshold = new List<double> { 0.9 },
             };

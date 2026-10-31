@@ -73,7 +73,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [349, 395, 63, 39],
-        "template": "Activity/活动教程.png",
+        "template": "Activity/Common/活动教程.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -86,7 +86,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1067, 558, 120, 79],
-        "template": "Common/合战场_行军.png",
+        "template": "Common/Battle/合战场_行军.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -121,7 +121,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [334, 267, 135, 92],
-        "template": ["Activity/小判箱掉落.png", "Activity/小判箱掉落2.png"],
+        "template": ["Activity/Underground/小判箱掉落.png", "Activity/Underground/小判箱掉落2.png"],
         "green_mask": true,
         "threshold": [0.8]
       }
@@ -134,7 +134,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [414, 285, 38, 37],
-        "template": ["Activity/小判箱掉落.png", "Activity/小判箱掉落2.png"],
+        "template": ["Activity/Underground/小判箱掉落.png", "Activity/Underground/小判箱掉落2.png"],
         "green_mask": true,
         "threshold": [0.8]
       }
@@ -153,7 +153,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1044, 29, 166, 87],
-        "template": "Activity/特殊掉落_地下城.png",
+        "template": "Activity/Underground/特殊掉落_地下城.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -166,7 +166,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1125, 577, 33, 26],
-        "template": "Common/资源点.png",
+        "template": "Common/Battle/资源点.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -200,7 +200,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
+        "template": "Common/Battle/阵形选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -255,7 +255,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1173, 373, 57, 23],
-        "template": "Common/自动行军_委托中.png",
+        "template": "Common/Battle/自动行军_委托中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -330,7 +330,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [3, 164, 43, 92],
-        "template": "Common/合战场选中.png",
+        "template": "Common/Navigation/合战场选中.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -348,7 +348,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/地下城.png",
+        "template": "Activity/Underground/地下城.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -524,7 +524,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
+        "template": "Common/Formation/部队记录页面.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -554,7 +554,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
+        "template": "Common/Growth/修行申请_狐之助.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -595,7 +595,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
+        "template": "Common/Equipment/整备刀装.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -612,7 +612,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [576, 60, 127, 33],
-        "template": "Common/出阵确认.png",
+        "template": "Common/Battle/出阵确认.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -638,7 +638,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -650,7 +650,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [229, 116, 90, 569],
-        "template": "Common/重伤.png",
+        "template": "Common/Status/重伤.png",
         "green_mask": true,
         "threshold": [0.85]
       }
@@ -724,7 +724,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -806,7 +806,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
+        "template": "Common/Equipment/整备刀装.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -825,7 +825,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [233, 128, 71, 549],
-        "template": "Common/重伤.png",
+        "template": "Common/Status/重伤.png",
         "green_mask": true,
         "threshold": [0.9]
       }
@@ -912,7 +912,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [254, 154, 31, 502],
-        "template": ["Common/重疲劳.png", "Common/疲劳.png"],
+        "template": ["Common/Status/重疲劳.png", "Common/Status/疲劳.png"],
         "green_mask": true,
         "threshold": [0.9]
       }
@@ -964,7 +964,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [576, 135, 162, 529],
-        "template": "Common/刀装破坏.png",
+        "template": "Common/Equipment/刀装破坏.png",
         "green_mask": true,
         "threshold": [0.85]
       }

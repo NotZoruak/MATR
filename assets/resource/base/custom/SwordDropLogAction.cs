@@ -26,7 +26,7 @@ public class SwordDropLogAction : IMaaCustomAction
     // 极化归来标志:该画面与刀剑掉落共用同一套对话框色条,动画 ROI 又读不到「极」,
     // 只能用标志图形的模板匹配区分,命中后只留档、不视为掉落
     private static readonly int[] KiwameReturnRoi = [60, 368, 121, 100];
-    private const string KiwameReturnTemplate = "Common/极化归来.png";
+    private const string KiwameReturnTemplate = "Common/Growth/极化归来.png";
     private const string KiwameReturnSuffix = "极化归来";
     private const double KiwameReturnThreshold = 0.9;
     // 掉落画面色条:与各掉落 node 的 ColorMatch 参数(roi [598,543,66,1] 区间 [88,48,2]~[96,56,10])保持一致,

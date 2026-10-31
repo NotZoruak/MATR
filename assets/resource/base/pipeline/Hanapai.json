@@ -60,7 +60,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -72,7 +72,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1067, 558, 120, 79],
-        "template": "Common/合战场_行军.png",
+        "template": "Common/Battle/合战场_行军.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -190,7 +190,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
+        "template": "Activity/TreasureVillage/秘宝之里.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -203,7 +203,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
+        "template": "Activity/TreasureVillage/秘宝之里.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -231,7 +231,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
+        "template": "Activity/TreasureVillage/秘宝之里.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -251,7 +251,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [349, 265, 579, 158],
-        "template": "Activity/秘宝之里_达成报酬1.png",
+        "template": "Activity/TreasureVillage/秘宝之里_达成报酬1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -264,7 +264,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [169, 154, 117, 120],
-        "template": "Activity/秘宝之里_达成报酬2.png",
+        "template": "Activity/TreasureVillage/秘宝之里_达成报酬2.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -432,7 +432,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
+        "template": "Activity/TreasureVillage/秘宝之里.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -445,7 +445,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
+        "template": "Activity/TreasureVillage/秘宝之里.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -509,7 +509,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }

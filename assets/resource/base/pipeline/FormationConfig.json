@@ -49,7 +49,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [104, 331, 49, 235],
-        "template": "Common/时代选择.png",
+        "template": "Common/Navigation/时代选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -67,7 +67,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [848, 607, 257, 63],
-        "template": "Common/地域选择.png",
+        "template": "Common/Navigation/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -101,7 +101,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
+        "template": "Common/Formation/部队记录页面.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -176,7 +176,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -593,10 +593,12 @@
   },
   "FC_ForceRecallClickExpeditionResult": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [570, 5, 139, 38],
-        "expected": "远征结果"
+        "roi": [569, 8, 144, 35],
+        "template": "Common/Expedition/远征结果.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -1763,7 +1765,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
+        "template": "Common/Formation/部队记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1778,7 +1780,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1805,7 +1807,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1828,7 +1830,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1851,7 +1853,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1874,7 +1876,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1897,7 +1899,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.95]
       }

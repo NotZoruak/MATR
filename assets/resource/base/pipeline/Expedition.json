@@ -36,7 +36,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [577, 8, 130, 35],
-        "template": "Common/部队记录页面.png",
+        "template": "Common/Formation/部队记录页面.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -54,7 +54,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -95,7 +95,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -188,7 +188,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -278,7 +278,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -368,7 +368,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -458,7 +458,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -702,7 +702,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [516, 57, 250, 47],
-        "template": "Common/远征目的地选择.png",
+        "template": "Common/Expedition/远征目的地选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -875,7 +875,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [374, 42, 39, 108],
-        "template": "Common/本丸远征.png",
+        "template": "Common/Expedition/本丸远征.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1326,7 +1326,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [104, 331, 49, 235],
-        "template": "Common/时代选择.png",
+        "template": "Common/Navigation/时代选择.png",
         "green_mask": true,
         "threshold": [0.95]
       }
@@ -1361,7 +1361,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [848, 607, 257, 63],
-        "template": "Common/地域选择.png",
+        "template": "Common/Navigation/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1393,7 +1393,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [848, 607, 257, 63],
-        "template": "Common/地域选择.png",
+        "template": "Common/Navigation/地域选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1432,7 +1432,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1074, 211, 37, 421],
-        "template": "Common/移除队员.png",
+        "template": "Common/Formation/移除队员.png",
         "threshold": [0.98]
       }
     },
@@ -1517,7 +1517,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1565,7 +1565,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1067, 558, 120, 79],
-        "template": "Common/合战场_行军.png",
+        "template": "Common/Battle/合战场_行军.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1578,7 +1578,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
+        "template": "Common/Battle/阵形选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -1713,7 +1713,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1221, 47, 36, 100],
-        "template": "Common/本丸修复.png",
+        "template": "Common/Repair/本丸修复.png",
         "threshold": [0.9]
       }
     },
@@ -1739,7 +1739,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [307, 163, 255, 89],
-        "template": "Common/未使用修刀槽.png",
+        "template": "Common/Repair/未使用修刀槽.png",
         "threshold": [0.9]
       }
     },
@@ -1757,7 +1757,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [303, 300, 255, 90],
-        "template": "Common/未使用修刀槽.png",
+        "template": "Common/Repair/未使用修刀槽.png",
         "threshold": [0.9]
       }
     },
@@ -1775,7 +1775,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [304, 432, 255, 90],
-        "template": "Common/未使用修刀槽.png",
+        "template": "Common/Repair/未使用修刀槽.png",
         "threshold": [0.9]
       }
     },
@@ -1793,7 +1793,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [304, 565, 255, 90],
-        "template": "Common/未使用修刀槽.png",
+        "template": "Common/Repair/未使用修刀槽.png",
         "threshold": [0.9]
       }
     },
@@ -1888,7 +1888,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1220, 315, 40, 106],
-        "template": "Common/本丸内番.png",
+        "template": "Common/Naiban/本丸内番.png",
         "threshold": [0.9]
       }
     },
@@ -2056,7 +2056,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [94, 363, 231, 157],
-        "template": "Common/内番移除完成.png",
+        "template": "Common/Naiban/内番移除完成.png",
         "threshold": [0.9]
       }
     },
@@ -2067,7 +2067,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [300, 357, 45, 155],
-        "template": "Common/移除内番安排.png",
+        "template": "Common/Naiban/移除内番安排.png",
         "threshold": [0.9]
       }
     },
@@ -2118,7 +2118,7 @@
               "type": "TemplateMatch",
               "param": {
                 "roi": [300, 365, 45, 40],
-                "template": "Common/移除内番安排.png",
+                "template": "Common/Naiban/移除内番安排.png",
                 "green_mask": false,
                 "threshold": [0.9]
               }
@@ -2299,7 +2299,7 @@
               "type": "TemplateMatch",
               "param": {
                 "roi": [300, 457, 45, 40],
-                "template": "Common/移除内番安排.png",
+                "template": "Common/Naiban/移除内番安排.png",
                 "green_mask": false,
                 "threshold": [0.9]
               }
@@ -2588,7 +2588,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1125, 24, 44, 41],
-        "template": "Common/黑色关闭按钮1.png",
+        "template": "Common/Dialog/黑色关闭按钮1.png",
         "green_mask": true,
         "threshold": [0.98]
       }

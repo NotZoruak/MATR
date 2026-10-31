@@ -4,7 +4,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 484, 145, 56],
-        "template": "Common/整备刀装.png",
+        "template": "Common/Equipment/整备刀装.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -22,7 +22,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1139, 132, 124, 41],
-        "template": "Common/部队记录.png",
+        "template": "Common/Formation/部队记录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -37,7 +37,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -62,7 +62,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [707, 53, 72, 64],
-        "template": "Common/使用记录.png",
+        "template": "Common/Formation/使用记录.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -151,7 +151,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [424, 125, 183, 81],
-        "template": "Common/刀装不足.png",
+        "template": "Common/Equipment/刀装不足.png",
         "green_mask": false,
         "threshold": [0.9]
       }
@@ -174,7 +174,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 220, 183, 82],
-        "template": "Common/刀装不足.png",
+        "template": "Common/Equipment/刀装不足.png",
         "green_mask": false,
         "threshold": [0.9]
       }
@@ -197,7 +197,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 315, 183, 81],
-        "template": "Common/刀装不足.png",
+        "template": "Common/Equipment/刀装不足.png",
         "green_mask": false,
         "threshold": [0.9]
       }
@@ -220,7 +220,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [423, 410, 183, 81],
-        "template": "Common/刀装不足.png",
+        "template": "Common/Equipment/刀装不足.png",
         "green_mask": false,
         "threshold": [0.9]
       }
@@ -243,7 +243,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [424, 504, 183, 82],
-        "template": "Common/刀装不足.png",
+        "template": "Common/Equipment/刀装不足.png",
         "green_mask": false,
         "threshold": [0.9]
       }
@@ -266,7 +266,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [424, 599, 182, 81],
-        "template": "Common/刀装不足.png",
+        "template": "Common/Equipment/刀装不足.png",
         "green_mask": false,
         "threshold": [0.9]
       }

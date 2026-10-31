@@ -159,7 +159,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [8, 1, 71, 107],
-        "template": "Common/本丸.png",
+        "template": "Common/Home/本丸.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -251,7 +251,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1184, 13, 32, 31],
-        "template": "Common/黑色关闭按钮1.png",
+        "template": "Common/Dialog/黑色关闭按钮1.png",
         "green_mask": true,
         "threshold": [0.98]
       }
@@ -561,7 +561,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [1186, 129, 65, 486],
-        "template": "Common/选择合成对象.png",
+        "template": "Common/Fusion/选择合成对象.png",
         "threshold": [0.98]
       }
     },
@@ -968,7 +968,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [31, 18, 61, 38],
-        "template": "Common/十连锻刀收获.png"
+        "template": "Common/Forge/十连锻刀收获.png"
       }
     },
     "action": {"type": "Click"},
@@ -1096,7 +1096,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [695, 178, 209, 86],
-        "template": "Common/all50锻刀公式.png"
+        "template": "Common/Forge/all50锻刀公式.png"
       }
     },
     "next": ["DT_ForgeAll50Check2", "DT_ForgeAll50Reset2"],
@@ -1107,7 +1107,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [695, 310, 209, 86],
-        "template": "Common/all50锻刀公式.png"
+        "template": "Common/Forge/all50锻刀公式.png"
       }
     },
     "next": ["DT_ForgeAll50Check3", "DT_ForgeAll50Reset3"],
@@ -1118,7 +1118,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [695, 442, 209, 86],
-        "template": "Common/all50锻刀公式.png"
+        "template": "Common/Forge/all50锻刀公式.png"
       }
     },
     "next": ["DT_ForgeAll50Check4", "DT_ForgeAll50Reset4"],
@@ -1129,7 +1129,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [695, 575, 209, 86],
-        "template": "Common/all50锻刀公式.png"
+        "template": "Common/Forge/all50锻刀公式.png"
       }
     },
     "next": ["DT_ForgeClickStart"],
@@ -1731,7 +1731,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [570, 1, 139, 45],
-        "template": "Common/阵形选择.png",
+        "template": "Common/Battle/阵形选择.png",
         "green_mask": true,
         "threshold": [0.98]
       }

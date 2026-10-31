@@ -236,7 +236,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
         {
             Name = "FormationEquipEmptyCheck",
             Recognition = "TemplateMatch",
-            Template = ["Common/装备为空.png"],
+            Template = ["Common/Equipment/装备为空.png"],
             Roi = new List<int>(roi),
             Threshold = new List<double> { 0.9 },
             GreenMask = true,
