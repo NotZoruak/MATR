@@ -667,7 +667,7 @@
   },
   "FB_DetectAfterMarching": {
     "next": [
-      "FB_PostExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "FB_PostMarching",
       "FB_PostBattleResult_Exp",
@@ -682,24 +682,6 @@
       "[JumpBack]IsSystemErrorFeedback",
       "[JumpBack]FallbackWait"
     ],
-    "on_error": ["FB_DetectWhereAmI"]
-  },
-  "FB_PostExpeditionReturn_Exp": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
-      }
-    },
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [388, 59, 54, 25]
-      }
-    },
-    "next": ["FB_DetectAfterMarching"],
     "on_error": ["FB_DetectWhereAmI"]
   },
   "FB_PostBattleResult_Exp": {

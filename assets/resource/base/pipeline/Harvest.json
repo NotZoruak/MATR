@@ -3003,7 +3003,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [564, 305, 152, 33],
-        "template": "Common/Battle/合战场_确认返回本丸.png",
+        "template": "Common/Battle/合战场_确认返回本丸弹窗.png",
         "green_mask": true,
         "threshold": 0.9
       }
