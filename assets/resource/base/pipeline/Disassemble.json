@@ -7,7 +7,7 @@
     "timeout": 120000,
     "next": [
       "D_DetectEmptyMailbox",
-      "[JumpBack]IsExpeditionReturn_Exp",
+      "D_HasExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "D_CheckHomeBrightness",
       "D_DetectMenu",
@@ -65,6 +65,24 @@
     },
     "next": [],
     "on_error": ["D_DetectWhereAmI"]
+  },
+  "D_HasExpeditionReturn_Exp": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [388, 59, 54, 25],
+        "expected": "经验"
+      }
+    },
+    "pre_delay": 300,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [388, 59, 54, 25]
+      }
+    },
+    "post_delay": 500,
+    "next": ["D_DetectWhereAmI"]
   },
   "D_DetectHome": {
     "recognition": {
@@ -535,12 +553,10 @@
   },
   "D_DetectPurchase": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [582, 169, 116, 29],
-        "template": "Common/Dialog/购买详情弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [570, 162, 136, 44],
+        "expected": "购买详情"
       }
     },
     "pre_delay": 500,
@@ -556,12 +572,10 @@
   },
   "D_DetectPurchasePopup": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [582, 169, 116, 29],
-        "template": "Common/Dialog/购买详情弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [570, 162, 136, 44],
+        "expected": "购买详情"
       }
     },
     "pre_delay": 300,

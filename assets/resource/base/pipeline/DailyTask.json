@@ -219,12 +219,11 @@
   },
   "DT_LoginRewardSignIn": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [512, 34, 51, 29],
-        "template": ["Common/Login/公告页面签到按钮_选中.png", "Common/Login/公告页面签到按钮_未选中.png"],
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "签到",
+        "only_rec": true
       }
     },
     "action": {"type": "Click"},
@@ -234,12 +233,11 @@
   },
   "DT_LoginRewardClaim": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [820, 581, 168, 46],
-        "template": ["Common/Login/签到页面领取奖励按钮_未领取.png", "Common/Login/签到界面领取奖励按钮_已领取.png"],
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "领取奖励",
+        "only_rec": true
       }
     },
     "action": {"type": "Click"},
@@ -346,16 +344,75 @@
   },
   "DT_WarmGiftIsInShop": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [1105, 84, 102, 26],
-        "template": "Common/Home/万屋页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "所持道具",
+        "only_rec": true
       }
     },
-    "next": ["DT_WarmGiftClaim", "DT_WarmGiftLeaveShop"],
+    "next": ["DT_WarmGiftClaim1", "DT_WarmGiftClaim2", "DT_WarmGiftClaim3", "DT_WarmGiftClaim4", "DT_WarmGiftLeaveShop"],
     "on_error": ["DT_WarmGiftEntry"]
+  },
+  "DT_WarmGiftClaim1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [510, 308, 82, 26],
+        "expected": "领取"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [510, 308, 82, 26]
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"]
+  },
+  "DT_WarmGiftClaim2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1100, 307, 83, 27],
+        "expected": "领取"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1100, 307, 83, 27]
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"]
+  },
+  "DT_WarmGiftClaim3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [515, 543, 84, 28],
+        "expected": "领取"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [515, 543, 84, 28]
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"]
+  },
+  "DT_WarmGiftClaim4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1100, 545, 85, 29],
+        "expected": "领取"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1100, 545, 85, 29]
+    },
+    "next": ["DT_WarmGiftFinishClaimHub"]
   },
   "DT_WarmGiftFinishClaimHub": {
     "timeout": 120000,
@@ -363,12 +420,10 @@
   },
   "DT_WarmGiftPurchaseDetail": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [582, 169, 116, 29],
-        "template": "Common/Dialog/购买详情弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [564, 163, 148, 37],
+        "expected": "购买详情"
       }
     },
     "action": {
@@ -479,12 +534,10 @@
   },
   "DT_MixIsSelectSword": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [318, 85, 54, 33],
-        "template": "Common/Fusion/合成目标选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "刀剑"
       }
     },
     "next": ["DT_MixHideUnmixableSword", "DT_MixFindSelectSword", "DT_MixNoAllowedMaterial"]
@@ -527,12 +580,10 @@
   },
   "DT_MixCancelSwordSelection": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [421, 105, 430, 44],
-        "template": "Common/Dialog/确认合成弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "是否确认使用下列刀剑进行合成"
       }
     },
     "action": {
@@ -545,12 +596,10 @@
   },
   "DT_MixMaterialPage": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [186, 366, 111, 30],
-        "template": "Common/Fusion/合成素材选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "强化项目"
       }
     },
     "next": ["DT_MixFindAllowedMaterial"]
@@ -569,12 +618,10 @@
   },
   "DT_MixClickCombine": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [421, 105, 430, 44],
-        "template": "Common/Dialog/确认合成弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [597, 34, 81, 38],
+        "expected": "合成"
       }
     },
     "action": {
@@ -2271,64 +2318,5 @@
     },
     "next": ["DT_ProjectRouter"],
     "on_error": ["DT_RestartGame"]
-  },
-  "DT_WarmGiftClaim": {
-    "recognition": {
-      "type": "Or",
-      "param": {
-        "any_of": [
-          {
-            "recognition": {
-              "type": "TemplateMatch",
-              "param": {
-                "roi": [510, 308, 82, 26],
-                "template": "Common/Home/万屋页面领取按钮.png",
-                "green_mask": false,
-                "threshold": 0.95
-              }
-            }
-          },
-          {
-            "recognition": {
-              "type": "TemplateMatch",
-              "param": {
-                "roi": [1100, 307, 83, 27],
-                "template": "Common/Home/万屋页面领取按钮.png",
-                "green_mask": false,
-                "threshold": 0.95
-              }
-            }
-          },
-          {
-            "recognition": {
-              "type": "TemplateMatch",
-              "param": {
-                "roi": [515, 543, 84, 28],
-                "template": "Common/Home/万屋页面领取按钮.png",
-                "green_mask": false,
-                "threshold": 0.95
-              }
-            }
-          },
-          {
-            "recognition": {
-              "type": "TemplateMatch",
-              "param": {
-                "roi": [1100, 545, 85, 29],
-                "template": "Common/Home/万屋页面领取按钮.png",
-                "green_mask": false,
-                "threshold": 0.95
-              }
-            }
-          }
-        ]
-      }
-    },
-    "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [510, 307, 675, 267]
-    },
-    "next": ["DT_WarmGiftFinishClaimHub"]
   }
 }
