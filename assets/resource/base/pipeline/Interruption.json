@@ -65,10 +65,12 @@
   },
   "IsExpeditionReturn_Exp": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [388, 59, 54, 25],
-        "expected": "经验"
+        "roi": [390, 58, 49, 27],
+        "template": "Common/Expedition/经验.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -112,10 +114,12 @@
   },
   "IsBattleResult_Title": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [558, 1, 162, 52],
-        "expected": "战斗结果"
+        "roi": [574, 8, 133, 34],
+        "template": "Common/Battle/战斗结果.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -167,10 +171,12 @@
   },
   "IsOtherDeviceLogin": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [390, 278, 276, 34],
-        "expected": "您的账号已在其它设备登录"
+        "roi": [389, 281, 276, 31],
+        "template": "Common/Login/其它设备登录弹窗.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -226,10 +232,12 @@
   },
   "IsInMenu": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [599, 36, 80, 43],
-        "expected": "目录"
+        "roi": [605, 41, 72, 35],
+        "template": "Common/Home/目录页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -293,10 +301,12 @@
   },
   "CancelTrainingApplication": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
+        "roi": [467, 591, 58, 29],
+        "template": "Common/Dialog/取消按钮_1.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {

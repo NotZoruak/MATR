@@ -228,10 +228,12 @@
   },
   "U_IsTeamSelect": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["U_CheckEquipmentPopup", "U_StopOnEquipmentPopup", "U_ClickTeam"],
@@ -386,20 +388,24 @@
   },
   "U_IsMenuDirectory": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
+        "roi": [605, 41, 72, 35],
+        "template": "Common/Home/目录页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["U_ClickUndergroundInMenu", "U_DetectWhereAmI"]
   },
   "U_ClickUndergroundInMenu": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
+        "roi": [168, 171, 72, 35],
+        "template": "Common/Home/目录中出阵按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {"type": "Click"},
@@ -666,10 +672,12 @@
   },
   "U_IsPreSortieConfirm": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "即刻"
+        "roi": [1168, 588, 75, 80],
+        "template": "Common/Battle/即刻出阵.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["U_ClickSortieNow"]

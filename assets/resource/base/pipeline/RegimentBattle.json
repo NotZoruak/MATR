@@ -173,10 +173,12 @@
   },
   "RB_IsTeamSelect": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -330,10 +332,12 @@
   },
   "RB_IsPreSortieConfirm": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "即刻"
+        "roi": [1168, 588, 75, 80],
+        "template": "Common/Battle/即刻出阵.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 100,

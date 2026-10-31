@@ -110,10 +110,12 @@
   },
   "E_VerifyScreen1": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [516, 57, 250, 47],
-        "expected": "远征目的地选择"
+        "roi": [524, 61, 234, 38],
+        "template": "Common/Expedition/远征目的地选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_SelectMap1", "E_DetectHome"],
@@ -153,10 +155,12 @@
   },
   "E_SelectTeamBtn1": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 100,
@@ -200,10 +204,12 @@
   },
   "E_VerifyScreen2": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [516, 57, 250, 47],
-        "expected": "远征目的地选择"
+        "roi": [524, 61, 234, 38],
+        "template": "Common/Expedition/远征目的地选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_SelectMap2", "E_DetectHome"],
@@ -243,10 +249,12 @@
   },
   "E_SelectTeamBtn2": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 100,
@@ -290,10 +298,12 @@
   },
   "E_VerifyScreen3": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [516, 57, 250, 47],
-        "expected": "远征目的地选择"
+        "roi": [524, 61, 234, 38],
+        "template": "Common/Expedition/远征目的地选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_SelectMap3", "E_DetectHome"],
@@ -333,10 +343,12 @@
   },
   "E_SelectTeamBtn3": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 100,
@@ -380,10 +392,12 @@
   },
   "E_VerifyScreen4": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [516, 57, 250, 47],
-        "expected": "远征目的地选择"
+        "roi": [524, 61, 234, 38],
+        "template": "Common/Expedition/远征目的地选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_SelectMap4", "E_DetectHome"],
@@ -423,10 +437,12 @@
   },
   "E_SelectTeamBtn4": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 100,
@@ -470,10 +486,12 @@
   },
   "E_VerifyScreen5": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [516, 57, 250, 47],
-        "expected": "远征目的地选择"
+        "roi": [524, 61, 234, 38],
+        "template": "Common/Expedition/远征目的地选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_SelectMap5", "E_DetectHome"],
@@ -513,10 +531,12 @@
   },
   "E_SelectTeamBtn5": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 100,
@@ -627,10 +647,12 @@
   },
   "E_VerifyMenuDir": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
+        "roi": [605, 41, 72, 35],
+        "template": "Common/Home/目录页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_ClickBackToHome"]
@@ -713,10 +735,12 @@
   },
   "E_VerifyLeftMenu": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
+        "roi": [605, 41, 72, 35],
+        "template": "Common/Home/目录页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_ClickBackToHome"],
@@ -850,10 +874,12 @@
   },
   "E_VerifyTeamSelect": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_StartExpedition"],
@@ -892,10 +918,12 @@
   },
   "E_IsMenuDirectory": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
+        "roi": [605, 41, 72, 35],
+        "template": "Common/Home/目录页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_ClickBackToHome"]
@@ -1077,10 +1105,12 @@
   },
   "E_LogDispatch": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [525, 56, 234, 42],
-        "expected": "远征目的地选择"
+        "roi": [524, 61, 234, 38],
+        "template": "Common/Expedition/远征目的地选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -1243,10 +1273,12 @@
   },
   "E_FlowerIsTeamSelectAfterRecord": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -1303,10 +1335,12 @@
   },
   "E_FlowerClickSortieInMenu": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
+        "roi": [168, 171, 72, 35],
+        "template": "Common/Home/目录中出阵按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {"type": "Click"},
@@ -1487,10 +1521,12 @@
   },
   "E_FlowerSortie": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1156, 584, 96, 47],
-        "expected": "即刻"
+        "roi": [1168, 588, 75, 80],
+        "template": "Common/Battle/即刻出阵.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -1593,10 +1629,12 @@
   },
   "E_FlowerTeamSelect": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [561, 1, 160, 49],
-        "expected": "部队选择"
+        "roi": [574, 9, 137, 35],
+        "template": "Common/Formation/部队选择页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "pre_delay": 500,
@@ -2185,10 +2223,12 @@
   },
   "E_NaibanVerifyFilter1": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
         "roi": [496, 66, 77, 37],
-        "expected": "筛选"
+        "template": "Common/Formation/筛选页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_NaibanClickFilterCondition1_1"]
@@ -2225,10 +2265,12 @@
   },
   "E_NaibanClickAcquisitionOrder1": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
         "roi": [496, 66, 77, 37],
-        "expected": "筛选"
+        "template": "Common/Formation/筛选页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -2366,10 +2408,12 @@
   },
   "E_NaibanVerifyFilter2": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
         "roi": [496, 66, 77, 37],
-        "expected": "筛选"
+        "template": "Common/Formation/筛选页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_NaibanClickFilterCondition2_1"]
@@ -2406,10 +2450,12 @@
   },
   "E_NaibanClickAcquisitionOrder2": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
         "roi": [496, 66, 77, 37],
-        "expected": "筛选"
+        "template": "Common/Formation/筛选页面.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
