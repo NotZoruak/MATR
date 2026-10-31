@@ -364,7 +364,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [168, 171, 72, 35],
-        "template": "Common/Home/目录中出阵按钮.png",
+        "template": "Common/Home/目录页面出阵按钮.png",
         "green_mask": false,
         "threshold": 0.95
       }

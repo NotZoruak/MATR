@@ -73,10 +73,12 @@
   "FB_ClickRetreat": {
     "enabled": true,
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1164, 407, 88, 40],
-        "expected": "返回"
+        "roi": [1177, 413, 61, 29],
+        "template": "Common/Battle/行军页面返回按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -91,10 +93,12 @@
   "FB_ConfirmRetreat": {
     "enabled": true,
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [548, 295, 182, 56],
-        "expected": "确认返回本丸"
+        "roi": [565, 307, 151, 29],
+        "template": "Common/Dialog/确认返回本丸弹窗.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -652,7 +656,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [168, 171, 72, 35],
-        "template": "Common/Home/目录中出阵按钮.png",
+        "template": "Common/Home/目录页面出阵按钮.png",
         "green_mask": false,
         "threshold": 0.95
       }

@@ -1775,10 +1775,12 @@
         "any_of": [
           {
             "recognition": {
-              "type": "OCR",
+              "type": "TemplateMatch",
               "param": {
-                "roi": [558, 1, 162, 52],
-                "expected": "战斗结果"
+                "roi": [574, 8, 133, 34],
+                "template": "Common/Battle/战斗结果.png",
+                "green_mask": false,
+                "threshold": 0.95
               }
             }
           },
