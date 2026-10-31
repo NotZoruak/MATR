@@ -54,10 +54,12 @@
   },
   "EC_DeclineUmeboshiUse": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [508, 368, 76, 36],
-        "expected": "不使用"
+        "roi": [515, 257, 250, 73],
+        "template": "江户潜入_使用梅干弹窗.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -328,10 +330,12 @@
   },
   "EC_RoundComplete": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1087, 548, 80, 38],
-        "expected": "继续"
+        "roi": [1088, 547, 77, 37],
+        "template": "Activity/EdoCastle/江户潜入_继续调查按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "focus": {
@@ -343,10 +347,12 @@
   },
   "EC_ContinueNextRound": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1087, 548, 80, 38],
-        "expected": "继续"
+        "roi": [1088, 547, 77, 37],
+        "template": "Activity/EdoCastle/江户潜入_继续调查按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "next": ["E_CheckTimerExpired", "EC_ClickContinueNextRound"],
@@ -362,6 +368,15 @@
     "next": ["EC_DetectWhereAmI"]
   },
   "EC_BeginRetreat": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1223, 529, 48, 182],
+        "template": "Activity/EdoCastle/江户潜入_行动选择按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
@@ -385,10 +400,12 @@
   },
   "EC_ConfirmReturnHome": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
         "roi": [552, 293, 187, 59],
-        "expected": "确认返回本丸"
+        "template": "Common/Dialog/确认返回本丸弹窗.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -538,7 +555,8 @@
         "custom_recognition_param": {"strategy": "balanced"}
       }
     },
-    "next": ["EC_BeginRetreat"]
+    "next": ["EC_BeginRetreat"],
+    "on_error": ["EC_DetectWhereAmI"]
   },
   "EC_ActionSelect": {
     "enabled": false,
@@ -564,10 +582,12 @@
   },
   "EC_ClickEnterBattle": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
         "roi": [602, 59, 78, 37],
-        "expected": "出阵"
+        "template": "Common/Dialog/确认出阵弹窗.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "action": {
@@ -582,10 +602,12 @@
   },
   "EC_ClickEnterBattleDone": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1228, 533, 39, 34],
-        "expected": "行"
+        "roi": [1223, 529, 48, 182],
+        "template": "Activity/EdoCastle/江户潜入_行动选择按钮.png",
+        "green_mask": false,
+        "threshold": 0.95
       }
     },
     "post_wait_freezes": {
