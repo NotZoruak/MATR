@@ -125,12 +125,10 @@
   },
   "THR_ClickRetreat": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [1177, 413, 61, 29],
-        "template": "Common/Battle/行军页面返回按钮.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [1164, 407, 88, 40],
+        "expected": "返回"
       }
     },
     "action": {
@@ -143,12 +141,10 @@
   },
   "THR_ConfirmRetreat": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [565, 307, 151, 29],
-        "template": "Common/Dialog/确认返回本丸弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [548, 295, 182, 56],
+        "expected": "确认返回本丸"
       }
     },
     "action": {
