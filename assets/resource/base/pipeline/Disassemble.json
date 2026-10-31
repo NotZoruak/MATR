@@ -108,12 +108,10 @@
   },
   "D_DetectMenu": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [605, 41, 72, 35],
-        "template": "Common/Home/目录页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "action": {
@@ -401,12 +399,10 @@
   },
   "D_DisassembleVerifyMenu": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [605, 41, 72, 35],
-        "template": "Common/Home/目录页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "pre_delay": 300,

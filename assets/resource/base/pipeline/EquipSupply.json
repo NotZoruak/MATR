@@ -77,12 +77,10 @@
   },
   "ConfirmEquipmentSupply": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [576, 151, 126, 34],
-        "template": "Common/Formation/确认使用部队记录弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "部队记录"
       }
     },
     "action": {

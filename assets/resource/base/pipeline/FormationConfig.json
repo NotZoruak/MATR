@@ -82,12 +82,10 @@
   },
   "FC_IsTeamSelect": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [574, 9, 137, 35],
-        "template": "Common/Formation/部队选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
       }
     },
     "action": {
@@ -200,12 +198,10 @@
   },
   "FC_IsInMenu": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [605, 41, 72, 35],
-        "template": "Common/Home/目录页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
       }
     },
     "action": {
@@ -285,12 +281,10 @@
   },
   "FC_ForceRecallIsExpeditionPage": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "next": ["FC_ForceRecallClickEra1"],
@@ -298,12 +292,10 @@
   },
   "FC_ForceRecallClickEra1": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "action": {
@@ -331,12 +323,10 @@
   },
   "FC_ForceRecallClickEra2": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "action": {
@@ -364,12 +354,10 @@
   },
   "FC_ForceRecallClickEra3": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "action": {
@@ -397,12 +385,10 @@
   },
   "FC_ForceRecallClickEra4": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "action": {
@@ -430,12 +416,10 @@
   },
   "FC_ForceRecallClickEra5": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "action": {
@@ -626,12 +610,10 @@
   },
   "FC_ForceRecallNotFound": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "next": ["FC_ForceRecallReturnToFormation"],
@@ -644,12 +626,10 @@
   },
   "FC_ForceRecallReturnToFormation": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [524, 61, 234, 38],
-        "template": "Common/Expedition/远征目的地选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [525, 56, 234, 42],
+        "expected": "远征目的地选择"
       }
     },
     "action": {
@@ -871,12 +851,10 @@
   },
   "FC_ConfirmFilter1": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [496, 66, 77, 37],
-        "template": "Common/Formation/筛选页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "筛选"
       }
     },
     "next": ["FC_ClickFilterCond1_1"],
@@ -1007,12 +985,10 @@
   },
   "FC_ConfirmFilter2": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [496, 66, 77, 37],
-        "template": "Common/Formation/筛选页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "筛选"
       }
     },
     "next": ["FC_ClickFilterCond2_1"],
@@ -1143,12 +1119,10 @@
   },
   "FC_ConfirmFilter3": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [496, 66, 77, 37],
-        "template": "Common/Formation/筛选页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "筛选"
       }
     },
     "next": ["FC_ClickFilterCond3_1"],
@@ -1279,12 +1253,10 @@
   },
   "FC_ConfirmFilter4": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [496, 66, 77, 37],
-        "template": "Common/Formation/筛选页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "筛选"
       }
     },
     "next": ["FC_ClickFilterCond4_1"],
@@ -1415,12 +1387,10 @@
   },
   "FC_ConfirmFilter5": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [496, 66, 77, 37],
-        "template": "Common/Formation/筛选页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "筛选"
       }
     },
     "next": ["FC_ClickFilterCond5_1"],
@@ -1551,12 +1521,10 @@
   },
   "FC_ConfirmFilter6": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [496, 66, 77, 37],
-        "template": "Common/Formation/筛选页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "筛选"
       }
     },
     "next": ["FC_ClickFilterCond6_1"],
@@ -1965,12 +1933,10 @@
   },
   "FC_UseRecord_Step4": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [576, 151, 126, 34],
-        "template": "Common/Formation/确认使用部队记录弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "部队记录"
       }
     },
     "action": {

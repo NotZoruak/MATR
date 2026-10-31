@@ -69,12 +69,10 @@
   },
   "TF_VerifyMenuOpenedForEntry": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [605, 41, 72, 35],
-        "template": "Common/Home/目录页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
       }
     },
     "next": ["TF_Hub"],
@@ -157,12 +155,10 @@
   },
   "TF_IsTeamSelect": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [574, 9, 137, 35],
-        "template": "Common/Formation/部队选择页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
       }
     },
     "action": {
@@ -211,12 +207,10 @@
   },
   "TF_ClickSortieNow": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [1168, 588, 75, 80],
-        "template": "Common/Battle/即刻出阵.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [1156, 584, 96, 47],
+        "expected": "即刻"
       }
     },
     "action": {"type": "Click"},
@@ -344,12 +338,10 @@
   },
   "TF_VerifyMenuOpened": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
-        "roi": [605, 41, 72, 35],
-        "template": "Common/Home/目录页面.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "roi": [599, 36, 80, 43],
+        "expected": "目录"
       }
     },
     "next": ["[Anchor]GrindDone"]
@@ -419,12 +411,10 @@
   },
   "TF_UseRecord_Step4": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "OCR",
       "param": {
         "roi": [576, 151, 126, 34],
-        "template": "Common/Formation/确认使用部队记录弹窗.png",
-        "green_mask": false,
-        "threshold": 0.95
+        "expected": "部队记录"
       }
     },
     "action": {
