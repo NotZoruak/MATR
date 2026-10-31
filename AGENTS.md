@@ -441,15 +441,16 @@ Copy-Item "$publish/MATR.exe", "$publish/MATR.dll", "$publish/MATR.deps.json", "
 Copy-Item "$publish/runtimes/*" -Destination "runtimes" -Recurse -Force
 # 根目录若有同名旧副本，必须以当前核心库覆盖，避免 CLR 优先加载旧版本。
 Copy-Item "$publish/runtimes/libs/MFAAvalonia.Core.dll" -Destination . -Force
+if ((Get-FileHash "$publish/runtimes/libs/MFAAvalonia.Core.dll" -Algorithm SHA256).Hash -ne (Get-FileHash "MFAAvalonia.Core.dll" -Algorithm SHA256).Hash) { throw "MFAAvalonia.Core.dll 根目录副本校验失败" }
 pwsh tools/pack_win.ps1 -Version vX.Y.Z
 ```
 
-> ⚠️ Do not use `_src/bin/AnyCPU/Release/MFAAvalonia.Core.dll`: it is a stale desktop-project cache. The DLL in the current `win-x64/publish/runtimes/libs/` directory is the correct release artifact.
+> ⚠️ 根目录顶层 `MFAAvalonia.Core.dll` 是启动时可能优先加载的程序集副本。每次发布拷贝都必须在同步 `runtimes` 后，单独从当前发布目录覆盖该文件并核对 SHA-256；只更新 `runtimes/libs/MFAAvalonia.Core.dll` 不算完成。禁止使用 `_src/bin/AnyCPU/Release/MFAAvalonia.Core.dll`，它是过期的桌面项目缓存；正确来源是当前 `win-x64/publish/runtimes/libs/MFAAvalonia.Core.dll`。
 
 ### Development and Test Runtime Boundaries
 
 - `D:\Claude_Workspace\MATR` is the development area. Build, publish, packaging, and artifact-copy operations are performed here.
 - “发布拷贝”特指：先将当前版本发布到 `_src/bin/AnyCPU/Release/win-x64/publish`，再把发布产物同步到开发区根目录 `D:\Claude_Workspace\MATR`，供用户直接启动检查；不指向测试运行区，也不包含向测试运行区同步。
-- 开发区根目录发布拷贝至少包括 `MATR.exe`、`MATR.dll`、`MATR.deps.json`、`MATR.runtimeconfig.json`、`libloader.dll`、当前发布生成的 `runtimes` 内容，以及 `runtimes/libs/MFAAvalonia.Core.dll`。不得使用 `_src/bin/AnyCPU/Release/MFAAvalonia.Core.dll` 作为发布拷贝来源。
+- 开发区根目录发布拷贝至少包括 `MATR.exe`、`MATR.dll`、`MATR.deps.json`、`MATR.runtimeconfig.json`、`libloader.dll`、当前发布生成的 `runtimes` 内容、`runtimes/libs/MFAAvalonia.Core.dll`，以及根目录顶层 `MFAAvalonia.Core.dll`。顶层副本必须单独从 `_src/bin/AnyCPU/Release/win-x64/publish/runtimes/libs/MFAAvalonia.Core.dll` 覆盖，并核对两者 SHA-256 一致；不得只更新运行库目录里的副本，也不得使用 `_src/bin/AnyCPU/Release/MFAAvalonia.Core.dll` 作为来源。
 - `D:\Apps\小只工具\MATR` 是测试运行区，默认严格只读。AI 只能读取该目录中的文件、目录和运行状态，禁止创建、修改、覆盖、复制、同步、移动、重命名、删除、启动、停止或以其他方式操作其中的任何内容。
 - 只有用户明确指定测试运行区中的具体文件地址和具体操作时，AI 才可以执行该项操作；用户未明确指定时，不得以发布验证、运行测试、同步程序或任何其他理由写入或操作测试运行区。
