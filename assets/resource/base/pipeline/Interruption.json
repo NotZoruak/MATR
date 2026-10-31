@@ -249,6 +249,22 @@
     },
     "action": {"type": "Click"}
   },
+  "IsFatigueRecoveryPage": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [570, 48, 120, 35],
+        "expected": "疲劳恢复",
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1255, 93, 10, 12]
+      }
+    }
+  },
   "IsTrainingApplication": {
     "recognition": {
       "type": "TemplateMatch",

@@ -17,6 +17,7 @@
       "S_IsSwordDropColor",
       "S_IsResourcePoint",
       "S_IsFormationSelect",
+      "[JumpBack]IsFatigueRecoveryPage",
       "S_IsTeamSelect",
       "S_IsPastEraSelect",
       "S_IsIsekaiEraSelect",

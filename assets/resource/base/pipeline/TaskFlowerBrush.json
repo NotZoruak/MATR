@@ -12,6 +12,7 @@
       "TF_IsEraSelect",
       "TF_IsRegionSelect",
       "TF_IsSortieActivity",
+      "[JumpBack]IsFatigueRecoveryPage",
       "TF_IsTeamSelect",
       "TF_IsMarching",
       "TF_IsFormationSelect",

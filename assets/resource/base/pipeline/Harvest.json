@@ -1375,6 +1375,7 @@
       "HV_IsSwordDropColor",
       "HV_IsResourcePoint",
       "HV_IsFormationSelect",
+      "[JumpBack]IsFatigueRecoveryPage",
       "HV_IsTeamSelect",
       "HV_IsPastEraSelect",
       "HV_IsRegionSelect",

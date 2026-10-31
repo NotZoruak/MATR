@@ -22,6 +22,7 @@
       "EC_IsEventPage",
       "EC_IsActionSelect",
       "EC_CheckHomeBrightness",
+      "[JumpBack]IsFatigueRecoveryPage",
       "EC_IsTeamSelect",
       "EC_IsSwordDropColor",
       "EC_IsSpecialDrop",
