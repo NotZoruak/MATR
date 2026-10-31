@@ -27,6 +27,7 @@
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsFatigueRecoveryPage",
       "[JumpBack]IsGameIcon",
       "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",

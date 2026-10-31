@@ -15,6 +15,7 @@
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsFatigueRecoveryPage",
       "[JumpBack]IsGameIcon",
       "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",
@@ -650,8 +651,9 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [1164, 407, 88, 40],
-        "expected": "返回"
+        "roi": [1171, 410, 72, 36],
+        "expected": "返回",
+        "only_rec": true
       }
     },
     "action": {
@@ -1538,6 +1540,7 @@
       "E_FlowerClickSortieInMenu",
       "E_FlowerClickFirstEra",
       "E_FlowerIsRegionSelect",
+      "[JumpBack]IsFatigueRecoveryPage",
       "E_FlowerTeamSelect",
       "E_FlowerHomeBrightness",
       "[JumpBack]IsAnnouncementPopup",

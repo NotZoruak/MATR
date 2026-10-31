@@ -13,7 +13,7 @@ $ZipFile = "$Root\MATR-$Version-$Platform.zip"
 $SourceDir = if ([string]::IsNullOrWhiteSpace($PublishDir)) { $Root } else { (Resolve-Path $PublishDir).Path }
 $CpuPatchRuntime = Join-Path $Root 'runtimes\win-x64\native'
 $ExpectedCpuPatchHashes = [ordered]@{
-    'MaaFramework.dll' = '1018F1719EEAC20657BB8AC3BB357374DE9C33678DC0D9DF182B18DB513821E1'
+    'MaaFramework.dll' = 'A27D305F5462E93E81EB11F961DA01575724EE450F4D9540B59EED866F164298'
     'fastdeploy_ppocr_maa.dll' = 'A7D12E9B0E7BB6257A67B56051823502DCB474A40E5911D4CBBBDD50F0606085'
     'onnxruntime_maa.dll' = '56E9D7D3BEAAD24E2CE79885201FE19F1B4DBDF511CF1D4BCB03549999C604DC'
     'opencv_world4_maa.dll' = '132C00F39772159EC6F3586E662F9996F725429F72AE42AF603B97AA80ACACEB'
@@ -35,7 +35,7 @@ if (-not (Test-Path -LiteralPath $SourceFramework -PathType Leaf)) {
 }
 $SourceFrameworkHash = (Get-FileHash -LiteralPath $SourceFramework -Algorithm SHA256).Hash
 if ($SourceFrameworkHash -notin @('7085FEDCAAE06D7521020EDFE8C3A3F9545986877E1B4A4BB8CF0188B39F97BE', $ExpectedCpuPatchHashes['MaaFramework.dll'])) {
-    throw '发布目录不是预期的官方 5.14.3 或当前双线程补丁构建，拒绝混入其他版本控制器。'
+    throw '发布目录不是预期的官方 5.14.3 或当前四线程补丁构建，拒绝混入其他版本控制器。'
 }
 
 # Clean old temp dir and zip
@@ -74,7 +74,7 @@ foreach ($name in $ExpectedCpuPatchHashes.Keys) {
         throw "打包暂存区运行库校验失败：$name"
     }
 }
-Write-Host '已校验 MaaFW 5.14.3 配套依赖，并注入双线程 CPU OCR 关闭自旋补丁。'
+Write-Host '已校验 MaaFW 5.14.3 配套依赖，并注入四线程 CPU OCR 关闭自旋补丁。'
 $KeepDirs = @("libs", "plugins", $Platform)
 Get-ChildItem "$TempDir\runtimes" -Directory | ForEach-Object {
     if ($KeepDirs -notcontains $_.Name) { Remove-Item -Recurse -Force $_.FullName }

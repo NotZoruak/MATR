@@ -16,6 +16,7 @@
       "TT_IsSilhouettePopup",
       "TT_IsTicketReplenishPage",
       "TT_CheckHomeBrightness",
+      "[JumpBack]IsFatigueRecoveryPage",
       "TT_IsTeamSelect",
       "TT_IsSwordSelect",
       "TT_IsSortie",

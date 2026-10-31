@@ -20,6 +20,7 @@
       "U_IsSpecialDrop",
       "U_IsFormationSelect",
       "U_CloseImmediateSortiePopup",
+      "[JumpBack]IsFatigueRecoveryPage",
       "U_IsTeamSelect",
       "U_IsSortie",
       "U_IsEventPage",

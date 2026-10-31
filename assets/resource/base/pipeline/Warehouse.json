@@ -9,6 +9,7 @@
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsFatigueRecoveryPage",
       "[JumpBack]IsGameIcon",
       "[JumpBack]IsServerSelection",
       "[JumpBack]IsLoginButton",

@@ -37,6 +37,7 @@
       "FC_IsSwordDropColor",
       "FC_RecoverFromEquip",
       "FC_LeaveSwordSelect",
+      "[JumpBack]IsFatigueRecoveryPage",
       "FC_IsTeamSelect",
       "FC_IsEraSelect",
       "FC_IsRegionSelect",

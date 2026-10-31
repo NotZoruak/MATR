@@ -15,6 +15,7 @@
       "HP_IsMarching",
       "HP_IsEventPage",
       "HP_CheckHomeBrightness",
+      "[JumpBack]IsFatigueRecoveryPage",
       "HP_IsTeamSelect",
       "HP_IsSwordDropColor",
       "HP_IsSpecialDrop1",

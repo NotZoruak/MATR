@@ -1,5 +1,5 @@
 ﻿# 一键打包 win-x64 与 macos-arm64 两个发布包（本地手动发布用）
-# 用法: pwsh tools/pack_all.ps1 -Version v0.15.5-beta.1
+# 用法: pwsh tools/pack_all.ps1 -Version v0.15.5-beta.2
 # 产物: MATR-$Version-win-x64.zip 与 MATR-$Version-macos-arm64.zip（仓库根目录）
 param(
     [Parameter(Mandatory = $true)]
@@ -25,7 +25,7 @@ pwsh (Join-Path $Root "tools\pack_win.ps1") -Version $Version -PublishDir (Join-
 if ($LASTEXITCODE -ne 0) { throw "Windows 打包失败（退出码 $LASTEXITCODE），停止后续发布。" }
 
 Write-Host "== macOS arm64 交叉发布 =="
-Write-Host "提示：Windows 使用 MaaFW 5.14.3 双线程 CPU OCR 关闭自旋补丁；macOS 包使用 MaaFW 5.14.3 官方 dylib，尚未适配该补丁。"
+Write-Host "提示：Windows 使用 MaaFW 5.14.3 四线程 CPU OCR 关闭自旋补丁；macOS 包使用 MaaFW 5.14.3 官方 dylib，尚未适配该补丁。"
 if (Test-Path (Join-Path $PublishBase 'osx-arm64\publish')) {
     Remove-Item -LiteralPath (Join-Path $PublishBase 'osx-arm64\publish') -Recurse -Force
 }
