@@ -22,6 +22,12 @@ public partial class WarehouseView : UserControl
         DataContext = App.Services.GetRequiredService<WarehouseViewModel>();
     }
 
+    private void ComparisonChartViewport_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        if (DataContext is WarehouseViewModel viewModel)
+            viewModel.UpdateChartDisplayWidth(e.NewSize.Width);
+    }
+
     private void ChartPoint_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Control control || control.DataContext is not WarehouseChartPointViewModel point)
