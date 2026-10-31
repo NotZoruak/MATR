@@ -1,6 +1,16 @@
 # MaaFW CPU OCR 补丁
 
-## 当前使用：MaaFramework 5.14.3 双线程低 CPU 方案
+## 当前使用：MaaFramework 5.14.3 四线程关闭自旋方案
+
+Windows 已恢复使用 `MaaFramework-5.14.3-cpu-ocr-no-spin.patch`：保留 4 个 CPU OCR 推理线程，仅关闭会话空闲自旋。原生版本为 `v5.14.3+cpu-nospin`，源码提交为 `8963191215ca49d6b037802acd07d20a4213160a`，依赖 MaaDeps v3.0.0、ONNX Runtime 1.29.0。
+
+打包校验的 `MaaFramework.dll` SHA-256 为 `A27D305F5462E93E81EB11F961DA01575724EE450F4D9540B59EED866F164298`。其他三个配套依赖沿用下方表格的摘要。构建使用 MSVC x64、RelWithDebInfo，版本参数为 `MAA_HASH_VERSION=v5.14.3+cpu-nospin`。
+
+默认 `rate_limit` 已恢复为 500 毫秒。macOS 继续使用官方 5.14.3 dylib，不包含 Windows 关闭自旋补丁；共享资源的轮询间隔同为 500 毫秒。
+
+以下为历史实验与构建记录，其中双线程和 1000 毫秒配置不再作为当前默认值。
+
+## 历史实验：MaaFramework 5.14.3 双线程低 CPU 方案
 
 MATR 当前依赖 `Maa.Framework.Runtimes 5.14.3`。Windows 使用 `MaaFramework-5.14.3-cpu-ocr-low-cpu.patch`，在原关闭自旋方案上将 CPU OCR 会话的推理线程数改为 2。原模型、识别前后处理与 GPU 路径保持不变。原生版本标识为 `v5.14.3+cpu-nospin-t2`。
 
