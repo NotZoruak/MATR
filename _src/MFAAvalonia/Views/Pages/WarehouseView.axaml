@@ -75,10 +75,16 @@
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="2" ColumnDefinitions="0.75*,1.5*" ColumnSpacing="12">
-            <Border Grid.Column="0" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="14,12">
+        <Grid x:Name="OtherResourcesLayout" Grid.Row="2" ColumnDefinitions="0.75*,1.5*" ColumnSpacing="12">
+            <Border x:Name="OtherResourcesPanel" Grid.Column="0" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="14,12">
                 <Grid RowDefinitions="Auto,*" RowSpacing="8">
-                    <TextBlock Text="其他资源" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock x:Name="OtherResourcesTitle" Text="其他资源" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" VerticalAlignment="Center" />
+                        <Button x:Name="OtherResourcesToggleButton" Grid.Column="1" Content="◀"
+                                Click="OtherResourcesToggleButton_OnClick"
+                                Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
+                                Foreground="#7B8798" Padding="4,2" ToolTip.Tip="收起其他资源" />
+                    </Grid>
                     <ScrollViewer x:Name="OtherItemsScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="暂无已记录物品" Foreground="{DynamicResource SukiLowText}" HorizontalAlignment="Center" Margin="0,18,0,12"
@@ -109,26 +115,42 @@
 
             <Border Grid.Column="1" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="14,12">
                 <Grid RowDefinitions="Auto,*" RowSpacing="6">
-                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto">
-                        <TextBlock Text="核心资源变化" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" VerticalAlignment="Center" />
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto,Auto">
                         <Button Grid.Column="1" Content="{Binding Last24HoursButtonText}" Command="{Binding SelectLast24HoursCommand}"
                                 Background="Transparent" Foreground="#7B8798" Padding="8,2" />
                         <Button Grid.Column="2" Content="{Binding Last7DaysButtonText}" Command="{Binding SelectLast7DaysCommand}"
                                 Background="Transparent" Foreground="#7B8798" Padding="8,2" />
                         <Button Grid.Column="3" Content="{Binding Last30DaysButtonText}" Command="{Binding SelectLast30DaysCommand}"
                                 Background="Transparent" Foreground="#7B8798" Padding="8,2" />
-                        <Button Grid.Column="4" Content="刷新图表" Command="{Binding RefreshChartsCommand}"
+                        <Border Grid.Column="4" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="6"
+                                Margin="2,0" Padding="2,0" Background="Transparent">
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <Button Content="−" Command="{Binding ZoomChartOutCommand}"
+                                        IsEnabled="{Binding CanZoomChartOut}"
+                                        Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
+                                        Foreground="#7B8798" Padding="4,2"
+                                        ToolTip.Tip="缩小时间范围" />
+                                <TextBlock Text="{Binding ChartZoomText}" MinWidth="48" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" Foreground="#7B8798" />
+                                <Button Content="+" Command="{Binding ZoomChartInCommand}"
+                                        IsEnabled="{Binding CanZoomChartIn}"
+                                        Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
+                                        Foreground="#7B8798" Padding="4,2"
+                                        ToolTip.Tip="放大时间范围" />
+                            </StackPanel>
+                        </Border>
+                        <Button Grid.Column="5" Content="刷新图表" Command="{Binding RefreshChartsCommand}"
                                 Background="Transparent" Foreground="#7B8798" Padding="8,2" />
-                        <Button Grid.Column="5" Content="清空" Command="{Binding ClearChartHistoryCommand}"
+                        <Button Grid.Column="6" Content="清空" Command="{Binding ClearChartHistoryCommand}"
                                 Background="Transparent" Foreground="#C96B6B" Padding="8,2" />
                     </Grid>
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                         <StackPanel Spacing="8">
                             <TextBlock Text="暂无识别记录" Foreground="{DynamicResource SukiLowText}" HorizontalAlignment="Center" VerticalAlignment="Center"
                                        IsVisible="{Binding NoChartHistory}" />
                             <Border Background="{DynamicResource SukiBackgroundColor}" CornerRadius="8" Padding="10"
                                     IsVisible="{Binding ComparisonChart.HasHistory}">
-                                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                                         <TextBlock Text="核心资源趋势对比" FontWeight="SemiBold"
                                                    VerticalAlignment="Center" />
@@ -158,43 +180,28 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
                                     </StackPanel>
-                                    <Viewbox Grid.Row="2" Height="230"
-                                             HorizontalAlignment="Stretch" Stretch="Uniform">
-                                        <Canvas Width="650" Height="230">
-                                                    <Line StartPoint="0,45" EndPoint="650,45" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                    <Line StartPoint="0,95" EndPoint="650,95" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                    <Line StartPoint="0,150" EndPoint="650,150" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                    <Line StartPoint="162.5,0" EndPoint="162.5,205" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                    <Line StartPoint="325,0" EndPoint="325,205" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                    <Line StartPoint="487.5,0" EndPoint="487.5,205" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                    <Line StartPoint="0,205" EndPoint="650,205" Stroke="#7B8798" StrokeThickness="1" />
-                                                    <Border Canvas.Left="365" Canvas.Top="168" Padding="8,5" CornerRadius="6"
-                                                            Background="#EEFFFFFF" BorderBrush="#D8DEE8" BorderThickness="1">
-                                                        <ItemsControl ItemsSource="{Binding ComparisonChart.Series}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate x:DataType="pages:WarehouseComparisonSeriesViewModel">
-                                                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,10,0">
-                                                                        <Ellipse Width="8" Height="8" Fill="{Binding Color}" VerticalAlignment="Center" />
-                                                                        <TextBlock Text="{Binding Name}" FontSize="11" Foreground="#202735" />
-                                                                    </StackPanel>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </Border>
+                                    <Grid x:Name="ComparisonChartViewport" Grid.Row="2" Height="{Binding ComparisonChart.ViewportHeight}"
+                                          HorizontalAlignment="Stretch" ClipToBounds="True"
+                                          SizeChanged="ComparisonChartViewport_OnSizeChanged">
+                                        <Canvas Width="{Binding ComparisonChart.ViewportWidth}" Height="{Binding ComparisonChart.ViewportHeight}">
+                                                    <Line StartPoint="{Binding ComparisonChart.HorizontalGridStartPoint45}" EndPoint="{Binding ComparisonChart.HorizontalGridEndPoint45}" Stroke="#AAB4C3" StrokeThickness="{Binding ComparisonChart.VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                    <Line StartPoint="{Binding ComparisonChart.HorizontalGridStartPoint95}" EndPoint="{Binding ComparisonChart.HorizontalGridEndPoint95}" Stroke="#AAB4C3" StrokeThickness="{Binding ComparisonChart.VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                    <Line StartPoint="{Binding ComparisonChart.HorizontalGridStartPoint150}" EndPoint="{Binding ComparisonChart.HorizontalGridEndPoint150}" Stroke="#AAB4C3" StrokeThickness="{Binding ComparisonChart.VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                    <Line StartPoint="{Binding ComparisonChart.VerticalGridStartPoint162}" EndPoint="{Binding ComparisonChart.VerticalGridEndPoint162}" Stroke="#AAB4C3" StrokeThickness="{Binding ComparisonChart.VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                    <Line StartPoint="{Binding ComparisonChart.VerticalGridStartPoint325}" EndPoint="{Binding ComparisonChart.VerticalGridEndPoint325}" Stroke="#AAB4C3" StrokeThickness="{Binding ComparisonChart.VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                    <Line StartPoint="{Binding ComparisonChart.VerticalGridStartPoint487}" EndPoint="{Binding ComparisonChart.VerticalGridEndPoint487}" Stroke="#AAB4C3" StrokeThickness="{Binding ComparisonChart.VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                    <Line StartPoint="{Binding ComparisonChart.BaselineStartPoint}" EndPoint="{Binding ComparisonChart.BaselineEndPoint}" Stroke="#7B8798" StrokeThickness="{Binding ComparisonChart.VisualScale}" />
                                                     <ItemsControl ItemsSource="{Binding ComparisonChart.Series}">
                                                         <ItemsControl.ItemsPanel>
                                                             <ItemsPanelTemplate>
-                                                                <Canvas Width="650" Height="230" />
+                                                                <Canvas Width="{Binding ComparisonChart.ViewportWidth}" Height="{Binding ComparisonChart.ViewportHeight}" />
                                                             </ItemsPanelTemplate>
                                                         </ItemsControl.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate x:DataType="pages:WarehouseComparisonSeriesViewModel">
-                                                                <Canvas Width="650" Height="230">
-                                                                    <Path Data="{Binding LineGeometry}" Stroke="{Binding Color}" StrokeThickness="2" Stretch="None" />
-                                                                    <ItemsControl Width="650" Height="230" ItemsSource="{Binding Points}">
+                                                                <Canvas Width="{Binding ViewportWidth}" Height="{Binding CanvasHeight}">
+                                                                    <Path Data="{Binding LineGeometry}" Stroke="{Binding Color}" StrokeThickness="{Binding PathStrokeThickness}" Stretch="None" />
+                                                                    <ItemsControl Width="{Binding ViewportWidth}" Height="{Binding CanvasHeight}" ItemsSource="{Binding Points}">
                                                                         <ItemsControl.Styles>
                                                                             <Style Selector="ContentPresenter">
                                                                                 <Setter Property="Canvas.Left" Value="{ReflectionBinding Left}" />
@@ -203,11 +210,12 @@
                                                                             </Style>
                                                                         </ItemsControl.Styles>
                                                                         <ItemsControl.ItemsPanel>
-                                                                            <ItemsPanelTemplate><Canvas Width="650" Height="230" /></ItemsPanelTemplate>
+                                                                            <ItemsPanelTemplate><Canvas Width="{Binding ViewportWidth}" Height="{Binding CanvasHeight}" /></ItemsPanelTemplate>
                                                                         </ItemsControl.ItemsPanel>
                                                                         <ItemsControl.ItemTemplate>
                                                                             <DataTemplate x:DataType="pages:WarehouseChartPointViewModel">
-                                                                                <Ellipse Width="12" Height="12" Fill="{Binding PointBrush}" Stroke="White" StrokeThickness="2"
+                                                                                <Ellipse Width="{Binding MarkerWidth}" Height="{Binding MarkerSize}" Fill="{Binding PointBrush}" Stroke="White" StrokeThickness="{Binding MarkerStrokeThickness}"
+                                                                                         Opacity="{Binding MarkerOpacity}"
                                                                                          PointerPressed="ChartPoint_OnPointerPressed">
                                                                                     <ToolTip.Tip>
                                                                                         <ToolTip>
@@ -236,50 +244,73 @@
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
-                                                    <ItemsControl Width="650" Height="230" HorizontalAlignment="Left"
-                                                                  ItemsSource="{Binding ComparisonChart.AxisLabels}">
-                                                        <ItemsControl.Styles>
-                                                            <Style Selector="ContentPresenter">
-                                                                <Setter Property="Canvas.Left" Value="{ReflectionBinding X}" />
-                                                                <Setter Property="Canvas.Top" Value="208" />
-                                                                <Setter Property="Panel.ZIndex" Value="2" />
-                                                            </Style>
-                                                        </ItemsControl.Styles>
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <Canvas Width="650" Height="230" />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate x:DataType="services:WarehouseChartTimeAxisLabel">
-                                                                <TextBlock Text="{Binding Text}" FontSize="10" Foreground="#7B8798"
-                                                                           HorizontalAlignment="Center" />
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
                                         </Canvas>
-                                    </Viewbox>
+                                        <ItemsControl Width="{Binding ComparisonChart.ViewportWidth}" Height="{Binding ComparisonChart.ViewportHeight}" HorizontalAlignment="Left"
+                                                      ItemsSource="{Binding ComparisonChart.AxisLabels}">
+                                            <ItemsControl.Styles>
+                                                <Style Selector="ContentPresenter">
+                                                    <Setter Property="Canvas.Left" Value="{ReflectionBinding X}" />
+                                                    <Setter Property="Canvas.Top" Value="{ReflectionBinding Y}" />
+                                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                                </Style>
+                                            </ItemsControl.Styles>
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate><Canvas Width="{Binding ComparisonChart.ViewportWidth}" Height="{Binding ComparisonChart.ViewportHeight}" /></ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="services:WarehouseChartTimeAxisLabel">
+                                                    <TextBlock Text="{Binding Text}" FontSize="{Binding FontSize}" Foreground="#7B8798"
+                                                               HorizontalAlignment="Center" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding ComparisonChart.LegendMargin}"
+                                                RenderTransform="{Binding ComparisonChart.LegendTransform}" RenderTransformOrigin="0,0"
+                                                Padding="8,5" CornerRadius="6"
+                                                Background="#EEFFFFFF" BorderBrush="#D8DEE8" BorderThickness="1">
+                                            <ItemsControl ItemsSource="{Binding ComparisonChart.Series}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="pages:WarehouseComparisonSeriesViewModel">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,10,0">
+                                                            <Ellipse Width="8" Height="8" Fill="{Binding Color}" VerticalAlignment="Center" />
+                                                            <TextBlock Text="{Binding Name}" FontSize="11" Foreground="#202735" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Border>
+                                    </Grid>
+                                    <ScrollBar Grid.Row="3" Orientation="Horizontal" Height="14"
+                                               Minimum="0" Maximum="{Binding ComparisonChart.ScrollMaximum}"
+                                               ViewportSize="{Binding ComparisonChart.ScrollViewportSize}"
+                                               SmallChange="1" LargeChange="{Binding ComparisonChart.ScrollViewportSize}"
+                                               Value="{Binding ComparisonChart.ScrollValue, Mode=TwoWay}"
+                                               IsVisible="{Binding ComparisonChart.HasScrollBar}" />
                                 </Grid>
                             </Border>
                             <ItemsControl ItemsSource="{Binding Charts}" IsVisible="{Binding HasChartHistory}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="pages:WarehouseChartViewModel">
                                         <Border Background="{DynamicResource SukiBackgroundColor}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
-                                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="110,*" ColumnSpacing="12" RowSpacing="4">
+                                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="110,*" ColumnSpacing="12" RowSpacing="4">
                                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                                 <TextBlock Grid.Column="1" Text="{Binding SummaryText}" Foreground="{DynamicResource SukiLowText}" VerticalAlignment="Center" />
                                                 <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding SelectionSummaryText}" Foreground="#B5791F" TextWrapping="Wrap" IsVisible="{Binding HasCompletedSelection}" />
-                                                <Viewbox Grid.Row="2" Grid.ColumnSpan="2" Height="170" HorizontalAlignment="Stretch" Stretch="Uniform" IsVisible="{Binding HasHistory}">
-                                                    <Canvas Width="650" Height="170">
-                                                        <Line StartPoint="0,30" EndPoint="650,30" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                        <Line StartPoint="0,68" EndPoint="650,68" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                        <Line StartPoint="0,106" EndPoint="650,106" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                        <Line StartPoint="162.5,0" EndPoint="162.5,145" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                        <Line StartPoint="325,0" EndPoint="325,145" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                        <Line StartPoint="487.5,0" EndPoint="487.5,145" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
-                                                        <Line StartPoint="0,145" EndPoint="650,145" Stroke="#7B8798" StrokeThickness="1" />
-                                                        <Path Data="{Binding LineGeometry}" Stroke="#5B8FF9" StrokeThickness="2" Stretch="None" />
-                                                        <ItemsControl Width="650" Height="170" ItemsSource="{Binding Points}">
+                                        <Grid Grid.Row="2" Grid.ColumnSpan="2" Height="{Binding ViewportHeight}" ClipToBounds="True"
+                                                      IsVisible="{Binding HasHistory}">
+                                            <Canvas Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}">
+                                                        <Line StartPoint="{Binding HorizontalGridStartPoint30}" EndPoint="{Binding HorizontalGridEndPoint30}" Stroke="#AAB4C3" StrokeThickness="{Binding VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                        <Line StartPoint="{Binding HorizontalGridStartPoint68}" EndPoint="{Binding HorizontalGridEndPoint68}" Stroke="#AAB4C3" StrokeThickness="{Binding VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                        <Line StartPoint="{Binding HorizontalGridStartPoint106}" EndPoint="{Binding HorizontalGridEndPoint106}" Stroke="#AAB4C3" StrokeThickness="{Binding VisualScale}" StrokeDashArray="4,4" Opacity="0.55" />
+                                                        <Line StartPoint="{Binding VerticalGridStartPoint162}" EndPoint="{Binding VerticalGridEndPoint162}" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
+                                                        <Line StartPoint="{Binding VerticalGridStartPoint325}" EndPoint="{Binding VerticalGridEndPoint325}" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
+                                                        <Line StartPoint="{Binding VerticalGridStartPoint487}" EndPoint="{Binding VerticalGridEndPoint487}" Stroke="#AAB4C3" StrokeThickness="1" StrokeDashArray="4,4" Opacity="0.55" />
+                                                        <Line StartPoint="{Binding BaselineStartPoint}" EndPoint="{Binding BaselineEndPoint}" Stroke="#7B8798" StrokeThickness="{Binding VisualScale}" />
+                                                        <Path Data="{Binding LineGeometry}" Stroke="#5B8FF9" StrokeThickness="{Binding PathStrokeThickness}" Stretch="None" />
+                                                        <ItemsControl Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}" ItemsSource="{Binding Points}">
                                                             <ItemsControl.Styles>
                                                                 <Style Selector="ContentPresenter">
                                                                     <Setter Property="Canvas.Left" Value="{ReflectionBinding Left}" />
@@ -287,23 +318,44 @@
                                                                     <Setter Property="Panel.ZIndex" Value="1" />
                                                                 </Style>
                                                             </ItemsControl.Styles>
-                                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><Canvas Width="650" Height="170" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><Canvas Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate x:DataType="pages:WarehouseChartPointViewModel">
-                                                                    <Ellipse Width="12" Height="12" Fill="{Binding PointBrush}" Stroke="White" StrokeThickness="2" PointerPressed="ChartPoint_OnPointerPressed">
+                                                                    <Ellipse Width="{Binding MarkerWidth}" Height="{Binding MarkerSize}" Fill="{Binding PointBrush}" Stroke="White" StrokeThickness="{Binding MarkerStrokeThickness}"
+                                                                             Opacity="{Binding MarkerOpacity}" PointerPressed="ChartPoint_OnPointerPressed">
                                                                         <ToolTip.Tip><ToolTip><Border Padding="12,8" CornerRadius="8" Background="#FFFFFF"><StackPanel Spacing="2"><TextBlock Text="{Binding RecordedAtText}" Foreground="#202735" /><TextBlock Text="{Binding CurrentText}" Foreground="#202735" /><StackPanel Orientation="Horizontal"><TextBlock Text="变动：" Foreground="#202735" /><TextBlock Text="{Binding ChangeValueText}" Foreground="{Binding ChangeBrush}" /></StackPanel></StackPanel></Border></ToolTip></ToolTip.Tip>
                                                                         <Ellipse.ContextMenu><ContextMenu><MenuItem Header="删除此记录点" Command="{Binding DeleteCommand}" /></ContextMenu></Ellipse.ContextMenu>
                                                                     </Ellipse>
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
                                                         </ItemsControl>
-                                                        <ItemsControl Width="650" Height="170" ItemsSource="{Binding AxisLabels}">
-                                                            <ItemsControl.Styles><Style Selector="ContentPresenter"><Setter Property="Canvas.Left" Value="{ReflectionBinding X}" /><Setter Property="Canvas.Top" Value="148" /><Setter Property="Panel.ZIndex" Value="2" /></Style></ItemsControl.Styles>
-                                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><Canvas Width="650" Height="170" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate><DataTemplate x:DataType="services:WarehouseChartTimeAxisLabel"><TextBlock Text="{Binding Text}" FontSize="10" Foreground="#7B8798" HorizontalAlignment="Center" /></DataTemplate></ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </Canvas>
-                                                </Viewbox>
+                                            </Canvas>
+                                                    <ItemsControl Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}" HorizontalAlignment="Left"
+                                                                  ItemsSource="{Binding AxisLabels}">
+                                                        <ItemsControl.Styles>
+                                                            <Style Selector="ContentPresenter">
+                                                                <Setter Property="Canvas.Left" Value="{ReflectionBinding X}" />
+                                                                <Setter Property="Canvas.Top" Value="{ReflectionBinding Y}" />
+                                                                <Setter Property="Panel.ZIndex" Value="2" />
+                                                            </Style>
+                                                        </ItemsControl.Styles>
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate><Canvas Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}" /></ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="services:WarehouseChartTimeAxisLabel">
+                                                                <TextBlock Text="{Binding Text}" FontSize="{Binding FontSize}" Foreground="#7B8798"
+                                                                           HorizontalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Grid>
+                                                <ScrollBar Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" Height="14"
+                                                           Minimum="0" Maximum="{Binding ScrollMaximum}"
+                                                           ViewportSize="{Binding ScrollViewportSize}"
+                                                           SmallChange="1" LargeChange="{Binding ScrollViewportSize}"
+                                                           Value="{Binding ScrollValue, Mode=TwoWay}"
+                                                           IsVisible="{Binding HasScrollBar}" />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>

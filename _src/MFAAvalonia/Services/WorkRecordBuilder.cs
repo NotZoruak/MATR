@@ -326,6 +326,10 @@ public static class WorkRecordBuilder
         if (action.StartsWith("列表持续抖动", StringComparison.Ordinal))
             return;
 
+        // 系统计划任务同步告警只说明调度器跳过或更新任务，不属于当前工作记录的特殊情况。
+        if (prefix == "计划任务")
+            return;
+
         if (prefix == "中断")
         {
             record.HasInterrupt = true;
