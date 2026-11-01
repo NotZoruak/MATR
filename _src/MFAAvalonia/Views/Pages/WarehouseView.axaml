@@ -75,10 +75,16 @@
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="2" ColumnDefinitions="0.75*,1.5*" ColumnSpacing="12">
-            <Border Grid.Column="0" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="14,12">
+        <Grid x:Name="OtherResourcesLayout" Grid.Row="2" ColumnDefinitions="0.75*,1.5*" ColumnSpacing="12">
+            <Border x:Name="OtherResourcesPanel" Grid.Column="0" Background="{DynamicResource SukiCardBackground}" CornerRadius="10" Padding="14,12">
                 <Grid RowDefinitions="Auto,*" RowSpacing="8">
-                    <TextBlock Text="其他资源" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock x:Name="OtherResourcesTitle" Text="其他资源" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" VerticalAlignment="Center" />
+                        <Button x:Name="OtherResourcesToggleButton" Grid.Column="1" Content="◀"
+                                Click="OtherResourcesToggleButton_OnClick"
+                                Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
+                                Foreground="#7B8798" Padding="4,2" ToolTip.Tip="收起其他资源" />
+                    </Grid>
                     <ScrollViewer x:Name="OtherItemsScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="暂无已记录物品" Foreground="{DynamicResource SukiLowText}" HorizontalAlignment="Center" Margin="0,18,0,12"

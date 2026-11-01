@@ -15,6 +15,7 @@ public partial class WarehouseView : UserControl
     private IPointer? _dragPointer;
     private double _dragStartY;
     private bool _isDraggingOtherItem;
+    private bool _isOtherResourcesCollapsed;
 
     public WarehouseView()
     {
@@ -26,6 +27,22 @@ public partial class WarehouseView : UserControl
     {
         if (DataContext is WarehouseViewModel viewModel)
             viewModel.UpdateChartDisplayWidth(e.NewSize.Width);
+    }
+
+    private void OtherResourcesToggleButton_OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _isOtherResourcesCollapsed = !_isOtherResourcesCollapsed;
+        OtherResourcesLayout.ColumnDefinitions[0].Width = _isOtherResourcesCollapsed
+            ? new GridLength(36)
+            : new GridLength(0.75, GridUnitType.Star);
+        OtherResourcesLayout.ColumnDefinitions[1].Width = _isOtherResourcesCollapsed
+            ? new GridLength(1, GridUnitType.Star)
+            : new GridLength(1.5, GridUnitType.Star);
+        OtherResourcesPanel.Padding = _isOtherResourcesCollapsed ? new Thickness(4) : new Thickness(14, 12);
+        OtherResourcesTitle.IsVisible = !_isOtherResourcesCollapsed;
+        OtherItemsScrollViewer.IsVisible = !_isOtherResourcesCollapsed;
+        OtherResourcesToggleButton.Content = _isOtherResourcesCollapsed ? "›" : "◀";
+        ToolTip.SetTip(OtherResourcesToggleButton, _isOtherResourcesCollapsed ? "展开其他资源" : "收起其他资源");
     }
 
     private void ChartPoint_OnPointerPressed(object? sender, PointerPressedEventArgs e)
