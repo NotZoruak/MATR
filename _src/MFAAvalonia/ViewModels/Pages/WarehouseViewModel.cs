@@ -732,6 +732,7 @@ public sealed partial class WarehouseComparisonChartViewModel : ObservableObject
     {
         var start = _selection.Start!.Value;
         var end = _selection.End!.Value;
+        var duration = _selection.Duration ?? TimeSpan.Zero;
         SelectionRows.Clear();
         var summaries = Series.Select(series =>
         {
@@ -744,26 +745,20 @@ public sealed partial class WarehouseComparisonChartViewModel : ObservableObject
             }
 
             var change = endPoint.Value - startPoint.Value;
+            var rate = WarehouseChartRangeSelectionResult.FormatAverageRate(change, duration);
+            var changeSummary = $"{change:+#,##0;-#,##0;0}，平均变化速率：{rate}";
             SelectionRows.Add(new WarehouseComparisonSelectionRowViewModel(
                 series.Name,
-                $"{startPoint.Value:N0} → {endPoint.Value:N0}（{change:+#,##0;-#,##0;0}）"));
-            return $"{series.Name} {startPoint.Value:N0} → {endPoint.Value:N0}（{change:+#,##0;-#,##0;0}）";
+                $"{startPoint.Value:N0} → {endPoint.Value:N0}（{changeSummary}）"));
+            return $"{series.Name} {startPoint.Value:N0} → {endPoint.Value:N0}（{changeSummary}）";
         });
         return $"起点：{start:yyyy-MM-dd HH:mm:ss} · 终点：{end:yyyy-MM-dd HH:mm:ss}\n{string.Join("　", summaries)}";
     }
 
     public ObservableCollection<WarehouseComparisonSelectionRowViewModel> SelectionRows { get; } = [];
     public string TimeSummaryText => _selection.Duration is { } duration
-        ? $"起始：{_selection.Start:yyyy-MM-dd HH:mm:ss} · 终止：{_selection.End:yyyy-MM-dd HH:mm:ss}\n相隔：{FormatDuration(duration)}"
+        ? $"起始：{_selection.Start:yyyy-MM-dd HH:mm:ss} · 终止：{_selection.End:yyyy-MM-dd HH:mm:ss}\n相隔：{WarehouseChartRangeSelectionResult.FormatDuration(duration)}"
         : string.Empty;
-
-    private static string FormatDuration(TimeSpan duration)
-    {
-        var totalHours = (int)duration.TotalHours;
-        return totalHours > 0
-            ? $"{totalHours}小时{duration.Minutes}分钟"
-            : $"{duration.Minutes}分钟";
-    }
 }
 
 public sealed class WarehouseComparisonSelectionRowViewModel
