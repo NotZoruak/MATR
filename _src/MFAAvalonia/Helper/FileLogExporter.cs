@@ -77,7 +77,16 @@ public static class FileLogExporter
                 // 获取符合条件的日志文件和图片文件：不传选项时按默认选项导出，
                 // 与导出对话框保持同一套选择规则，避免两条入口各漏一份日志
                 var effectiveOptions = options ?? new ExportLogPackageOptions();
-                var eligibleFiles = await Task.Run(() => GetEligibleFiles(baseDirectory, effectiveOptions));
+                var eligibleFiles = await Task.Run(() =>
+                {
+                    // 保存位置确认后复用启动时的过期和容量清理，导出时不移动正在写入的主日志。
+                    AppPaths.CleanupOldDebugLogs(
+                        Path.Combine(baseDirectory, "debug"),
+                        logInfo: message => LoggerHelper.Info(message),
+                        logWarning: message => LoggerHelper.Warning(message),
+                        rotateMainLog: false);
+                    return GetEligibleFiles(baseDirectory, effectiveOptions);
+                });
 
                 if (!eligibleFiles.Any())
                 {

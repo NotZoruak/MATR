@@ -159,16 +159,26 @@ public static class AppPaths
     /// 清理过期调试日志和截图，限制 debug 目录的磁盘占用。
     /// </summary>
     public static void CleanupOldDebugLogs(int retainDays = 3, Action<string>? logInfo = null, Action<string>? logWarning = null)
+        => CleanupOldDebugLogs(Path.Combine(InstallRoot, "debug"), retainDays, logInfo, logWarning);
+
+    /// <summary>
+    /// 按指定调试目录执行过期及容量清理；导出时关闭主日志轮转，保留正在写入的文件。
+    /// </summary>
+    public static void CleanupOldDebugLogs(
+        string debugPath,
+        int retainDays = 3,
+        Action<string>? logInfo = null,
+        Action<string>? logWarning = null,
+        bool rotateMainLog = true)
     {
         try
         {
-            var debugPath = Path.Combine(InstallRoot, "debug");
             if (!Directory.Exists(debugPath))
                 return;
 
             var cutoff = DateTime.Now.AddDays(-retainDays);
             var mainLog = Path.Combine(debugPath, "maafw.log");
-            if (File.Exists(mainLog) && new FileInfo(mainLog).Length > 0)
+            if (rotateMainLog && File.Exists(mainLog) && new FileInfo(mainLog).Length > 0)
             {
                 try
                 {
