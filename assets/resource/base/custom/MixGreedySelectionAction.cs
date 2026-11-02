@@ -15,14 +15,15 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 /// <summary>按精确需求量选择习合素材，尽量避免乱舞经验溢出。</summary>
 public sealed class MixGreedySelectionAction : IMaaCustomAction
 {
-    private static readonly MixGreedyPoint[] SelectedMaterialMarkers =
-    [
-        new(1099, 172),
-        new(1100, 273),
-        new(1100, 374),
-        new(1100, 475),
-        new(1100, 576)
-    ];
+    // 素材行右侧的竖直边框不受刀名、头像和勾选图标影响，滚动后重新定位各行。
+    private const int MaterialEdgeX = 1099;
+    private const int MaterialListTop = 124;
+    private const int MaterialListHeight = 554;
+    private const int MaterialClickX = 858;
+    private const int MinimumMaterialRowHeight = 80;
+    private const int MaximumMaterialRowHeight = 98;
+    private const int SelectionStateAttempts = 12;
+    private const int SelectionStateIntervalMilliseconds = 100;
 
     private static readonly int[] SelectAll = [1145, 460, 111, 40];
     private static readonly int[] ClearAllSelection = [1151, 361, 101, 30];
@@ -80,10 +81,22 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
             var required = MixGreedySelectionDecision.CalculateRequiredMaterialCount(rarity, level, needForNextLevel);
             LoggerHelper.Info($"[习合] 稀有度{rarity}、乱舞{level}级，升至7级需素材{required}把");
 
-            ClickRegion(context, SelectAll, "一键选择");
-            if (!TryReadSelectedCount(context, out var selected))
+            ClickRegion(context, SelectAll, "一键选择", 0);
+            if (!WaitForSelectedCount(context, count => count > 0, out var selected))
             {
-                LoggerHelper.Warning("[习合] 无法读取一键选择后的已选数量");
+                if (selected == 0 && TryReadMaterialRows(context, out var rows))
+                {
+                    var available = rows.Count(row => !row.IsSelected);
+                    LoggerHelper.Warning(rows.Any(row => row.IsSelected)
+                        ? "[习合] 一键选择后计数持续为0/30，但画面存在已选素材，识别结果不一致，停止选材"
+                        : available > 0
+                        ? $"[习合] 一键选择后持续为0/30，当前画面仍有{available}行未选素材，选择未生效，停止选材"
+                        : "[习合] 一键选择后持续为0/30，未识别到可用的完整素材行，停止选材");
+                }
+                else
+                {
+                    LoggerHelper.Warning("[习合] 无法确认一键选择后的有效素材数量，停止选材");
+                }
                 return false;
             }
 
@@ -105,7 +118,7 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 if (!ClearAllAndSelectMaterials(context, required))
                     return false;
             }
-            else if (!CancelExcessMaterials(context, plan.ExcessCount))
+            else if (!CancelExcessMaterials(context, required))
             {
                 return false;
             }
@@ -131,28 +144,20 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         }
     }
 
-    /// <summary>全部解除后确认首行未选中，再按升序逐把选择至目标数量。</summary>
+    /// <summary>全部解除后确认已选数量归零，再按升序逐把选择至目标数量。</summary>
     private static bool ClearAllAndSelectMaterials<T>(T context, int required) where T : IMaaContext
     {
-        for (var attempt = 1; attempt <= MixGreedySelectionDecision.ClearAllAttempts; attempt++)
-        {
-            ClickRegion(context, ClearAllSelection, "全部解除", 0);
-            ActionParamHelper.SleepWithStopCheck(context, MixGreedySelectionDecision.ClearAllDelayMilliseconds);
-            if (!IsSelectedMaterial(context, SelectedMaterialMarkers[0]))
-                return SelectMaterials(context, required);
+        ClickRegion(context, ClearAllSelection, "全部解除", 0);
+        if (WaitForSelectedCount(context, count => count == 0, out var selected))
+            return SelectMaterials(context, required);
 
-            if (attempt < MixGreedySelectionDecision.ClearAllAttempts)
-                LoggerHelper.Warning("[习合] 全部解除后第一行素材仍为绿色，重新解除一次");
-        }
-
-        LoggerHelper.Warning("[习合] 两次全部解除后第一行素材仍处于选中状态");
+        LoggerHelper.Warning($"[习合] 全部解除后未确认数量归零，当前已选{selected}把，停止选材");
         return false;
     }
 
-    /// <summary>按升序逐页选择素材；每页只处理五个完整素材行，数量一律以画面上的「选择中 X/30」为准。</summary>
+    /// <summary>按升序逐页选择素材；根据当前画面定位素材行，并逐把核对已选数量。</summary>
     private static bool SelectMaterials<T>(T context, int required) where T : IMaaContext
     {
-        var expectedCount = -1;
         for (var page = 0; page <= MaxPageScrolls; page++)
         {
             if (!TryReadSelectedCount(context, out var selectedCount))
@@ -161,26 +166,22 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 return false;
             }
 
-            if (expectedCount >= 0 && selectedCount != expectedCount)
-            {
-                LoggerHelper.Info($"[习合] 滑动后已选数量由{expectedCount}把变为{selectedCount}把，改按画面数量继续");
-            }
-
             if (selectedCount > required)
             {
                 LoggerHelper.Warning($"[习合] 已选数量超过预期：{selectedCount}，预期：{required}");
                 return false;
             }
 
-            for (var index = 0; index < SelectedMaterialMarkers.Length && selectedCount < required; index++)
+            while (selectedCount < required)
             {
-                if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
-                    continue;
-
-                if (!SelectSingleMaterial(context, index))
+                if (!TryReadMaterialRows(context, out var rows))
                     return false;
+                var row = rows.FirstOrDefault(item => !item.IsSelected);
+                if (row == default)
+                    break;
 
-                selectedCount++;
+                if (!ChangeSingleMaterial(context, row, selectedCount + 1, out selectedCount))
+                    return false;
             }
 
             if (selectedCount == required)
@@ -191,7 +192,8 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 return false;
             }
 
-            expectedCount = selectedCount;
+            if (page == MaxPageScrolls)
+                break;
             HoldSwipeToNextMaterialPage(context);
             ActionParamHelper.SleepWithStopCheck(context, MixGreedySelectionDecision.SwipeSettleDelayMilliseconds);
         }
@@ -200,46 +202,43 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         return false;
     }
 
-    /// <summary>点击指定行选择素材，并确认该行已经变为选中状态。</summary>
-    private static bool SelectSingleMaterial<T>(T context, int index) where T : IMaaContext
+    /// <summary>只点击一次素材行，随后读取画面，确认选中状态与数量都发生了预期变化。</summary>
+    private static bool ChangeSingleMaterial<T>(T context, MaterialRow row, int expectedCount, out int selectedCount) where T : IMaaContext
     {
-        var selectPosition = MixGreedySelectionDecision.CancelPositions[index];
-        for (var attempt = 1; attempt <= MixGreedySelectionDecision.ManualClickAttempts; attempt++)
-        {
-            context.ClickWithProgress(selectPosition.X, selectPosition.Y);
-            ActionParamHelper.SleepWithStopCheck(context, 200);
-            if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
-                return true;
+        context.ClickWithProgress(MaterialClickX, row.CenterY);
+        if (WaitForSelectedCount(context, count => count == expectedCount, out selectedCount)
+            && TryReadMaterialRows(context, out var rows)
+            && rows.Any(item => item.Top <= row.CenterY && item.Bottom >= row.CenterY
+                && item.IsSelected != row.IsSelected))
+            return true;
 
-            LoggerHelper.Warning($"[习合] 第{index + 1}行素材第{attempt}次选择后未出现绿色状态");
-        }
-
+        LoggerHelper.Warning($"[习合] 素材行y={row.CenterY}点击后未确认状态变化，已选{selectedCount}把，预期{expectedCount}把");
         return false;
     }
 
-    /// <summary>逐页取消超额素材；每页只处理五个完整素材行。</summary>
-    private static bool CancelExcessMaterials<T>(T context, int cancelCount) where T : IMaaContext
+    /// <summary>逐页取消超额素材；处理当前画面上的已选行后，再判断是否已经到底。</summary>
+    private static bool CancelExcessMaterials<T>(T context, int required) where T : IMaaContext
     {
-        for (var page = 0; cancelCount > 0 && page <= MaxPageScrolls; page++)
+        for (var page = 0; page <= MaxPageScrolls; page++)
         {
-            foreach (var index in Enumerable.Range(0, SelectedMaterialMarkers.Length))
+            // 翻页动作也可能改变勾选状态，以画面数量作为本页起点。
+            if (!TryReadSelectedCount(context, out var selectedCount) || selectedCount < required)
             {
-                if (cancelCount == 0)
-                    return true;
-
-                if (!IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
-                    continue;
-
-                var cancelPosition = MixGreedySelectionDecision.CancelPositions[index];
-                context.ClickWithProgress(cancelPosition.X, cancelPosition.Y);
-                ActionParamHelper.SleepWithStopCheck(context, 200);
-                if (IsSelectedMaterial(context, SelectedMaterialMarkers[index]))
-                {
-                    LoggerHelper.Warning($"[习合] 第{index + 1}行素材取消未生效");
+                LoggerHelper.Warning("[习合] 翻页后已选数量异常，停止取消素材");
+                return false;
+            }
+            var cancelCount = selectedCount - required;
+            while (cancelCount > 0)
+            {
+                if (!TryReadMaterialRows(context, out var rows))
                     return false;
-                }
+                var row = rows.FirstOrDefault(item => item.IsSelected);
+                if (row == default)
+                    break;
 
-                cancelCount--;
+                if (!ChangeSingleMaterial(context, row, selectedCount - 1, out selectedCount))
+                    return false;
+                cancelCount = selectedCount - required;
             }
 
             if (cancelCount == 0)
@@ -250,6 +249,8 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
                 return false;
             }
 
+            if (page == MaxPageScrolls)
+                break;
             HoldSwipeToNextMaterialPage(context);
             ActionParamHelper.SleepWithStopCheck(context, MixGreedySelectionDecision.SwipeSettleDelayMilliseconds);
         }
@@ -265,9 +266,10 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         ActionParamHelper.SleepWithStopCheck(context, ListOcrScan.ScrollSettleMilliseconds);
     }
 
-    /// <summary>判断指定素材行右侧是否显示已选中的绿色背景。</summary>
-    private static bool IsSelectedMaterial<T>(T context, MixGreedyPoint marker) where T : IMaaContext
+    /// <summary>读取当前素材列表的边框色带，定位足够完整的可点击素材行。</summary>
+    private static bool TryReadMaterialRows<T>(T context, out List<MaterialRow> rows) where T : IMaaContext
     {
+        rows = [];
         using var image = context.GetImage();
         if (image == null)
             return false;
@@ -275,10 +277,65 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         if (bitmap == null)
             return false;
 
-        var pixel = ReadPixel(bitmap, marker.X, marker.Y);
-        return Math.Abs(pixel.R - SelectedGreenR) <= SelectedGreenTolerance
-            && Math.Abs(pixel.G - SelectedGreenG) <= SelectedGreenTolerance
-            && Math.Abs(pixel.B - SelectedGreenB) <= SelectedGreenTolerance;
+        if (bitmap.PixelSize.Width <= MaterialEdgeX || bitmap.PixelSize.Height < MaterialListTop + MaterialListHeight)
+            return false;
+
+        var column = new byte[MaterialListHeight * 4];
+        var handle = GCHandle.Alloc(column, GCHandleType.Pinned);
+        try
+        {
+            bitmap.CopyPixels(new PixelRect(MaterialEdgeX, MaterialListTop, 1, MaterialListHeight),
+                handle.AddrOfPinnedObject(), column.Length, 4);
+        }
+        finally
+        {
+            handle.Free();
+        }
+
+        rows = FindMaterialRows(column);
+        return true;
+    }
+
+    /// <summary>根据竖直色带的连续区间识别素材行，忽略顶部和底部露出的短残行。</summary>
+    internal static List<MaterialRow> FindMaterialRows(byte[] column)
+    {
+        var rows = new List<MaterialRow>();
+        var start = 0;
+        var previousState = -1;
+        var height = column.Length / 4;
+        for (var y = 0; y <= height; y++)
+        {
+            var state = -1;
+            if (y < height)
+            {
+                var offset = y * 4;
+                var red = column[offset + 2];
+                var green = column[offset + 1];
+                var blue = column[offset];
+                if (Math.Abs(red - SelectedGreenR) <= SelectedGreenTolerance
+                    && Math.Abs(green - SelectedGreenG) <= SelectedGreenTolerance
+                    && Math.Abs(blue - SelectedGreenB) <= SelectedGreenTolerance)
+                    state = 1;
+                else if (red == 251 && green == 250 && blue == 245)
+                    state = 0;
+            }
+
+            if (state == previousState)
+                continue;
+
+            var length = y - start;
+            if (previousState >= 0 && length >= MinimumMaterialRowHeight && length <= MaximumMaterialRowHeight)
+                rows.Add(new MaterialRow(MaterialListTop + start, MaterialListTop + y - 1, previousState == 1));
+            start = y;
+            previousState = state;
+        }
+        return rows;
+    }
+
+    /// <summary>素材行在当前截图中的纵向范围及选中状态。</summary>
+    internal readonly record struct MaterialRow(int Top, int Bottom, bool IsSelected)
+    {
+        public int CenterY => (Top + Bottom) / 2;
     }
 
     /// <summary>判断素材列表是否已滑到底部。</summary>
@@ -429,19 +486,49 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         for (var attempt = 0; attempt < 5; attempt++)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            using var image = context.GetImage();
-            if (image != null)
-            {
-                var text = context.GetText(SelectedCountX, SelectedCountY, SelectedCountWidth, SelectedCountHeight, image);
-                if (MixGreedySelectionDecision.TryParseSelectedCount(text, out selected))
-                    return true;
-            }
+            if (TryReadSelectedCountOnce(context, out selected))
+                return true;
 
             if (attempt < 4)
                 ActionParamHelper.SleepWithStopCheck(context, 200);
         }
 
-        selected = 0;
+        selected = -1;
+        return false;
+    }
+
+    /// <summary>只读取一次当前画面中的已选数量，无法识别时返回负数。</summary>
+    private static bool TryReadSelectedCountOnce<T>(T context, out int selected) where T : IMaaContext
+    {
+        using var image = context.GetImage();
+        if (image != null)
+        {
+            var text = context.GetText(SelectedCountX, SelectedCountY, SelectedCountWidth, SelectedCountHeight, image);
+            if (MixGreedySelectionDecision.TryParseSelectedCount(text, out selected))
+                return true;
+        }
+
+        selected = -1;
+        return false;
+    }
+
+    /// <summary>输入后只观察数量变化，不重复点击，避免旧帧或尚未完成的界面刷新造成误判。</summary>
+    private static bool WaitForSelectedCount<T>(T context, Func<int, bool> expected, out int selected) where T : IMaaContext
+    {
+        selected = -1;
+        for (var attempt = 0; attempt < SelectionStateAttempts; attempt++)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            if (TryReadSelectedCountOnce(context, out var current))
+            {
+                selected = current;
+                if (expected(current))
+                    return true;
+            }
+
+            if (attempt < SelectionStateAttempts - 1)
+                ActionParamHelper.SleepWithStopCheck(context, SelectionStateIntervalMilliseconds);
+        }
         return false;
     }
 
