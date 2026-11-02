@@ -376,14 +376,14 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [487, 65, 91, 37],
+        "roi": [508, 72, 59, 32],
         "expected": "选"
       }
     },
     "action": {
       "type": "Click",
       "param": {
-        "target": [754, 137, 94, 27]
+        "target": [753, 145, 101, 26]
       }
     },
     "post_delay": 200,
@@ -516,7 +516,8 @@
       "time": 200,
       "target": [603, 603, 75, 43]
     },
-    "next": ["NM_ClaimMailboxForMail", "NM_IsMailboxEmpty"]
+    "next": ["NM_ClaimMailboxForMail", "NM_IsMailboxEmpty", "NM_IsFilterForMail"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_ClaimMailboxForMail": {
     "recognition": {
