@@ -94,7 +94,14 @@
         "threshold": [0.98]
       }
     },
-    "next": ["S_IsMarchingDamage", "S_FatigueDetect", "S_EqCheck", "S_CheckBoss", "S_PostClickMarching"]
+    "next": [
+      "S_IsMarchingDamage",
+      "S_FatigueDetect",
+      "S_EqCheck",
+      "S_CheckBoss",
+      "S_ConfirmRetreat",
+      "S_PostClickMarching"
+    ]
   },
   "S_IsSwordDropColor": {
     "recognition": {
