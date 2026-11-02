@@ -173,7 +173,8 @@ internal static class ResourcePointRewardParser
     private static readonly IReadOnlyDictionary<string, string> ResourceNameMappings =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["末炭"] = "木炭"
+            ["末炭"] = "木炭",
+            ["冷材"] = "冷却材"
         };
 
     public static IReadOnlyList<string> Parse(string text)
