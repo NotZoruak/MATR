@@ -76,7 +76,7 @@
         "roi": [349, 395, 63, 39],
         "template": "Activity/活动教程.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -89,7 +89,7 @@
         "roi": [1067, 558, 120, 79],
         "template": "Common/合战场_行军.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["U_CheckBeforeMarch"],
@@ -156,7 +156,7 @@
         "roi": [1044, 29, 166, 87],
         "template": "Activity/特殊掉落_地下城.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -169,7 +169,7 @@
         "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 0,
@@ -203,7 +203,7 @@
         "roi": [570, 1, 139, 45],
         "template": "Common/阵形选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["U_ClickFormation1"],
@@ -258,7 +258,7 @@
         "roi": [1173, 373, 57, 23],
         "template": "Common/自动行军_委托中.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -333,7 +333,7 @@
         "roi": [3, 164, 43, 92],
         "template": "Common/合战场选中.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -351,7 +351,7 @@
         "roi": [427, 69, 388, 52],
         "template": "Activity/地下城.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["U_SelectFloor", "U_DetectWhereAmI"]
@@ -557,7 +557,7 @@
         "roi": [96, 558, 54, 38],
         "template": "Common/修行申请_狐之助.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -598,7 +598,7 @@
         "roi": [423, 484, 145, 56],
         "template": "Common/整备刀装.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "post_wait_freezes": {
@@ -615,7 +615,7 @@
         "roi": [576, 60, 127, 33],
         "template": "Common/出阵确认.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -641,7 +641,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["U_NavigateToActivity", "U_DetectWhereAmI"]
@@ -727,7 +727,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["U_DetectWhereAmI"]
@@ -809,7 +809,7 @@
         "roi": [423, 484, 145, 56],
         "template": "Common/整备刀装.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},

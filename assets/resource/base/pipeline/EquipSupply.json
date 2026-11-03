@@ -6,7 +6,7 @@
         "roi": [423, 484, 145, 56],
         "template": "Common/整备刀装.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -24,7 +24,7 @@
         "roi": [1139, 132, 124, 41],
         "template": "Common/部队记录.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -39,7 +39,7 @@
         "roi": [707, 53, 72, 64],
         "template": "Common/使用记录.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -64,7 +64,7 @@
         "roi": [707, 53, 72, 64],
         "template": "Common/使用记录.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},

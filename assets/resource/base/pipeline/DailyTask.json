@@ -161,7 +161,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "post_delay": 1000,
@@ -254,7 +254,7 @@
         "roi": [1184, 13, 32, 31],
         "template": "Common/黑色关闭按钮1.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -565,7 +565,7 @@
       "param": {
         "roi": [1186, 129, 65, 486],
         "template": "Common/选择合成对象.png",
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -1738,7 +1738,7 @@
         "roi": [570, 1, 139, 45],
         "template": "Common/阵形选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["DT_DrillSelectFormation"]

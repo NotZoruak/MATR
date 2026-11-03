@@ -57,7 +57,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["E_CheckTeamStatus", "E_DetectHome", "Expedition"]
@@ -98,7 +98,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -191,7 +191,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 100,
@@ -281,7 +281,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 100,
@@ -371,7 +371,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 100,
@@ -461,7 +461,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 100,
@@ -706,7 +706,7 @@
         "roi": [516, 57, 250, 47],
         "template": "Common/远征目的地选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "post_wait_freezes": {"time": 200},
@@ -879,7 +879,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 0,
@@ -1365,7 +1365,7 @@
         "roi": [848, 607, 257, 63],
         "template": "Common/地域选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 300,
@@ -1397,7 +1397,7 @@
         "roi": [848, 607, 257, 63],
         "template": "Common/地域选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -1435,7 +1435,7 @@
       "param": {
         "roi": [1074, 211, 37, 421],
         "template": "Common/移除队员.png",
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -1521,7 +1521,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["E_FlowerNavigate", "E_FlowerBattleHub"]
@@ -1570,7 +1570,7 @@
         "roi": [1067, 558, 120, 79],
         "template": "Common/合战场_行军.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -1583,7 +1583,7 @@
         "roi": [570, 1, 139, 45],
         "template": "Common/阵形选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -2593,7 +2593,7 @@
         "roi": [1125, 24, 44, 41],
         "template": "Common/黑色关闭按钮1.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},

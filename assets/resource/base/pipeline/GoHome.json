@@ -139,7 +139,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     }
   },
@@ -168,7 +168,7 @@
         "roi": [918, 337, 31, 35],
         "template": "Activity/离开部队交替.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -197,7 +197,7 @@
         "roi": [468, 188, 313, 41],
         "template": "Activity/江户城_特殊掉落.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},

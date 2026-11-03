@@ -6,7 +6,7 @@
         "roi": [374, 42, 39, 108],
         "template": "Common/本丸远征.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["E_AllTeamsBusy"]
@@ -43,7 +43,7 @@
         "roi": [816, 577, 182, 59],
         "template": "Common/登录奖励.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -158,7 +158,7 @@
         "roi": [665, 529, 124, 78],
         "template": "Common/登录.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"}
@@ -185,7 +185,7 @@
         "roi": [443, 431, 120, 46],
         "template": "Common/游戏更新.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"}
@@ -212,7 +212,7 @@
         "roi": [3, 164, 43, 92],
         "template": "Common/合战场选中.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -244,7 +244,7 @@
         "roi": [569, 322, 138, 31],
         "template": "Common/内番报告.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"}
@@ -272,7 +272,7 @@
         "roi": [1125, 577, 33, 26],
         "template": "Common/资源点.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -293,7 +293,7 @@
         "roi": [96, 558, 54, 38],
         "template": "Common/修行申请_狐之助.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {

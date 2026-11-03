@@ -52,7 +52,7 @@
         "roi": [104, 331, 49, 235],
         "template": "Common/时代选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -70,7 +70,7 @@
         "roi": [848, 607, 257, 63],
         "template": "Common/地域选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -179,7 +179,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["FC_OpenFormation"],
@@ -1771,7 +1771,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 100},
-    "next": ["FC_PreCheckUseRecord"],
+    "next": ["FC_PreCheckUseRecord", "FC_UseRecord_Step1"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_PreCheckUseRecord": {
