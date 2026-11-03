@@ -72,7 +72,7 @@
         "roi": [427, 69, 388, 52],
         "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["RB_CheckGoalPt", "RB_IsRainbowBattle", "RB_SelectDifficulty", "RB_DetectWhereAmI"]
@@ -85,7 +85,7 @@
         "roi": [122, 137, 245, 53],
         "template": "Activity/特别合战场开放.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["RB_CheckRainbowShell", "RB_CloseRainbowBattle", "RB_SelectDifficulty"]
@@ -127,7 +127,7 @@
         "roi": [427, 69, 388, 52],
         "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -221,7 +221,7 @@
         "roi": [1173, 373, 57, 23],
         "template": "Common/自动行军_委托中.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -377,7 +377,7 @@
         "roi": [427, 69, 388, 52],
         "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "anchor": {"RB_RoundDone": "RB_TerminateRound"},
@@ -391,7 +391,7 @@
         "roi": [427, 69, 388, 52],
         "template": ["Activity/陆联.png", "Activity/海联.png"],
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "inverse": true,
@@ -557,7 +557,7 @@
         "roi": [780, 12, 51, 30],
         "template": "Activity/海陆联队_行动选择.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "anchor": {"RB_RoundDone": "RB_TerminateRound"},
@@ -570,7 +570,7 @@
         "roi": [918, 337, 31, 35],
         "template": "Activity/离开部队交替.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -654,7 +654,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["RB_NavigateToActivity", "RB_DetectWhereAmI"]

@@ -63,7 +63,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["HP_NavigateToActivity", "HP_DetectWhereAmI"]
@@ -75,7 +75,7 @@
         "roi": [1067, 558, 120, 79],
         "template": "Common/合战场_行军.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -193,7 +193,7 @@
         "roi": [427, 69, 388, 52],
         "template": "Activity/秘宝之里.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["HP_CheckGoalPt", "HP_SelectDifficulty", "HP_DetectWhereAmI"]
@@ -206,7 +206,7 @@
         "roi": [427, 69, 388, 52],
         "template": "Activity/秘宝之里.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -234,7 +234,7 @@
         "roi": [427, 69, 388, 52],
         "template": "Activity/秘宝之里.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -254,7 +254,7 @@
         "roi": [349, 265, 579, 158],
         "template": "Activity/秘宝之里_达成报酬1.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["HP_IsSpecialDrop2"],
@@ -267,7 +267,7 @@
         "roi": [169, 154, 117, 120],
         "template": "Activity/秘宝之里_达成报酬2.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["HP_TerminateRound"]
@@ -435,7 +435,7 @@
         "roi": [427, 69, 388, 52],
         "template": "Activity/秘宝之里.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["HP_SortieSuccessDone"],
@@ -448,7 +448,7 @@
         "roi": [427, 69, 388, 52],
         "template": "Activity/秘宝之里.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "inverse": true,
@@ -512,7 +512,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 500,

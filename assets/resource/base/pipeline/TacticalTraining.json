@@ -69,7 +69,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["TT_NavigateToActivity"],
@@ -106,7 +106,7 @@
         "roi": [429, 69, 289, 52],
         "template": "Activity/战术强化训练.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": [],
@@ -125,7 +125,7 @@
         "roi": [3, 164, 43, 92],
         "template": "Common/合战场选中.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["TT_OnSortieScreen"],
@@ -159,7 +159,7 @@
         "roi": [429, 69, 289, 52],
         "template": "Activity/战术强化训练.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "next": ["TT_ClickDifficulty"],
@@ -182,7 +182,7 @@
         "roi": [429, 69, 289, 52],
         "template": "Activity/战术强化训练.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "post_delay": 300,
@@ -573,7 +573,7 @@
         "roi": [8, 1, 71, 107],
         "template": "Common/本丸.png",
         "green_mask": true,
-        "threshold": [0.98]
+        "threshold": [0.97]
       }
     },
     "pre_delay": 500,
