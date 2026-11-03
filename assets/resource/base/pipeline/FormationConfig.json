@@ -1771,7 +1771,7 @@
     },
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 100},
-    "next": ["FC_PreCheckUseRecord"],
+    "next": ["FC_PreCheckUseRecord", "FC_UseRecord_Step1"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_PreCheckUseRecord": {
