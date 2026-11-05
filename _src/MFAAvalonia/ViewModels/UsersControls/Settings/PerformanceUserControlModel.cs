@@ -80,7 +80,7 @@ public partial class PerformanceUserControlModel : ViewModelBase
         if (v)
         {
 #if WINDOWS
-            if (GpuOptions.Count == 2)
+            if (GpuOptions.Count == 3)
             {
                 var gpus = new List<LocalizationViewModel<GpuDeviceOption>>();
 
@@ -92,7 +92,7 @@ public partial class PerformanceUserControlModel : ViewModelBase
                         Other = new GpuDeviceOption(adapter)
                     });
                 }
-                GpuOptions.InsertRange(1, gpus);
+                GpuOptions.InsertRange(2, gpus);
                 ConfigurationManager.Current.SetValue(ConfigurationKeys.GPUs, GpuOptions);
                 MaaProcessorManager.Instance.Current.SetTasker();
             }
@@ -100,20 +100,20 @@ public partial class PerformanceUserControlModel : ViewModelBase
         }
         else
         {
-            if (GpuOptions.Count != 2)
+            if (GpuOptions.Count > 3)
             {
                 if (GpuIndex == GpuOptions.Count - 1)
                 {
-                    GpuIndex = 1;
+                    GpuIndex = 2;
                 }
-                if (GpuIndex > 0 && GpuIndex < GpuOptions.Count - 1)
+                else if (GpuIndex >= 2)
                 {
                     GpuIndex = 0;
                     MaaProcessorManager.Instance.Current.SetTasker();
                 }
-                while (GpuOptions.Count > 2)
+                while (GpuOptions.Count > 3)
                 {
-                    GpuOptions.RemoveAt(1);
+                    GpuOptions.RemoveAt(2);
                 }
 
                 ConfigurationManager.Current.SetValue(ConfigurationKeys.GPUs, GpuOptions);
@@ -137,6 +137,12 @@ public partial class PerformanceUserControlModel : ViewModelBase
         public static GpuDeviceOption CPU = new(InferenceDevice.CPU);
         public static GpuDeviceOption GPU0 = new(InferenceDevice.GPU0);
         public static GpuDeviceOption GPU1 = new(InferenceDevice.GPU1);
+        public static GpuDeviceOption ForceGPU0 = new(new DirectMLAdapterInfo
+        {
+            AdapterId = 0,
+            AdapterName = "GPU 0",
+            IsDirectMLCompatible = true
+        });
         public GpuDeviceOption()
         {
 
@@ -162,6 +168,14 @@ public partial class PerformanceUserControlModel : ViewModelBase
         {
             Other = GpuDeviceOption.Auto,
         },
+        new("GpuOptionEnable")
+        {
+#if WINDOWS
+            Other = GpuDeviceOption.ForceGPU0,
+#else
+            Other = GpuDeviceOption.GPU0,
+#endif
+        },
         new("GpuOptionDisable")
         {
             Other = GpuDeviceOption.CPU
@@ -172,6 +186,10 @@ public partial class PerformanceUserControlModel : ViewModelBase
     //     new("GpuOptionAuto")
     //     {
     //         Other = GpuDeviceOption.Auto,
+    //     },
+    //     new("GpuOptionEnable")
+    //     {
+    //         Other = GpuDeviceOption.GPU0,
     //     },
     //     new("GpuOptionDisable")
     //     {

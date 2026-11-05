@@ -1854,20 +1854,6 @@ public class MaaProcessor
             var resources = currentResource?.ResolvedPath ?? currentResource?.Path ?? [];
             resources = resources.Select(Path.GetFullPath).ToList();
 
-            // PI v2.6.0 要求 hash 只基于 resource.path，必须在 attach_resource_path 之前校验。
-            if (!string.IsNullOrWhiteSpace(currentResource?.Hash))
-            {
-                using var hashResource = new MaaResource(resources);
-                var actualHash = hashResource.Hash;
-                if (!string.Equals(actualHash, currentResource.Hash, StringComparison.OrdinalIgnoreCase))
-                {
-                    var message = $"资源完整性校验不匹配：expected={currentResource.Hash}, actual={actualHash}";
-                    LoggerHelper.Warning(message);
-                    AddLog(message, Brushes.OrangeRed, changeColor: false);
-                    ToastHelper.Warn(message);
-                }
-            }
-
             var controllerType = ViewModel?.CurrentController ?? MaaControllerTypes.Adb;
             var controllerName = controllerType.ToJsonKey();
             var controllerConfig = Interface?.Controller?.FirstOrDefault(c =>
@@ -1888,7 +1874,34 @@ public class MaaProcessor
             maaResource = await TaskManager.RunTaskAsync(() =>
             {
                 token.ThrowIfCancellationRequested();
-                return new MaaResource(resources);
+                var resource = new MaaResource();
+                var gpuOption = Instances.PerformanceUserControlModel.GpuOption;
+                Instances.PerformanceUserControlModel.ChangeGpuOption(resource, gpuOption);
+
+                foreach (var resourcePath in resources)
+                {
+                    token.ThrowIfCancellationRequested();
+                    var loadJob = resource.AppendBundle(resourcePath);
+                    if (loadJob.Wait() != MaaJobStatus.Succeeded)
+                    {
+                        throw new InvalidOperationException($"加载资源失败：{resourcePath}");
+                    }
+                }
+
+                // PI v2.6.0 要求 hash 只基于 resource.path，必须在 attach_resource_path 之前校验。
+                if (!string.IsNullOrWhiteSpace(currentResource?.Hash))
+                {
+                    var actualHash = resource.Hash;
+                    if (!string.Equals(actualHash, currentResource.Hash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var message = $"资源完整性校验不匹配：expected={currentResource.Hash}, actual={actualHash}";
+                        LoggerHelper.Warning(message);
+                        AddLog(message, Brushes.OrangeRed, changeColor: false);
+                        ToastHelper.Warn(message);
+                    }
+                }
+
+                return resource;
             }, token: token, name: "资源检测", catchException: true, shouldLog: false, handleError: exception =>
             {
                 HandleInitializationError(exception, LangKeys.LoadResourcesFailed.ToLocalization(), LangKeys.LoadResourcesFailedDetail.ToLocalization());
@@ -1896,8 +1909,6 @@ public class MaaProcessor
                 InvalidResource = true;
                 throw exception;
             });
-
-            Instances.PerformanceUserControlModel.ChangeGpuOption(maaResource, Instances.PerformanceUserControlModel.GpuOption);
 
             LoggerHelper.Info(
                 $"GPU acceleration: {(Instances.PerformanceUserControlModel.GpuOption.IsDirectML ? Instances.PerformanceUserControlModel.GpuOption.Adapter.AdapterName : Instances.PerformanceUserControlModel.GpuOption.Device.ToString())}{(Instances.PerformanceUserControlModel.GpuOption.IsDirectML ? $",Adapter Id: {Instances.PerformanceUserControlModel.GpuOption.Adapter.AdapterId}" : "")}");

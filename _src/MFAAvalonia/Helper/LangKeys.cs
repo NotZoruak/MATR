@@ -199,6 +199,7 @@ public static class LangKeys
 	public static readonly string Github = "Github";
 	public static readonly string GlobalConfigTip = "GlobalConfigTip";
 	public static readonly string GpuOptionAuto = "GpuOptionAuto";
+	public static readonly string GpuOptionEnable = "GpuOptionEnable";
 	public static readonly string InstanceConfigTip = "InstanceConfigTip";
 	public static readonly string GpuOptionDisable = "GpuOptionDisable";
 	public static readonly string HardRestartAdb = "HardRestartAdb";
