@@ -1024,6 +1024,9 @@
   <data name="GpuOptionAuto" xml:space="preserve">
         <value>自動</value>
     </data>
+  <data name="GpuOptionEnable" xml:space="preserve">
+        <value>強制有効</value>
+    </data>
   <data name="GpuOptionDisable" xml:space="preserve">
         <value>使用しないでください</value>
     </data>

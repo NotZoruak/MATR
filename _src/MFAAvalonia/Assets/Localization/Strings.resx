@@ -576,6 +576,9 @@
     <data name="GpuOptionAuto" xml:space="preserve">
         <value>自动</value>
     </data>
+    <data name="GpuOptionEnable" xml:space="preserve">
+        <value>强制开启</value>
+    </data>
     <data name="GpuOptionDisable" xml:space="preserve">
         <value>不使用</value>
     </data>
