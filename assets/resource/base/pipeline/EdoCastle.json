@@ -83,7 +83,7 @@
     "post_delay": 0,
     "timeout": 2500,
     "next": ["EC_RecognizeResourcePoint"],
-    "on_error": ["IsTrainingApplication"]
+    "on_error": ["IsTrainingApplication", "EC_DetectWhereAmI"]
   },
   "EC_RecognizeResourcePoint": {
     "recognition": {

@@ -67,7 +67,7 @@
     "post_delay": 0,
     "timeout": 2500,
     "next": ["S_RecognizeResourcePoint"],
-    "on_error": ["IsTrainingApplication"]
+    "on_error": ["IsTrainingApplication", "S_DetectWhereAmI"]
   },
   "S_RecognizeResourcePoint": {
     "recognition": {

@@ -176,7 +176,7 @@
     "post_delay": 0,
     "timeout": 2500,
     "next": ["U_RecognizeResourcePoint"],
-    "on_error": ["IsTrainingApplication"]
+    "on_error": ["IsTrainingApplication", "U_DetectWhereAmI"]
   },
   "U_RecognizeResourcePoint": {
     "recognition": {
