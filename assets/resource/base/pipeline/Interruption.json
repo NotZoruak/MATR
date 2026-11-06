@@ -318,7 +318,8 @@
       "param": {
         "target": [460, 587, 69, 37]
       }
-    }
+    },
+    "next": ["[Anchor]Hub"]
   },
   "IsNetworkRequestTimeout": {
     "recognition": {

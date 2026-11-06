@@ -26,7 +26,7 @@
       "EC_IsTeamSelect",
       "EC_IsSwordDropColor",
       "EC_IsSpecialDrop",
-      "EC_RecognizeResourcePoint",
+      "EC_IsResourcePoint",
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInSortie",
@@ -69,6 +69,21 @@
     },
     "next": ["EC_TerminateRound"]
   },
+  "EC_IsResourcePoint": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1125, 577, 33, 26],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "pre_delay": 500,
+    "timeout": 2500,
+    "next": ["EC_RecognizeResourcePoint"],
+    "on_error": ["IsTrainingApplication"]
+  },
   "EC_RecognizeResourcePoint": {
     "recognition": {
       "type": "OCR",
@@ -83,7 +98,8 @@
       "custom_action": "ResourcePointLogAction",
       "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"江户潜入\"}"
     },
-    "next": ["EC_DetectWhereAmI"]
+    "next": ["EC_DetectWhereAmI"],
+    "on_error": ["EC_RestartGame"]
   },
   "EC_CheckHomeBrightness": {
     "recognition": {
