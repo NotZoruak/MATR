@@ -509,13 +509,11 @@
         "upper": [133, 173, 24]
       }
     },
-    "pre_delay": 500,
     "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["NM_ClaimMailboxHub"]
-  },
-  "NM_ClaimMailboxHub": {
-    "next": ["NM_CloseClaimMailboxPopup", "NM_DetectWhereAmI"]
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["NM_CloseClaimMailboxPopup"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_IsClaimMailboxPopup": {
     "recognition": {
@@ -529,10 +527,12 @@
   },
   "NM_CloseClaimMailboxPopup": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1234, 11, 34, 36],
-        "expected": ["×", "x", "X"]
+        "roi": [1225, 6, 52, 51],
+        "template": ["Common/黑色关闭按钮1.png"],
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -540,7 +540,8 @@
       "time": 100,
       "target": [1234, 11, 34, 36]
     },
-    "next": ["NM_ClaimMailboxHub"]
+    "next": ["NM_CloseClaimMailboxPopup", "NM_IsSelectingMixTarget"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_IsMailboxEmpty": {
     "recognition": {
