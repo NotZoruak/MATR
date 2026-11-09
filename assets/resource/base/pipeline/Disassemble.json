@@ -569,7 +569,7 @@
       "time": 200,
       "target": [603, 603, 75, 43]
     },
-    "next": ["D_ClickClaimMailboxItems", "D_CloseRewardPump", "D_DetectEmptyMailbox", "D_IsFilterForMailbox"],
+    "next": ["D_DetectEmptyMailbox", "D_ClickClaimMailboxItems", "D_CloseRewardPump", "D_IsFilterForMailbox"],
     "on_error": ["D_DetectWhereAmI"]
   },
   "D_CloseRewardPump": {
