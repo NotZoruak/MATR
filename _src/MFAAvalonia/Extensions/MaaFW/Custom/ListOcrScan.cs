@@ -151,12 +151,46 @@ public static class ListOcrScan
             .Select(item => $"{(item.Box is { Count: >= 4 } ? string.Join(",", item.Box!) : "-")}:{item.Text}")
             .OrderBy(signature => signature, StringComparer.Ordinal));
 
-    /// <summary>刀装/马匹确定按钮 OCR 区域（右侧按钮列）</summary>
+    /// <summary>刀装/马匹/宝物确定按钮 OCR 区域（右侧按钮列）</summary>
     public static readonly int[] ConfirmRoi = [1027, 130, 54, 561];
 
-    /// <summary>OCR 右侧按钮列找「确定」并点击（命中多个取最上方）；可指定双击。</summary>
-    public static bool ClickConfirm<T>(T context, bool doubleClick = false) where T : IMaaContext
+    /// <summary>点击目标物品并确认；未找到确定按钮时继续点击目标，找到后重复点击确定直到按钮消失。</summary>
+    public static bool ClickTargetAndConfirm<T>(T context, List<int> targetBox, string logTag) where T : IMaaContext
     {
+        int targetX = targetBox[0] + targetBox[2] / 2;
+        int targetY = targetBox[1] + targetBox[3] / 2;
+        while (true)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            ClickWithLoopDetection(context, targetX, targetY, $"{logTag}.SelectTarget");
+
+            if (ClickConfirmUntilClosed(context, logTag))
+                return true;
+        }
+    }
+
+    /// <summary>识别右侧「确定」并反复点击，直到 OCR 不再识别到该按钮。</summary>
+    private static bool ClickConfirmUntilClosed<T>(T context, string logTag) where T : IMaaContext
+    {
+        bool clicked = false;
+        while (true)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            if (!TryFindConfirm(context, out int cx, out int cy, out string box))
+                return clicked;
+
+            LoggerHelper.Info($"[ListOcrScan] 点击「确定」box=[{box}]");
+            ClickWithLoopDetection(context, cx, cy, $"{logTag}.Confirm");
+            clicked = true;
+        }
+    }
+
+    /// <summary>立即 OCR 右侧按钮列，返回最上方「确定」按钮的中心。</summary>
+    private static bool TryFindConfirm<T>(T context, out int centerX, out int centerY, out string boxText) where T : IMaaContext
+    {
+        centerX = 0;
+        centerY = 0;
+        boxText = string.Empty;
         using var image = context.GetImage();
         if (image == null)
             return false;
@@ -167,22 +201,20 @@ public static class ListOcrScan
             .Where(r => r.Box is { Count: >= 4 })
             .OrderBy(r => r.Box![1])
             .FirstOrDefault();
+        if (hit?.Box is not { Count: >= 4 } box)
+            return false;
 
-        if (hit?.Box is { Count: >= 4 })
-        {
-            int cx = hit.Box[0] + hit.Box[2] / 2;
-            int cy = hit.Box[1] + hit.Box[3] / 2;
-            LoggerHelper.Info($"[ListOcrScan] 点击「确定」box=[{string.Join(",", hit.Box)}]");
-            context.ClickWithProgress(cx, cy);
-            if (doubleClick)
-            {
-                ActionParamHelper.SleepWithStopCheck(context, 500);
-                context.ClickWithProgress(cx, cy);
-            }
-            ActionParamHelper.SleepWithStopCheck(context, 500);
-            return true;
-        }
-        return false;
+        centerX = box[0] + box[2] / 2;
+        centerY = box[1] + box[3] / 2;
+        boxText = string.Join(",", box);
+        return true;
+    }
+
+    /// <summary>点击并将重复点击送入任务卡死循环监控。</summary>
+    private static void ClickWithLoopDetection<T>(T context, int x, int y, string actionName) where T : IMaaContext
+    {
+        context.ClickWithProgress(x, y);
+        ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionClick(actionName, x, y);
     }
 
     /// <summary>竖直拖动步数</summary>

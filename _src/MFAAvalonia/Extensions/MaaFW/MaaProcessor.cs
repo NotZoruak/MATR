@@ -433,6 +433,14 @@ public class MaaProcessor
         _recoveryMonitor.RecordActivity(_recoveryClock.Elapsed);
     }
 
+    /// <summary>记录自定义动作中的重复点击，供卡死循环监控识别。</summary>
+    public void RecordCustomActionClick(string actionName, int x, int y)
+    {
+        var now = _recoveryClock.Elapsed;
+        _recoveryMonitor.FeedAction(actionName, "Click", x, y, now);
+        _recoveryMonitor.RecordActivity(now);
+    }
+
     /// <summary>记录重启阶段事件，同时写入文件日志和实时日志面板。</summary>
     public void LogRestartEvent(string category, string message, bool isWarning)
     {
