@@ -2021,21 +2021,25 @@
       "param": {
         "any_of": [
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [745, 403, 1, 136],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [745, 403, 1, 136],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           },
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [802, 403, 1, 137],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [802, 403, 1, 137],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           }
         ]
@@ -2057,21 +2061,25 @@
       "param": {
         "all_of": [
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [745, 403, 1, 136],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [745, 403, 1, 136],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           },
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [802, 403, 1, 137],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [802, 403, 1, 137],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           }
         ]
