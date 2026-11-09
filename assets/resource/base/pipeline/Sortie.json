@@ -63,9 +63,11 @@
         "threshold": [0.97]
       }
     },
+    "pre_delay": 0,
+    "post_delay": 0,
     "timeout": 2500,
     "next": ["S_RecognizeResourcePoint"],
-    "on_error": ["S_IsTrainingApplication"]
+    "on_error": ["IsTrainingApplication", "S_DetectWhereAmI"]
   },
   "S_RecognizeResourcePoint": {
     "recognition": {
@@ -1868,53 +1870,6 @@
     "repeat": 3,
     "repeat_delay": 500,
     "next": ["S_DetectWhereAmI"]
-  },
-  "S_IsTrainingApplication": {
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [197, 600, 52, 26]
-      }
-    },
-    "repeat": 10,
-    "repeat_delay": 500,
-    "next": ["S_ClickTrainingApplication", "S_CancelTrainingApplication"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_ClickTrainingApplication": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [96, 558, 54, 38],
-        "template": "Common/修行申请_狐之助.png",
-        "green_mask": true,
-        "threshold": [0.97]
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [96, 558, 54, 38]
-      }
-    },
-    "next": ["S_CancelTrainingApplication", "S_ClickTrainingApplication"],
-    "on_error": ["S_DetectWhereAmI"]
-  },
-  "S_CancelTrainingApplication": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [460, 587, 69, 37],
-        "expected": "取消"
-      }
-    },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [460, 587, 69, 37]
-      }
-    },
-    "next": ["S_CancelTrainingApplication", "S_DetectWhereAmI"]
   },
   "S_Boss_E5_R3_2": {
     "enabled": false,

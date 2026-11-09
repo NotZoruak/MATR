@@ -28,7 +28,7 @@
     "recognition": {
       "type": "TemplateMatch",
       "param": {
-        "roi": [1037, 438, 206, 76],
+        "roi": [1131, 438, 112, 98],
         "template": "Common/修行书信.png",
         "green_mask": true,
         "threshold": [0.95]
@@ -74,7 +74,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [947, 533, 67, 75]
+        "target": [947, 595, 13, 13]
       }
     }
   },
@@ -89,7 +89,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [947, 533, 67, 75]
+        "target": [947, 595, 13, 13]
       }
     }
   },
@@ -104,7 +104,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [947, 533, 67, 75]
+        "target": [947, 595, 13, 13]
       }
     }
   },
@@ -119,7 +119,7 @@
     "action": {
       "type": "Click",
       "param": {
-        "target": [947, 533, 67, 75]
+        "target": [947, 595, 13, 13]
       }
     }
   },
@@ -318,7 +318,8 @@
       "param": {
         "target": [460, 587, 69, 37]
       }
-    }
+    },
+    "next": ["[Anchor]Hub"]
   },
   "IsNetworkRequestTimeout": {
     "recognition": {

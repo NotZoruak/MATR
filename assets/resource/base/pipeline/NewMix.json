@@ -117,8 +117,8 @@
       }
     },
     "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["NM_IsFilterForMix", "NM_DetectWhereAmI"]
+    "next": ["NM_IsFilterForMix", "NM_OpenFilterForMix"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_IsFilterForMix": {
     "recognition": {
@@ -134,7 +134,6 @@
         "target": [754, 137, 94, 27]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSwordHub"]
   },
   "NM_FilterSwordHub": {
@@ -158,7 +157,6 @@
         "target": [235, 217, 83, 27]
       }
     },
-    "post_delay": 200,
     "next": [
       "NM_FilterSword2",
       "NM_FilterSword3",
@@ -178,7 +176,6 @@
         "target": [419, 218, 66, 30]
       }
     },
-    "post_delay": 200,
     "next": [
       "NM_FilterSword3",
       "NM_FilterSword4",
@@ -197,7 +194,6 @@
         "target": [596, 218, 56, 27]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword4", "NM_FilterSword5", "NM_FilterSword6", "NM_FilterSword7", "NM_FilterConfirmForMix"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -209,7 +205,6 @@
         "target": [772, 215, 63, 32]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword5", "NM_FilterSword6", "NM_FilterSword7", "NM_FilterConfirmForMix"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -221,7 +216,6 @@
         "target": [241, 289, 74, 33]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword6", "NM_FilterSword7", "NM_FilterConfirmForMix"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -233,7 +227,6 @@
         "target": [423, 290, 52, 31]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword7", "NM_FilterConfirmForMix"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -245,7 +238,6 @@
         "target": [588, 287, 68, 34]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterConfirmForMix"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -258,7 +250,6 @@
       }
     },
     "action": {"type": "Click"},
-    "post_delay": 200,
     "next": ["NM_SelectMixTarget"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -345,7 +336,6 @@
         "target": [1060, 403, 1, 1]
       }
     },
-    "post_delay": 1000,
     "next": ["NM_IsInMailbox", "NM_OpenMailbox"],
     "on_error": ["NM_DetectWhereAmI"]
   },
@@ -386,7 +376,6 @@
         "target": [753, 145, 101, 26]
       }
     },
-    "post_delay": 200,
     "next": ["NM_ClickItemTypeForMail"]
   },
   "NM_ClickItemTypeForMail": {
@@ -396,7 +385,6 @@
         "target": [956, 285, 112, 36]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSwordHubForMail"]
   },
   "NM_FilterSwordHubForMail": {
@@ -419,7 +407,6 @@
         "target": [235, 217, 83, 27]
       }
     },
-    "post_delay": 200,
     "next": [
       "NM_FilterSword2ForMail",
       "NM_FilterSword3ForMail",
@@ -438,7 +425,6 @@
         "target": [419, 218, 66, 30]
       }
     },
-    "post_delay": 200,
     "next": [
       "NM_FilterSword3ForMail",
       "NM_FilterSword4ForMail",
@@ -456,7 +442,6 @@
         "target": [596, 218, 56, 27]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword4ForMail", "NM_FilterSword5ForMail", "NM_FilterSword6ForMail", "NM_FilterSword7ForMail", "NM_FilterConfirmForMail"]
   },
   "NM_FilterSword4ForMail": {
@@ -467,7 +452,6 @@
         "target": [772, 215, 63, 32]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword5ForMail", "NM_FilterSword6ForMail", "NM_FilterSword7ForMail", "NM_FilterConfirmForMail"]
   },
   "NM_FilterSword5ForMail": {
@@ -478,7 +462,6 @@
         "target": [241, 289, 74, 33]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword6ForMail", "NM_FilterSword7ForMail", "NM_FilterConfirmForMail"]
   },
   "NM_FilterSword6ForMail": {
@@ -489,7 +472,6 @@
         "target": [423, 290, 52, 31]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterSword7ForMail", "NM_FilterConfirmForMail"]
   },
   "NM_FilterSword7ForMail": {
@@ -500,7 +482,6 @@
         "target": [588, 287, 68, 34]
       }
     },
-    "post_delay": 200,
     "next": ["NM_FilterConfirmForMail"]
   },
   "NM_FilterConfirmForMail": {
@@ -528,13 +509,11 @@
         "upper": [133, 173, 24]
       }
     },
-    "pre_delay": 500,
     "action": {"type": "Click"},
-    "post_delay": 500,
-    "next": ["NM_ClaimMailboxHub"]
-  },
-  "NM_ClaimMailboxHub": {
-    "next": ["NM_CloseClaimMailboxPopup", "NM_DetectWhereAmI"]
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["NM_CloseClaimMailboxPopup"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_IsClaimMailboxPopup": {
     "recognition": {
@@ -548,10 +527,12 @@
   },
   "NM_CloseClaimMailboxPopup": {
     "recognition": {
-      "type": "OCR",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [1234, 11, 34, 36],
-        "expected": ["×", "x", "X"]
+        "roi": [1225, 6, 52, 51],
+        "template": ["Common/黑色关闭按钮1.png"],
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "action": {"type": "Click"},
@@ -559,7 +540,8 @@
       "time": 100,
       "target": [1234, 11, 34, 36]
     },
-    "next": ["NM_ClaimMailboxHub"]
+    "next": ["NM_CloseClaimMailboxPopup", "NM_IsSelectingMixTarget"],
+    "on_error": ["NM_DetectWhereAmI"]
   },
   "NM_IsMailboxEmpty": {
     "recognition": {
@@ -669,7 +651,6 @@
       }
     },
     "action": {"type": "Click"},
-    "post_delay": 200,
     "next": ["NM_IsMixMaterialSelection"]
   },
   "NM_IsMixLevelCompleted": {
@@ -710,7 +691,6 @@
       }
     },
     "action": {"type": "Click"},
-    "post_delay": 200,
     "next": ["NM_ConfirmMix", "NM_ClickMix"],
     "on_error": ["NM_DetectWhereAmI"]
   },

@@ -33,6 +33,9 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
     private const int RarityX = 246;
     private const int RarityY = 211;
     private static readonly int[] RarityNameRoi = [293, 240, 140, 28];
+    private static readonly int[] RarityRecoveryClickRegion = [1269, 124, 8, 7];
+    private const int RarityRecoveryClickLimit = 5;
+    private const int RarityRecoveryClickIntervalMilliseconds = 500;
     private const int LevelX = 415;
     private const int LevelY = 299;
     private const int LevelWidth = 20;
@@ -52,10 +55,6 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
     private const int BottomX = 1112;
     private const int BottomY = 686;
     private const int MaxPageScrolls = 20;
-    /// <summary>画面处于白屏过渡时，稀有度色值的最大重读次数。</summary>
-    private const int ScreenReadyAttempts = 12;
-    /// <summary>画面处于白屏过渡时，两次稀有度色值读取之间的间隔毫秒数。</summary>
-    private const int ScreenReadyIntervalMilliseconds = 200;
 
     public string Name { get; set; } = nameof(MixGreedySelectionAction);
 
@@ -374,31 +373,22 @@ public sealed class MixGreedySelectionAction : IMaaCustomAction
         return MixGreedySelectionDecision.TryGetRarity(pixel.R, pixel.G, pixel.B, out rarity);
     }
 
-    /// <summary>习合完成返回选刀画面时会短暂出现白屏过渡，整帧被白色蒙层冲淡，色值读取必然失败；此时等待画面恢复后再读。</summary>
+    /// <summary>无法读取稀有度时，尝试点击推进习合演出，每次点击后重新读取。</summary>
     private static bool TryReadRarityAfterScreenReady<T>(T context, out int rarity) where T : IMaaContext
     {
-        for (var attempt = 1; attempt <= ScreenReadyAttempts; attempt++)
+        for (var clicks = 0; ; clicks++)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            if (TryReadRarity(context, out rarity))
-            {
-                if (attempt > 1)
-                    LoggerHelper.Info($"[习合] 画面已恢复，第 {attempt} 次读取到稀有度 {rarity}");
+            if (TryReadRarity(context, out rarity) || TryReadRarityFromSwordName(context, out rarity))
                 return true;
-            }
 
-            if (attempt == 1)
-                LoggerHelper.Info("[习合] 稀有度色值异常，画面可能处于白屏过渡，等待画面恢复");
+            if (clicks == RarityRecoveryClickLimit)
+                return false;
 
-            if (attempt < ScreenReadyAttempts)
-                ActionParamHelper.SleepWithStopCheck(context, ScreenReadyIntervalMilliseconds);
+            ClickRegion(context, RarityRecoveryClickRegion,
+                $"稀有度未读到，尝试推进习合演出（{clicks + 1}/{RarityRecoveryClickLimit}）",
+                RarityRecoveryClickIntervalMilliseconds);
         }
-
-        if (TryReadRarityFromSwordName(context, out rarity))
-            return true;
-
-        rarity = 0;
-        return false;
     }
 
     /// <summary>取色失败后，使用刀名 OCR 识别已知稀有度的刀剑。</summary>

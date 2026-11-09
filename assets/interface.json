@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.5",
+  "version": "v0.15.6-beta.1",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.5 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.6-beta.1 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -251,7 +251,7 @@
         "薙"
       ],
       "label": "刀解清仓",
-      "description": "⚠该功能测试数据较少，请在有人值守时使用（感觉不如手动刀解）。后续会全量重构以提升使用体验。\n\n 自动刀解 + 收邮箱循环，邮箱清空后任务终止。"
+      "description": "自动刀解 + 收邮箱循环，邮箱清空后任务终止。"
     },
     {
       "name": "习合",
@@ -6801,7 +6801,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword1": {"enabled": true}
+            "D_FilterSword1": {"enabled": true},
+            "D_FilterSword1ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -6815,7 +6816,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword2": {"enabled": true}
+            "D_FilterSword2": {"enabled": true},
+            "D_FilterSword2ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -6829,7 +6831,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword3": {"enabled": true}
+            "D_FilterSword3": {"enabled": true},
+            "D_FilterSword3ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -6843,7 +6846,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword4": {"enabled": true}
+            "D_FilterSword4": {"enabled": true},
+            "D_FilterSword4ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -6857,7 +6861,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword5": {"enabled": true}
+            "D_FilterSword5": {"enabled": true},
+            "D_FilterSword5ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -6871,7 +6876,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword6": {"enabled": true}
+            "D_FilterSword6": {"enabled": true},
+            "D_FilterSword6ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -6885,7 +6891,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "D_FilterSword7": {"enabled": true}
+            "D_FilterSword7": {"enabled": true},
+            "D_FilterSword7ForMailbox": {"enabled": true}
           }
         }
       ],
@@ -7122,9 +7129,6 @@
             "E_SmartWait": {"enabled": true},
             "E_ClickBackToHome": {
               "next": ["E_SmartWait"]
-            },
-            "E_VerifyLeftMenu": {
-              "on_error": ["E_SmartWait"]
             }
           }
         },
