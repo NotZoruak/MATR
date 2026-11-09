@@ -7129,9 +7129,6 @@
             "E_SmartWait": {"enabled": true},
             "E_ClickBackToHome": {
               "next": ["E_SmartWait"]
-            },
-            "E_VerifyLeftMenu": {
-              "on_error": ["E_SmartWait"]
             }
           }
         },
