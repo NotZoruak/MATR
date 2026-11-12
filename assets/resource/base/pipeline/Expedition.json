@@ -71,10 +71,6 @@
       }
     },
     "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [0, 629, 136, 91]
-    },
     "next": ["E_IsTeamStatusPanel", "Expedition"]
   },
   "E_CheckTeam1": {
@@ -1654,7 +1650,67 @@
       "time": 200,
       "target": [112, 79, 580, 30]
     },
-    "next": ["E_OpenTeamRecordForUse"],
+    "next": ["E_FlowerConfirmTeam1", "E_OpenTeamRecordForUse"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [210, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam3": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [332, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam4": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [453, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam5": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [576, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
     "on_error": ["E_FlowerBattleHub"]
   },
   "E_FlowerIsSwordDropColor": {
@@ -2021,21 +2077,25 @@
       "param": {
         "any_of": [
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [745, 403, 1, 136],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [745, 403, 1, 136],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           },
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [802, 403, 1, 137],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [802, 403, 1, 137],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           }
         ]
@@ -2057,21 +2117,25 @@
       "param": {
         "all_of": [
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [745, 403, 1, 136],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [745, 403, 1, 136],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           },
           {
-            "type": "ColorMatch",
-            "param": {
-              "roi": [802, 403, 1, 137],
-              "lower": [253, 238, 186],
-              "upper": [253, 238, 186],
-              "count": 25
+            "recognition": {
+              "type": "ColorMatch",
+              "param": {
+                "roi": [802, 403, 1, 137],
+                "lower": [253, 238, 186],
+                "upper": [253, 238, 186],
+                "count": 25
+              }
             }
           }
         ]

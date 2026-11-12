@@ -1600,7 +1600,19 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["HV_DisableAutoMarch", "HV_EnableAutoMarch", "HV_ClickAutoMarchNoOrYesDelegate", "HV_CaptainHub"]
+    "next": ["HV_ConfirmTeam", "HV_DisableAutoMarch", "HV_EnableAutoMarch", "HV_ClickAutoMarchNoOrYesDelegate", "HV_CaptainHub"]
+  },
+  "HV_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["HV_IsTeamSelect"],
+    "on_error": ["HV_DetectWhereAmI"]
   },
   "HV_DisableAutoMarch": {
     "enabled": true,

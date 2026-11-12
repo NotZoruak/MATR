@@ -57,7 +57,7 @@ public class MaaProcessor
     ];
     private static readonly int[][] FormationTeamVerifyRois =
     [
-        [172, 81, 17, 9], [284, 77, 18, 9], [431, 80, 16, 8], [555, 78, 16, 8], [675, 79, 16, 8],
+        [89, 109, 1, 1], [210, 109, 1, 1], [332, 109, 1, 1], [453, 109, 1, 1], [576, 109, 1, 1],
     ];
     private static readonly int[][] FormationRecordSlotClickCoords =
     [
@@ -431,6 +431,14 @@ public class MaaProcessor
     public void RecordCustomActionActivity()
     {
         _recoveryMonitor.RecordActivity(_recoveryClock.Elapsed);
+    }
+
+    /// <summary>记录自定义动作中的重复点击，供卡死循环监控识别。</summary>
+    public void RecordCustomActionClick(string actionName, int x, int y)
+    {
+        var now = _recoveryClock.Elapsed;
+        _recoveryMonitor.FeedAction(actionName, "Click", x, y, now);
+        _recoveryMonitor.RecordActivity(now);
     }
 
     /// <summary>记录重启阶段事件，同时写入文件日志和实时日志面板。</summary>
@@ -4698,12 +4706,12 @@ public class MaaProcessor
         };
     }
 
-    /// <summary>FC_ClickTeam 的常驻首选判断：目标部队在远征中时直接结束本次编成</summary>
+    /// <summary>目标部队在远征中时直接结束本次编成。</summary>
     private const string FormationTeamExpeditionCheck = "FC_IsTeamOnExpedition";
 
-    /// <summary>构造 FC_ClickTeam 的 next，常驻判断固定位于首位</summary>
+    /// <summary>构造选队后继：先检查是否仍未选中，再判断远征状态与预设业务。</summary>
     private static JArray BuildClickTeamNext(params string[] presetFlow) =>
-        new([FormationTeamExpeditionCheck, .. presetFlow]);
+        new(["FC_ConfirmTeam", FormationTeamExpeditionCheck, .. presetFlow]);
 
     /// <summary>将自定编队任务选择的预设转换为本次运行所需的 pipeline override。</summary>
     private void ApplyFormationPresetOverride(ref MaaToken taskModels, DragItemViewModel task, int? formationPresetId)
@@ -4741,14 +4749,7 @@ public class MaaProcessor
                     ["param"] = new JObject { ["target"] = new JArray(FormationTeamClickCoords[team - 1]) },
                 },
             },
-            ["FC_VerifySelectedTeam1"] = new JObject
-            {
-                ["recognition"] = new JObject
-                {
-                    ["param"] = new JObject { ["roi"] = new JArray(FormationTeamVerifyRois[team - 1]) },
-                },
-            },
-            ["FC_VerifySelectedTeam2"] = new JObject
+            ["FC_ConfirmTeam"] = new JObject
             {
                 ["recognition"] = new JObject
                 {
@@ -6191,7 +6192,8 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.RestartGameAction(this));
             tasker.Resource.Register(new Custom.DragCaptainAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerAction());
-            tasker.Resource.Register(new Custom.GoalPtCheckAction());
+            tasker.Resource.Register(new Custom.GoalPtCheckRecognition());
+            tasker.Resource.Register(new Custom.TacticalTargetSwordRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimerRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimeTracker());
             tasker.Resource.Register(new Custom.SmartWaitAction());

@@ -28,7 +28,14 @@ public class FormationConfigAction : IMaaCustomAction
                 return false;
             }
 
-            var presets = ConfigurationManager.CurrentInstance.GetValue<List<FormationPreset>>(ConfigurationKeys.FormationPresets, []);
+            var ownerProcessor = ActionParamHelper.ResolveOwnerProcessor(context);
+            if (ownerProcessor == null)
+            {
+                LoggerHelper.Error("[FormationConfig] 无法确定任务所属实例，任务失败");
+                return false;
+            }
+
+            var presets = ownerProcessor.InstanceConfiguration.GetValue<List<FormationPreset>>(ConfigurationKeys.FormationPresets, []);
             var preset = presets?.FirstOrDefault(p => p.Id == presetId);
             if (preset == null)
             {

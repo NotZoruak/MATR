@@ -33,6 +33,14 @@ public class FormationEquipStateMachine : IMaaCustomAction
         [364, 346, 111, 44],
     ];
 
+    /// <summary>刀装槽位是否存在的 OCR 区域（槽 1-3）</summary>
+    private static readonly int[][] EquipSlotPresenceRois =
+    [
+        [290, 154, 24, 25],
+        [290, 252, 24, 25],
+        [290, 351, 24, 25],
+    ];
+
     /// <summary>刀装区空槽位检测区域</summary>
     private static readonly int[] EquipAreaRoi = [322, 136, 57, 256];
 
@@ -58,7 +66,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
     private static readonly int[] UnassignedFilterRoi = [1020, 97, 24, 24];
 
     /// <summary>宝物列表 OCR 区域</summary>
-    private static readonly int[] TreasureListRoi = [950, 172, 131, 515];
+    private static readonly int[] TreasureListRoi = [950, 172, 131, 447];
 
     /// <summary>当前位识别的最大尝试次数（进入装备页与翻页瞬间可能读不到前后位编号）</summary>
     private const int SlotDetectAttempts = 3;
@@ -118,7 +126,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
                     return false;
                 for (int retry = 0; !slotMissing && retry < 3 && IsEquipEmpty(context, cur); retry++)
                 {
-                    LoggerHelper.Warning($"[FormationEquipStateMachine] 槽位{cur} 装备确认失败（槽位为空），重新装备（第 {retry + 1} 轮）");
+                    LoggerHelper.Info($"[FormationEquipStateMachine] 第{cur}位刀剑男士装备确认未通过，重新配置（第 {retry + 1} 轮）");
                     if (!ConfigureCurrent(context, cur, out slotMissing))
                         return false;
                 }
@@ -249,27 +257,35 @@ public class FormationEquipStateMachine : IMaaCustomAction
     private bool ConfigureCurrent<T>(T context, int pos, out bool slotMissing) where T : IMaaContext
     {
         slotMissing = false;
+        bool configuredEquipment = false;
         FormationContext.CurrentSlot = pos;
-        LoggerHelper.Info($"[FormationEquipStateMachine] 配置槽位{pos} 装备");
+        LoggerHelper.Info($"[FormationEquipStateMachine] 配置第{pos}位刀剑男士的装备");
 
         // 刀装：按切分数量配置 0-3 个槽位
         var equipList = FormationContext.SplitEquip(FormationContext.Equips[pos - 1]);
         for (int slot = 0; slot < equipList.Count && slot < 3; slot++)
         {
+            if (!IsTextAt(context, EquipSlotPresenceRois[slot], "兵"))
+            {
+                slotMissing = true;
+                LoggerHelper.Info($"[FormationEquipStateMachine] 第{pos}位刀剑男士没有第{slot + 1}个刀装槽，停止后续刀装配置");
+                break;
+            }
+
             if (!ClickEquipSlot(context, slot))
             {
-                // 该刀无此刀装槽（如短刀 1 槽、胁差 2 槽）：停止配置后续槽位，继续马匹流程
+                // 刀装列表持续未展开时由任务卡死监控处理
                 slotMissing = true;
-                LoggerHelper.Warning($"[FormationEquipStateMachine] 槽位{pos} 刀装槽{slot + 1} 无法打开刀装列表，视为无此槽位，停止后续刀装配置");
                 break;
             }
             if (!FormationEquipSelectAction.SelectEquip(context, pos, slot + 1))
             {
                 // 目标刀装不存在（列表已到底）：停止配置后续槽位，继续马匹流程
                 slotMissing = true;
-                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 刀装槽{slot + 1} 未找到目标刀装，停止后续刀装配置");
+                LoggerHelper.Error($"[FormationEquipStateMachine] 第{pos}位刀剑男士的刀装槽{slot + 1} 未找到目标刀装，停止后续刀装配置");
                 break;
             }
+            configuredEquipment = true;
         }
 
         // 马匹：非「无」时配置
@@ -279,18 +295,22 @@ public class FormationEquipStateMachine : IMaaCustomAction
             {
                 // 马匹列表打不开：跳过马匹配置，继续下一成员，避免流程卡死
                 slotMissing = true;
-                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 马匹列表未确认，跳过马匹配置");
+                LoggerHelper.Error($"[FormationEquipStateMachine] 第{pos}位刀剑男士的马匹列表未确认，跳过马匹配置");
             }
             else if (!EnsureUnassignedFilter(context))
             {
                 slotMissing = true;
-                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 马匹未装备筛选状态未能切换，跳过马匹配置");
+                LoggerHelper.Error($"[FormationEquipStateMachine] 第{pos}位刀剑男士的马匹未装备筛选状态未能切换，跳过马匹配置");
             }
             else if (!FormationHorseSelectAction.SelectHorse(context, pos))
             {
                 // 目标马匹不存在（列表已到底）：跳过马匹配置，继续下一成员，避免流程卡死
                 slotMissing = true;
-                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 未找到目标马匹「{FormationContext.Horses[pos - 1]}」，跳过马匹配置");
+                LoggerHelper.Error($"[FormationEquipStateMachine] 第{pos}位刀剑男士未找到目标马匹「{FormationContext.Horses[pos - 1]}」，跳过马匹配置");
+            }
+            else
+            {
+                configuredEquipment = true;
             }
         }
 
@@ -301,59 +321,67 @@ public class FormationEquipStateMachine : IMaaCustomAction
                 || !SelectTreasure(context, pos))
             {
                 slotMissing = true;
-                LoggerHelper.Error($"[FormationEquipStateMachine] 槽位{pos} 宝物配置失败");
+                LoggerHelper.Error($"[FormationEquipStateMachine] 第{pos}位刀剑男士的宝物配置失败");
+            }
+            else
+            {
+                configuredEquipment = true;
             }
         }
+
+        if (configuredEquipment)
+            ActionParamHelper.SleepWithStopCheck(context, 500);
 
         return true;
     }
 
-    /// <summary>点击指定刀装槽位并确认刀装列表打开（未确认则重试 3 次，避免对不存在的槽位反复点击）</summary>
+    /// <summary>持续点击指定刀装槽位，直到 OCR 确认刀装列表打开。</summary>
     private bool ClickEquipSlot<T>(T context, int index) where T : IMaaContext
     {
         var coords = EquipSlotCoords[index];
-        for (int attempt = 0; attempt < 3; attempt++)
+        while (true)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            ClickRect(context, coords);
-            ActionParamHelper.SleepWithStopCheck(context, 500);
+            ClickRect(context, coords, "FormationEquipStateMachine.OpenEquipList");
 
             if (IsTextAt(context, EquipListConfirmRoi, "刀装"))
+            {
+                ActionParamHelper.SleepWithStopCheck(context, 500);
                 return true;
+            }
         }
-        return false;
     }
 
-    /// <summary>点击马匹槽位并确认马匹列表打开（未确认则重试）</summary>
+    /// <summary>持续点击马匹槽位，直到 OCR 确认马匹列表打开。</summary>
     private bool ClickHorseSlot<T>(T context) where T : IMaaContext
     {
-        for (int attempt = 0; attempt < 8; attempt++)
+        while (true)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            ClickRect(context, HorseSlotCoords);
-            ActionParamHelper.SleepWithStopCheck(context, 500);
+            ClickRect(context, HorseSlotCoords, "FormationEquipStateMachine.OpenHorseList");
 
             if (IsTextAt(context, HorseListConfirmRoi, "马"))
+            {
+                ActionParamHelper.SleepWithStopCheck(context, 500);
                 return true;
+            }
         }
-        LoggerHelper.Error("[FormationEquipStateMachine] 马匹列表未确认");
-        return false;
     }
 
-    /// <summary>点击宝物槽位并确认宝物页面打开。</summary>
+    /// <summary>持续点击宝物槽位，直到 OCR 确认宝物列表打开。</summary>
     private bool ClickTreasureSlot<T>(T context) where T : IMaaContext
     {
-        for (int attempt = 0; attempt < 3; attempt++)
+        while (true)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            ClickRect(context, TreasureSlotCoords);
-            ActionParamHelper.SleepWithStopCheck(context, 500);
+            ClickRect(context, TreasureSlotCoords, "FormationEquipStateMachine.OpenTreasureList");
 
             if (IsOnlyRecTextAt(context, TreasureListConfirmRoi, "宝物"))
+            {
+                ActionParamHelper.SleepWithStopCheck(context, 500);
                 return true;
+            }
         }
-        LoggerHelper.Error("[FormationEquipStateMachine] 宝物列表未确认");
-        return false;
     }
 
     /// <summary>反复检查并点击筛选标记，直到马匹或宝物列表启用仅显示未装备筛选。</summary>
@@ -382,14 +410,7 @@ public class FormationEquipStateMachine : IMaaCustomAction
             target,
             TreasureListRoi,
             ListOcrScan.EquipScroll,
-            (_, box) =>
-            {
-                var cx = box[0] + box[2] / 2;
-                var cy = box[1] + box[3] / 2;
-                context.ClickWithProgress(cx, cy);
-                ActionParamHelper.SleepWithStopCheck(context, 500);
-                return ListOcrScan.ClickConfirm(context, doubleClick: true);
-            },
+            (_, box) => ListOcrScan.ClickTargetAndConfirm(context, box, "FormationTreasureSelect"),
             "FormationTreasureSelect");
     }
 
@@ -461,10 +482,12 @@ public class FormationEquipStateMachine : IMaaCustomAction
     }
 
     /// <summary>计算区域中心并点击</summary>
-    private static void ClickRect<T>(T context, int[] coords) where T : IMaaContext
+    private static void ClickRect<T>(T context, int[] coords, string? loopDetectionName = null) where T : IMaaContext
     {
         int cx = coords[0] + coords[2] / 2;
         int cy = coords[1] + coords[3] / 2;
         context.ClickWithProgress(cx, cy);
+        if (loopDetectionName != null)
+            ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionClick(loopDetectionName, cx, cy);
     }
 }

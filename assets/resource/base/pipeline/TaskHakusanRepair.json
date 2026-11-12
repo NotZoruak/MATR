@@ -283,7 +283,19 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["THR_IsDamagedSword", "THR_LogNoDamagedSword"]
+    "next": ["THR_ConfirmTeam", "THR_IsDamagedSword", "THR_LogNoDamagedSword"]
+  },
+  "THR_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["THR_IsTeamSelect"],
+    "on_error": ["THR_Hub"]
   },
   "THR_IsDamagedSword": {
     "recognition": {

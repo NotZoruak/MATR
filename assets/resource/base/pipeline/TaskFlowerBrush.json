@@ -170,7 +170,19 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["TF_DissolveHub"]
+    "next": ["TF_ConfirmTeam", "TF_DissolveHub"]
+  },
+  "TF_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TF_IsTeamSelect"],
+    "on_error": ["TF_Hub"]
   },
   "TF_DissolveHub": {
     "next": ["TF_DissolveCheck", "TF_CheckFatigue", "TF_ClickSortieNow"],

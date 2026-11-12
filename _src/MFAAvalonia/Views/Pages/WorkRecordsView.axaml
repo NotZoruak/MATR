@@ -391,7 +391,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- 任务收获：资源与刀剑掉落 -->
+                <!-- 任务收获：资源、刀剑掉落与跳过剪影 -->
                 <Border Background="{DynamicResource SukiCardBackground}"
                         BorderBrush="{DynamicResource SukiControlBorderBrush}"
                         BorderThickness="1"
@@ -464,6 +464,21 @@
                                                 <Run Text="：" />
                                                 <Run Text="{Binding DropsText}" />
                                             </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <StackPanel Spacing="4"
+                                        IsVisible="{Binding SelectedHasSkippedSilhouettes}"
+                                        Margin="0,4,0,0">
+                                <TextBlock Classes="RecordSectionTitle" Text="{Binding SelectedSkippedSilhouetteTotalText}" />
+                                <ItemsControl ItemsSource="{Binding SelectedSkippedSilhouetteItems}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Classes="RecordBody" Text="{Binding}" Margin="0,0,12,2" TextWrapping="Wrap" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

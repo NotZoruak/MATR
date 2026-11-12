@@ -131,7 +131,19 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_CheckTimerExpired", "HP_EnableAutoMarch", "HP_CaptainHub"]
+    "next": ["HP_ConfirmTeam", "E_CheckTimerExpired", "HP_EnableAutoMarch", "HP_CaptainHub"]
+  },
+  "HP_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["HP_IsTeamSelect"],
+    "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_EnableAutoMarch": {
     "recognition": {
@@ -201,26 +213,14 @@
   "HP_CheckGoalPt": {
     "enabled": false,
     "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
-      }
-    },
-    "action": {
       "type": "Custom",
-      "custom_action": "GoalPtCheckAction",
-      "custom_action_param": {
-        "roi": [888, 198, 184, 32]
+      "param": {
+        "custom_recognition": "GoalPtCheckRecognition",
+        "custom_recognition_param": {
+          "roi": [888, 198, 184, 32]
+        }
       }
     },
-    "post_delay": 300,
-    "next": ["HP_SelectDifficulty"],
-    "on_error": ["HP_CompleteCurrentTaskAfterGoalPt"]
-  },
-  "HP_CompleteCurrentTaskAfterGoalPt": {
     "action": {
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",

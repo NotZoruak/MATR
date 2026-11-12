@@ -80,6 +80,7 @@ public sealed class WorkRecord
         || ReturnHomeCount > 0
         || ResourceGains.Count > 0
         || SwordDrops.Count > 0
+        || SkippedSilhouettes.Count > 0
         || LogisticsCounts.Count > 0
         || SpecialEvents.Count > 0;
 
@@ -123,6 +124,9 @@ public sealed class WorkRecord
 
     /// <summary>刀剑掉落明细</summary>
     public List<SwordDrop> SwordDrops { get; } = [];
+
+    /// <summary>可靠识别为非目标并刷新跳过的剪影刀名。</summary>
+    public List<string> SkippedSilhouettes { get; } = [];
 
     /// <summary>后勤记录：行为词 → 次数（[后勤] 前缀词条）</summary>
     public Dictionary<string, int> LogisticsCounts { get; } = [];

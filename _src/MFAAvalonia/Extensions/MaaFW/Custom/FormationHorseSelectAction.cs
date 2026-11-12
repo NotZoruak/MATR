@@ -42,34 +42,18 @@ public class FormationHorseSelectAction : IMaaCustomAction
         string target = FormationContext.Horses[pos - 1];
         if (string.IsNullOrEmpty(target) || target == "无")
         {
-            LoggerHelper.Info($"[FormationHorseSelect] 槽位{pos} 马匹为「无」，跳过");
+            LoggerHelper.Info($"[FormationHorseSelect] 第{pos}位刀剑男士的马匹为「无」，跳过");
             return true;
         }
 
-        LoggerHelper.Info($"[FormationHorseSelect] 槽位{pos} 寻找马匹: {target}");
+        LoggerHelper.Info($"[FormationHorseSelect] 第{pos}位刀剑男士寻找马匹：{target}");
 
         return ListOcrScan.ScanAndClick(
             context,
             target,
             ListOcrScan.EquipListRoi,
             ListOcrScan.EquipScroll,
-            (_, box) =>
-            {
-                // 第一次点击：命中马匹位置中心；未出现「确定」时重试再点，最多 8 次
-                int cx = box[0] + box[2] / 2;
-                int cy = box[1] + box[3] / 2;
-                for (int attempt = 0; attempt < 8; attempt++)
-                {
-                    context.ClickWithProgress(cx, cy);
-                    ActionParamHelper.SleepWithStopCheck(context, 500);
-
-                    // 第二次点击：OCR 找到「确定」后双击确认按钮
-                    if (ListOcrScan.ClickConfirm(context, doubleClick: true))
-                        return true;
-                }
-                LoggerHelper.Error("[FormationHorseSelect] 重试后仍未找到「确定」按钮");
-                return false;
-            },
+            (_, box) => ListOcrScan.ClickTargetAndConfirm(context, box, "FormationHorseSelect"),
             // 马匹同样精确匹配，仅「高楯黑」允许 OCR 漏识「楯」；否则祝一号/祝十号会互相误选
             "FormationHorseSelect",
             SwordNameMatcher.IsHorseMatch);

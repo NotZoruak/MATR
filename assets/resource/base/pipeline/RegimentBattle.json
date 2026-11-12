@@ -122,26 +122,14 @@
   "RB_CheckGoalPt": {
     "enabled": false,
     "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [427, 69, 388, 52],
-        "template": ["Activity/陆联.png", "Activity/海联.png"],
-        "green_mask": true,
-        "threshold": [0.97]
-      }
-    },
-    "action": {
       "type": "Custom",
-      "custom_action": "GoalPtCheckAction",
-      "custom_action_param": {
-        "roi": [885, 206, 185, 33]
+      "param": {
+        "custom_recognition": "GoalPtCheckRecognition",
+        "custom_recognition_param": {
+          "roi": [885, 206, 185, 33]
+        }
       }
     },
-    "post_delay": 300,
-    "next": ["RB_IsRainbowBattle", "RB_SelectDifficulty"],
-    "on_error": ["RB_CompleteCurrentTaskAfterGoalPt"]
-  },
-  "RB_CompleteCurrentTaskAfterGoalPt": {
     "action": {
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
@@ -189,6 +177,7 @@
     "repeat": 2,
     "repeat_delay": 500,
     "next": [
+      "RB_ConfirmTeam",
       "E_CheckTimerExpired",
       "RB_CloseImmediateSortiePopup",
       "RB_DisableAutoMarch",
@@ -196,6 +185,18 @@
       "RB_ClickAutoMarchConfirm",
       "RB_CaptainHub"
     ]
+  },
+  "RB_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["RB_IsTeamSelect"],
+    "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_CloseImmediateSortiePopup": {
     "recognition": {

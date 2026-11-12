@@ -56,6 +56,9 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(SelectedHasSwordDrops))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropGroups))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropTotalText))]
+    [NotifyPropertyChangedFor(nameof(SelectedHasSkippedSilhouettes))]
+    [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteTotalText))]
+    [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteItems))]
     [NotifyPropertyChangedFor(nameof(SelectedHasOutcomes))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsSummaryText))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchCountText))]
@@ -138,6 +141,11 @@ public partial class WorkRecordsViewModel : ViewModelBase
 
     /// <summary>刀种展示顺序</summary>
     private static readonly string[] TypeOrder = WorkRecordBuilder.SwordTypeOrder;
+
+    /// <summary>刀剑名称到刀种的映射，用于跳过剪影按刀种排序。</summary>
+    private static readonly Dictionary<string, string> SwordTypeByName = SwordCatalogService
+        .Load(Path.Combine(AppPaths.ResourceDirectory, "base", "SwordBookCatalog.json"))
+        .ToDictionary(entry => entry.BaseName, entry => entry.Type, StringComparer.Ordinal);
 
     /// <summary>资源展示顺序</summary>
     private static readonly string[] ResourceOrder =
@@ -502,8 +510,30 @@ public partial class WorkRecordsViewModel : ViewModelBase
         ? "刀剑掉落"
         : $"刀剑掉落（×{SelectedRecord.SwordDrops.Count}）";
 
+    /// <summary>是否有刷新跳过的剪影。</summary>
+    public bool SelectedHasSkippedSilhouettes => SelectedRecord?.SkippedSilhouettes.Count > 0;
+
+    public string SelectedSkippedSilhouetteTotalText => SelectedRecord is null
+        ? "跳过剪影" : $"跳过剪影（×{SelectedRecord.SkippedSilhouettes.Count}）";
+
+    /// <summary>按刀种顺序排列并合并次数，供任务收获区域自动换行。</summary>
+    public IReadOnlyList<string> SelectedSkippedSilhouetteItems => SelectedRecord?.SkippedSilhouettes
+        .Select((name, index) => (Name: name, Index: index))
+        .GroupBy(item => item.Name)
+        .Select(group => new
+        {
+            Name = group.Key,
+            Count = group.Count(),
+            FirstIndex = group.Min(item => item.Index),
+            Type = SwordTypeByName.GetValueOrDefault(group.Key, string.Empty)
+        })
+        .OrderBy(item => Array.IndexOf(TypeOrder, item.Type) is var index && index >= 0 ? index : int.MaxValue)
+        .ThenBy(item => item.FirstIndex)
+        .Select(item => $"{item.Name}（×{item.Count}）")
+        .ToArray() ?? [];
+
     /// <summary>是否有出阵收获</summary>
-    public bool SelectedHasOutcomes => SelectedHasResources || SelectedHasSwordDrops;
+    public bool SelectedHasOutcomes => SelectedHasResources || SelectedHasSwordDrops || SelectedHasSkippedSilhouettes;
 
     /// <summary>后勤摘要文本：倒计时结束、检查队伍状况和刷花属于同一组。</summary>
     public string SelectedLogisticsSummaryText

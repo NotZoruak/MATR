@@ -459,7 +459,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["FB_Dissolve"]
+    "next": ["FB_ConfirmTeam", "FB_Dissolve"]
+  },
+  "FB_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["FB_ClickTeam"]
   },
   "FB_Dissolve": {
     "next": ["FB_DissolveCheck", "FB_CheckCaptainFatigue", "FB_ClickSortieNow"],

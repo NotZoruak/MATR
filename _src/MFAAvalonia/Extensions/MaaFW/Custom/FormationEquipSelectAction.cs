@@ -52,35 +52,19 @@ public class FormationEquipSelectAction : IMaaCustomAction
         var equipList = FormationContext.SplitEquip(FormationContext.Equips[pos - 1]);
         if (slot > equipList.Count)
         {
-            LoggerHelper.Info($"[FormationEquipSelect] 槽位{pos} 刀装数不足，槽 {slot} 跳过");
+            LoggerHelper.Info($"[FormationEquipSelect] 第{pos}位刀剑男士没有第{slot}个刀装槽，跳过");
             return true;
         }
 
         string target = equipList[slot - 1];
-        LoggerHelper.Info($"[FormationEquipSelect] 槽位{pos} 刀装槽{slot} 寻找刀装: {target}");
+        LoggerHelper.Info($"[FormationEquipSelect] 第{pos}位刀剑男士的刀装槽{slot}寻找刀装：{target}");
 
         return ListOcrScan.ScanAndClick(
             context,
             target,
             ListOcrScan.EquipListRoi,
             ListOcrScan.EquipScroll,
-            (_, box) =>
-            {
-                // 第一次点击：命中刀装位置中心；未出现「确定」时重试再点，最多 8 次
-                int cx = box[0] + box[2] / 2;
-                int cy = box[1] + box[3] / 2;
-                for (int attempt = 0; attempt < 8; attempt++)
-                {
-                    context.ClickWithProgress(cx, cy);
-                    ActionParamHelper.SleepWithStopCheck(context, 500);
-
-                    // 第二次点击：OCR 找到「确定」后双击确认按钮
-                    if (ListOcrScan.ClickConfirm(context, doubleClick: true))
-                        return true;
-                }
-                LoggerHelper.Error("[FormationEquipSelect] 重试后仍未找到「确定」按钮");
-                return false;
-            },
+            (_, box) => ListOcrScan.ClickTargetAndConfirm(context, box, "FormationEquipSelect"),
             // 默认精确匹配：只允许字形容错，不允许一字之差命中异种刀装
             "FormationEquipSelect",
             (ocrText, expected) =>

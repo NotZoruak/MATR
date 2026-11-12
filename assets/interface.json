@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.6-beta.1",
+  "version": "v0.15.6-beta.2",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.6-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.6-beta.2 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -215,6 +215,8 @@
       "repeatable": true,
       "repeat_count": 1,
       "option": [
+        "TT_目标PT",
+        "TT_筛选目标刀剑",
         "TT_选择部队",
         "TT_选择难度",
         "TT_疲劳处理",
@@ -223,7 +225,7 @@
         "TT_同步远征"
       ],
       "label": "战术强化",
-      "description": "战术强化训练/巧克力/南瓜 活动自动化出阵。\n\n* **选择部队**：当选择的部队不符合要求时，会自动依次尝试1-5队。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "战术强化训练/巧克力/南瓜活动自动化出阵。\n\n* **达到目标PT后跳过任务**：启用后，达到设定的目标总 PT 时跳过本次任务；可选用日期计划，让目标随活动进度逐日放宽。\n* **筛选目标刀剑**：可在齿轮中搜索并选择希望保留的刀剑；可靠识别为非目标刀剑时刷新剪影。\n* **选择部队**：设置首选部队；不符合条件时自动依次尝试 1 至 5 队。\n* **选择难度**：可选初级、中级、上级，或保持当前难度。\n* **疲劳处理**：可选择不处理、自动刷花，或疲劳时停止任务。\n* **更换队长**：启用后自动更换队长。\n* **购买门票**：启用后，门票不足时自动购买补充，一次购买一张。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "刷花",
@@ -2150,6 +2152,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2183,6 +2206,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2216,6 +2260,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2249,6 +2314,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2282,6 +2368,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -2778,6 +2885,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2804,6 +2925,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2830,6 +2965,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2856,6 +3005,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2882,6 +3045,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -3240,6 +3417,117 @@
         }
       ]
     },
+    "TT_目标PT": {
+      "name": "TT_目标PT",
+      "label": "达到目标PT后跳过任务",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["TT_目标总PT", "TT_日期计划"],
+          "pipeline_override": {
+            "TT_CheckGoalPt": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "TT_目标总PT": {
+      "name": "TT_目标总PT",
+      "label": "目标总 PT",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "total_goal",
+          "label": "目标总 PT",
+          "default": "300000",
+          "pipeline_type": "int"
+        }
+      ]
+    },
+    "TT_日期计划": {
+      "name": "TT_日期计划",
+      "label": "使用日期计划",
+      "type": "switch",
+      "inline_sub_options": true,
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["TT_计划开始日期", "TT_计划截至日期"]
+        }
+      ]
+    },
+    "TT_计划开始日期": {
+      "name": "TT_计划开始日期",
+      "label": "开始日期",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "start_date",
+          "label": "开始日期",
+          "default": "",
+          "control": "date"
+        }
+      ]
+    },
+    "TT_计划截至日期": {
+      "name": "TT_计划截至日期",
+      "label": "截至日期",
+      "description": "开启后目标会随日期线性放宽。\n今日目标 = 向上取整(总目标 × 已过天数 ÷ 总天数)，开始日与截至日均计入天数。\n每天 5:00 切换计划日，5:00 前仍按前一天计算。当日早于开始日期时不作检查，晚于截至日期时固定按总目标比较。\n活动多在早上 5:00 结束，建议将截至日期填为活动实际结束日期的前一天。",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "end_date",
+          "label": "截至日期",
+          "default": "",
+          "control": "date"
+        }
+      ]
+    },
+    "TT_筛选目标刀剑": {
+      "name": "TT_筛选目标刀剑",
+      "label": "筛选目标刀剑",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["TT_目标刀剑"],
+          "pipeline_override": {
+            "TT_CheckNonTargetSword": {"enabled": true},
+            "TT_CheckTargetSword": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "TT_目标刀剑": {
+      "name": "TT_目标刀剑",
+      "label": "目标刀剑",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "swords",
+          "label": "目标刀剑",
+          "default": "[\"三日月宗近\",\"小狐丸\",\"大典太光世\",\"骚速剑\",\"数珠丸恒次\",\"大包平\",\"明石国行\",\"千子村正\",\"大般若长光\",\"小龙景光\",\"不动行光\",\"小乌丸\",\"笼手切江\",\"谦信景光\",\"小豆长光\",\"日向正宗\",\"静形薙刀\",\"南泉一文字\",\"千代金丸\",\"南海太郎朝尊\",\"肥前忠广\",\"桑名江\",\"松井江\",\"泛尘\"]"
+        }
+      ]
+    },
     "HP_选择难度": {
       "name": "HP_选择难度",
       "label": "选择难度",
@@ -3304,6 +3592,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3327,6 +3629,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3350,6 +3666,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3373,6 +3703,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3396,6 +3740,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -3728,6 +4086,20 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3751,6 +4123,20 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3774,6 +4160,20 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3797,6 +4197,20 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3820,6 +4234,20 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -3968,6 +4396,12 @@
       "default_case": "初级",
       "cases": [
         {
+          "name": "保持当前难度",
+          "pipeline_override": {
+            "TT_ClickDifficulty": {"enabled": false}
+          }
+        },
+        {
           "name": "初级",
           "pipeline_override": {
             "TT_ClickDifficulty": {
@@ -4018,6 +4452,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 140, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4041,6 +4489,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 250, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4064,6 +4526,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 360, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4087,6 +4563,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 465, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4110,6 +4600,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 575, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -4585,6 +5089,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 140, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4612,6 +5130,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 250, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4639,6 +5171,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 360, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4666,6 +5212,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 465, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4693,6 +5253,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 575, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -7246,6 +7820,13 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7258,6 +7839,13 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7270,6 +7858,13 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7282,6 +7877,13 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7294,6 +7896,13 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [636, 85, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -8374,6 +8983,13 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8386,6 +9002,13 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8398,6 +9021,13 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8410,6 +9040,13 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8422,6 +9059,13 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -8908,6 +9552,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8932,6 +9590,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8956,6 +9628,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8980,6 +9666,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -9004,6 +9704,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }

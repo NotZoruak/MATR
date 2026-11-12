@@ -30,6 +30,11 @@ public static class WorkRecordBuilder
     private static readonly Regex WordRegex = new(
         @"^(?:\[[a-zA-Z]+\s*=[^\]]*\]\s*)*(?:\[Record\]\s*)?(?:(?<special>\[Special\])\s*)?\[(?<prefix>[^\]\s=]+)\]\s+(?<action>\S+)(?:\s+(?<detail>.*))?$", RegexOptions.Compiled);
 
+    // 只采集当前刷新剪影文案中的非目标刀剑。
+    private static readonly Regex SkippedSilhouetteRegex = new(
+        @"\[战术强化\]\s+当前剪影[：:]\s*(?<name>[^，,\r\n]+)[，,]\s*得分\s*.*非目标刀剑[，,]\s*刷新剪影\s*$",
+        RegexOptions.Compiled);
+
     /// <summary>状态码 → 中文（NOT_STARTED 语义见 Build 中按是否执行过区分）</summary>
     public static readonly Dictionary<string, string> StatusMap = new()
     {
@@ -290,9 +295,12 @@ public static class WorkRecordBuilder
         Dictionary<WorkRecord, string> lastAcceptedKey,
         Dictionary<WorkRecord, DateTime> lastReturnHomeTime)
     {
+        var skippedSilhouette = SkippedSilhouetteRegex.Match(content);
         var match = WordRegex.Match(content);
         var action = match.Success ? match.Groups["action"].Value : "";
-        var filterKey = match.Success
+        var filterKey = skippedSilhouette.Success
+            ? $"战术强化\u001F跳过剪影\u001F{skippedSilhouette.Groups["name"].Value.Trim()}"
+            : match.Success
             ? $"{match.Groups["prefix"].Value}\u001F{action}\u001F{match.Groups["detail"].Value}"
             : content;
         var filterWindow = IsRetreatAction(action) ? RetreatFilterSeconds : RepeatFilterSeconds;
@@ -317,6 +325,12 @@ public static class WorkRecordBuilder
         var prefix = match.Groups["prefix"].Value;
         var detail = match.Groups["detail"].Value;
         var isSpecial = match.Groups["special"].Success;
+
+        if (skippedSilhouette.Success)
+        {
+            record.SkippedSilhouettes.Add(skippedSilhouette.Groups["name"].Value.Trim());
+            return;
+        }
 
         // 换队长拖拽的 OCR 保护日志仅用于排查，不作为用户可见的特殊情况。
         if (prefix == "DragCaptain" && action.StartsWith("无可用位置", StringComparison.Ordinal))
