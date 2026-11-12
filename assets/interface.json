@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.6-beta.1",
+  "version": "v0.15.6-beta.2",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.6-beta.1 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.6-beta.2 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -225,7 +225,7 @@
         "TT_同步远征"
       ],
       "label": "战术强化",
-      "description": "战术强化训练/巧克力/南瓜 活动自动化出阵。\n\n* **达到目标PT后跳过任务**：启用后达到目标累计 PT 时跳过当前任务的剩余轮数，可选日期计划。\n* **筛选目标刀剑**：可在齿轮中搜索并选择希望保留的刀剑，可靠识别为非目标刀剑时自动刷新；识别不确定时继续出阵。\n* **选择部队**：当选择的部队不符合要求时，会自动依次尝试1-5队。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "战术强化训练/巧克力/南瓜活动自动化出阵。\n\n* **达到目标PT后跳过任务**：启用后，达到设定的目标总 PT 时跳过本次任务；可选用日期计划，让目标随活动进度逐日放宽。\n* **筛选目标刀剑**：可在齿轮中搜索并选择希望保留的刀剑；可靠识别为非目标刀剑时刷新剪影。\n* **选择部队**：设置首选部队；不符合条件时自动依次尝试 1 至 5 队。\n* **选择难度**：可选初级、中级、上级，或保持当前难度。\n* **疲劳处理**：可选择不处理、自动刷花，或疲劳时停止任务。\n* **更换队长**：启用后自动更换队长。\n* **购买门票**：启用后，门票不足时自动购买补充，一次购买一张。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "刷花",
@@ -3510,7 +3510,8 @@
           "label": "开启",
           "option": ["TT_目标刀剑"],
           "pipeline_override": {
-            "TT_CheckNonTargetSword": {"enabled": true}
+            "TT_CheckNonTargetSword": {"enabled": true},
+            "TT_CheckTargetSword": {"enabled": true}
           }
         }
       ]
@@ -4394,6 +4395,12 @@
       "label": "选择难度",
       "default_case": "初级",
       "cases": [
+        {
+          "name": "保持当前难度",
+          "pipeline_override": {
+            "TT_ClickDifficulty": {"enabled": false}
+          }
+        },
         {
           "name": "初级",
           "pipeline_override": {

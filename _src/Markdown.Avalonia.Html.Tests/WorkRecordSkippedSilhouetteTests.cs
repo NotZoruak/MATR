@@ -19,11 +19,11 @@ public class WorkRecordSkippedSilhouetteTests
         var start = new DateTime(2026, 11, 12, 12, 0, 0);
         var record = Assert.Single(WorkRecordBuilder.Build([
             new LogEntry(start, "INF", "开始任务：战术强化"),
-            new LogEntry(start.AddSeconds(1), "INF", "[战术强化] 当前剪影：厚藤四郎，可信度 99.00%，非目标刀剑，刷新剪影"),
-            new LogEntry(start.AddSeconds(2), "INF", "[战术强化] 当前剪影：厚藤四郎，可信度 99.10%，非目标刀剑，刷新剪影"),
-            new LogEntry(start.AddSeconds(5), "INF", "[战术强化] 当前剪影：小狐丸，可信度 99.00%，目标刀剑，继续出阵"),
-            new LogEntry(start.AddSeconds(10), "INF", "[战术强化] 当前剪影：平野藤四郎，可信度 98.00%，非目标刀剑，刷新剪影"),
-            new LogEntry(start.AddSeconds(12), "INF", "[战术强化] 当前剪影：旧记录刀剑，可信度 98.00%，非目标刀剑，准备刷新"),
+            new LogEntry(start.AddSeconds(1), "INF", "[战术强化] 当前剪影：厚藤四郎，得分 99.00%，非目标刀剑，刷新剪影"),
+            new LogEntry(start.AddSeconds(2), "INF", "[战术强化] 当前剪影：厚藤四郎，得分 99.10%，非目标刀剑，刷新剪影"),
+            new LogEntry(start.AddSeconds(5), "INF", "[战术强化] 当前剪影：小狐丸，得分 99.00%，目标刀剑，继续出阵"),
+            new LogEntry(start.AddSeconds(10), "INF", "[战术强化] 当前剪影：平野藤四郎，得分 98.00%，非目标刀剑，刷新剪影"),
+            new LogEntry(start.AddSeconds(12), "INF", "[战术强化] 当前剪影：旧记录刀剑，得分 98.00%，非目标刀剑，准备刷新"),
             new LogEntry(start.AddSeconds(15), "INF", "停止前状态：SUCCEEDED")
         ]));
         Assert.Equal(new[] { "厚藤四郎", "平野藤四郎" }, Skipped(record));

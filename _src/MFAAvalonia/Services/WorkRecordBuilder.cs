@@ -32,7 +32,7 @@ public static class WorkRecordBuilder
 
     // 只采集当前刷新剪影文案中的非目标刀剑。
     private static readonly Regex SkippedSilhouetteRegex = new(
-        @"\[战术强化\]\s+当前剪影[：:]\s*(?<name>[^，,\r\n]+)[，,].*非目标刀剑[，,]\s*刷新剪影\s*$",
+        @"\[战术强化\]\s+当前剪影[：:]\s*(?<name>[^，,\r\n]+)[，,]\s*得分\s*.*非目标刀剑[，,]\s*刷新剪影\s*$",
         RegexOptions.Compiled);
 
     /// <summary>状态码 → 中文（NOT_STARTED 语义见 Build 中按是否执行过区分）</summary>

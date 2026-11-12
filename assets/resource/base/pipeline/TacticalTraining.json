@@ -124,7 +124,7 @@
     },
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["TT_CheckGoalPt", "TT_ClickDifficulty"]
+    "next": ["TT_CheckGoalPt", "TT_ClickDifficulty", "TT_ClickChocolateKunaiTraining", "TT_VerifyEventPage", "TT_DetectWhereAmI"]
   },
   "TT_CheckGoalPt": {
     "enabled": false,
@@ -185,7 +185,7 @@
     },
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["TT_CheckSilhouette", "TT_CheckNonTargetSword", "TT_EnterEvent"],
+    "next": ["TT_CheckSilhouette", "TT_CheckNonTargetSword", "TT_CheckTargetSword", "TT_EnterEvent"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_CheckNonTargetSword": {
@@ -193,7 +193,10 @@
     "max_hit": 1,
     "recognition": {
       "type": "Custom",
-      "param": {"custom_recognition": "TacticalTargetSwordRecognition"}
+      "param": {
+        "custom_recognition": "TacticalTargetSwordRecognition",
+        "custom_recognition_param": {"mode": "non_target"}
+      }
     },
     "action": {
       "type": "Click",
@@ -207,6 +210,18 @@
     },
     "next": ["TT_VerifyNonTargetSilhouettePopup", "TT_ClickNonTargetSilhouetteRefresh"],
     "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_CheckTargetSword": {
+    "enabled": false,
+    "max_hit": 1,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "TacticalTargetSwordRecognition",
+        "custom_recognition_param": {"mode": "target"}
+      }
+    },
+    "next": ["TT_EnterEvent"]
   },
   "TT_VerifyNonTargetSilhouettePopup": {
     "recognition": {
@@ -226,6 +241,10 @@
       }
     },
     "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1098, 249, 121, 31]
+    },
     "next": ["TT_VerifyNonTargetSilhouettePopup", "TT_ClickNonTargetSilhouetteRefresh"],
     "on_error": ["TT_DetectWhereAmI"]
   },
@@ -243,7 +262,6 @@
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_EnterEvent": {
-    "pre_delay": 200,
     "action": {
       "type": "Click",
       "param": {
@@ -254,7 +272,8 @@
       "time": 200,
       "target": [1141, 614, 120, 49]
     },
-    "next": ["TT_IsTeamSelect", "TT_DetectWhereAmI"]
+    "next": ["TT_IsTeamSelect", "TT_SortieSuccess", "TT_EnterEvent"],
+    "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_IsSilhouettePopup": {
     "recognition": {
@@ -312,7 +331,6 @@
         "target": [594, 605, 89, 19]
       }
     },
-    "post_delay": 300,
     "next": ["TT_ConfirmTicketReplenish", "TT_IsTicketReplenishPage"],
     "on_error": ["TT_DetectWhereAmI"]
   },
@@ -330,8 +348,7 @@
         "target": [754, 592, 66, 22]
       }
     },
-    "post_delay": 300,
-    "next": ["TT_CloseTicketDialog", "TT_ConfirmTicketReplenish"],
+    "next": ["TT_ConfirmTicketReplenish", "TT_ConfirmTicketReplenishDone"],
     "on_error": ["TT_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
@@ -340,35 +357,51 @@
       }
     }
   },
-  "TT_CloseTicketDialog": {
-    "action": {
-      "type": "Click",
+  "TT_ConfirmTicketReplenishDone": {
+    "recognition": {
+      "type": "OCR",
       "param": {
-        "target": [1039, 54, 1, 1]
+        "roi": [600, 59, 83, 37],
+        "expected": "确认"
       }
     },
-    "post_delay": 500,
-    "next": ["TT_CloseTicketDialog2"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "inverse": true,
+    "next": ["TT_ConfirmTicketUpdate"],
+    "on_error": ["TT_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[战术强化] 补充门票",
+        "display": "file"
+      }
+    }
   },
-  "TT_CloseTicketDialog2": {
-    "action": {
-      "type": "Click",
+  "TT_ConfirmTicketUpdate": {
+    "recognition": {
+      "type": "OCR",
       "param": {
-        "target": [1039, 54, 1, 1]
+        "roi": [604, 587, 68, 36],
+        "expected": "确定"
       }
     },
-    "post_delay": 500,
-    "next": ["TT_CloseTicketDialog3"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "action": {"type": "Click"},
+    "next": ["TT_ConfirmTicketUpdate", "TT_IsTicketDialogClosed"],
+    "on_error": ["TT_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[战术强化] 更新剪影",
+        "display": "file"
+      }
+    }
   },
-  "TT_CloseTicketDialog3": {
-    "action": {
-      "type": "Click",
+  "TT_IsTicketDialogClosed": {
+    "recognition": {
+      "type": "OCR",
       "param": {
-        "target": [1039, 54, 1, 1]
+        "roi": [604, 587, 68, 36],
+        "expected": "确定"
       }
     },
+    "inverse": true,
     "next": ["TT_DetectWhereAmI"]
   },
   "TT_NavigateToActivity": {
@@ -402,7 +435,8 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["TT_ConfirmTargetTeam", "TT_CheckCaptainColor"]
+    "next": ["TT_ConfirmTargetTeam", "TT_CaptainHub", "TT_TryTeam1"],
+    "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTargetTeam": {
     "recognition": {
@@ -500,18 +534,16 @@
       }
     }
   },
-  "TT_CheckCaptainColor": {
-    "next": ["TT_CaptainHub", "TT_TryTeam1"]
-  },
   "TT_TryTeam1": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["TT_ConfirmTryTeam1", "TT_CheckCaptainColorTry1"],
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_ConfirmTryTeam1", "TT_CaptainHub", "TT_TryTeam2"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTryTeam1": {
@@ -525,19 +557,16 @@
     },
     "next": ["TT_TryTeam1"]
   },
-  "TT_CheckCaptainColorTry1": {
-    "next": ["TT_CaptainHub", "TT_TryTeam2"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
   "TT_TryTeam2": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [282, 94, 1, 1]
       }
     },
-    "next": ["TT_ConfirmTryTeam2", "TT_CheckCaptainColorTry2"],
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_ConfirmTryTeam2", "TT_CaptainHub", "TT_TryTeam3"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTryTeam2": {
@@ -551,19 +580,16 @@
     },
     "next": ["TT_TryTeam2"]
   },
-  "TT_CheckCaptainColorTry2": {
-    "next": ["TT_CaptainHub", "TT_TryTeam3"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
   "TT_TryTeam3": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [398, 91, 1, 1]
       }
     },
-    "next": ["TT_ConfirmTryTeam3", "TT_CheckCaptainColorTry3"],
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_ConfirmTryTeam3", "TT_CaptainHub", "TT_TryTeam4"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTryTeam3": {
@@ -577,19 +603,16 @@
     },
     "next": ["TT_TryTeam3"]
   },
-  "TT_CheckCaptainColorTry3": {
-    "next": ["TT_CaptainHub", "TT_TryTeam4"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
   "TT_TryTeam4": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [519, 89, 1, 1]
       }
     },
-    "next": ["TT_ConfirmTryTeam4", "TT_CheckCaptainColorTry4"],
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_ConfirmTryTeam4", "TT_CaptainHub", "TT_TryTeam5"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTryTeam4": {
@@ -603,19 +626,16 @@
     },
     "next": ["TT_TryTeam4"]
   },
-  "TT_CheckCaptainColorTry4": {
-    "next": ["TT_CaptainHub", "TT_TryTeam5"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
   "TT_TryTeam5": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [635, 91, 1, 1]
       }
     },
-    "next": ["TT_ConfirmTryTeam5", "TT_CheckCaptainColorTry5"],
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_ConfirmTryTeam5", "TT_CaptainHub", "TT_AllTeamsExhausted"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTryTeam5": {
@@ -628,9 +648,6 @@
       }
     },
     "next": ["TT_TryTeam5"]
-  },
-  "TT_CheckCaptainColorTry5": {
-    "next": ["TT_CaptainHub", "TT_AllTeamsExhausted"]
   },
   "TT_AllTeamsExhausted": {
     "action": {

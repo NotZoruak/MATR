@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
-/// <summary>可靠识别为非目标刀剑时命中，刷新点击仍由 pipeline 执行。</summary>
+/// <summary>按目标类别确认可靠剪影，刷新点击仍由 pipeline 执行。</summary>
 public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
 {
     private readonly SilhouetteService _service = new();
@@ -25,6 +25,10 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
         try
         {
             ActionParamHelper.ThrowIfStopping(context);
+            var param = ActionParamHelper.Parse(args.RecognitionParam);
+            var targetMode = string.Equals((string?)param["mode"], "target", StringComparison.OrdinalIgnoreCase);
+            if (!targetMode && !string.Equals((string?)param["mode"], "non_target", StringComparison.OrdinalIgnoreCase))
+                return false;
             var task = MaaProcessor.ResolveByTasker(context.Tasker)?.GetActiveTaskDefinition();
             var filter = task?.Option?.FirstOrDefault(option => option.Name == TacticalTargetSwordSettings.FilterOptionName);
             if (filter == null || !(filter.Index > 0 || filter.SelectedCases?.Contains("Yes") == true))
@@ -55,7 +59,7 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
                     var targets = _service.Templates.Where(template => names.Contains(template.Name))
                         .Select(template => template.Id).Distinct().ToArray();
                     var candidates = _service.RecognizeSwords(normalized);
-                    var decision = Evaluate(candidates, targets);
+                    var decision = EvaluateForMode(candidates, targets, targetMode);
                     if (decision.Message == null) return false;
                     LoggerHelper.Info(decision.Message);
                     try
@@ -66,7 +70,7 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
                     {
                         LoggerHelper.Warning($"[战术强化] 剪影结果界面日志写入失败：{logException.Message}");
                     }
-                    return decision.Refresh;
+                    return decision.Hit;
                 }
             }
         }
@@ -81,7 +85,7 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
         }
     }
 
-    /// <summary>达到 90% 时需领先至少 1 个百分点，85% 至 90% 以下时需领先至少 5 个百分点。</summary>
+    /// <summary>最高分至少 95%，且与第二位的差距超过对应阈值时才视为可靠。</summary>
     public static bool ShouldRefresh(IEnumerable<RecognitionResult> results, IReadOnlyCollection<int> targets)
         => Evaluate(results, targets).Refresh;
 
@@ -99,8 +103,8 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
             return (false, null);
         var score = (decimal)ranked[0].Score;
         var gap = score - (decimal)ranked[1].Score;
-        var reliable = (score >= 0.90m && gap >= 0.01m)
-            || (score >= 0.85m && score < 0.90m && gap >= 0.05m);
+        var requiredGap = score > 0.99m ? 0.015m : 0.03m;
+        var reliable = score >= 0.95m && gap > requiredGap;
         if (!reliable)
             return (false, null);
 
@@ -108,6 +112,15 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
         var refresh = targets.Count > 0 && !targets.Contains(winner.Id);
         var outcome = targets.Count == 0 ? "未设置可识别目标，继续出阵"
             : refresh ? "非目标刀剑，刷新剪影" : "目标刀剑，继续出阵";
-        return (refresh, $"[战术强化] 当前剪影：{winner.Name}，可信度 {winner.Score:P2}，{outcome}");
+        return (refresh, $"[战术强化] 当前剪影：{winner.Name}，得分 {winner.Score:P2}，{outcome}");
+    }
+
+    /// <summary>仅在结果符合当前目标类别时命中并记录一次日志。</summary>
+    public static (bool Hit, string? Message) EvaluateForMode(
+        IEnumerable<RecognitionResult> results, IReadOnlyCollection<int> targets, bool targetMode)
+    {
+        var decision = Evaluate(results, targets);
+        var hit = targetMode ? !decision.Refresh : decision.Refresh;
+        return hit ? (true, decision.Message) : (false, null);
     }
 }
