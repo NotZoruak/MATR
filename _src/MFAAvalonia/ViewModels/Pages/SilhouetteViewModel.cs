@@ -129,6 +129,10 @@ public partial class SilhouetteViewModel : ViewModelBase
 
             if (results.Count == 0)
                 StatusMessage = "尚未露出剪影，请先刮开涂层";
+            // 不同刀剑的显示得分并列时，不能把排序第一项当成已确认身份
+            else if (results.Skip(1).Any(result => result.Id != results[0].Id
+                && result.ScoreText == results[0].ScoreText))
+                StatusMessage = "多个候选并列，需继续揭露剪影";
             else
                 StatusMessage = $"识别完成：{results[0].Name} ({results[0].ScoreText})";
         }
