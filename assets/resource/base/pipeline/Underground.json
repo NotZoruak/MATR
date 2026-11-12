@@ -246,8 +246,19 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["U_DisableAutoMarch", "U_EnableAutoMarch", "U_ClickAutoMarchNoOrYesDelegate", "U_CaptainHub"],
+    "next": ["U_ConfirmTeam", "U_DisableAutoMarch", "U_EnableAutoMarch", "U_ClickAutoMarchNoOrYesDelegate", "U_CaptainHub"],
     "on_error": ["U_DetectWhereAmI"]
+  },
+  "U_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["U_ClickTeam"]
   },
   "U_DisableAutoMarch": {
     "enabled": true,

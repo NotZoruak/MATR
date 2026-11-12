@@ -62,6 +62,16 @@ public class ExpeditionTimerRoutingTests
         var expectedSourceNext = smartSchedulingEnabled
             ? GetSmartSchedulingNext(entry, syncOptionName, defaultNext)
             : GetSyncDisabledSmartNext(entry, syncOptionName, checkSourceName, defaultNext);
+        // 选队页先检查目标部队是否仍未选中，再保留原有计时与业务候选顺序。
+        var teamConfirm = checkSourceName switch
+        {
+            "RB_IsTeamSelect" => "RB_ConfirmTeam",
+            "HP_IsTeamSelect" => "HP_ConfirmTeam",
+            "EC_IsTeamSelect" => "EC_ConfirmTeam",
+            _ => null,
+        };
+        if (teamConfirm is not null)
+            expectedSourceNext = [teamConfirm, .. expectedSourceNext];
         Assert.Equal(expectedSourceNext, ReadStringArray(effective[checkSourceName]!["next"]));
     }
 

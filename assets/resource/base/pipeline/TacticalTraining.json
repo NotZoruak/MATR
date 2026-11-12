@@ -122,8 +122,8 @@
         "threshold": [0.97]
       }
     },
-    "pre_delay":0,
-    "post_delay":0,
+    "pre_delay": 0,
+    "post_delay": 0,
     "next": ["TT_CheckGoalPt", "TT_ClickDifficulty"]
   },
   "TT_CheckGoalPt": {
@@ -402,7 +402,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["TT_CheckCaptainColor"]
+    "next": ["TT_ConfirmTargetTeam", "TT_CheckCaptainColor"]
+  },
+  "TT_ConfirmTargetTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TT_ClickTargetTeam"]
   },
   "TT_CaptainHub": {
     "recognition": {
@@ -500,8 +511,19 @@
         "target": [154, 93, 1, 1]
       }
     },
-    "next": ["TT_CheckCaptainColorTry1"],
+    "next": ["TT_ConfirmTryTeam1", "TT_CheckCaptainColorTry1"],
     "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmTryTeam1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TT_TryTeam1"]
   },
   "TT_CheckCaptainColorTry1": {
     "next": ["TT_CaptainHub", "TT_TryTeam2"],
@@ -515,8 +537,19 @@
         "target": [282, 94, 1, 1]
       }
     },
-    "next": ["TT_CheckCaptainColorTry2"],
+    "next": ["TT_ConfirmTryTeam2", "TT_CheckCaptainColorTry2"],
     "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmTryTeam2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [210, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TT_TryTeam2"]
   },
   "TT_CheckCaptainColorTry2": {
     "next": ["TT_CaptainHub", "TT_TryTeam3"],
@@ -530,8 +563,19 @@
         "target": [398, 91, 1, 1]
       }
     },
-    "next": ["TT_CheckCaptainColorTry3"],
+    "next": ["TT_ConfirmTryTeam3", "TT_CheckCaptainColorTry3"],
     "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmTryTeam3": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [332, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TT_TryTeam3"]
   },
   "TT_CheckCaptainColorTry3": {
     "next": ["TT_CaptainHub", "TT_TryTeam4"],
@@ -545,8 +589,19 @@
         "target": [519, 89, 1, 1]
       }
     },
-    "next": ["TT_CheckCaptainColorTry4"],
+    "next": ["TT_ConfirmTryTeam4", "TT_CheckCaptainColorTry4"],
     "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmTryTeam4": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [453, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TT_TryTeam4"]
   },
   "TT_CheckCaptainColorTry4": {
     "next": ["TT_CaptainHub", "TT_TryTeam5"],
@@ -560,8 +615,19 @@
         "target": [635, 91, 1, 1]
       }
     },
-    "next": ["TT_CheckCaptainColorTry5"],
+    "next": ["TT_ConfirmTryTeam5", "TT_CheckCaptainColorTry5"],
     "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmTryTeam5": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [576, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["TT_TryTeam5"]
   },
   "TT_CheckCaptainColorTry5": {
     "next": ["TT_CaptainHub", "TT_AllTeamsExhausted"]

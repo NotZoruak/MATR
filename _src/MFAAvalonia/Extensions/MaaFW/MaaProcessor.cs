@@ -57,7 +57,7 @@ public class MaaProcessor
     ];
     private static readonly int[][] FormationTeamVerifyRois =
     [
-        [172, 81, 17, 9], [284, 77, 18, 9], [431, 80, 16, 8], [555, 78, 16, 8], [675, 79, 16, 8],
+        [89, 109, 1, 1], [210, 109, 1, 1], [332, 109, 1, 1], [453, 109, 1, 1], [576, 109, 1, 1],
     ];
     private static readonly int[][] FormationRecordSlotClickCoords =
     [
@@ -4706,12 +4706,12 @@ public class MaaProcessor
         };
     }
 
-    /// <summary>FC_ClickTeam 的常驻首选判断：目标部队在远征中时直接结束本次编成</summary>
+    /// <summary>目标部队在远征中时直接结束本次编成。</summary>
     private const string FormationTeamExpeditionCheck = "FC_IsTeamOnExpedition";
 
-    /// <summary>构造 FC_ClickTeam 的 next，常驻判断固定位于首位</summary>
+    /// <summary>构造选队后继：先检查是否仍未选中，再判断远征状态与预设业务。</summary>
     private static JArray BuildClickTeamNext(params string[] presetFlow) =>
-        new([FormationTeamExpeditionCheck, .. presetFlow]);
+        new(["FC_ConfirmTeam", FormationTeamExpeditionCheck, .. presetFlow]);
 
     /// <summary>将自定编队任务选择的预设转换为本次运行所需的 pipeline override。</summary>
     private void ApplyFormationPresetOverride(ref MaaToken taskModels, DragItemViewModel task, int? formationPresetId)
@@ -4749,14 +4749,7 @@ public class MaaProcessor
                     ["param"] = new JObject { ["target"] = new JArray(FormationTeamClickCoords[team - 1]) },
                 },
             },
-            ["FC_VerifySelectedTeam1"] = new JObject
-            {
-                ["recognition"] = new JObject
-                {
-                    ["param"] = new JObject { ["roi"] = new JArray(FormationTeamVerifyRois[team - 1]) },
-                },
-            },
-            ["FC_VerifySelectedTeam2"] = new JObject
+            ["FC_ConfirmTeam"] = new JObject
             {
                 ["recognition"] = new JObject
                 {

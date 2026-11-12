@@ -7,7 +7,7 @@ namespace MFAAvalonia.Extensions.MaaFW.Custom;
 
 /// <summary>
 /// 长期远征计划——根据记录的部队编号选择刷花目标部队。
-/// 读取 FlowerStateTracker.TargetTeam，点击对应部队按钮。
+/// 读取 FlowerStateTracker.TargetTeam，点击对应部队按钮，并选择该部队的颜色验证分支。
 /// </summary>
 public class SelectFlowerTeamAction : IMaaCustomAction
 {
@@ -53,6 +53,13 @@ public class SelectFlowerTeamAction : IMaaCustomAction
                 context.Tasker.Click(clickPoint.X, clickPoint.Y);
                 ActionParamHelper.ResolveOwnerProcessor(context)?.RecordCustomActionActivity();
                 return true;
+            }
+
+            // 验证范围由目标部队决定，必须先绑定路由，避免沿用上一次刷花的部队。
+            if (!context.OverrideNext(args.NodeName, [$"E_FlowerConfirmTeam{team}", "E_OpenTeamRecordForUse"]))
+            {
+                LoggerHelper.Error($"[选队刷花] 无法设置部队{team}的选中验证分支");
+                return false;
             }
 
             var t = TeamTargets[team - 1];

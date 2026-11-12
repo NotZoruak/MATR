@@ -1718,7 +1718,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["DT_DrillClickSortie", "DT_DrillBattleHub"]
+    "next": ["DT_DrillConfirmTeam", "DT_DrillClickSortie", "DT_DrillBattleHub"]
+  },
+  "DT_DrillConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["DT_DrillSelectTeam"]
   },
   "DT_DrillClickSortie": {
     "recognition": {

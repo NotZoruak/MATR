@@ -177,6 +177,7 @@
     "repeat": 2,
     "repeat_delay": 500,
     "next": [
+      "RB_ConfirmTeam",
       "E_CheckTimerExpired",
       "RB_CloseImmediateSortiePopup",
       "RB_DisableAutoMarch",
@@ -184,6 +185,18 @@
       "RB_ClickAutoMarchConfirm",
       "RB_CaptainHub"
     ]
+  },
+  "RB_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["RB_IsTeamSelect"],
+    "on_error": ["RB_DetectWhereAmI"]
   },
   "RB_CloseImmediateSortiePopup": {
     "recognition": {

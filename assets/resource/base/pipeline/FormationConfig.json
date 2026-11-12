@@ -234,7 +234,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["FC_IsTeamOnExpedition", "FC_IsTeamEmpty", "FC_DissolveTeam"]
+    "next": ["FC_ConfirmTeam", "FC_IsTeamOnExpedition", "FC_IsTeamEmpty", "FC_DissolveTeam"]
+  },
+  "FC_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [201, 106, 0],
+        "upper": [221, 126, 18]
+      }
+    },
+    "next": ["FC_ClickTeam"]
   },
   "FC_IsTeamOnExpedition": {
     "recognition": {

@@ -1650,7 +1650,67 @@
       "time": 200,
       "target": [112, 79, 580, 30]
     },
-    "next": ["E_OpenTeamRecordForUse"],
+    "next": ["E_FlowerConfirmTeam1", "E_OpenTeamRecordForUse"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam1": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam2": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [210, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam3": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [332, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam4": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [453, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
+    "on_error": ["E_FlowerBattleHub"]
+  },
+  "E_FlowerConfirmTeam5": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [576, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["E_FlowerTeamSelect"],
     "on_error": ["E_FlowerBattleHub"]
   },
   "E_FlowerIsSwordDropColor": {

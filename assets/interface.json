@@ -2152,6 +2152,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2185,6 +2206,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2218,6 +2260,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2251,6 +2314,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2284,6 +2368,27 @@
             },
             "THR_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "S_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "THR_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -2780,6 +2885,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2806,6 +2925,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2832,6 +2965,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2858,6 +3005,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -2884,6 +3045,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "RB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -3416,6 +3591,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3439,6 +3628,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3462,6 +3665,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3485,6 +3702,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3508,6 +3739,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "HP_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -3840,6 +4085,20 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3863,6 +4122,20 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3886,6 +4159,20 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3909,6 +4196,20 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -3932,6 +4233,20 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
+            },
+            "EC_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -4130,6 +4445,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 140, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4153,6 +4482,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 250, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4176,6 +4519,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 360, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4199,6 +4556,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 465, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4222,6 +4593,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 575, 30, 71]
+            },
+            "TT_ConfirmTargetTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -4697,6 +5082,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 140, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4724,6 +5123,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 250, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4751,6 +5164,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 360, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4778,6 +5205,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 465, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -4805,6 +5246,20 @@
             },
             "SelectRecordSlot": {
               "target": [1209, 575, 30, 71]
+            },
+            "U_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -7358,6 +7813,13 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7370,6 +7832,13 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7382,6 +7851,13 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7394,6 +7870,13 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -7406,6 +7889,13 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [636, 85, 1, 1]
+            },
+            "FB_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -8486,6 +8976,13 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8498,6 +8995,13 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8510,6 +9014,13 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8522,6 +9033,13 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -8534,6 +9052,13 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
+            },
+            "DT_DrillConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }
@@ -9020,6 +9545,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 140, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -9044,6 +9583,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 250, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -9068,6 +9621,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 360, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -9092,6 +9659,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 465, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
             }
           }
         },
@@ -9116,6 +9697,20 @@
             },
             "TF_UseRecord_Step2": {
               "target": [1209, 575, 30, 71]
+            },
+            "HV_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
             }
           }
         }

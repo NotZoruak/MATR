@@ -321,7 +321,26 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_CheckTimerExpired", "S_DisableAutoMarch", "S_EnableAutoMarch", "S_ClickAutoMarchNoOrYesDelegate", "S_CaptainHub"]
+    "next": [
+      "S_ConfirmTeam",
+      "E_CheckTimerExpired",
+      "S_DisableAutoMarch",
+      "S_EnableAutoMarch",
+      "S_ClickAutoMarchNoOrYesDelegate",
+      "S_CaptainHub"
+    ]
+  },
+  "S_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["S_IsTeamSelect"],
+    "on_error": ["S_DetectWhereAmI"]
   },
   "S_DisableAutoMarch": {
     "enabled": true,
