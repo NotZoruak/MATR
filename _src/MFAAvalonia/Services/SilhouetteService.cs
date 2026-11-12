@@ -58,7 +58,12 @@ public class SilhouetteService
         };
     }
 
-    public List<RecognitionResult> Recognize(SKBitmap shot)
+    public List<RecognitionResult> Recognize(SKBitmap shot) => Recognize(shot, false);
+
+    /// <summary>按刀剑编号合并上下半身，保留低分候选以便准确比较前两名差距。</summary>
+    public List<RecognitionResult> RecognizeSwords(SKBitmap shot) => Recognize(shot, true);
+
+    private List<RecognitionResult> Recognize(SKBitmap shot, bool rankBySword)
     {
         if (_templates.Count == 0) return new List<RecognitionResult>();
 
@@ -138,6 +143,8 @@ public class SilhouetteService
                 }
             if (weight > 0) scores.Add((t, sum / weight));
         }
+        if (rankBySword)
+            scores = scores.GroupBy(item => item.t.Id).Select(group => group.MaxBy(item => item.s)).ToList();
         scores.Sort((a, b) => b.s.CompareTo(a.s));
         if (scores.Count == 0) return new List<RecognitionResult>();
 
@@ -146,6 +153,8 @@ public class SilhouetteService
             Rank = i + 1, Id = x.t.Id, Name = x.t.Name,
             Score = x.s, IsHead = x.t.IsHead
         }).ToList();
+
+        if (rankBySword) return top;
 
         var ret = top.Where(r => r.Score >= UKN).ToList();
         if (ret.Count == 0 && top.Count > 0) ret.Add(top[0]);

@@ -56,6 +56,9 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(SelectedHasSwordDrops))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropGroups))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropTotalText))]
+    [NotifyPropertyChangedFor(nameof(SelectedHasSkippedSilhouettes))]
+    [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteTotalText))]
+    [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteItems))]
     [NotifyPropertyChangedFor(nameof(SelectedHasOutcomes))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsSummaryText))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchCountText))]
@@ -502,8 +505,18 @@ public partial class WorkRecordsViewModel : ViewModelBase
         ? "刀剑掉落"
         : $"刀剑掉落（×{SelectedRecord.SwordDrops.Count}）";
 
+    /// <summary>是否有刷新跳过的剪影。</summary>
+    public bool SelectedHasSkippedSilhouettes => SelectedRecord?.SkippedSilhouettes.Count > 0;
+
+    public string SelectedSkippedSilhouetteTotalText => SelectedRecord is null
+        ? "跳过剪影" : $"跳过剪影（×{SelectedRecord.SkippedSilhouettes.Count}）";
+
+    /// <summary>按刀名合并次数，供任务收获区域自动换行。</summary>
+    public IReadOnlyList<string> SelectedSkippedSilhouetteItems => SelectedRecord?.SkippedSilhouettes
+        .GroupBy(name => name).Select(group => $"{group.Key}（×{group.Count()}）").ToArray() ?? [];
+
     /// <summary>是否有出阵收获</summary>
-    public bool SelectedHasOutcomes => SelectedHasResources || SelectedHasSwordDrops;
+    public bool SelectedHasOutcomes => SelectedHasResources || SelectedHasSwordDrops || SelectedHasSkippedSilhouettes;
 
     /// <summary>后勤摘要文本：倒计时结束、检查队伍状况和刷花属于同一组。</summary>
     public string SelectedLogisticsSummaryText

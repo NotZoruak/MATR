@@ -6199,7 +6199,8 @@ public class MaaProcessor
             tasker.Resource.Register(new Custom.RestartGameAction(this));
             tasker.Resource.Register(new Custom.DragCaptainAction());
             tasker.Resource.Register(new Custom.ExpeditionTimerAction());
-            tasker.Resource.Register(new Custom.GoalPtCheckAction());
+            tasker.Resource.Register(new Custom.GoalPtCheckRecognition());
+            tasker.Resource.Register(new Custom.TacticalTargetSwordRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimerRecognition());
             tasker.Resource.Register(new Custom.ExpeditionTimeTracker());
             tasker.Resource.Register(new Custom.SmartWaitAction());

@@ -12,17 +12,17 @@
     },
     "timeout": 120000,
     "next": [
-      "TT_IsEventPage",
+      "TT_IsSwordDropColor",
       "TT_IsSilhouettePopup",
+      "TT_IsEventPage",
       "TT_IsTicketReplenishPage",
       "TT_CheckHomeBrightness",
       "[JumpBack]IsFatigueRecoveryPage",
       "TT_IsTeamSelect",
-      "TT_IsSwordSelect",
-      "TT_IsSortie",
-      "TT_IsSwordDropColor",
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInSortie",
+      "[JumpBack]IsInMenu",
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
@@ -72,8 +72,7 @@
         "threshold": [0.97]
       }
     },
-    "next": ["TT_NavigateToActivity"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "next": ["TT_NavigateToActivity", "TT_DetectWhereAmI"]
   },
   "TT_IsSwordDropColor": {
     "recognition": {
@@ -84,7 +83,6 @@
         "upper": [96, 56, 10]
       }
     },
-    "pre_delay": 100,
     "action": {
       "type": "Custom",
       "custom_action": "SwordDropLogAction",
@@ -95,9 +93,7 @@
         "timeout": 120000
       }
     },
-    "post_delay": 1000,
-    "next": ["TT_CheckRoundComplete", "TT_DetectWhereAmI"],
-    "on_error": ["TT_RestartGame"]
+    "next": ["TT_CheckRoundComplete", "TT_DetectWhereAmI"]
   },
   "TT_CheckRoundComplete": {
     "recognition": {
@@ -109,48 +105,12 @@
         "threshold": [0.97]
       }
     },
-    "next": [],
-    "on_error": ["TT_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[战术强化] 完成一圈",
         "display": "file"
       }
     }
-  },
-  "TT_IsSortie": {
-    "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [3, 164, 43, 92],
-        "template": "Common/合战场选中.png",
-        "green_mask": true,
-        "threshold": [0.97]
-      }
-    },
-    "next": ["TT_OnSortieScreen"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
-  "TT_OnSortieScreen": {
-    "pre_delay": 100,
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [8, 299, 32, 89]
-      }
-    },
-    "next": ["TT_DetectWhereAmI"]
-  },
-  "TT_IsSwordSelect": {
-    "enabled": false,
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [530, 6, 224, 45],
-        "expected": "刀剑男士选择"
-      }
-    },
-    "next": ["TT_DetectWhereAmI"]
   },
   "TT_IsEventPage": {
     "recognition": {
@@ -162,8 +122,26 @@
         "threshold": [0.97]
       }
     },
-    "next": ["TT_ClickDifficulty"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "pre_delay":0,
+    "post_delay":0,
+    "next": ["TT_CheckGoalPt", "TT_ClickDifficulty"]
+  },
+  "TT_CheckGoalPt": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "GoalPtCheckRecognition",
+        "custom_recognition_param": {
+          "roi": [845, 183, 108, 34]
+        }
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "目标 PT 已达成"}
+    }
   },
   "TT_ClickDifficulty": {
     "action": {
@@ -172,8 +150,28 @@
         "target": [143, 213, 16, 2]
       }
     },
-    "post_delay": 300,
-    "next": ["TT_VerifyEventPage", "TT_DetectWhereAmI"]
+    "repeat": 2,
+    "repeat_delay": 500,
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [143, 213, 16, 2]
+    },
+    "next": ["TT_ClickChocolateKunaiTraining", "TT_VerifyEventPage", "TT_DetectWhereAmI"]
+  },
+  "TT_ClickChocolateKunaiTraining": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [705, 235, 339, 343],
+        "template": ["Activity/巧克力_苦无战斗训练1.png", "Activity/巧克力_苦无战斗训练2.png"],
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_EnterEvent", "TT_DetectWhereAmI"]
   },
   "TT_VerifyEventPage": {
     "recognition": {
@@ -185,8 +183,50 @@
         "threshold": [0.97]
       }
     },
-    "post_delay": 300,
-    "next": ["TT_CheckSilhouette", "TT_EnterEvent"],
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["TT_CheckSilhouette", "TT_CheckNonTargetSword", "TT_EnterEvent"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_CheckNonTargetSword": {
+    "enabled": false,
+    "max_hit": 1,
+    "recognition": {
+      "type": "Custom",
+      "param": {"custom_recognition": "TacticalTargetSwordRecognition"}
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1098, 249, 121, 31]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1098, 249, 121, 31]
+    },
+    "next": ["TT_VerifyNonTargetSilhouettePopup", "TT_ClickNonTargetSilhouetteRefresh"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_VerifyNonTargetSilhouettePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [593, 58, 93, 39],
+        "expected": "更新"
+      }
+    }
+  },
+  "TT_ClickNonTargetSilhouetteRefresh": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1098, 249, 121, 31],
+        "expected": "剪影更新"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["TT_VerifyNonTargetSilhouettePopup", "TT_ClickNonTargetSilhouetteRefresh"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_CheckSilhouette": {
@@ -210,7 +250,10 @@
         "target": [1141, 614, 120, 49]
       }
     },
-    "post_delay": 200,
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1141, 614, 120, 49]
+    },
     "next": ["TT_IsTeamSelect", "TT_DetectWhereAmI"]
   },
   "TT_IsSilhouettePopup": {
@@ -329,9 +372,6 @@
     "next": ["TT_DetectWhereAmI"]
   },
   "TT_NavigateToActivity": {
-    "next": ["TT_ClickMenu", "TT_DetectWhereAmI"]
-  },
-  "TT_ClickMenu": {
     "recognition": {
       "type": "OCR",
       "param": {
@@ -339,49 +379,8 @@
         "expected": "目"
       }
     },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["TT_PostClickMenuHub"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
-  "TT_PostClickMenuHub": {
-    "next": ["TT_IsMenuDirectory", "TT_CheckNavDirForRetry", "TT_DetectWhereAmI"]
-  },
-  "TT_IsMenuDirectory": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [600, 34, 83, 49],
-        "expected": "目录"
-      }
-    },
-    "next": ["TT_ClickActivityInMenu"],
-    "on_error": ["TT_DetectWhereAmI"]
-  },
-  "TT_ClickActivityInMenu": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [160, 158, 97, 62],
-        "expected": "出阵"
-      }
-    },
-    "pre_delay": 100,
     "action": {"type": "Click"},
     "next": ["TT_DetectWhereAmI"]
-  },
-  "TT_CheckNavDirForRetry": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [1183, 18, 87, 40],
-        "expected": "目"
-      }
-    },
-    "pre_delay": 100,
-    "action": {"type": "Click"},
-    "next": ["TT_PostClickMenuHub"],
-    "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_IsTeamSelect": {
     "recognition": {
@@ -403,8 +402,7 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["TT_CheckCaptainColor"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "next": ["TT_CheckCaptainColor"]
   },
   "TT_CaptainHub": {
     "recognition": {
@@ -470,8 +468,20 @@
         "target": [1204, 629, 1, 1]
       }
     },
-    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "TT_DetectWhereAmI"],
-    "on_error": ["TT_DetectWhereAmI"],
+    "timeout": 30000,
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "TT_IsPreSortieConfirm", "TT_SortieSuccess"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_SortieSuccess": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [539, 3, 87, 6],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "next": ["TT_DetectWhereAmI"],
     "focus": {
       "Node.Action.Succeeded": {
         "content": "[战术强化] 出阵",
@@ -480,8 +490,7 @@
     }
   },
   "TT_CheckCaptainColor": {
-    "next": ["TT_CaptainHub", "TT_TryTeam1"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "next": ["TT_CaptainHub", "TT_TryTeam1"]
   },
   "TT_TryTeam1": {
     "pre_delay": 100,
@@ -555,8 +564,7 @@
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_CheckCaptainColorTry5": {
-    "next": ["TT_CaptainHub", "TT_AllTeamsExhausted"],
-    "on_error": ["TT_DetectWhereAmI"]
+    "next": ["TT_CaptainHub", "TT_AllTeamsExhausted"]
   },
   "TT_AllTeamsExhausted": {
     "action": {
@@ -585,8 +593,6 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "通行令牌不足"}
-    },
-    "next": [],
-    "on_error": ["TT_DetectWhereAmI"]
+    }
   }
 }

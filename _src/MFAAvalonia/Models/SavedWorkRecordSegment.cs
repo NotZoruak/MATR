@@ -23,6 +23,7 @@ public sealed class SavedWorkRecordSegment
     public bool HasInterrupt { get; set; }
     public Dictionary<string, int> ResourceGains { get; set; } = [];
     public List<SwordDrop> SwordDrops { get; set; } = [];
+    public List<string> SkippedSilhouettes { get; set; } = [];
     public Dictionary<string, int> LogisticsCounts { get; set; } = [];
     public List<LogisticsDispatch> LogisticsDispatches { get; set; } = [];
     public List<LogisticsRepair> LogisticsRepairs { get; set; } = [];
@@ -49,6 +50,7 @@ public sealed class SavedWorkRecordSegment
             HasInterrupt = source.HasInterrupt,
             ResourceGains = new Dictionary<string, int>(source.ResourceGains),
             SwordDrops = source.SwordDrops.ToList(),
+            SkippedSilhouettes = source.SkippedSilhouettes.ToList(),
             LogisticsCounts = new Dictionary<string, int>(source.LogisticsCounts),
             LogisticsDispatches = source.LogisticsDispatches.ToList(),
             LogisticsRepairs = source.LogisticsRepairs.ToList(),
@@ -79,6 +81,7 @@ public sealed class SavedWorkRecordSegment
         foreach (var item in ResourceGains)
             result.ResourceGains[item.Key] = item.Value;
         result.SwordDrops.AddRange(SwordDrops);
+        result.SkippedSilhouettes.AddRange(SkippedSilhouettes);
         foreach (var item in LogisticsCounts)
             result.LogisticsCounts[item.Key] = item.Value;
         result.LogisticsDispatches.AddRange(LogisticsDispatches);

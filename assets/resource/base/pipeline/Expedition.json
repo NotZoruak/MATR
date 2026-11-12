@@ -71,10 +71,6 @@
       }
     },
     "action": {"type": "Click"},
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [0, 629, 136, 91]
-    },
     "next": ["E_IsTeamStatusPanel", "Expedition"]
   },
   "E_CheckTeam1": {

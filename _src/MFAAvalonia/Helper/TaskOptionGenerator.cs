@@ -2108,7 +2108,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
          if (MaaProcessor.Interface?.Option?.TryGetValue(subOption.Name ?? string.Empty, out var subInterfaceOption) != true) return;
          
          Control control;
-         if (subInterfaceOption.IsHotkey)
+         if (subOption.Name == TacticalTargetSwordSettings.ListOptionName)
+            control = new TacticalTargetSwordUserControl(
+                new TacticalTargetSwordUserControlModel(subOption, saveConfigurationAction));
+         else if (subInterfaceOption.IsHotkey)
             control = CreateHotkeyControl(subOption, subInterfaceOption);
          else if (subInterfaceOption.IsInput)
             control = CreateInputControl(subOption, subInterfaceOption);

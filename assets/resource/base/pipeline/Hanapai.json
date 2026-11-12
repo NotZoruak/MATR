@@ -201,26 +201,14 @@
   "HP_CheckGoalPt": {
     "enabled": false,
     "recognition": {
-      "type": "TemplateMatch",
-      "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
-      }
-    },
-    "action": {
       "type": "Custom",
-      "custom_action": "GoalPtCheckAction",
-      "custom_action_param": {
-        "roi": [888, 198, 184, 32]
+      "param": {
+        "custom_recognition": "GoalPtCheckRecognition",
+        "custom_recognition_param": {
+          "roi": [888, 198, 184, 32]
+        }
       }
     },
-    "post_delay": 300,
-    "next": ["HP_SelectDifficulty"],
-    "on_error": ["HP_CompleteCurrentTaskAfterGoalPt"]
-  },
-  "HP_CompleteCurrentTaskAfterGoalPt": {
     "action": {
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
