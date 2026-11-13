@@ -135,7 +135,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap1": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -145,7 +144,6 @@
     "next": ["E_ClickSmallMap1"]
   },
   "E_ClickSmallMap1": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -156,6 +154,13 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch1": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
@@ -241,7 +246,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap2": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -262,6 +266,13 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
@@ -347,7 +358,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap3": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -368,6 +378,13 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch3": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
@@ -453,7 +470,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap4": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -474,6 +490,13 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch4": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
@@ -559,7 +582,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap5": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -580,6 +602,13 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
