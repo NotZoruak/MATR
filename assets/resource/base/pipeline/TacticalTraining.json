@@ -436,7 +436,7 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["TT_ConfirmTargetTeam", "TT_CaptainHub", "TT_TryTeam1", "TT_SortieSuccess"],
+    "next": ["TT_ConfirmTargetTeam", "TT_CaptainHub", "TT_SortieSuccess", "TT_TryTeam1", "TT_RecordStrategyEntry"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTargetTeam": {
@@ -536,6 +536,7 @@
     }
   },
   "TT_TryTeam1": {
+    "enabled": true,
     "action": {
       "type": "Click",
       "param": {
@@ -655,6 +656,398 @@
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "全部队伍不符合要求"}
+    }
+  },
+  "TT_RecordStrategyEntry": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": [
+      "TT_TryRecord1",
+      "TT_TryRecord2",
+      "TT_TryRecord3",
+      "TT_TryRecord4",
+      "TT_TryRecord5",
+      "TT_NoRecordsSelected"
+    ]
+  },
+  "TT_TryRecord1": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "anchor": {
+      "TT_RecordSlot": "TT_SelectRecord1",
+      "TT_NextRecord": "TT_RecordsAfter1"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [574, 6, 136, 39]
+    },
+    "next": ["TT_IsRecordPage"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_SelectRecord1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 140, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["TT_UseSelectedRecord"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_RecordsAfter1": {
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["TT_TryRecord2", "TT_TryRecord3", "TT_TryRecord4", "TT_TryRecord5", "TT_AllRecordsExhausted"]
+  },
+  "TT_TryRecord2": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "anchor": {
+      "TT_RecordSlot": "TT_SelectRecord2",
+      "TT_NextRecord": "TT_RecordsAfter2"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [574, 6, 136, 39]
+    },
+    "next": ["TT_IsRecordPage"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_SelectRecord2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 250, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["TT_UseSelectedRecord"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_RecordsAfter2": {
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["TT_TryRecord3", "TT_TryRecord4", "TT_TryRecord5", "TT_AllRecordsExhausted"]
+  },
+  "TT_TryRecord3": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "anchor": {
+      "TT_RecordSlot": "TT_SelectRecord3",
+      "TT_NextRecord": "TT_RecordsAfter3"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [574, 6, 136, 39]
+    },
+    "next": ["TT_IsRecordPage"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_SelectRecord3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 360, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["TT_UseSelectedRecord"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_RecordsAfter3": {
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["TT_TryRecord4", "TT_TryRecord5", "TT_AllRecordsExhausted"]
+  },
+  "TT_TryRecord4": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "anchor": {
+      "TT_RecordSlot": "TT_SelectRecord4",
+      "TT_NextRecord": "TT_RecordsAfter4"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [574, 6, 136, 39]
+    },
+    "next": ["TT_IsRecordPage"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_SelectRecord4": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 465, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["TT_UseSelectedRecord"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_RecordsAfter4": {
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["TT_TryRecord5", "TT_AllRecordsExhausted"]
+  },
+  "TT_TryRecord5": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1139, 132, 124, 41],
+        "template": "Common/部队记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "anchor": {
+      "TT_RecordSlot": "TT_SelectRecord5",
+      "TT_NextRecord": "TT_AllRecordsExhausted"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [574, 6, 136, 39]
+    },
+    "next": ["TT_IsRecordPage"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_SelectRecord5": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1209, 575, 30, 71]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [655, 121, 540, 562]
+    },
+    "next": ["TT_UseSelectedRecord"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_IsRecordPage": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [574, 6, 136, 39],
+        "expected": "部队记录"
+      }
+    },
+    "next": ["[Anchor]TT_RecordSlot"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_UseSelectedRecord": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [707, 53, 72, 64],
+        "template": "Common/使用记录.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [442, 253, 395, 125]
+    },
+    "next": ["TT_ConfirmRecordUse", "TT_RecordUnavailable", "TT_RecordReturned"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmRecordUse": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [576, 151, 126, 34],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [789, 512, 1, 4]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [576, 151, 126, 34]
+    },
+    "next": ["TT_RecordUnavailable", "TT_RecordReturned"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_RecordUnavailable": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [568, 34, 142, 35],
+        "expected": "记录确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [776, 526, 56, 41]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [568, 34, 142, 35]
+    },
+    "next": ["TT_LeaveRecordPage", "TT_RecordReturned"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_LeaveRecordPage": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [571, 4, 146, 40],
+        "expected": "部队记录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [57, 19, 31, 30]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [571, 4, 146, 40]
+    },
+    "next": ["TT_RecordReturned"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_RecordReturned": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "pre_wait_freezes": {
+      "time": 200,
+      "target": [1199, 623, 8, 7]
+    },
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["TT_CaptainHub", "[Anchor]TT_NextRecord"]
+  },
+  "TT_NoRecordsSelected": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "未选择部队记录"}
+    }
+  },
+  "TT_AllRecordsExhausted": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "全部启用的部队记录不符合出阵条件"}
     }
   },
   "TT_WaitRefresh": {
