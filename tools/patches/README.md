@@ -6,6 +6,8 @@ Windows 已恢复使用 `MaaFramework-5.14.3-cpu-ocr-no-spin.patch`：保留 4 �
 
 打包校验的 `MaaFramework.dll` SHA-256 为 `A27D305F5462E93E81EB11F961DA01575724EE450F4D9540B59EED866F164298`。其他三个配套依赖沿用下方表格的摘要。构建使用 MSVC x64、RelWithDebInfo，版本参数为 `MAA_HASH_VERSION=v5.14.3+cpu-nospin`。
 
+补丁运行库首次可放在 `runtimes/win-x64/native`。`pack_win.ps1` 会逐个验证这四个文件的固定摘要，并把符合预期的文件复制到 `runtimes/patches/win-x64/native` 作为独立缓存；后续 .NET 发布或开发区同步替换官方运行库时，不会覆盖该缓存。打包时始终从缓存注入补丁文件。缓存文件丢失或不匹配时，会尝试从兼容路径逐个恢复；若对应文件摘要不符，则按下方构建说明恢复。
+
 默认 `rate_limit` 已恢复为 500 毫秒。macOS 继续使用官方 5.14.3 dylib，不包含 Windows 关闭自旋补丁；共享资源的轮询间隔同为 500 毫秒。
 
 以下为历史实验与构建记录，其中双线程和 1000 毫秒配置不再作为当前默认值。
