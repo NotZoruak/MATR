@@ -1598,7 +1598,9 @@
                         </Button>
                     </StackPanel>
                 </dashboard:DashboardCard.HeaderActions>
-                <ScrollViewer BorderBrush="LightGray"
+                <!-- 日志重新获得焦点时保留当前位置，避免旧焦点项触发回滚。 -->
+                <ScrollViewer BringIntoViewOnFocusChange="False"
+                              BorderBrush="LightGray"
                               BorderThickness="1"
                               ClipToBounds="False"
                               Margin="15,8,10,5"
@@ -1606,6 +1608,9 @@
                               VerticalContentAlignment="Top"
                               extensions:ScrollViewerExtensions.AutoScroll="True"
                               extensions:ScrollViewerExtensions.PanningMode="VerticalOnly">
+                    <ScrollViewer.Styles>
+                        <StyleInclude Source="avares://MFAAvalonia.Core/Assets/Style/LogScrollStyles.axaml" />
+                    </ScrollViewer.Styles>
                     <ItemsControl ItemsSource="{Binding Path=LogItemViewModels}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

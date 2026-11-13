@@ -290,7 +290,7 @@
         "expected": "更新"
       }
     },
-    "next": ["TT_ConfirmSilhouette", "TT_TerminateNoTicket"],
+    "next": ["TT_ConfirmSilhouette", "TT_TicketGate", "TT_TerminateNoTicket"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmSilhouette": {
@@ -299,19 +299,36 @@
       "param": {
         "roi": [564, 593, 32, 25],
         "lower": [127, 167, 18],
-        "upper": [133, 173, 24]
+        "upper": [133, 173, 24],
+        "count": 800
       }
     },
     "action": {"type": "Click"},
+    "next": ["TT_ConfirmSilhouetteSuccess", "TT_ConfirmSilhouette"],
+    "on_error": ["TT_DetectWhereAmI"]
+  },
+  "TT_ConfirmSilhouetteSuccess": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [564, 593, 32, 25],
+        "lower": [127, 167, 18],
+        "upper": [133, 173, 24],
+        "count": 800
+      }
+    },
+    "inverse": true,
     "next": ["TT_DetectWhereAmI"]
   },
   "TT_TicketGate": {
+    "enabled": false,
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [564, 593, 32, 25],
         "lower": [187, 187, 187],
-        "upper": [193, 193, 193]
+        "upper": [193, 193, 193],
+        "count": 800
       }
     },
     "action": {
@@ -320,7 +337,6 @@
         "target": [853, 147, 19, 14]
       }
     },
-    "post_delay": 300,
     "next": ["TT_IsTicketReplenishPage", "TT_TicketGate"],
     "on_error": ["TT_DetectWhereAmI"]
   },
@@ -1066,6 +1082,7 @@
     "next": ["TT_DetectWhereAmI"]
   },
   "TT_TerminateNoTicket": {
+    "enabled": true,
     "action": {
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",

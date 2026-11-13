@@ -1,0 +1,7 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <!-- Markdown 日志内部的 ScrollViewer 也会发出焦点定位请求并冒泡到外层，
+         因此需要在日志区域内同时关闭内部容器的焦点自动定位。 -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="BringIntoViewOnFocusChange" Value="False" />
+    </Style>
+</Styles>

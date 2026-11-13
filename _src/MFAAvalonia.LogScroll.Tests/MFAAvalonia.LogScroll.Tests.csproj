@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
+    <PackageReference Include="Avalonia.Headless.XUnit" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+    <ProjectReference Include="../Markdown.Avalonia/Markdown.Avalonia.csproj" />
+    <Compile Include="../MFAAvalonia/Extensions/ScrollViewerExtensions.cs" Link="ScrollViewerExtensions.cs" />
+    <AvaloniaResource Include="../MFAAvalonia/Assets/Style/LogScrollStyles.axaml" Link="LogScrollStyles.axaml" />
+  </ItemGroup>
+</Project>
