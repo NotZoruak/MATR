@@ -4935,9 +4935,8 @@
         {
           "name": "",
           "pipeline_override": {
-            "TT_IsSilhouettePopup": {
-              "next": ["TT_ConfirmSilhouette", "TT_TicketGate"]
-            }
+            "TT_TicketGate": {"enabled": true},
+            "TT_TerminateNoTicket": {"enabled": false}
           }
         }
       ],
