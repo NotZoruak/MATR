@@ -1,6 +1,20 @@
 # MaaFW CPU OCR 补丁
 
-## 当前使用：MaaFramework 5.14.3 四线程关闭自旋方案
+## 当前使用：MaaFramework 5.16.0
+
+运行库依赖升级为 `Maa.Framework.Runtimes 5.16.0`，托管封装保留稳定版 `Maa.Framework 5.10.0`。Windows 使用 `MaaFramework-5.16.0-cpu-ocr-no-spin.patch`，源码提交为 `11ea6b57fdd50322a462a3d39d77f110a8326335`。保留新版 `InferenceContext` 同步机制，仅在 CPU OCR 会话保留四个推理线程并关闭空闲自旋；macOS 使用官方 5.16.0 dylib。
+
+构建使用 MaaDeps v3.0.0、MSVC x64、RelWithDebInfo，版本参数 `MAA_HASH_VERSION=v5.16.0+cpu-nospin`。仅替换 MaaFramework.dll，其他依赖使用官方 5.16.0 NuGet 包配套文件。打包脚本拒绝旧版框架，并从 `runtimes/patches/win-x64/native` 校验及注入以下文件：
+
+| 文件 | SHA-256 |
+|---|---|
+| `MaaFramework.dll` | `06E7A49B431EC55375D8552200E943750C328703198DDFE03AD731BE57547653` |
+| `fastdeploy_ppocr_maa.dll` | `671FEAEEAA4D8F34719B8E75F279C810CC80C0DB37F100778975F75D12C2F192` |
+| `onnxruntime_maa.dll` | `29C654B2B6BA9EED0FC5FC94DD43407B2128A01CA02A8D32AB7AA6EFDFFC03E1` |
+| `opencv_world4_maa.dll` | `34524A1B28B343E16B8016F44C52046358576BE0E84C393D17DE1146502DF555` |
+
+
+## 历史方案：MaaFramework 5.14.3 四线程关闭自旋方案
 
 Windows 已恢复使用 `MaaFramework-5.14.3-cpu-ocr-no-spin.patch`：保留 4 个 CPU OCR 推理线程，仅关闭会话空闲自旋。原生版本为 `v5.14.3+cpu-nospin`，源码提交为 `8963191215ca49d6b037802acd07d20a4213160a`，依赖 MaaDeps v3.0.0、ONNX Runtime 1.29.0。
 
