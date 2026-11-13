@@ -472,13 +472,17 @@
                                         IsVisible="{Binding SelectedHasSkippedSilhouettes}"
                                         Margin="0,4,0,0">
                                 <TextBlock Classes="RecordSectionTitle" Text="{Binding SelectedSkippedSilhouetteTotalText}" />
-                                <ItemsControl ItemsSource="{Binding SelectedSkippedSilhouetteItems}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
+                                <ItemsControl ItemsSource="{Binding SelectedSkippedSilhouetteGroups}">
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Classes="RecordBody" Text="{Binding}" Margin="0,0,12,2" TextWrapping="Wrap" />
+                                        <DataTemplate x:DataType="pages:SkippedSilhouetteGroupDisplay">
+                                            <TextBlock Classes="RecordSwordBody"
+                                                       LineHeight="24"
+                                                       TextWrapping="Wrap">
+                                                <Run Text="{Binding SwordType}"
+                                                     FontWeight="Bold" />
+                                                <Run Text="：" />
+                                                <Run Text="{Binding SilhouettesText}" />
+                                            </TextBlock>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

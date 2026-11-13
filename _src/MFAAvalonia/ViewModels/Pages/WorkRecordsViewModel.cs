@@ -58,7 +58,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropTotalText))]
     [NotifyPropertyChangedFor(nameof(SelectedHasSkippedSilhouettes))]
     [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteTotalText))]
-    [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteItems))]
+    [NotifyPropertyChangedFor(nameof(SelectedSkippedSilhouetteGroups))]
     [NotifyPropertyChangedFor(nameof(SelectedHasOutcomes))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsSummaryText))]
     [NotifyPropertyChangedFor(nameof(SelectedLogisticsDispatchCountText))]
@@ -516,21 +516,25 @@ public partial class WorkRecordsViewModel : ViewModelBase
     public string SelectedSkippedSilhouetteTotalText => SelectedRecord is null
         ? "跳过剪影" : $"跳过剪影（×{SelectedRecord.SkippedSilhouettes.Count}）";
 
-    /// <summary>按刀种顺序排列并合并次数，供任务收获区域自动换行。</summary>
-    public IReadOnlyList<string> SelectedSkippedSilhouetteItems => SelectedRecord?.SkippedSilhouettes
-        .Select((name, index) => (Name: name, Index: index))
-        .GroupBy(item => item.Name)
-        .Select(group => new
-        {
-            Name = group.Key,
-            Count = group.Count(),
-            FirstIndex = group.Min(item => item.Index),
-            Type = SwordTypeByName.GetValueOrDefault(group.Key, string.Empty)
-        })
-        .OrderBy(item => Array.IndexOf(TypeOrder, item.Type) is var index && index >= 0 ? index : int.MaxValue)
-        .ThenBy(item => item.FirstIndex)
-        .Select(item => $"{item.Name}（×{item.Count}）")
-        .ToArray() ?? [];
+    /// <summary>跳过剪影按刀种分组并合并次数。</summary>
+    public IReadOnlyList<SkippedSilhouetteGroupDisplay> SelectedSkippedSilhouetteGroups =>
+        SelectedRecord?.SkippedSilhouettes
+            .Select((name, index) => new
+            {
+                Name = name,
+                Index = index,
+                Type = SwordTypeByName.GetValueOrDefault(name, "未知刀种")
+            })
+            .GroupBy(item => item.Type)
+            .OrderBy(group => Array.IndexOf(TypeOrder, group.Key) is var index && index >= 0 ? index : int.MaxValue)
+            .ThenBy(group => group.Min(item => item.Index))
+            .Select(group => new SkippedSilhouetteGroupDisplay(
+                group.Key,
+                string.Join("，", group
+                    .GroupBy(item => item.Name)
+                    .OrderBy(nameGroup => nameGroup.Min(item => item.Index))
+                    .Select(nameGroup => $"{nameGroup.Key}（x{nameGroup.Count()}）"))))
+            .ToArray() ?? [];
 
     /// <summary>是否有出阵收获</summary>
     public bool SelectedHasOutcomes => SelectedHasResources || SelectedHasSwordDrops || SelectedHasSkippedSilhouettes;
@@ -638,3 +642,6 @@ public partial class WorkRecordsViewModel : ViewModelBase
 
 /// <summary>刀剑掉落按刀种分组后的展示数据</summary>
 public sealed record SwordDropGroupDisplay(string SwordType, string DropsText);
+
+/// <summary>跳过剪影按刀种分组后的展示数据</summary>
+public sealed record SkippedSilhouetteGroupDisplay(string SwordType, string SilhouettesText);

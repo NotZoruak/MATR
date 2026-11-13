@@ -50,13 +50,14 @@ public class WorkRecordSkippedSilhouetteTests
     }
 
     [Fact]
-    public void 仅有跳过剪影时也应显示任务收获并按刀名汇总()
+    public void 仅有跳过剪影时也应显示任务收获并按刀种和刀名汇总()
     {
         var record = new WorkRecord();
         Skipped(record).AddRange(["厚藤四郎", "厚藤四郎", "平野藤四郎"]);
         var model = new WorkRecordsViewModel { SelectedRecord = record };
         Assert.True(model.SelectedHasOutcomes);
         Assert.Equal("跳过剪影（×3）", model.SelectedSkippedSilhouetteTotalText);
-        Assert.Contains("厚藤四郎（×2）", model.SelectedSkippedSilhouetteItems);
+        var group = Assert.Single(model.SelectedSkippedSilhouetteGroups);
+        Assert.Equal("厚藤四郎（x2），平野藤四郎（x1）", group.SilhouettesText);
     }
 }

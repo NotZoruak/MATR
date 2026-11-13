@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.6-beta.2",
+  "version": "v0.15.6",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.6-beta.2 | 刀剑乱舞小助手",
+  "custom_title": "MATR v0.15.6 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -93,6 +93,7 @@
         "S_选择时代",
         "S_选择地域",
         "S_选择部队",
+        "S_部队记录",
         "S_选择阵形",
         "S_重伤处理",
         "S_疲劳处理",
@@ -115,6 +116,7 @@
       "option": [
         "HV_选择时代",
         "HV_选择部队",
+        "HV_部队记录",
         "HV_选择阵形",
         "HV_重伤处理",
         "HV_疲劳处理",
@@ -139,6 +141,7 @@
       "option": [
         "U_层数选择",
         "U_选择部队",
+        "U_部队记录",
         "U_选择阵形",
         "U_重伤处理",
         "U_疲劳处理",
@@ -163,6 +166,7 @@
       "option": [
         "RB_目标PT",
         "RB_选择部队",
+        "RB_部队记录",
         "RB_选择难度",
         "RB_疲劳处理",
         "RB_自动行军",
@@ -183,6 +187,7 @@
       "option": [
         "HP_目标PT",
         "HP_选择部队",
+        "HP_部队记录",
         "HP_选择难度",
         "HP_疲劳处理",
         "HP_换队长",
@@ -200,6 +205,7 @@
       "option": [
         "EC_行动策略",
         "EC_选择部队",
+        "EC_部队记录",
         "EC_疲劳处理",
         "EC_换队长",
         "EC_购买门票",
@@ -218,6 +224,8 @@
         "TT_目标PT",
         "TT_筛选目标刀剑",
         "TT_选择部队",
+        "TT_部队记录",
+        "TT_出阵条件不满足时",
         "TT_选择难度",
         "TT_疲劳处理",
         "TT_换队长",
@@ -225,7 +233,7 @@
         "TT_同步远征"
       ],
       "label": "战术强化",
-      "description": "战术强化训练/巧克力/南瓜活动自动化出阵。\n\n* **达到目标PT后跳过任务**：启用后，达到设定的目标总 PT 时跳过本次任务；可选用日期计划，让目标随活动进度逐日放宽。\n* **筛选目标刀剑**：可在齿轮中搜索并选择希望保留的刀剑；可靠识别为非目标刀剑时刷新剪影。\n* **选择部队**：设置首选部队；不符合条件时自动依次尝试 1 至 5 队。\n* **选择难度**：可选初级、中级、上级，或保持当前难度。\n* **疲劳处理**：可选择不处理、自动刷花，或疲劳时停止任务。\n* **更换队长**：启用后自动更换队长。\n* **购买门票**：启用后，门票不足时自动购买补充，一次购买一张。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "战术强化训练/巧克力/南瓜活动自动化出阵。\n\n* **达到目标PT后跳过任务**：启用后，达到设定的目标总 PT 时跳过本次任务；可选用日期计划，让目标随活动进度逐日放宽。\n* **筛选目标刀剑**：可在齿轮中搜索并选择希望保留的刀剑；可靠识别为非目标刀剑时刷新剪影。\n* **选择部队**：设置首选部队。\n* **无法出阵时**：可选择依次尝试其他部队，或固定目标部队并依次使用已启用的部队记录；记录可在齿轮中多选，按记录编号顺序尝试。\n* **选择难度**：可选初级、中级、上级，或保持当前难度。\n* **疲劳处理**：可选择不处理、自动刷花，或疲劳时停止任务。\n* **更换队长**：启用后自动更换队长。\n* **购买门票**：启用后，门票不足时自动购买补充，一次购买一张。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "刷花",
@@ -2132,26 +2140,17 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
-            },
             "THR_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
             },
             "S_ConfirmTeam": {
               "recognition": {
@@ -2186,26 +2185,17 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
-            },
             "THR_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
             },
             "S_ConfirmTeam": {
               "recognition": {
@@ -2240,26 +2230,17 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
-            },
             "THR_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
             },
             "S_ConfirmTeam": {
               "recognition": {
@@ -2294,26 +2275,17 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
-            },
             "THR_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
             },
             "S_ConfirmTeam": {
               "recognition": {
@@ -2348,26 +2320,17 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
-            },
             "THR_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
             },
             "S_ConfirmTeam": {
               "recognition": {
@@ -2389,6 +2352,84 @@
                   "roi": [576, 109, 1, 1]
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "S_部队记录": {
+      "name": "S_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -2871,9 +2912,6 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "1"}
             },
@@ -2882,9 +2920,6 @@
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
             },
             "RB_ConfirmTeam": {
               "recognition": {
@@ -2911,9 +2946,6 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
-            },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "2"}
             },
@@ -2922,9 +2954,6 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
             },
             "RB_ConfirmTeam": {
               "recognition": {
@@ -2951,9 +2980,6 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "3"}
             },
@@ -2962,9 +2988,6 @@
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
             },
             "RB_ConfirmTeam": {
               "recognition": {
@@ -2991,9 +3014,6 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
-            },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "4"}
             },
@@ -3002,9 +3022,6 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
             },
             "RB_ConfirmTeam": {
               "recognition": {
@@ -3031,9 +3048,6 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "RB_TrySwitchTeam": {
               "custom_action_param": {"initial_team": "5"}
             },
@@ -3042,9 +3056,6 @@
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
             },
             "RB_ConfirmTeam": {
               "recognition": {
@@ -3059,6 +3070,84 @@
                   "roi": [576, 109, 1, 1]
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "RB_部队记录": {
+      "name": "RB_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -3581,17 +3670,11 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "HP_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
             },
             "HP_ConfirmTeam": {
               "recognition": {
@@ -3618,17 +3701,11 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
-            },
             "HP_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
             },
             "HP_ConfirmTeam": {
               "recognition": {
@@ -3655,17 +3732,11 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "HP_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
             },
             "HP_ConfirmTeam": {
               "recognition": {
@@ -3692,17 +3763,11 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
-            },
             "HP_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
             },
             "HP_ConfirmTeam": {
               "recognition": {
@@ -3729,17 +3794,11 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "HP_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
             },
             "HP_ConfirmTeam": {
               "recognition": {
@@ -3754,6 +3813,84 @@
                   "roi": [576, 109, 1, 1]
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "HP_部队记录": {
+      "name": "HP_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -4075,12 +4212,6 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
@@ -4111,12 +4242,6 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
             },
             "EC_IsTeamSelect": {
               "post_wait_freezes": {
@@ -4149,12 +4274,6 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
@@ -4185,12 +4304,6 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
             },
             "EC_IsTeamSelect": {
               "post_wait_freezes": {
@@ -4223,12 +4336,6 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "EC_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
@@ -4248,6 +4355,84 @@
                   "roi": [576, 109, 1, 1]
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "EC_部队记录": {
+      "name": "EC_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -4447,12 +4632,6 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "TT_ConfirmTargetTeam": {
               "recognition": {
                 "param": {
@@ -4483,12 +4662,6 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
             },
             "TT_ConfirmTargetTeam": {
               "recognition": {
@@ -4521,12 +4694,6 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "TT_ConfirmTargetTeam": {
               "recognition": {
                 "param": {
@@ -4557,12 +4724,6 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
             },
             "TT_ConfirmTargetTeam": {
               "recognition": {
@@ -4595,12 +4756,6 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "TT_ConfirmTargetTeam": {
               "recognition": {
                 "param": {
@@ -4615,6 +4770,145 @@
                 }
               }
             }
+          }
+        }
+      ]
+    },
+    "TT_部队记录": {
+      "name": "TT_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            }
+          }
+        }
+      ]
+    },
+    "TT_出阵条件不满足时": {
+      "name": "TT_出阵条件不满足时",
+      "label": "无法出阵时",
+      "default_case": "尝试其他部队",
+      "cases": [
+        {
+          "name": "尝试其他部队",
+          "pipeline_override": {
+            "TT_TryTeam1": {"enabled": true},
+            "TT_RecordStrategyEntry": {"enabled": false}
+          }
+        },
+        {
+          "name": "使用部队记录",
+          "option": ["TT_启用部队记录"],
+          "pipeline_override": {
+            "TT_TryTeam1": {"enabled": false},
+            "TT_RecordStrategyEntry": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "TT_启用部队记录": {
+      "name": "TT_启用部队记录",
+      "label": "启用的部队记录",
+      "description": "请提前配置游戏中的部队记录。固定目标部队，按编号依次使用勾选记录，每次返回部队选择页后检查出阵条件；全部取消时结束任务并提示未选择记录。",
+      "type": "checkbox",
+      "default_cases": ["部队记录1", "部队记录2", "部队记录3", "部队记录4", "部队记录5"],
+      "cases": [
+        {
+          "name": "部队记录1",
+          "pipeline_override": {
+            "TT_TryRecord1": {"enabled": true}
+          }
+        },
+        {
+          "name": "部队记录2",
+          "pipeline_override": {
+            "TT_TryRecord2": {"enabled": true}
+          }
+        },
+        {
+          "name": "部队记录3",
+          "pipeline_override": {
+            "TT_TryRecord3": {"enabled": true}
+          }
+        },
+        {
+          "name": "部队记录4",
+          "pipeline_override": {
+            "TT_TryRecord4": {"enabled": true}
+          }
+        },
+        {
+          "name": "部队记录5",
+          "pipeline_override": {
+            "TT_TryRecord5": {"enabled": true}
           }
         }
       ]
@@ -5081,15 +5375,6 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "U_ConfirmTeam": {
               "recognition": {
                 "param": {
@@ -5121,15 +5406,6 @@
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
             },
             "U_ConfirmTeam": {
               "recognition": {
@@ -5163,15 +5439,6 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "U_ConfirmTeam": {
               "recognition": {
                 "param": {
@@ -5203,15 +5470,6 @@
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
             },
             "U_ConfirmTeam": {
               "recognition": {
@@ -5245,15 +5503,6 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
-            },
-            "THR_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
-            },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "U_ConfirmTeam": {
               "recognition": {
                 "param": {
@@ -5267,6 +5516,84 @@
                   "roi": [576, 109, 1, 1]
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "U_部队记录": {
+      "name": "U_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
@@ -9541,17 +9868,11 @@
               },
               "target": [154, 93, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 140, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [108, 76, 106, 6]
               },
               "target": [154, 93, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 140, 30, 71]
             },
             "HV_ConfirmTeam": {
               "recognition": {
@@ -9579,17 +9900,11 @@
               },
               "target": [282, 94, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 250, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [229, 76, 105, 6]
               },
               "target": [282, 94, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 250, 30, 71]
             },
             "HV_ConfirmTeam": {
               "recognition": {
@@ -9617,17 +9932,11 @@
               },
               "target": [398, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 360, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [351, 76, 106, 6]
               },
               "target": [398, 91, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 360, 30, 71]
             },
             "HV_ConfirmTeam": {
               "recognition": {
@@ -9655,17 +9964,11 @@
               },
               "target": [519, 89, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 465, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [471, 76, 106, 6]
               },
               "target": [519, 89, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 465, 30, 71]
             },
             "HV_ConfirmTeam": {
               "recognition": {
@@ -9693,17 +9996,11 @@
               },
               "target": [635, 91, 1, 1]
             },
-            "SelectRecordSlot": {
-              "target": [1209, 575, 30, 71]
-            },
             "TF_IsTeamSelect": {
               "post_wait_freezes": {
                 "target": [594, 75, 106, 7]
               },
               "target": [635, 91, 1, 1]
-            },
-            "TF_UseRecord_Step2": {
-              "target": [1209, 575, 30, 71]
             },
             "HV_ConfirmTeam": {
               "recognition": {
@@ -9718,6 +10015,84 @@
                   "roi": [576, 109, 1, 1]
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    "HV_部队记录": {
+      "name": "HV_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
             }
           }
         }
