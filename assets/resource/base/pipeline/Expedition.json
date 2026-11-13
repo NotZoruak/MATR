@@ -156,14 +156,17 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch1": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn1"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn1", "E_VerifyScreen1"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn1": {
@@ -259,14 +262,17 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch2": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn2"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn2", "E_VerifyScreen2"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn2": {
@@ -362,14 +368,17 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch3": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn3"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn3", "E_VerifyScreen3"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn3": {
@@ -465,14 +474,17 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch4": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn4"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn4", "E_VerifyScreen4"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn4": {
@@ -568,14 +580,17 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch5": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn5", "E_SelectTeam5"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn5", "E_SelectTeam5", "E_VerifyScreen5"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn5": {
@@ -791,32 +806,27 @@
       }
     },
     "post_wait_freezes": {"time": 200},
-    "next": ["E_GoHome"],
-    "on_error": ["Expedition"]
+    "next": ["E_GoHome"]
   },
   "E_ExpSubHub1": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam1", "E_CheckTeam1", "E_ExpSubHub2"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam1", "E_CheckTeam1", "E_ExpSubHub2"]
   },
   "E_ExpSubHub2": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam2", "E_CheckTeam2", "E_ExpSubHub3"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam2", "E_CheckTeam2", "E_ExpSubHub3"]
   },
   "E_ExpSubHub3": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam3", "E_CheckTeam3", "E_ExpSubHub4"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam3", "E_CheckTeam3", "E_ExpSubHub4"]
   },
   "E_ExpSubHub4": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam4", "E_CheckTeam4", "E_ExpSubHub5"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam4", "E_CheckTeam4", "E_ExpSubHub5"]
   },
   "E_ExpSubHub5": {
     "pre_delay": 0,
@@ -828,8 +838,7 @@
       "E_WorkshopHub",
       "[Anchor]E_NaibanHub",
       "E_AllTeamsBusy"
-    ],
-    "on_error": ["Expedition"]
+    ]
   },
   "E_NaibanAnchorInit": {
     "max_hit": 1,
