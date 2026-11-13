@@ -612,7 +612,11 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
                     var opt = new MaaInterface.MaaInterfaceSelectOption
                     {
                         Name = newOpt.Name,
-                        Index = newOpt.Index,
+                        Index = ResolveAddedOptionIndex(
+                            optName,
+                            newOpt.Index,
+                            existingDict,
+                            maaInterface),
                         Data = newOpt.Data != null ? new Dictionary<string, string?>(newOpt.Data) : null
                     };
                     SetDefaultOptionValue(maaInterface, opt);
@@ -623,6 +627,34 @@ public class TaskLoader(MaaInterface? maaInterface, TaskQueueViewModel taskQueue
             oldItem.InterfaceItem!.Option = newOptions;
         }
         else oldItem.InterfaceItem!.Option = null;
+    }
+
+    private static int? ResolveAddedOptionIndex(
+        string optionName,
+        int? proposedIndex,
+        Dictionary<string, MaaInterface.MaaInterfaceSelectOption> existingOptions,
+        MaaInterface? maaInterface)
+    {
+        const string recordSuffix = "_部队记录";
+        if (proposedIndex.HasValue || !optionName.EndsWith(recordSuffix, StringComparison.Ordinal))
+            return proposedIndex;
+
+        var teamOptionName = string.Concat(
+            optionName.AsSpan(0, optionName.Length - recordSuffix.Length),
+            "_选择部队");
+        if (!existingOptions.TryGetValue(teamOptionName, out var teamOption)
+            || teamOption.Index is not int teamIndex)
+        {
+            return proposedIndex;
+        }
+
+        if (maaInterface?.Option?.TryGetValue(optionName, out var recordOption) == true
+            && recordOption.Cases is { Count: > 0 } cases)
+        {
+            return Math.Clamp(teamIndex, 0, cases.Count - 1);
+        }
+
+        return teamIndex;
     }
 
     private List<MaaInterface.MaaInterfaceSelectOption> MergeSubOptions(List<MaaInterface.MaaInterfaceSelectOption> existingSubOptions)

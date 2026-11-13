@@ -3,13 +3,14 @@
     "pre_delay": 0,
     "timeout": 120000,
     "next": [
+      "[JumpBack]E_IsInSorties",
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "E_DetectExpeditionScreen",
       "E_IsMenuDirectory",
       "E_IsTeamStatusPanel",
       "E_CheckHomeBrightness",
-      "E_IsSwordDropColor",
+      "[JumpBack]E_IsSwordDropColor",
       "[JumpBack]IsAnnouncementPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
@@ -31,6 +32,23 @@
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_RestartGame"]
+  },
+  "E_IsInSorties": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [15, 2, 54, 104],
+        "template": "Common/出阵界面标志.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1193, 21, 65, 34]
+      }
+    }
   },
   "E_LeaveTroopRecord": {
     "recognition": {
@@ -117,7 +135,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap1": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -127,7 +144,6 @@
     "next": ["E_ClickSmallMap1"]
   },
   "E_ClickSmallMap1": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -138,14 +154,24 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch1": {
-    "pre_delay": 100,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn1"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn1", "E_ConfirmDispatch1"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn1": {
@@ -165,17 +191,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_ConfirmTeamBtn1", "E_MarkTeam1"]
+    "next": ["[JumpBack]E_CloseTeamSelectPopup", "E_ConfirmTeamBtn1", "E_MarkTeam1"]
   },
   "E_ConfirmTeamBtn1": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [89, 109, 1, 1],
-        "lower": [165, 14, 14],
-        "upper": [185, 34, 34]
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199]
       }
     },
+    "inverse": true,
     "next": ["E_SelectTeamBtn1"],
     "on_error": ["E_GoHome"]
   },
@@ -220,7 +247,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap2": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -230,7 +256,6 @@
     "next": ["E_ClickSmallMap2"]
   },
   "E_ClickSmallMap2": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -241,14 +266,24 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch2": {
-    "pre_delay": 100,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn2"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn2", "E_ConfirmDispatch2"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn2": {
@@ -268,17 +303,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_ConfirmTeamBtn2", "E_MarkTeam2"]
+    "next": ["[JumpBack]E_CloseTeamSelectPopup", "E_ConfirmTeamBtn2", "E_MarkTeam2"]
   },
   "E_ConfirmTeamBtn2": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [210, 109, 1, 1],
-        "lower": [165, 14, 14],
-        "upper": [185, 34, 34]
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199]
       }
     },
+    "inverse": true,
     "next": ["E_SelectTeamBtn2"],
     "on_error": ["E_GoHome"]
   },
@@ -323,7 +359,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap3": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -333,7 +368,6 @@
     "next": ["E_ClickSmallMap3"]
   },
   "E_ClickSmallMap3": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -344,14 +378,24 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch3": {
-    "pre_delay": 100,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn3"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn3", "E_ConfirmDispatch3"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn3": {
@@ -371,17 +415,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_ConfirmTeamBtn3", "E_MarkTeam3"]
+    "next": ["[JumpBack]E_CloseTeamSelectPopup", "E_ConfirmTeamBtn3", "E_MarkTeam3"]
   },
   "E_ConfirmTeamBtn3": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [332, 109, 1, 1],
-        "lower": [165, 14, 14],
-        "upper": [185, 34, 34]
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199]
       }
     },
+    "inverse": true,
     "next": ["E_SelectTeamBtn3"],
     "on_error": ["E_GoHome"]
   },
@@ -426,7 +471,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap4": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -436,7 +480,6 @@
     "next": ["E_ClickSmallMap4"]
   },
   "E_ClickSmallMap4": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -447,14 +490,24 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch4": {
-    "pre_delay": 100,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn4"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn4", "E_ConfirmDispatch4"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn4": {
@@ -474,17 +527,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_ConfirmTeamBtn4", "E_MarkTeam4"]
+    "next": ["[JumpBack]E_CloseTeamSelectPopup", "E_ConfirmTeamBtn4", "E_MarkTeam4"]
   },
   "E_ConfirmTeamBtn4": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [453, 109, 1, 1],
-        "lower": [165, 14, 14],
-        "upper": [185, 34, 34]
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199]
       }
     },
+    "inverse": true,
     "next": ["E_SelectTeamBtn4"],
     "on_error": ["E_GoHome"]
   },
@@ -529,7 +583,6 @@
     "on_error": ["Expedition"]
   },
   "E_SelectMap5": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -539,7 +592,6 @@
     "next": ["E_ClickSmallMap5"]
   },
   "E_ClickSmallMap5": {
-    "pre_delay": 100,
     "action": {
       "type": "Click",
       "param": {
@@ -550,14 +602,24 @@
     "on_error": ["Expedition"]
   },
   "E_ConfirmDispatch5": {
-    "pre_delay": 100,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [516, 57, 250, 47],
+        "expected": "远征目的地选择"
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
         "target": [1199, 636, 1, 1]
       }
     },
-    "next": ["E_SelectTeamBtn5", "E_SelectTeam5"],
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [516, 57, 250, 47]
+    },
+    "next": ["E_SelectTeamBtn5", "E_ConfirmDispatch5"],
     "on_error": ["Expedition"]
   },
   "E_SelectTeamBtn5": {
@@ -577,17 +639,18 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["E_ConfirmTeamBtn5", "E_MarkTeam5"]
+    "next": ["[JumpBack]E_CloseTeamSelectPopup", "E_ConfirmTeamBtn5", "E_MarkTeam5"]
   },
   "E_ConfirmTeamBtn5": {
     "recognition": {
       "type": "ColorMatch",
       "param": {
         "roi": [576, 109, 1, 1],
-        "lower": [165, 14, 14],
-        "upper": [185, 34, 34]
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199]
       }
     },
+    "inverse": true,
     "next": ["E_SelectTeamBtn5"],
     "on_error": ["E_GoHome"]
   },
@@ -656,7 +719,9 @@
       "E_VerifyMenuDir",
       "E_CloseBlackButton",
       "E_ClickRetreat",
-      "E_CheckHomeBrightness"
+      "E_CheckHomeBrightness",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]E_IsSwordDropColor"
     ],
     "on_error": ["Expedition"]
   },
@@ -771,32 +836,27 @@
       }
     },
     "post_wait_freezes": {"time": 200},
-    "next": ["E_GoHome"],
-    "on_error": ["Expedition"]
+    "next": ["E_GoHome"]
   },
   "E_ExpSubHub1": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam1", "E_CheckTeam1", "E_ExpSubHub2"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam1", "E_CheckTeam1", "E_ExpSubHub2"]
   },
   "E_ExpSubHub2": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam2", "E_CheckTeam2", "E_ExpSubHub3"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam2", "E_CheckTeam2", "E_ExpSubHub3"]
   },
   "E_ExpSubHub3": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam3", "E_CheckTeam3", "E_ExpSubHub4"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam3", "E_CheckTeam3", "E_ExpSubHub4"]
   },
   "E_ExpSubHub4": {
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["E_SkipTeam4", "E_CheckTeam4", "E_ExpSubHub5"],
-    "on_error": ["Expedition"]
+    "next": ["E_SkipTeam4", "E_CheckTeam4", "E_ExpSubHub5"]
   },
   "E_ExpSubHub5": {
     "pre_delay": 0,
@@ -808,8 +868,7 @@
       "E_WorkshopHub",
       "[Anchor]E_NaibanHub",
       "E_AllTeamsBusy"
-    ],
-    "on_error": ["Expedition"]
+    ]
   },
   "E_NaibanAnchorInit": {
     "max_hit": 1,
@@ -897,8 +956,7 @@
       "param": {
         "target": [947, 533, 67, 75]
       }
-    },
-    "next": ["Expedition"]
+    }
   },
   "E_CheckHomeBrightness": {
     "recognition": {
@@ -2692,6 +2750,20 @@
       }
     },
     "next": ["E_GoHome"]
+  },
+  "E_CloseTeamSelectPopup": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1023, 50, 43, 42],
+        "template": "Common/黑色关闭按钮1.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {"time": 200},
+    "on_error": ["E_GoHome"]
   },
   "E_CloseBlackButton": {
     "recognition": {

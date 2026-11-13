@@ -1,5 +1,5 @@
 ﻿param(
-[string]$Version = "v0.15.5",
+[string]$Version = "v0.15.6",
     [string]$PublishDir = ""
 )
 
@@ -11,7 +11,8 @@ $TempDir = "$TempBase\MATR"
 $Platform = "win-x64"
 $ZipFile = "$Root\MATR-$Version-$Platform.zip"
 $SourceDir = if ([string]::IsNullOrWhiteSpace($PublishDir)) { $Root } else { (Resolve-Path $PublishDir).Path }
-$CpuPatchRuntime = Join-Path $Root 'runtimes\win-x64\native'
+$CpuPatchRuntime = Join-Path $Root 'runtimes\patches\win-x64\native'
+$LegacyCpuPatchRuntime = Join-Path $Root 'runtimes\win-x64\native'
 $ExpectedCpuPatchHashes = [ordered]@{
     'MaaFramework.dll' = 'A27D305F5462E93E81EB11F961DA01575724EE450F4D9540B59EED866F164298'
     'fastdeploy_ppocr_maa.dll' = 'A7D12E9B0E7BB6257A67B56051823502DCB474A40E5911D4CBBBDD50F0606085'
@@ -20,12 +21,25 @@ $ExpectedCpuPatchHashes = [ordered]@{
 }
 foreach ($name in $ExpectedCpuPatchHashes.Keys) {
     $path = Join-Path $CpuPatchRuntime $name
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-        throw "缺少 MaaFW 5.14.3 CPU OCR 补丁运行库：$path。请按 tools/patches 中的说明构建并放置。"
+    $actualHash = if (Test-Path -LiteralPath $path -PathType Leaf) {
+        (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
     }
-    $actualHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+    else {
+        ''
+    }
     if ($actualHash -ne $ExpectedCpuPatchHashes[$name]) {
-        throw "MaaFW 5.14.3 补丁依赖校验失败：$name；实际摘要：$actualHash"
+        $legacyPath = Join-Path $LegacyCpuPatchRuntime $name
+        if (Test-Path -LiteralPath $legacyPath -PathType Leaf) {
+            $legacyHash = (Get-FileHash -LiteralPath $legacyPath -Algorithm SHA256).Hash
+            if ($legacyHash -eq $ExpectedCpuPatchHashes[$name]) {
+                New-Item -ItemType Directory -Force -Path $CpuPatchRuntime | Out-Null
+                Copy-Item -LiteralPath $legacyPath -Destination $path -Force
+                $actualHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+            }
+        }
+    }
+    if ($actualHash -ne $ExpectedCpuPatchHashes[$name]) {
+        throw "MaaFW 5.14.3 补丁依赖校验失败：$name；缓存路径：$path；兼容路径：$(Join-Path $LegacyCpuPatchRuntime $name)；实际摘要：$actualHash。请按 tools/patches 中的说明构建并放置。"
     }
 }
 
