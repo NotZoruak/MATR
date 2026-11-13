@@ -3,13 +3,14 @@
     "pre_delay": 0,
     "timeout": 120000,
     "next": [
+      "[JumpBack]E_IsInSorties",
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "E_DetectExpeditionScreen",
       "E_IsMenuDirectory",
       "E_IsTeamStatusPanel",
       "E_CheckHomeBrightness",
-      "E_IsSwordDropColor",
+      "[JumpBack]E_IsSwordDropColor",
       "[JumpBack]IsAnnouncementPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
@@ -31,6 +32,23 @@
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_RestartGame"]
+  },
+  "E_IsInSorties": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [15, 2, 54, 104],
+        "template": "Common/出阵界面标志.png",
+        "green_mask": true,
+        "threshold": [0.95]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1193, 21, 65, 34]
+      }
+    }
   },
   "E_LeaveTroopRecord": {
     "recognition": {
@@ -656,7 +674,9 @@
       "E_VerifyMenuDir",
       "E_CloseBlackButton",
       "E_ClickRetreat",
-      "E_CheckHomeBrightness"
+      "E_CheckHomeBrightness",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]E_IsSwordDropColor"
     ],
     "on_error": ["Expedition"]
   },
@@ -897,8 +917,7 @@
       "param": {
         "target": [947, 533, 67, 75]
       }
-    },
-    "next": ["Expedition"]
+    }
   },
   "E_CheckHomeBrightness": {
     "recognition": {

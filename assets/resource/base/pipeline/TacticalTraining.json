@@ -124,7 +124,14 @@
     },
     "pre_delay": 0,
     "post_delay": 0,
-    "next": ["TT_CheckGoalPt", "TT_ClickDifficulty", "TT_ClickChocolateKunaiTraining", "TT_VerifyEventPage", "TT_DetectWhereAmI"]
+    "next": [
+      "E_CheckTimerExpired",
+      "TT_CheckGoalPt",
+      "TT_ClickDifficulty",
+      "TT_ClickChocolateKunaiTraining",
+      "TT_VerifyEventPage",
+      "TT_DetectWhereAmI"
+    ]
   },
   "TT_CheckGoalPt": {
     "enabled": false,
@@ -367,13 +374,7 @@
     },
     "inverse": true,
     "next": ["TT_ConfirmTicketUpdate"],
-    "on_error": ["TT_DetectWhereAmI"],
-    "focus": {
-      "Node.Action.Succeeded": {
-        "content": "[战术强化] 补充门票",
-        "display": "file"
-      }
-    }
+    "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTicketUpdate": {
     "recognition": {
@@ -435,7 +436,7 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["TT_ConfirmTargetTeam", "TT_CaptainHub", "TT_TryTeam1"],
+    "next": ["TT_ConfirmTargetTeam", "TT_CaptainHub", "TT_TryTeam1", "TT_SortieSuccess"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_ConfirmTargetTeam": {
@@ -458,7 +459,7 @@
         "upper": [178, 27, 27]
       }
     },
-    "next": ["TT_DragCaptain", "TT_IsPreSortieConfirm"],
+    "next": ["TT_DragCaptain", "TT_IsPreSortieConfirm", "TT_SortieSuccess"],
     "on_error": ["TT_DetectWhereAmI"]
   },
   "TT_DragCaptain": {
