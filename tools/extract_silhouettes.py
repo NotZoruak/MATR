@@ -26,6 +26,15 @@ def decode_image(data):
     return image
 
 
+def excluded_form_ids(catalog):
+    """同名刀剑只保留最初普通形态，排除极化及髭切、膝丸的中间形态。"""
+    groups = {}
+    for item in catalog:
+        if item["number"].isdigit() and not item.get("typeOnly", False):
+            groups.setdefault(item["name"], []).append(int(item["number"]))
+    return {sid for ids in groups.values() for sid in sorted(ids)[1:]}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--adb", required=True, help="ADB 程序路径")
@@ -40,6 +49,7 @@ def main():
 
     catalog = json.loads((ROOT / "assets/resource/base/SwordBookCatalog.json").read_text(encoding="utf-8"))
     names = {int(item["number"]): item["name"] for item in catalog if item["number"].isdigit()}
+    excluded_ids = excluded_form_ids(catalog)
     assets = {}
     with tempfile.TemporaryDirectory(prefix="matr-silhouette-") as temp:
         apk = args.apk
@@ -64,6 +74,9 @@ def main():
         unknown = sorted({sid for sid, _ in assets if sid not in names})
         if unknown:
             raise ValueError(f"名册缺少以下编号，需先核实名称：{unknown}")
+        assets = {key: value for key, value in assets.items() if key[0] not in excluded_ids}
+        if not assets:
+            raise RuntimeError("没有找到最初普通形态的剪影素材")
         # 先校验全部图片，避免读取失败留下部分更新的图库。
         converted = []
         for (sid, view), (data, source) in sorted(assets.items()):
@@ -75,9 +88,14 @@ def main():
             converted.append((filename, mask, {"file": filename, "source": source,
                               "source_sha256": hashlib.sha256(data).hexdigest()}))
         args.output.mkdir(parents=True, exist_ok=True)
+        # 移除旧次提取残留的极化及中间形态素材，避免继续参与识别。
+        for existing in args.output.glob("*.png"):
+            match = re.fullmatch(r"(\d+)_(.+)_(head|foot)\.png", existing.name)
+            if match and int(match.group(1)) in excluded_ids:
+                existing.unlink()
         for filename, mask, _ in converted:
             mask.save(args.output / filename)
-        manifest = {"package": "com.youzu.djlw", "alpha_threshold": 127,
+        manifest = {"package": "com.youzu.djlw", "alpha_threshold": 127, "exclude_extreme": True, "initial_form_only": True,
                     "templates": [entry for _, _, entry in converted]}
         (args.output / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"已提取 {len(converted)} 张剪影，{len(set(sid for sid, _ in assets))} 个编号，目录：{args.output}")

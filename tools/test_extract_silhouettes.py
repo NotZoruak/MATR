@@ -5,7 +5,7 @@ import unittest
 
 from PIL import Image
 
-from extract_silhouettes import decode_image
+from extract_silhouettes import decode_image, excluded_form_ids
 
 
 class DecodeImageTests(unittest.TestCase):
@@ -18,6 +18,16 @@ class DecodeImageTests(unittest.TestCase):
         client = b"UF" + png[20:24] + png[:20] + png[24:]
         self.assertEqual(decode_image(png).tobytes(), decode_image(client).tobytes())
         self.assertEqual(image.tobytes(), decode_image(client).tobytes())
+
+    def test_每把刀只保留最初普通形态(self):
+        catalog = [
+            {"number": str(sid), "name": name}
+            for name, ids in [("三日月宗近", [3, 4]), ("日本号", [136, 137]),
+                              ("髭切", [107, 108, 109, 110, 111]), ("膝丸", [112, 113, 114, 115]),
+                              ("云重", [254])]
+            for sid in ids
+        ]
+        self.assertEqual({4, 137, 108, 109, 110, 111, 113, 114, 115}, excluded_form_ids(catalog))
 
     def test_异常尺寸应拒绝导入(self):
         stream = io.BytesIO()

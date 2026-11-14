@@ -132,7 +132,14 @@ public class SilhouetteServiceTests
         var service = new SilhouetteService();
         service.LoadTemplates(templates);
         Assert.Equal(Directory.GetFiles(templates, "*.png").Length, service.Templates.Count);
-        Assert.True(service.Templates.Count >= 321);
+        Assert.Equal(231, service.Templates.Count);
+        var catalog = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(
+            Path.Combine(directory.FullName, "assets", "resource", "base", "SwordBookCatalog.json")))!.AsArray();
+        var excludedIds = catalog.Where(item => int.TryParse(item!["number"]!.GetValue<string>(), out _))
+            .GroupBy(item => item!["name"]!.GetValue<string>())
+            .Where(group => group.Count() > 1)
+            .SelectMany(group => group.Select(item => int.Parse(item!["number"]!.GetValue<string>())).OrderBy(id => id).Skip(1)).ToHashSet();
+        Assert.DoesNotContain(service.Templates, template => excludedIds.Contains(template.Id));
         using var fixture = SKBitmap.Decode(Path.Combine(directory.FullName,
             "_src", "Markdown.Avalonia.Html.Tests", "TestData", "Silhouette", "nihongou-client.png"));
         using var shot = new SKBitmap(1280, 720);
