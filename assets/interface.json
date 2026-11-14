@@ -294,7 +294,9 @@
       "pipeline_override": {
         "E_StandaloneReturnHome": {"enabled": true},
         "E_StandaloneOpenDirectory": {"enabled": true},
-        "E_StandaloneWaitMenu": {"enabled": true}
+        "E_StandaloneWaitMenu": {"enabled": true},
+        "E_StandaloneFinishHub": {"enabled": true},
+        "E_StandaloneClosePanel": {"enabled": true}
       }
     }
   ],
