@@ -13,7 +13,6 @@ MATR/
 │       │   ├── image/               #   Template match images (1280×720 baseline)
 │       │   └── model/               #   OCR model files
 │       ├── logo/                    #   Startup logo resources
-│       ├── silhouette/              #   Silhouette recognition reference images
 │       └── announcement/            #   Version release notes (Markdown)
 ├── _src/                        # C# source code (Avalonia desktop app)
 │   ├── MFAAvalonia/             #   Core library: Models, ViewModels, Views, Services, Controls, etc.

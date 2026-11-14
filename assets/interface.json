@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v0.15.7",
+  "version": "v1.0.0-beta.1",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v0.15.7 | 刀剑乱舞小助手",
+  "custom_title": "MATR v1.0.0-beta.1 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -105,7 +105,7 @@
         "S_同步远征"
       ],
       "label": "常驻作战",
-      "description": "合战场（过去/异去）出阵自动化。\n\n过去的王点前撤退、道中撤退与异去的购买门票设置：点「过去/异去」选项旁边的齿轮\n\n* **重伤处理**：加速符修刀：修刀之后继续任务。无加速符修刀：不使用加速符，修刀后结束任务\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑疲劳时撤退。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "合战场（过去/异去）出阵自动化。\n\n过去的王点前撤退、道中撤退与异去的购买门票设置：点「过去/异去」选项旁边的齿轮\n\n* **重伤处理**：加速符修刀：修刀后继续任务。无加速符修刀：不使用加速符，普通修刀后结束任务。白山修刀：使用白山吉光修复重伤刀剑，使用前请阅读本选项的注意事项。\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑疲劳时撤退。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "刷收获物",
@@ -155,7 +155,7 @@
         "U_同步远征"
       ],
       "label": "大阪挖地",
-      "description": "沉眠于地下的千两箱/地下城 活动自动化出阵。\n\n* **层数选择**：设定目标层数（1-99）。选择不启用时直接进入当前层数。\n* **重伤处理**：加速符修刀：修刀之后继续任务。无加速符修刀：不使用加速符，修刀后结束任务\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑疲劳时撤退。\n* **更多点击**：挖地急急急急急！和自动行军一样，可能导致遗漏部分刀剑掉落记录。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **每轮回程**：每轮战斗结束后返回本丸。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+      "description": "沉眠于地下的千两箱/地下城 活动自动化出阵。\n\n* **层数选择**：设定目标层数（1-99）。选择不启用时直接进入当前层数。\n* **重伤处理**：加速符修刀：修刀后继续任务。无加速符修刀：不使用加速符，普通修刀后结束任务。白山修刀：使用白山吉光修复重伤刀剑，使用前请阅读本选项的注意事项。\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **补充刀装**：出阵前检测刀装不足弹窗并自动补充，使用前请将部队保存至对应的记录槽。\n* **刀装保护**：行军中检测到刀装被破坏/接近被破坏时撤退。\n* **疲劳撤退**：行军中检测刀剑疲劳时撤退。\n* **更多点击**：挖地急急急急急！和自动行军一样，可能导致遗漏部分刀剑掉落记录。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **每轮回程**：每轮战斗结束后返回本丸。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "海陆联队",
@@ -290,7 +290,14 @@
       "repeat_count": 0,
       "option": ["远征", "修刀", "内番", "RefreshInterval"],
       "label": "本丸后勤",
-      "description": "后勤（远征+修刀+内番）任务自动化。推荐通过其它任务的「同步后勤」选项调用，而非单独运行。\n\n* **远征**：定时检查并派遣部队远征，点击齿轮设置各部队远征地图和配置长期远征计划。\n* **修刀**：检查远征队伍后，启用空闲工坊自动修复受损刀剑（会自动避开编入队伍的刀剑），不使用加速符。可自定义使用的工坊和筛选条件。\n* **内番**：检查远征队伍后，若内番位置空闲，自动进入今日内番表指派内番。点击右侧齿轮可设置「联动本丸刀帐」等功能。"
+      "description": "后勤（远征+修刀+内番）任务自动化。推荐通过其它任务的「同步后勤」选项调用，而非单独运行。\n\n* **远征**：定时检查并派遣部队远征，点击齿轮设置各部队远征地图和配置长期远征计划。\n* **修刀**：检查远征队伍后，启用空闲工坊自动修复受损刀剑（会自动避开编入队伍的刀剑），不使用加速符。可自定义使用的工坊和筛选条件。\n* **内番**：检查远征队伍后，若内番位置空闲，自动进入今日内番表指派内番。点击右侧齿轮可设置「联动本丸刀帐」等功能。",
+      "pipeline_override": {
+        "E_StandaloneReturnHome": {"enabled": true},
+        "E_StandaloneOpenDirectory": {"enabled": true},
+        "E_StandaloneWaitMenu": {"enabled": true},
+        "E_StandaloneFinishHub": {"enabled": true},
+        "E_StandaloneClosePanel": {"enabled": true}
+      }
     }
   ],
   "global_option": ["客户端类型", "远征智能调度", "卡死重启", "检测到顶号后结束任务"],
@@ -2786,16 +2793,24 @@
     "S_记录不足时自动装备刀装": {
       "name": "S_记录不足时自动装备刀装",
       "label": "记录中刀装不足时使用自动装备刀装",
-      "type": "checkbox",
+      "type": "switch",
       "cases": [
         {
-          "name": "",
+          "name": "Yes",
+          "label": "开启",
           "pipeline_override": {
             "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": false}
+          }
         }
       ],
-      "default_case": []
+      "default_case": "No"
     },
     "S_刀装保护": {
       "name": "S_刀装保护",
@@ -4952,7 +4967,8 @@
           "DisplayName": "加速符修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": true},
-            "S_StopOnDamagePopup": {"enabled": false}
+            "S_StopOnDamagePopup": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": false}
           }
         },
         {
@@ -4961,8 +4977,8 @@
           "pipeline_override": {
             "CheckAccel": {"enabled": false},
             "ClickAccel": {"enabled": false},
-            "IsPreDamage": {"enabled": false},
-            "THR_IsPreDamage": {"enabled": true},
+            "IsPreDamage": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false},
             "S_StopOnDamagePopup": {"enabled": false},
             "LogRepairDone": {
               "focus": {
@@ -4978,14 +4994,25 @@
           }
         },
         {
+          "name": "白山修刀",
+          "DisplayName": "白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "S_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
-            "S_StopOnDamagePopup": {"enabled": true}
+            "S_StopOnDamagePopup": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false}
           }
         }
-      ]
+      ],
+      "description": "白山修刀注意事项：  \n使用白山修刀前，请自行将需要使用的白山吉光标记为「喜爱」。  \n待修复刀剑必须提前装备御守。  \n在出阵部队中，待修复刀剑必须可被移动至二号位。  \n出阵前，若白山吉光疲劳值低于35，会先自动为白山刷花至满疲劳。  \n出阵前会自动为白山吉光和待修复刀剑重新使用「自动装备刀装」，装备非远程刀装，并卸下待修复刀剑的马匹。请保证有足够的刀装可供使用。待修复刀剑为薙刀或大太刀时，请自行确保其在上述装备状态下的速度低于白山吉光。  \n使用本功能导致的一切后果自负。"
     },
     "S_疲劳处理": {
       "name": "S_疲劳处理",
@@ -5318,7 +5345,8 @@
           "DisplayName": "加速符修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": true},
-            "U_StopOnDamagePopup": {"enabled": false}
+            "U_StopOnDamagePopup": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": false}
           }
         },
         {
@@ -5327,8 +5355,8 @@
           "pipeline_override": {
             "CheckAccel": {"enabled": false},
             "ClickAccel": {"enabled": false},
-            "IsPreDamage": {"enabled": false},
-            "THR_IsPreDamage": {"enabled": true},
+            "IsPreDamage": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false},
             "U_StopOnDamagePopup": {"enabled": false},
             "LogRepairDone": {
               "focus": {
@@ -5344,14 +5372,25 @@
           }
         },
         {
+          "name": "白山修刀",
+          "DisplayName": "白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "U_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
-            "U_StopOnDamagePopup": {"enabled": true}
+            "U_StopOnDamagePopup": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false}
           }
         }
-      ]
+      ],
+      "description": "白山修刀注意事项：  \n使用白山修刀前，请自行将需要使用的白山吉光标记为「喜爱」。  \n待修复刀剑必须提前装备御守。  \n在出阵部队中，待修复刀剑必须可被移动至二号位。  \n出阵前，若白山吉光疲劳值低于35，会先自动为白山刷花至满疲劳。  \n出阵前会自动为白山吉光和待修复刀剑重新使用「自动装备刀装」，装备非远程刀装，并卸下待修复刀剑的马匹。请保证有足够的刀装可供使用。待修复刀剑为薙刀或大太刀时，请自行确保其在上述装备状态下的速度低于白山吉光。  \n使用本功能导致的一切后果自负。"
     },
     "U_选择部队": {
       "name": "U_选择部队",
@@ -5714,16 +5753,24 @@
     "U_记录不足时自动装备刀装": {
       "name": "U_记录不足时自动装备刀装",
       "label": "记录中刀装不足时使用自动装备刀装",
-      "type": "checkbox",
+      "type": "switch",
       "cases": [
         {
-          "name": "",
+          "name": "Yes",
+          "label": "开启",
           "pipeline_override": {
             "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": false}
+          }
         }
       ],
-      "default_case": []
+      "default_case": "No"
     },
     "U_刀装保护": {
       "name": "U_刀装保护",
@@ -8432,7 +8479,8 @@
           "DisplayName": "加速符修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": true},
-            "FB_StopOnDamagePopup": {"enabled": false}
+            "FB_StopOnDamagePopup": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": false}
           }
         },
         {
@@ -8441,8 +8489,8 @@
           "pipeline_override": {
             "CheckAccel": {"enabled": false},
             "ClickAccel": {"enabled": false},
-            "IsPreDamage": {"enabled": false},
-            "THR_IsPreDamage": {"enabled": true},
+            "IsPreDamage": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false},
             "LogRepairDone": {
               "focus": {
                 "Node.Action.Succeeded": {
@@ -8458,14 +8506,25 @@
           }
         },
         {
+          "name": "白山修刀",
+          "DisplayName": "白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "FB_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
-            "FB_StopOnDamagePopup": {"enabled": true}
+            "FB_StopOnDamagePopup": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false}
           }
         }
-      ]
+      ],
+      "description": "白山修刀注意事项：  \n使用白山修刀前，请自行将需要使用的白山吉光标记为「喜爱」。  \n待修复刀剑必须提前装备御守。  \n在出阵部队中，待修复刀剑必须可被移动至二号位。  \n出阵前，若白山吉光疲劳值低于35，会先自动为白山刷花至满疲劳。  \n出阵前会自动为白山吉光和待修复刀剑重新使用「自动装备刀装」，装备非远程刀装，并卸下待修复刀剑的马匹。请保证有足够的刀装可供使用。待修复刀剑为薙刀或大太刀时，请自行确保其在上述装备状态下的速度低于白山吉光。  \n使用本功能导致的一切后果自负。"
     },
     "疲劳阈值": {
       "name": "疲劳阈值",
@@ -10172,20 +10231,21 @@
       "cases": [
         {
           "name": "修刀并继续",
-          "DisplayName": "修刀并继续",
+          "DisplayName": "加速符修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": true},
-            "HV_StopOnDamagePopup": {"enabled": false}
+            "HV_StopOnDamagePopup": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": false}
           }
         },
         {
           "name": "修刀并停止",
-          "DisplayName": "修刀并停止",
+          "DisplayName": "无加速符修刀",
           "pipeline_override": {
             "CheckAccel": {"enabled": false},
             "ClickAccel": {"enabled": false},
-            "IsPreDamage": {"enabled": false},
-            "THR_IsPreDamage": {"enabled": true},
+            "IsPreDamage": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false},
             "HV_StopOnDamagePopup": {"enabled": false},
             "LogRepairDone": {
               "focus": {
@@ -10201,14 +10261,25 @@
           }
         },
         {
+          "name": "白山修刀",
+          "DisplayName": "白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "HV_StopOnDamagePopup": {"enabled": false}
+          }
+        },
+        {
           "name": "停止",
           "DisplayName": "停止",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
-            "HV_StopOnDamagePopup": {"enabled": true}
+            "HV_StopOnDamagePopup": {"enabled": true},
+            "THR_IsPreDamage": {"enabled": false}
           }
         }
-      ]
+      ],
+      "description": "白山修刀注意事项：  \n使用白山修刀前，请自行将需要使用的白山吉光标记为「喜爱」。  \n待修复刀剑必须提前装备御守。  \n在出阵部队中，待修复刀剑必须可被移动至二号位。  \n出阵前，若白山吉光疲劳值低于35，会先自动为白山刷花至满疲劳。  \n出阵前会自动为白山吉光和待修复刀剑重新使用「自动装备刀装」，装备非远程刀装，并卸下待修复刀剑的马匹。请保证有足够的刀装可供使用。待修复刀剑为薙刀或大太刀时，请自行确保其在上述装备状态下的速度低于白山吉光。  \n使用本功能导致的一切后果自负。"
     },
     "HV_疲劳处理": {
       "name": "HV_疲劳处理",
@@ -10282,16 +10353,24 @@
     "HV_记录不足时自动装备刀装": {
       "name": "HV_记录不足时自动装备刀装",
       "label": "记录中刀装不足时使用自动装备刀装",
-      "type": "checkbox",
+      "type": "switch",
       "cases": [
         {
-          "name": "",
+          "name": "Yes",
+          "label": "开启",
           "pipeline_override": {
             "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": false}
+          }
         }
       ],
-      "default_case": []
+      "default_case": "No"
     },
     "HV_疲劳撤退": {
       "name": "HV_疲劳撤退",

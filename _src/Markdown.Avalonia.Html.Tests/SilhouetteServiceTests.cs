@@ -26,7 +26,7 @@ public class SilhouetteServiceTests
             canvas.DrawBitmap(fixture, 703, 235);
         }
         var service = new SilhouetteService();
-        service.LoadTemplates(Path.Combine(directory.FullName, "assets", "resource", "silhouette"));
+        service.LoadTemplates(Path.Combine(directory.FullName, "assets", "resource", "base", "image", "silhouette"));
         var results = service.RecognizeSwords(shot);
         Assert.NotEmpty(results);
         Assert.Equal(87, results[0].Id);
@@ -102,6 +102,59 @@ public class SilhouetteServiceTests
             using var shot = CreateShot(region);
             Assert.Empty(service.RecognizeSwords(shot));
         });
+    }
+
+    [Fact]
+    public void 不同截图分辨率应得到相同的刀剑排名()
+    {
+        WithTemplate(20, 220, service =>
+        {
+            using var region = DrawPattern(20, 220);
+            using var shot = CreateShot(region);
+            using var scaled = new SKBitmap(2560, 1440);
+            using (var canvas = new SKCanvas(scaled))
+                canvas.DrawBitmap(shot, new SKRect(0, 0, 2560, 1440));
+            var expected = Assert.Single(service.RecognizeSwords(shot));
+            var actual = Assert.Single(service.RecognizeSwords(scaled));
+            Assert.Equal(expected.Id, actual.Id);
+            Assert.InRange(System.Math.Abs(expected.Score - actual.Score), 0, 0.01);
+        });
+    }
+
+    [Fact]
+    public void 客户端图库应完整加载并识别实际画面的日本号()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "assets", "interface.json")))
+            directory = directory.Parent;
+        Assert.NotNull(directory);
+        var templates = Path.Combine(directory.FullName, "assets", "resource", "base", "image", "silhouette");
+        var service = new SilhouetteService();
+        service.LoadTemplates(templates);
+        Assert.Equal(Directory.GetFiles(templates, "*.png").Length, service.Templates.Count);
+        Assert.Equal(231, service.Templates.Count);
+        var catalog = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(
+            Path.Combine(directory.FullName, "assets", "resource", "base", "SwordBookCatalog.json")))!.AsArray();
+        var excludedIds = catalog.Where(item => int.TryParse(item!["number"]!.GetValue<string>(), out _))
+            .GroupBy(item => item!["name"]!.GetValue<string>())
+            .Where(group => group.Count() > 1)
+            .SelectMany(group => group.Select(item => int.Parse(item!["number"]!.GetValue<string>())).OrderBy(id => id).Skip(1)).ToHashSet();
+        Assert.DoesNotContain(service.Templates, template => excludedIds.Contains(template.Id));
+        using var fixture = SKBitmap.Decode(Path.Combine(directory.FullName,
+            "_src", "Markdown.Avalonia.Html.Tests", "TestData", "Silhouette", "nihongou-client.png"));
+        using var shot = new SKBitmap(1280, 720);
+        using (var canvas = new SKCanvas(shot))
+        {
+            canvas.Clear(SKColors.White);
+            canvas.DrawBitmap(fixture, 703, 235);
+        }
+        var ranked = service.RecognizeSwords(shot);
+        Assert.Equal(136, ranked[0].Id);
+        Assert.True(ranked[0].Score >= 0.98);
+        Assert.True(ranked[0].Score - ranked[1].Score > 0.03);
+        Assert.Equal(ranked[0].Id, service.Recognize(shot)[0].Id);
+        Assert.True(MFAAvalonia.Extensions.MaaFW.Custom.TacticalTargetSwordRecognition.ShouldRefresh(ranked, [3]));
+        Assert.False(MFAAvalonia.Extensions.MaaFW.Custom.TacticalTargetSwordRecognition.ShouldRefresh(ranked, [136]));
     }
 
     private static SKBitmap DrawPattern(byte dark, byte light)

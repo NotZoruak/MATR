@@ -26,15 +26,21 @@ public class TacticalTargetSwordTests
         new() { Id = id, Name = id.ToString(), Score = score, IsHead = head };
 
     [Theory]
-    [InlineData(0.90, 0.89, true)]
-    [InlineData(0.91, 0.90, true)]
-    [InlineData(0.91, 0.9001, false)]
-    [InlineData(0.8999, 0.80, true)]
-    [InlineData(0.85, 0.80, true)]
-    [InlineData(0.85, 0.8001, false)]
-    [InlineData(0.8499, 0.70, false)]
-    [InlineData(0.8999, 0.85, false)]
-    [InlineData(0.99, 0.98, true)]
+    [InlineData(0.90, 0.89, false)]
+    [InlineData(0.91, 0.90, false)]
+    [InlineData(0.85, 0.80, false)]
+    [InlineData(0.9499, 0.70, false)]
+    [InlineData(0.95, 0.9199, true)]
+    [InlineData(0.95, 0.92, false)]
+    [InlineData(0.95, 0.9201, false)]
+    [InlineData(0.99, 0.9599, true)]
+    [InlineData(0.99, 0.96, false)]
+    [InlineData(0.99, 0.98, false)]
+    [InlineData(0.9901, 0.975, true)]
+    [InlineData(0.9901, 0.9751, false)]
+    [InlineData(0.9901, 0.9752, false)]
+    [InlineData(1.0, 0.9849, true)]
+    [InlineData(1.0, 0.985, false)]
     public void 达到可信度和最小差距阈值才刷新(double first, double second, bool expected)
         => Assert.Equal(expected, Refresh([Sword(1, first), Sword(2, second)], [3]));
 
@@ -177,10 +183,15 @@ public class TacticalTargetSwordTests
         var root = FindRoot();
         var pipeline = JsonNode.Parse(File.ReadAllText(Path.Combine(root, "assets/resource/base/pipeline/TacticalTraining.json")))!;
         var next = pipeline["TT_VerifyEventPage"]!["next"]!.AsArray();
-        Assert.Equal(new[] { "TT_CheckSilhouette", "TT_CheckNonTargetSword", "TT_EnterEvent" },
+        Assert.Equal(new[] { "TT_CheckSilhouette", "TT_CheckNonTargetSword", "TT_CheckTargetSword", "TT_EnterEvent" },
             next.Select(item => item!.GetValue<string>()));
+        var target = pipeline["TT_CheckTargetSword"]!;
+        Assert.False(target["enabled"]!.GetValue<bool>());
+        Assert.Equal("target", target["recognition"]!["param"]!["custom_recognition_param"]!["mode"]!.GetValue<string>());
+        Assert.Equal(new[] { "TT_EnterEvent" }, target["next"]!.AsArray().Select(item => item!.GetValue<string>()));
         var check = pipeline["TT_CheckNonTargetSword"]!;
         Assert.NotNull(check);
+        Assert.Equal("non_target", check["recognition"]!["param"]!["custom_recognition_param"]!["mode"]!.GetValue<string>());
         Assert.False(check["enabled"]!.GetValue<bool>());
         Assert.Equal(1, check["max_hit"]!.GetValue<int>());
         Assert.Equal("TacticalTargetSwordRecognition", check["recognition"]!["param"]!["custom_recognition"]!.GetValue<string>());

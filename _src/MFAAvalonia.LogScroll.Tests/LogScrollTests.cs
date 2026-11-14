@@ -27,6 +27,40 @@ public class LogScrollTests
     [AvaloniaTheory]
     [InlineData(false)]
     [InlineData(true)]
+    public void ReturningToPageResumesBottomFollowing(bool appendWhileAway)
+    {
+        var logs = new StackPanel();
+        for (var i = 0; i < 30; i++)
+            logs.Children.Add(new TextBlock { Text = $"日志 {i}", Height = 40 });
+        var scroll = new ScrollViewer { Content = logs };
+        ScrollViewerExtensions.SetAutoScroll(scroll, true);
+        var host = new ContentControl { Content = scroll };
+        var window = new Window { Width = 500, Height = 300, Content = host };
+        window.Show();
+        try
+        {
+            Flush(window);
+            scroll.ScrollToEnd();
+            Flush(window);
+            scroll.Offset = new Vector(0, 200);
+            Flush(window);
+            host.Content = new TextBlock { Text = "本丸仓库" };
+            Flush(window);
+            if (appendWhileAway)
+                logs.Children.Add(new TextBlock { Text = "离开期间新增", Height = 400 });
+            host.Content = scroll;
+            Flush(window);
+            Assert.Equal(scroll.ScrollBarMaximum.Y, scroll.Offset.Y);
+            logs.Children.Add(new TextBlock { Text = "返回后新增", Height = 40 });
+            Flush(window);
+            Assert.Equal(scroll.ScrollBarMaximum.Y, scroll.Offset.Y);
+        }
+        finally { window.Close(); }
+    }
+
+    [AvaloniaTheory]
+    [InlineData(false)]
+    [InlineData(true)]
     public void RestoreFocusPreservesPositionWithFix(bool applyFix)
     {
         var nested = new Markdown.Avalonia.Full.MarkdownScrollViewer

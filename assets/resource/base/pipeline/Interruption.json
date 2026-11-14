@@ -144,7 +144,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [0, 0, 1280, 720],
-        "template": "Common/游戏图标.png",
+        "template": ["Common/游戏图标.png", "Common/游戏图标bilibili.png"],
         "green_mask": true,
         "threshold": [0.8]
       }

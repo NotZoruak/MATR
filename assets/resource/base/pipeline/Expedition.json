@@ -665,7 +665,7 @@
       "time": 200,
       "target": [0, 610, 148, 110]
     },
-    "next": ["E_GoHome"]
+    "next": ["E_StandaloneFinishHub", "E_GoHome"]
   },
   "E_TrackerOCR": {
     "enabled": false,
@@ -675,7 +675,7 @@
       "custom_action": "ExpeditionTimeTracker"
     },
     "post_delay": 0,
-    "next": ["E_GoHome"]
+    "next": ["E_StandaloneFinishHub", "E_GoHome"]
   },
   "E_StartExpedition": {
     "recognition": {
@@ -760,7 +760,7 @@
         "expected": "目录"
       }
     },
-    "next": ["E_ClickBackToHome"]
+    "next": ["E_StandaloneReturnHome", "E_ClickBackToHome"]
   },
   "E_ClickBackToHome": {
     "pre_delay": 1000,
@@ -812,6 +812,78 @@
     },
     "next": ["E_CheckHomeBrightness", "E_ConfirmRetreat"],
     "on_error": ["E_GoHome"]
+  },
+  "E_StandaloneReturnHome": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1037, 169, 110, 44]
+      }
+    },
+    "next": ["E_DetectHome", "E_StandaloneReturnHome"],
+    "on_error": ["E_GoHome"]
+  },
+  "E_StandaloneFinishHub": {
+    "enabled": false,
+    "pre_delay": 0,
+    "post_delay": 0,
+    "next": ["E_StandaloneOpenDirectory", "E_StandaloneClosePanel"],
+    "on_error": ["Expedition"]
+  },
+  "E_StandaloneClosePanel": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [374, 42, 39, 108],
+        "template": "Common/本丸远征.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [230, 12, 71, 19]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [0, 610, 148, 110]
+    },
+    "next": ["E_StandaloneFinishHub"]
+  },
+  "E_StandaloneOpenDirectory": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_StandaloneWaitMenu"],
+    "on_error": ["E_GoHome"]
+  },
+  "E_StandaloneWaitMenu": {
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
+      }
+    },
+    "next": ["E_SmartWait", "E_WaitRefresh"]
   },
   "E_WaitRefresh": {
     "post_delay": 60000,
@@ -997,7 +1069,7 @@
         "expected": "目录"
       }
     },
-    "next": ["E_ClickBackToHome"]
+    "next": ["E_StandaloneReturnHome", "E_ClickBackToHome"]
   },
   "E_CheckConfiguredMembers1": {
     "enabled": false,

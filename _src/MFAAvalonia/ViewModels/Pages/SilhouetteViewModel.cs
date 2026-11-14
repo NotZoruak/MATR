@@ -40,7 +40,7 @@ public partial class SilhouetteViewModel : ViewModelBase
 
     private void LoadTemplatesIfNeeded()
     {
-        var silhouetteDir = Path.Combine(AppPaths.ResourceDirectory, "silhouette");
+        var silhouetteDir = SilhouetteService.TemplateDirectory;
         if (Directory.Exists(silhouetteDir))
         {
             _service.LoadTemplates(silhouetteDir);
@@ -49,7 +49,7 @@ public partial class SilhouetteViewModel : ViewModelBase
         else
         {
             LoggerHelper.Warn($"[Silhouette] 模板目录不存在: {silhouetteDir}");
-            StatusMessage = "模板目录未找到，请检查 resource/silhouette/";
+            StatusMessage = "模板目录未找到，请检查 resource/base/image/silhouette/";
         }
     }
 

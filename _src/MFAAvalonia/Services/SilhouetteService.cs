@@ -21,11 +21,13 @@ public class SilhouetteService
     public IReadOnlyList<SilhouetteTemplate> Templates => _templates;
     private readonly List<SilhouetteTemplate> _templates = new();
 
+    public static string TemplateDirectory => Path.Combine(AppPaths.ResourceDirectory, "base", "image", "silhouette");
+
     public void LoadTemplates(string dir)
     {
         _templates.Clear();
         if (!Directory.Exists(dir)) return;
-        foreach (var f in Directory.GetFiles(dir, "*.png"))
+        foreach (var f in Directory.GetFiles(dir, "*.png").OrderBy(path => path, StringComparer.Ordinal))
         {
             var t = Parse(f);
             if (t != null) _templates.Add(t);
@@ -69,9 +71,13 @@ public class SilhouetteService
     {
         if (_templates.Count == 0) return new List<RecognitionResult>();
 
+        // 两个识别入口统一换算到游戏基准分辨率，避免高分辨率截图裁错区域。
+        using var normalized = new SKBitmap(1280, 720);
+        using (var canvas = new SKCanvas(normalized))
+            canvas.DrawBitmap(shot, new SKRect(0, 0, 1280, 720));
         using var roi = new SKBitmap(RS, RS);
         using (var cv = new SKCanvas(roi))
-            cv.DrawBitmap(shot, new SKRect(RX, RY, RX + RS, RY + RS), new SKRect(0, 0, RS, RS));
+            cv.DrawBitmap(normalized, new SKRect(RX, RY, RX + RS, RY + RS), new SKRect(0, 0, RS, RS));
 
         // 1. 涂层检测：保持灰度低于 35 的暗像素超过 4% 才判为露出
         float cs = RS / 3f;

@@ -260,15 +260,34 @@ public static class ScrollViewerExtensions
             scrollViewer.ScrollChanged -= OnScrollChanged;
             // 添加新的处理器
             scrollViewer.ScrollChanged += OnScrollChanged;
+            scrollViewer.Loaded -= OnAutoScrollLoaded;
+            scrollViewer.Loaded += OnAutoScrollLoaded;
         }
         else
         {
             scrollViewer.ScrollChanged -= OnScrollChanged;
+            scrollViewer.Loaded -= OnAutoScrollLoaded;
             if (state != null)
             {
                 scrollViewer.Tag = null;
             }
         }
+    }
+
+    private static void OnAutoScrollLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is not ScrollViewer scroll)
+            return;
+
+        // 页面返回时布局尚可能变化，待加载完成后恢复到底部并重新启用跟随。
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!scroll.IsLoaded || !GetAutoScroll(scroll) || scroll.Tag is not AutoScrollState state)
+                return;
+
+            state.ShouldAutoScroll = true;
+            scroll.ScrollToEnd();
+        }, DispatcherPriority.Loaded);
     }
 
     private static void OnScrollChanged(object? sender, ScrollChangedEventArgs e)

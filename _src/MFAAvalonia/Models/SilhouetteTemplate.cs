@@ -1,7 +1,7 @@
 namespace MFAAvalonia.Models;
 
 /// <summary>
-/// 剪影模板数据，启动时从 resource/silhouette/ 加载
+/// 剪影模板数据，启动时从 resource/base/image/silhouette/ 加载
 /// </summary>
 public class SilhouetteTemplate
 {

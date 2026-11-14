@@ -34,6 +34,18 @@
                 </TabItem.Header>
                 <views:SilhouetteView />
             </TabItem>
+            <TabItem Classes="tools-tab">
+                <TabItem.Header>
+                    <TextBlock Text="经验表（极）" FontSize="20" />
+                </TabItem.Header>
+                <views:ExperienceTableView />
+            </TabItem>
+            <TabItem Classes="tools-tab">
+                <TabItem.Header>
+                    <TextBlock Text="远征收益" FontSize="20" />
+                </TabItem.Header>
+                <views:ExpeditionIncomeView />
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>
