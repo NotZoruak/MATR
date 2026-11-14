@@ -45,12 +45,9 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
             using (var bitmap = SKBitmap.Decode(stream))
             {
                 if (bitmap == null) return false;
-                using var normalized = new SKBitmap(1280, 720);
-                using (var canvas = new SKCanvas(normalized))
-                    canvas.DrawBitmap(bitmap, new SKRect(0, 0, 1280, 720));
                 lock (_sync)
                 {
-                    var directory = Path.Combine(AppPaths.ResourceDirectory, "silhouette");
+                    var directory = SilhouetteService.TemplateDirectory;
                     if (_templateDirectory != directory)
                     {
                         _service.LoadTemplates(directory);
@@ -58,7 +55,7 @@ public sealed class TacticalTargetSwordRecognition : IMaaCustomRecognition
                     }
                     var targets = _service.Templates.Where(template => names.Contains(template.Name))
                         .Select(template => template.Id).Distinct().ToArray();
-                    var candidates = _service.RecognizeSwords(normalized);
+                    var candidates = _service.RecognizeSwords(bitmap);
                     var decision = EvaluateForMode(candidates, targets, targetMode);
                     if (decision.Message == null) return false;
                     LoggerHelper.Info(decision.Message);

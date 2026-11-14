@@ -1,0 +1,1611 @@
+{
+  "package": "com.youzu.djlw",
+  "alpha_threshold": 127,
+  "templates": [
+    {
+      "file": "00003_三日月宗近_head.png",
+      "source": "安装包",
+      "source_sha256": "72ec787983432ba0465d2737509d14c535e04198fa5ff6355fff145ba04b2011"
+    },
+    {
+      "file": "00003_三日月宗近_foot.png",
+      "source": "安装包",
+      "source_sha256": "ab96187ccf9f178910544e6326bd793a289338774b78673e01f8f38acf6aeae9"
+    },
+    {
+      "file": "00004_三日月宗近_head.png",
+      "source": "安装包",
+      "source_sha256": "ba2b540cc90acacc8e11bb607e20cbe45780813bdd03e57e878565468b0ac42c"
+    },
+    {
+      "file": "00005_小狐丸_head.png",
+      "source": "安装包",
+      "source_sha256": "4a55ae49f6fa11ced8a719d1ce0a781789ef64d0bec4b04310e9f68a6c583076"
+    },
+    {
+      "file": "00005_小狐丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "38c67fb2b8363209787ef6b384c17eeaead294c384a93595e1b5e3a33b98e7cb"
+    },
+    {
+      "file": "00006_小狐丸_head.png",
+      "source": "安装包",
+      "source_sha256": "d11d24f0b0320f385619a1ddaec651d9a05f9957da2d332dbda477bfd0a9028c"
+    },
+    {
+      "file": "00007_石切丸_head.png",
+      "source": "安装包",
+      "source_sha256": "0a2633ebb649eeb110f038c1b541c03df9f0fc4c1d1d62e896696156f98ebfc1"
+    },
+    {
+      "file": "00007_石切丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "299788b787cf0066ac6d5d92339e701bbc9bc0cfcbfd0d02eb2a2479a186cc80"
+    },
+    {
+      "file": "00008_石切丸_head.png",
+      "source": "安装包",
+      "source_sha256": "93c23d8f7cc06c3841be643421a88d4b1505f9498ca4c13568e7af26b2436d2a"
+    },
+    {
+      "file": "00009_岩融_head.png",
+      "source": "安装包",
+      "source_sha256": "2eeda1f890b3a76896568b512b8e310685e77578ead96487d0e9e06bfd53cff7"
+    },
+    {
+      "file": "00009_岩融_foot.png",
+      "source": "安装包",
+      "source_sha256": "453e5943d59f09093ab35ba7e01a8fbaffb974b949452cd4f492b7acf184deeb"
+    },
+    {
+      "file": "00010_岩融_head.png",
+      "source": "安装包",
+      "source_sha256": "097b12a4911afc51a0b2723411c2a8d2d3bdc6d0c6cafd48fe48b59b3ed4bce7"
+    },
+    {
+      "file": "00011_今剑_head.png",
+      "source": "安装包",
+      "source_sha256": "da099963ee48ddcc27d2006142574796467b222fef5b80bc7d838845b054e2ed"
+    },
+    {
+      "file": "00011_今剑_foot.png",
+      "source": "安装包",
+      "source_sha256": "adf26b7ee46ef84dfd383ccade1cc61d30d825ab75a45bf5ac8159376c753d0b"
+    },
+    {
+      "file": "00012_今剑_head.png",
+      "source": "安装包",
+      "source_sha256": "26e54e2e3b3f2fb93a30f99c9bd5e879f87f9a84a2e613cdf123ae12291b3af4"
+    },
+    {
+      "file": "00013_大典太光世_head.png",
+      "source": "安装包",
+      "source_sha256": "41c74e5c7a594a1b92894e79314dcba253c3da87257d6d46a9b26fb8779c2b06"
+    },
+    {
+      "file": "00013_大典太光世_foot.png",
+      "source": "安装包",
+      "source_sha256": "aa0432ed9896eec5033141a52c2c1f108e560b8ad00b8d131b28a8851e49a774"
+    },
+    {
+      "file": "00014_大典太光世_head.png",
+      "source": "安装包",
+      "source_sha256": "700b36c7267e362a658cc15215c1a2ebba4a7bdd8c8b47d1d0e95df517f8f889"
+    },
+    {
+      "file": "00015_骚速剑_head.png",
+      "source": "安装包",
+      "source_sha256": "7c1cff4ec0021d6060414fc10e78dd3354ab1e97605bfc9e3a2633bf812075a4"
+    },
+    {
+      "file": "00015_骚速剑_foot.png",
+      "source": "安装包",
+      "source_sha256": "30a63bdc61fc6ff643fe8cf78088abf1d9a697a5e105374eb2756b60eb54262e"
+    },
+    {
+      "file": "00016_骚速剑_head.png",
+      "source": "安装包",
+      "source_sha256": "af03b16eded9ccb09acbc19437026016484a030c9b4b4774186989722d7e1ed9"
+    },
+    {
+      "file": "00017_数珠丸恒次_head.png",
+      "source": "安装包",
+      "source_sha256": "7cb29388bdb75ad303e362c5a2a9c38c17797baf2a8d7ff55dedf13be7e07326"
+    },
+    {
+      "file": "00017_数珠丸恒次_foot.png",
+      "source": "安装包",
+      "source_sha256": "7cb44185ef7022e27f92d0c91b6668826db1ce203e68f92aa5c275d3d30d8467"
+    },
+    {
+      "file": "00018_数珠丸恒次_head.png",
+      "source": "安装包",
+      "source_sha256": "3215223044643efb19b3d7f6d28a3379190175577f667c4e003b96bdcc36948f"
+    },
+    {
+      "file": "00019_笑面青江_head.png",
+      "source": "安装包",
+      "source_sha256": "e27472c278d34f40b59e008e1070165276f6d68b2a0b641b923146a8a156aebb"
+    },
+    {
+      "file": "00019_笑面青江_foot.png",
+      "source": "安装包",
+      "source_sha256": "05e50f9a3145fa6e5ff8e7f3e3385429d3aa449a949171e45e291d1a0d6b7308"
+    },
+    {
+      "file": "00020_笑面青江_head.png",
+      "source": "安装包",
+      "source_sha256": "e25133393c8f19c6d535b0252acb27a43b877ca65c4379ba12854428f34dbc6e"
+    },
+    {
+      "file": "00021_鬼丸国纲_head.png",
+      "source": "安装包",
+      "source_sha256": "5991d7a5b18f05927e595601bd40c450f88ff9781538931dd3e52b77c3a2262c"
+    },
+    {
+      "file": "00021_鬼丸国纲_foot.png",
+      "source": "安装包",
+      "source_sha256": "5c8073330567748c5481eba78fad4c3c33de65c5f2719885653396c42f90bd13"
+    },
+    {
+      "file": "00022_鬼丸国纲_head.png",
+      "source": "安装包",
+      "source_sha256": "42c6c338bde19c66bdce0c7c719ecf2d39ee7b392d02fe4a8aab214f5c177e07"
+    },
+    {
+      "file": "00023_鸣狐_head.png",
+      "source": "安装包",
+      "source_sha256": "65f27e1d32b0e008a256e48c6b12ac390f274c214ae4b3075e07288ddd141928"
+    },
+    {
+      "file": "00023_鸣狐_foot.png",
+      "source": "安装包",
+      "source_sha256": "8a65581ec716372b5d2dfc6855ec42ac8d8f4fe0b35ab3874f6270f318041eef"
+    },
+    {
+      "file": "00024_鸣狐_head.png",
+      "source": "安装包",
+      "source_sha256": "4fae7575fad2411a25feeba8b69aee4736d561dd99e037eca41164520c8080a0"
+    },
+    {
+      "file": "00025_一期一振_head.png",
+      "source": "安装包",
+      "source_sha256": "89c8a0314972f8a2516d652048c241892498393d97281b70ba88447e6225beb1"
+    },
+    {
+      "file": "00025_一期一振_foot.png",
+      "source": "安装包",
+      "source_sha256": "4c7a6cbac23c5969a421cce7ebef9b7c08546119af57df4f791d28842fbc4aef"
+    },
+    {
+      "file": "00026_一期一振_head.png",
+      "source": "安装包",
+      "source_sha256": "d910a5e3dcd767dc894bfff480dd600e31dd08f30f1d4c0a0803fe339fabe6b4"
+    },
+    {
+      "file": "00027_鲶尾藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "3ef456081b4b395248287e1a6ea76b09185bb9f01eb3cfc36fc209278ebd7fc8"
+    },
+    {
+      "file": "00027_鲶尾藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "4c4393c9b659aa5c3de0f2c09dcc3e270cd6c88ac8dede1cc6c4e3616301b6be"
+    },
+    {
+      "file": "00028_鲶尾藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "a86b6db798e6412e78efdc2f42c0441dd10a24d1d6df72bab7f93f87b988bd17"
+    },
+    {
+      "file": "00029_骨喰藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "4e90bc7af5bc09e1cc54aa9d2aaa131bd34e9e334ee3aa11438657ee71e90a9e"
+    },
+    {
+      "file": "00029_骨喰藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "76a47d3a901fd4f82d825f50780f240c4fb9f7d3248e290d57754e4c1e999e4c"
+    },
+    {
+      "file": "00030_骨喰藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "18f26e685593060c21b8755d70fede90a43db0336b5164492122a52e4e4a854b"
+    },
+    {
+      "file": "00031_平野藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "e2587e68736ceb35fab7e208ec414a34ecec097f2bd13e1b845ea86d59299db0"
+    },
+    {
+      "file": "00031_平野藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "61dd3f50c37a00c98ac25e3161e331df5eb0d5462abb07b84ca60a411b8dc981"
+    },
+    {
+      "file": "00032_平野藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "3139db5cd5e708cef822e87e0fb9a39e3d4d9b12a26fcdd0150c6ddd32aa3370"
+    },
+    {
+      "file": "00033_厚藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "801b209a96f46b6220aca86e1a3e9a9b3d0c4fea592329c4b065dd6d5a03c872"
+    },
+    {
+      "file": "00033_厚藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "cf339b798b1c1572bd01ece6de463825714ed813d591f6bb8f5e27797bf0eb0a"
+    },
+    {
+      "file": "00034_厚藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "4d5f7fe151510db165b43fec12e396f858b80475a0c89b7e4240af654953fb22"
+    },
+    {
+      "file": "00035_后藤藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "966418d832fb88266f58b93a747b6935fda3698e0be654899c64c60abd996278"
+    },
+    {
+      "file": "00035_后藤藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "1b6a78971e73b3cac7f0e15d5a7a68299fdbb96249e649db9141004cc6dc4838"
+    },
+    {
+      "file": "00036_后藤藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "2bcfdbfe27845b7cf85e962d58c6f6f27a1bc63f80851176cb10394b93bc0adb"
+    },
+    {
+      "file": "00037_信浓藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "5480154c569eef4720506b292681588cadc365dcde9afb47a92ba2a42766c5c8"
+    },
+    {
+      "file": "00037_信浓藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "7c049bbbafb9d17c8e971a92cc4c7ee732ffad5686a1cc4c6b509e4024c23a66"
+    },
+    {
+      "file": "00038_信浓藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "4e140d75dcbd2804be84bbee51c44360c48ef7178e4bb73c200eead88a7f2917"
+    },
+    {
+      "file": "00039_前田藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "b7884ea42740d59a14461d134b01e0dfe8e9ac02049d10481f28a36e2a840dca"
+    },
+    {
+      "file": "00039_前田藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "7d413a7753d36d6627f5bdf6a021ef1d65323c4b5438a705c8256452706504c9"
+    },
+    {
+      "file": "00040_前田藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "7c0bd86f77bd807e0dfe558d900ef13022333b480fbd83c09cf06f229d1de23a"
+    },
+    {
+      "file": "00041_秋田藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "8dc59cfe7410a7792c0a9d1e6dc147369540295449e2eeec7249ec6ee7e2bdc5"
+    },
+    {
+      "file": "00041_秋田藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "bcb277cf0795bbefbfa8f585341ca93dc08515713fbe4be963b2f4184ebf8f28"
+    },
+    {
+      "file": "00042_秋田藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "27371178d5932e5b984b1a8dcae4956d66656dbecafd1f8691d8e52a490fda88"
+    },
+    {
+      "file": "00043_博多藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "0c442a52fc1bd72fc9c1c61ba6cc14572ec25ff3a0ce2fd22bb5e120a7b99d7a"
+    },
+    {
+      "file": "00043_博多藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "6466f165cba2dd345db2908bb7680db00340f09f8af747508d30d4b632d8c51a"
+    },
+    {
+      "file": "00044_博多藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "35bfce8773372b3532089b89b6e555ebd4bddd100992ff5f33d3a66040b6e05a"
+    },
+    {
+      "file": "00045_乱藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "78ce5ba03f4cf420abaa7503e37633fa8eb72b812862d6746f76c076db099db1"
+    },
+    {
+      "file": "00045_乱藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "ee6bc88ea76c50e730852e0686377f446ec03108354ef1ca29f058b57ac4c147"
+    },
+    {
+      "file": "00046_乱藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "3b6e5d4b1c9203057c5973adf4b12346e63f7c8b0fd88a6094eac7049b4ada27"
+    },
+    {
+      "file": "00047_五虎退_head.png",
+      "source": "安装包",
+      "source_sha256": "b21bddb5bba3f1840fb677d24b27c3ee91bfd6f69a9caa2c9d11bdbcdc532c82"
+    },
+    {
+      "file": "00047_五虎退_foot.png",
+      "source": "安装包",
+      "source_sha256": "2d0d65effb00a7ebbdcecfbd80a573c4270e4bdbf9620967883d936c2e840197"
+    },
+    {
+      "file": "00048_五虎退_head.png",
+      "source": "安装包",
+      "source_sha256": "e8af8ddbb54fd7a0a70f1912ae1eb8a021ccac629fc8ccf8516fcf9281f70218"
+    },
+    {
+      "file": "00049_药研藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "f7133f691e2aef3e7212c98a93af7798734bcdfd5affab44a2c7094d8cd6fe6f"
+    },
+    {
+      "file": "00049_药研藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "e93629e298ac6ea84b36006b9d0d2d32c2988f8085bd8b1238b4bd8d85954e2a"
+    },
+    {
+      "file": "00050_药研藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "383e4b754771ef78c4e382d2ce597d59c5e6b7139aafe6ed48afe8e0546560dc"
+    },
+    {
+      "file": "00051_包丁藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "25e6eaf2fe8bab8389b69743887543dc14b1202dd849341df87327a2eea67221"
+    },
+    {
+      "file": "00051_包丁藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "343ce3cd59d86308776924ba75420d2a9a5abcc9540104f71554ff2cb7fcb462"
+    },
+    {
+      "file": "00052_包丁藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "793b9dec59558693adc351f15ebe454628ec588ec034e3e3949ccb28de4cd514"
+    },
+    {
+      "file": "00053_大包平_head.png",
+      "source": "安装包",
+      "source_sha256": "604f8dfed998d160d35e7993a38468e8e6f60f435f5ea400d6d035a72040149b"
+    },
+    {
+      "file": "00053_大包平_foot.png",
+      "source": "安装包",
+      "source_sha256": "1dd5dcde1ec15d014b6c0e2e32f5a1a666df83dc9dcab33b2fad3f370c3dd0c2"
+    },
+    {
+      "file": "00054_大包平_head.png",
+      "source": "安装包",
+      "source_sha256": "3129ac8b49bf87cbca8bfc9baf4a4a95cfb748a66c534d7dc797e92af14e565e"
+    },
+    {
+      "file": "00055_莺丸_head.png",
+      "source": "安装包",
+      "source_sha256": "f3dc49b0d0c7cae225a3e3e385f44e3ce39050318831ebb3cdf85d81ab33d767"
+    },
+    {
+      "file": "00055_莺丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "54d6a418d0c3ae7431759c26eda61025d6e0e6bdc0ad0895dcc7c9ccedc5816c"
+    },
+    {
+      "file": "00056_莺丸_head.png",
+      "source": "安装包",
+      "source_sha256": "a768da9beb228766cd731a747e1dfaee984b274e65054f07261c3f9216dc0c12"
+    },
+    {
+      "file": "00057_明石国行_head.png",
+      "source": "安装包",
+      "source_sha256": "5c05b7d478561dd953d379aaadf1f367ca997c1042e052a55f348d1175959741"
+    },
+    {
+      "file": "00057_明石国行_foot.png",
+      "source": "安装包",
+      "source_sha256": "514fb4d08eb19429bdff33ab1adaeff1014dc6551b0c1a911a130b82ec79681a"
+    },
+    {
+      "file": "00058_明石国行_head.png",
+      "source": "安装包",
+      "source_sha256": "4626d2b1845677e426b3ef8e6a67d5a672ff72a1606c432797e86b7e87f91b43"
+    },
+    {
+      "file": "00059_萤丸_head.png",
+      "source": "安装包",
+      "source_sha256": "f4a19056db94e01db8c783b6957ae773546fea50671d3ff124329a4365e9ccba"
+    },
+    {
+      "file": "00059_萤丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "e05ee3346d73124487e6ab67f81a1a87499466bbd69543cc2134300fb09f1940"
+    },
+    {
+      "file": "00060_萤丸_head.png",
+      "source": "安装包",
+      "source_sha256": "75caca2c31aee9a9a62f045eac7dd641d4cffcb8127d0b2bc438cf33d6f5b9cf"
+    },
+    {
+      "file": "00061_爱染国俊_head.png",
+      "source": "安装包",
+      "source_sha256": "4dde195b413c5ea74bf75c9d960f10ee8662e76571277be554f7451aad5dfc84"
+    },
+    {
+      "file": "00061_爱染国俊_foot.png",
+      "source": "安装包",
+      "source_sha256": "d9c914d5d9065a19285175c5b08d26627db70fd725dbba622cda5e11ef3ea043"
+    },
+    {
+      "file": "00062_爱染国俊_head.png",
+      "source": "安装包",
+      "source_sha256": "283c6ccf6c25c66fc4e7802ad3adf847f1f7bf35b920324027a96969fa6b33b5"
+    },
+    {
+      "file": "00063_千子村正_head.png",
+      "source": "安装包",
+      "source_sha256": "cb546b0f6b925557e4ceb578bb39b7b972dbd4827675d6c476c59bb0ce84840a"
+    },
+    {
+      "file": "00063_千子村正_foot.png",
+      "source": "安装包",
+      "source_sha256": "0070edc2caf7db8e88734cb5a4312750592f026dabfe071e6a7ada4ad827eb90"
+    },
+    {
+      "file": "00064_千子村正_head.png",
+      "source": "安装包",
+      "source_sha256": "463cab02f3d8b876405f1e80a75697f5a365ec9db13ad4daa7ac20bd0ac8f4d7"
+    },
+    {
+      "file": "00065_蜻蛉切_head.png",
+      "source": "安装包",
+      "source_sha256": "d3e58cf47c6b27f4250f0d594ff2812e6df007dba190a76419f2183d41cab077"
+    },
+    {
+      "file": "00065_蜻蛉切_foot.png",
+      "source": "安装包",
+      "source_sha256": "a3988e0a753795dbb5d0a074edf21cc790f3e9c90bb0892c3f739cc5cde30bca"
+    },
+    {
+      "file": "00066_蜻蛉切_head.png",
+      "source": "安装包",
+      "source_sha256": "f8cf7991652b8323b7ef9217f66807e6c092bf225f2b41bb43b438f902f6cf7d"
+    },
+    {
+      "file": "00067_物吉贞宗_head.png",
+      "source": "安装包",
+      "source_sha256": "3e3ddb3923805339b9e9de10cab49904ab1d03a1dc50bb22d26561bf773462c7"
+    },
+    {
+      "file": "00067_物吉贞宗_foot.png",
+      "source": "安装包",
+      "source_sha256": "9dc0220b6977d9c849b13a5c5605983273d0bffb7d78454f684b9d8343c1dd05"
+    },
+    {
+      "file": "00068_物吉贞宗_head.png",
+      "source": "安装包",
+      "source_sha256": "0c0da3a2f3d22a287fe7f38739857e26a04d22b1163cb25a3e668b8447f65ec0"
+    },
+    {
+      "file": "00069_太鼓钟贞宗_head.png",
+      "source": "安装包",
+      "source_sha256": "c43fb0623a7bbf5c962dec2d942a0ce8078bd0fae402f3d4d23950ac3ff0ba78"
+    },
+    {
+      "file": "00069_太鼓钟贞宗_foot.png",
+      "source": "安装包",
+      "source_sha256": "8c3db4ae8e99e02067d84c8bcbd49b742d923b6c1f611d01e711252d76dc3046"
+    },
+    {
+      "file": "00070_太鼓钟贞宗_head.png",
+      "source": "安装包",
+      "source_sha256": "49b21f4d1b508307019bbf5a4a194ed770830b3c416e70e315a79c762a4b6328"
+    },
+    {
+      "file": "00071_龟甲贞宗_head.png",
+      "source": "安装包",
+      "source_sha256": "d0fe49002a527c42aa41eab55d4d3d9d0f2fe1015dfa0d571f82fcd2a4d75ed9"
+    },
+    {
+      "file": "00071_龟甲贞宗_foot.png",
+      "source": "安装包",
+      "source_sha256": "2b03003a9a599bc03749445728cbecf46f92a07aec7d7370b9246d5b127defdc"
+    },
+    {
+      "file": "00072_龟甲贞宗_head.png",
+      "source": "安装包",
+      "source_sha256": "f7b9414a4e3b69a2c9c6b6f109f5aa6e38ca2249e3efa9bb82adc5f9ff3b0c1f"
+    },
+    {
+      "file": "00073_烛台切光忠_head.png",
+      "source": "安装包",
+      "source_sha256": "4c38efd85190dc65b63b87799b88548d9f4b8a6305342a3d6f5c4ad72149cac2"
+    },
+    {
+      "file": "00073_烛台切光忠_foot.png",
+      "source": "安装包",
+      "source_sha256": "f12482a9f1b1029c0669512432a01427e1087219b68d08c2c1945ee886ac4136"
+    },
+    {
+      "file": "00074_烛台切光忠_head.png",
+      "source": "安装包",
+      "source_sha256": "49bd60edbcc86f7715468ddca1e3d990878639386cf1089e6fce2428c4954c8b"
+    },
+    {
+      "file": "00075_大般若长光_head.png",
+      "source": "安装包",
+      "source_sha256": "be9e649c9fc96503b02cd38bebd84cb9bbfc92f1fd4b83eb06348d284da905ac"
+    },
+    {
+      "file": "00075_大般若长光_foot.png",
+      "source": "安装包",
+      "source_sha256": "2a78b8326f248d1c400901a28ac3a44df13b475bad781c93c28781e7b98b6e7b"
+    },
+    {
+      "file": "00076_大般若长光_head.png",
+      "source": "安装包",
+      "source_sha256": "1bc0d3cb2ef9e57c236e151cac963c062865cb3a8c578600e77e4eb183186b09"
+    },
+    {
+      "file": "00077_小龙景光_head.png",
+      "source": "安装包",
+      "source_sha256": "28c06f930ce030ae50156fe6180fef307a9f61252b0a2fc12c1f6616988215d5"
+    },
+    {
+      "file": "00077_小龙景光_foot.png",
+      "source": "安装包",
+      "source_sha256": "a28ffde48eccbb9db1ca923e4e8fca8e4a1d5684897cabca623e77177a33566b"
+    },
+    {
+      "file": "00078_小龙景光_head.png",
+      "source": "安装包",
+      "source_sha256": "1c5e90aac4ca10bcc08d0759e547e0e48ef653beb4460d3f5afb3cb566e7ea99"
+    },
+    {
+      "file": "00079_江雪左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "0f4e839234349f37659f54863dd53001f7e7e71b30c6028646cf723f477e2b4e"
+    },
+    {
+      "file": "00079_江雪左文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "dd5f3652f53339e638273cd4705482001c0f19ca74d8034aca8f90ecb25c8c13"
+    },
+    {
+      "file": "00080_江雪左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "39d20c5bb65772a09dd7d9f24b87c271f136b33d9f88cacb3c1e6d5870b11a7d"
+    },
+    {
+      "file": "00081_宗三左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "8db9261e09e7a3da531fb79ce83e191655bb27c78809fcf5b6a453754f454789"
+    },
+    {
+      "file": "00081_宗三左文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "9b80b417e18b050c7f31d0267b5f6f0aeef993723230c98b221db6a338467a6e"
+    },
+    {
+      "file": "00082_宗三左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "1671c04e1c62dd45ea680e4fd436d973a460cbe427bfde1670b13131afcb5a0d"
+    },
+    {
+      "file": "00083_小夜左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "0215696c1ae640e68c5ebcda05f1dcd2b7d46c05399a90a2125c770fec1be4c1"
+    },
+    {
+      "file": "00083_小夜左文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "ef58e38042608d5b003f57c5d61792bdc30afbe3d4d250de1c3e079b7e6d9bd8"
+    },
+    {
+      "file": "00084_小夜左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "faacb5850c4a4bcd51e578a44a8404f66dc5a535fa45086ecb7b003dd492a483"
+    },
+    {
+      "file": "00085_加州清光_head.png",
+      "source": "安装包",
+      "source_sha256": "218e09d3ebf143717ebed929468903db886e88dba3884696916d2e2fbbf8ffc8"
+    },
+    {
+      "file": "00085_加州清光_foot.png",
+      "source": "安装包",
+      "source_sha256": "77ff5e0920bb7150e6d5bbf2d5e3450e2a191e35dae77d85aa923c569901f0d2"
+    },
+    {
+      "file": "00086_加州清光_head.png",
+      "source": "安装包",
+      "source_sha256": "804bbbadeaad84425d517e9a0ee76fba058fefcc0bb38745df846278dd24e028"
+    },
+    {
+      "file": "00087_大和守安定_head.png",
+      "source": "安装包",
+      "source_sha256": "4ae3e9c68eb91ecee84675f968d2738b81aaf82fa22b517255a2550ea0aab70a"
+    },
+    {
+      "file": "00087_大和守安定_foot.png",
+      "source": "安装包",
+      "source_sha256": "46e4f4da4bffc960ff261b554d2de9bef4888174483bbd7d77ed1f25b8bb31b5"
+    },
+    {
+      "file": "00088_大和守安定_head.png",
+      "source": "安装包",
+      "source_sha256": "323a28ac70407cbebec1473f0f32d516a345b442167509b1ef78447d8a341523"
+    },
+    {
+      "file": "00089_歌仙兼定_head.png",
+      "source": "安装包",
+      "source_sha256": "bb8a4d9a85f0b8a3cacf9fa91d21cea1e403c7454b586eceb7e33696dfcbc1b1"
+    },
+    {
+      "file": "00089_歌仙兼定_foot.png",
+      "source": "安装包",
+      "source_sha256": "b52dd8467d760d64095c7a46173b9aca18d33abe0bb74a609341a39765c3639b"
+    },
+    {
+      "file": "00090_歌仙兼定_head.png",
+      "source": "安装包",
+      "source_sha256": "de23cb87c4766cd62fd96fb2064fb89741a1a988f1c6f3587f8e78c43fbdc7dd"
+    },
+    {
+      "file": "00091_和泉守兼定_head.png",
+      "source": "安装包",
+      "source_sha256": "529149922866a8e1df216abf4f980cd7e72f875e869d9945bdf7977f0099f314"
+    },
+    {
+      "file": "00091_和泉守兼定_foot.png",
+      "source": "安装包",
+      "source_sha256": "5494610336a93f004e0aabd34fbc18399a5d2ad16aceb54d479f7bba0b9bbfa4"
+    },
+    {
+      "file": "00092_和泉守兼定_head.png",
+      "source": "安装包",
+      "source_sha256": "ad30fa4a598e9c0d91d296f167bcfeafaf102b327bb441f8d380e05f63c0994a"
+    },
+    {
+      "file": "00093_陆奥守吉行_head.png",
+      "source": "安装包",
+      "source_sha256": "1aa8d6fa33ca582a31311b4aa8fe20f343dfc3a19d772635c90689914aee38e1"
+    },
+    {
+      "file": "00093_陆奥守吉行_foot.png",
+      "source": "安装包",
+      "source_sha256": "497f6643e6378604f833ed4e9a4cce0d0df8ed00ab2da4fc89c361a9fbe7877a"
+    },
+    {
+      "file": "00094_陆奥守吉行_head.png",
+      "source": "安装包",
+      "source_sha256": "1ac77e225b81d4ef5ec871da44865d556b5b29b08d25c1d0afacf9777e0e108f"
+    },
+    {
+      "file": "00095_山姥切国广_head.png",
+      "source": "安装包",
+      "source_sha256": "4bf76584f2bbf6a5387b8737c4b28426eecf06076afc1978b641fcdf34cd628c"
+    },
+    {
+      "file": "00095_山姥切国广_foot.png",
+      "source": "安装包",
+      "source_sha256": "c9ad5024e9b4113f1cefaf952173ded9f2ef80d4b4d6486d47a2f33158a72089"
+    },
+    {
+      "file": "00096_山姥切国广_head.png",
+      "source": "安装包",
+      "source_sha256": "fe9a259a84cf8d21f3fe2673939af62a8e054f61423eb2a8aa4e2f26537857f5"
+    },
+    {
+      "file": "00097_山伏国广_head.png",
+      "source": "安装包",
+      "source_sha256": "9053c104446a2d2570cf9744a4e1ee3b3eef44b9e4a38ba3eb8e47a08207391b"
+    },
+    {
+      "file": "00097_山伏国广_foot.png",
+      "source": "安装包",
+      "source_sha256": "786ad0bdcd10fd8d8c59682a51682fd24d3184ed4ddec7ab8c4e6755ee717571"
+    },
+    {
+      "file": "00098_山伏国广_head.png",
+      "source": "安装包",
+      "source_sha256": "d2c9a2a304b84af343ba7fe5cb3352e7042d6bc770f53332e43e4ef9af1952d4"
+    },
+    {
+      "file": "00099_堀川国广_head.png",
+      "source": "安装包",
+      "source_sha256": "9da6042355b82797f4c210287d2eda31fb79c3e3f45b2a6c613fa7414fd0ac77"
+    },
+    {
+      "file": "00099_堀川国广_foot.png",
+      "source": "安装包",
+      "source_sha256": "74420eb968fa2eddaf843502d723540a01a62c6a508bcde186657cd2f6512469"
+    },
+    {
+      "file": "00100_堀川国广_head.png",
+      "source": "安装包",
+      "source_sha256": "84b565f37c126fca00d208b86e743eb2b7d0faf7cba8eb476dcbffc3fa3e34c0"
+    },
+    {
+      "file": "00101_蜂须贺虎彻_head.png",
+      "source": "安装包",
+      "source_sha256": "2a7d7fd7e35d2d7cbd5645dca9346f03aacc67f1c5375d36108d66bc110cf83e"
+    },
+    {
+      "file": "00101_蜂须贺虎彻_foot.png",
+      "source": "安装包",
+      "source_sha256": "c666e100e173d28224c0da62e32579985b62ac29854ebbf4ac3725346826887c"
+    },
+    {
+      "file": "00102_蜂须贺虎彻_head.png",
+      "source": "安装包",
+      "source_sha256": "dd15268c48d852d99547afb625744c7acb792a6f57b52deae46eabd4f4935c21"
+    },
+    {
+      "file": "00103_浦岛虎彻_head.png",
+      "source": "安装包",
+      "source_sha256": "b203d13df23cca257f831e231722b3bde6e1cbe3e99a4c141a5cd890f418897c"
+    },
+    {
+      "file": "00103_浦岛虎彻_foot.png",
+      "source": "安装包",
+      "source_sha256": "61d9d5c67e68cc237d278709e3e60253e99de30679ecdc6b4bf1c9a16328c72c"
+    },
+    {
+      "file": "00104_浦岛虎彻_head.png",
+      "source": "安装包",
+      "source_sha256": "9f41de872261de7fc1f580bcc3453d25e2b6a85ca55ea1cc3aadc4c5450f6d17"
+    },
+    {
+      "file": "00105_长曾祢虎彻_head.png",
+      "source": "安装包",
+      "source_sha256": "cb26e1404b0a4addeeb55364260ba6cdc1e0facf2b5da617507fb7063c2b25c7"
+    },
+    {
+      "file": "00105_长曾祢虎彻_foot.png",
+      "source": "安装包",
+      "source_sha256": "ee05d9c062f3bebd9d6ee31b3642041f7a9953f9b103e6606354b446f9e3a2a3"
+    },
+    {
+      "file": "00106_长曾祢虎彻_head.png",
+      "source": "安装包",
+      "source_sha256": "ae71ab026200fcb92a9e18b40bed52b4c7c2f835c341c375b880b34455d13380"
+    },
+    {
+      "file": "00107_髭切_head.png",
+      "source": "安装包",
+      "source_sha256": "36eec172b8e8d848ed59bfba083eba8d329fe9c6cb6ea807b3583465427ea3c9"
+    },
+    {
+      "file": "00107_髭切_foot.png",
+      "source": "安装包",
+      "source_sha256": "7e3a0a649e4fd86ec93f1b96fe717298d5b84af2c453a9225134d5622c54685e"
+    },
+    {
+      "file": "00108_髭切_head.png",
+      "source": "安装包",
+      "source_sha256": "b13e64082f8eb3214c3806eb621698bd49675d9593e80fe241985f09cf0ee8f5"
+    },
+    {
+      "file": "00109_髭切_head.png",
+      "source": "安装包",
+      "source_sha256": "89f7f4bc7ed0815b696755102bd6fcaf983f01e129a0a204d277019d44763610"
+    },
+    {
+      "file": "00110_髭切_head.png",
+      "source": "安装包",
+      "source_sha256": "2bf3639bdab4d54e7138c8de03fdf81ace37d113f1f460b0c8be4b9c263e7054"
+    },
+    {
+      "file": "00111_髭切_head.png",
+      "source": "安装包",
+      "source_sha256": "efca4d4f44e8db399bd3cfb982cf58bc549da15cc084a62e5d07f66a44bd9fa6"
+    },
+    {
+      "file": "00112_膝丸_head.png",
+      "source": "安装包",
+      "source_sha256": "f7769827240e280779369e0162bf4afaa158899fe4763a9dde7252f6f84cf7e1"
+    },
+    {
+      "file": "00112_膝丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "40055213cc133d310a050462cc218dd8012a8baf0a1ddf76a4a0570648b2ad7c"
+    },
+    {
+      "file": "00113_膝丸_head.png",
+      "source": "安装包",
+      "source_sha256": "400414c98ffeca319228eb26c43024f6da13143f47fd88bc4c11a188de59b51e"
+    },
+    {
+      "file": "00114_膝丸_head.png",
+      "source": "安装包",
+      "source_sha256": "b9f5b988b8f5973b35a71dc514ddd69771e727b7c2f1f1553346d5f874166c4c"
+    },
+    {
+      "file": "00115_膝丸_head.png",
+      "source": "安装包",
+      "source_sha256": "1aa034b885a47ef0a5f399c81297f3e29fbca44d2400a6899ef561b54a38001d"
+    },
+    {
+      "file": "00116_大俱利伽罗_head.png",
+      "source": "安装包",
+      "source_sha256": "9ba979cd9c3cb179d9afb5ae9ff80934d14d61d781c7e83455079ed9d4b50043"
+    },
+    {
+      "file": "00116_大俱利伽罗_foot.png",
+      "source": "安装包",
+      "source_sha256": "7eb2878859ccc9bbfbed2239708746d27521cdd107d6ac8963a5d28a28261352"
+    },
+    {
+      "file": "00117_大俱利伽罗_head.png",
+      "source": "安装包",
+      "source_sha256": "10d77282b11c4a4439554d3d7793eb8ee4c0b517997bcee9e4cd0fb546f5153b"
+    },
+    {
+      "file": "00118_压切长谷部_head.png",
+      "source": "安装包",
+      "source_sha256": "03455d346fb8e291fe9ac08cf02f6371236f5c3746ff9c45e53eedbc21ffd542"
+    },
+    {
+      "file": "00118_压切长谷部_foot.png",
+      "source": "安装包",
+      "source_sha256": "cda47a116d7e02405cc79b419fa618ee257b51c0fa0ba0647689c1ca842a13e4"
+    },
+    {
+      "file": "00119_压切长谷部_head.png",
+      "source": "安装包",
+      "source_sha256": "e194a78feab65fc1a348db16800ab3d0acbf0aa9f07a6d6723950cb05b8c498c"
+    },
+    {
+      "file": "00120_不动行光_head.png",
+      "source": "安装包",
+      "source_sha256": "dccfafcce44b23870d27f17a3bf87635003c8fa301d4ebd743c891c5b07ea79d"
+    },
+    {
+      "file": "00120_不动行光_foot.png",
+      "source": "安装包",
+      "source_sha256": "c2ea93cd46cbe08fb14d161737b20d78a6c56361ad054ad45a23926aa663459a"
+    },
+    {
+      "file": "00121_不动行光_head.png",
+      "source": "安装包",
+      "source_sha256": "7e6f568ad748f5c696c35baf1faf6c8694fc29743fb9020646060fad916ec959"
+    },
+    {
+      "file": "00122_狮子王_head.png",
+      "source": "安装包",
+      "source_sha256": "62af91b17bcfa12a64d5983d67e63905108cbfdc43663407166b19588801ee1e"
+    },
+    {
+      "file": "00122_狮子王_foot.png",
+      "source": "安装包",
+      "source_sha256": "7e2cb052b931066e892988253023fa5f21dcc0edba1050cdada4f7fe69fe9cde"
+    },
+    {
+      "file": "00123_狮子王_head.png",
+      "source": "安装包",
+      "source_sha256": "6fc98d738192a383e3689e269bd5a1db610e54853e72a829f9206c76bc7ae644"
+    },
+    {
+      "file": "00124_小乌丸_head.png",
+      "source": "安装包",
+      "source_sha256": "a4ea54760926ad75d8077f3bf3cf0651e4dbcf7b3cfa8f16bcf94a2ce6b7fe4f"
+    },
+    {
+      "file": "00124_小乌丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "70214bbcb05bc99a2a873fc6245fbe5b331ba011735031cd497b0cc4bcb1a5ba"
+    },
+    {
+      "file": "00125_小乌丸_head.png",
+      "source": "安装包",
+      "source_sha256": "a5edf4cfbb6da5afa80f64dfaebde38d319de28d96e3aafdedde225c69e3ba39"
+    },
+    {
+      "file": "00126_拔丸_head.png",
+      "source": "安装包",
+      "source_sha256": "40fa1030d4728770d50afecc9141a2843a85c8315be448fcdf3ee075096c0d06"
+    },
+    {
+      "file": "00128_同田贯正国_head.png",
+      "source": "安装包",
+      "source_sha256": "aca5f638dd3aec50d9932d47f4916032deece1bbd661e5d2ed878aed528ad0c0"
+    },
+    {
+      "file": "00128_同田贯正国_foot.png",
+      "source": "安装包",
+      "source_sha256": "f3c05f9c4b672fb5e36760be17f2c0a85c69392cb1d29bf1c58c5b3369d15264"
+    },
+    {
+      "file": "00129_同田贯正国_head.png",
+      "source": "安装包",
+      "source_sha256": "ad09df4ada105cadb12e0af31c80c00f03ac0651c1cc1b7191efac0d964108b2"
+    },
+    {
+      "file": "00130_鹤丸国永_head.png",
+      "source": "安装包",
+      "source_sha256": "ce90b1178a5f7c04d3e633820e4fc3e05c7a1e41f3ea20d2981e01b05f4389fa"
+    },
+    {
+      "file": "00130_鹤丸国永_foot.png",
+      "source": "安装包",
+      "source_sha256": "621e9119dc4a65e474704a38bcc1ac689aecc0bc60a3c31f646e8e78288d7c05"
+    },
+    {
+      "file": "00131_鹤丸国永_head.png",
+      "source": "安装包",
+      "source_sha256": "750b03314c78f0bdb5aee3312125208f9481e61884391b61a21426c80cd40a52"
+    },
+    {
+      "file": "00132_太郎太刀_head.png",
+      "source": "安装包",
+      "source_sha256": "9775f28f5553d5dd693cab05cc0e1038fd5984d7c3ca99f2ba881dbd0a651926"
+    },
+    {
+      "file": "00132_太郎太刀_foot.png",
+      "source": "安装包",
+      "source_sha256": "72e76d64c636ba436c7eff8b45c67ad185d9a287305f3cf0df8c3bf17e83702b"
+    },
+    {
+      "file": "00133_太郎太刀_head.png",
+      "source": "安装包",
+      "source_sha256": "0b86b12ebebaab0c41204761339c912d2a13418a18e8d4221dc351d95a064155"
+    },
+    {
+      "file": "00134_次郎太刀_head.png",
+      "source": "安装包",
+      "source_sha256": "efc7fa566a4ff5b96c27a1a3fc64ec36ebde148adf33838997cef7ad4f4965d9"
+    },
+    {
+      "file": "00134_次郎太刀_foot.png",
+      "source": "安装包",
+      "source_sha256": "68d3643253477a22e7d7696770e7475085d7dfc698f6bff610e9da8a20b3be0a"
+    },
+    {
+      "file": "00135_次郎太刀_head.png",
+      "source": "安装包",
+      "source_sha256": "d7e70b3960f8f5fbfb3d3f77e670e2ece116568cace7d7a4689fca73d44547bd"
+    },
+    {
+      "file": "00136_日本号_head.png",
+      "source": "安装包",
+      "source_sha256": "d6f66b00e29d485f10d2a8ce14b4c9ffd94fb4639fc1e9512f8a124cb0e60dd6"
+    },
+    {
+      "file": "00136_日本号_foot.png",
+      "source": "安装包",
+      "source_sha256": "0658269db854a32b2caca56fc3a0a2860d40c630bf8e5559fb2e71655e775528"
+    },
+    {
+      "file": "00137_日本号_head.png",
+      "source": "安装包",
+      "source_sha256": "3dd39690c40bd8307ece4793ee71a5ae609c0045a701215e720e658af360603d"
+    },
+    {
+      "file": "00138_御手杵_head.png",
+      "source": "安装包",
+      "source_sha256": "191537eb82439fa9a8129bc4dacecb74247080a010c6f913f97e98d05e81b78a"
+    },
+    {
+      "file": "00138_御手杵_foot.png",
+      "source": "安装包",
+      "source_sha256": "a22593546c8bb5a9d64c8b5dde044311d5c5062f95dc809f6baadc55059585e0"
+    },
+    {
+      "file": "00139_御手杵_head.png",
+      "source": "安装包",
+      "source_sha256": "e339a9133ffb1ab78c5be31c4d373a5748f1f95200e95f82fd964f5af429c384"
+    },
+    {
+      "file": "00140_巴形薙刀_head.png",
+      "source": "安装包",
+      "source_sha256": "72a011400a12aa11b73757aa52000f9769ee2defce26618b99a6be9ba8f93436"
+    },
+    {
+      "file": "00140_巴形薙刀_foot.png",
+      "source": "安装包",
+      "source_sha256": "ad907a30d15812bc51193fafefe20420a374d112dbd15239c642e753f3385460"
+    },
+    {
+      "file": "00141_巴形薙刀_head.png",
+      "source": "安装包",
+      "source_sha256": "6cf7ae128f81b517169ab7502155f819228bc6f7a6975d061fdc37375d339ef3"
+    },
+    {
+      "file": "00142_毛利藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "4fed4ea9793c553b8ce85126de36eee5dfd78861a24cc5f00e82465bc7bd0913"
+    },
+    {
+      "file": "00142_毛利藤四郎_foot.png",
+      "source": "安装包",
+      "source_sha256": "c142712091e9bde3ff8fdae99b2617e8d26346fe3c9ce9c36d4cb9a8bbe0f19f"
+    },
+    {
+      "file": "00143_毛利藤四郎_head.png",
+      "source": "安装包",
+      "source_sha256": "81cce312f14e5ae762824e8da6d9134bbe5a894a23fb147b393ce53cbf0cfde0"
+    },
+    {
+      "file": "00144_笼手切江_head.png",
+      "source": "安装包",
+      "source_sha256": "de2ce7822d7e7751dfce36a7767dc0378afa3ea20605abe99d1548f42695927b"
+    },
+    {
+      "file": "00144_笼手切江_foot.png",
+      "source": "安装包",
+      "source_sha256": "757c82d0368c59b3a8a788dbc0cf368dd9e5682da6e866c3c4e98dabeae516d6"
+    },
+    {
+      "file": "00145_笼手切江_head.png",
+      "source": "安装包",
+      "source_sha256": "46ca67da4ba42e506a2e86332aded5027c7dd843ff37c5234fdf6d909b7e6b59"
+    },
+    {
+      "file": "00146_谦信景光_head.png",
+      "source": "安装包",
+      "source_sha256": "8f4f4730a934049bb2d44bda954955a77207799e99d174e0c42c56f52c444899"
+    },
+    {
+      "file": "00146_谦信景光_foot.png",
+      "source": "安装包",
+      "source_sha256": "01186fb54dfafd4b979965349f3ac39cb61f06d3c05eae329c5e69856a2dc9b2"
+    },
+    {
+      "file": "00147_谦信景光_head.png",
+      "source": "安装包",
+      "source_sha256": "29743fd32ce48f17ca28b1b9c1d2b03f282906991f31c6571ca80d0054d55640"
+    },
+    {
+      "file": "00148_小豆长光_head.png",
+      "source": "安装包",
+      "source_sha256": "daea6795486260ecd9f3fab376c85ad6faefbfdc16460574b552390671703fc8"
+    },
+    {
+      "file": "00148_小豆长光_foot.png",
+      "source": "安装包",
+      "source_sha256": "c13e5ba677d1716854658b677bfd5120619ba7f41ea872ea26fec593a7f7c342"
+    },
+    {
+      "file": "00149_小豆长光_head.png",
+      "source": "安装包",
+      "source_sha256": "f209878e38e980114e0fa0b8c4ac212e565aa491e1d4d227703a763c267c75e3"
+    },
+    {
+      "file": "00150_日向正宗_head.png",
+      "source": "安装包",
+      "source_sha256": "570b6c10d83f6305eafb956cbd238ddb9f31f9f55ff53f0008f495763ed0ddd7"
+    },
+    {
+      "file": "00150_日向正宗_foot.png",
+      "source": "安装包",
+      "source_sha256": "2ba3e550a01fc1456b8c0e528329e0e68ac618ee8ea397ed3f73273c21f79135"
+    },
+    {
+      "file": "00151_日向正宗_head.png",
+      "source": "安装包",
+      "source_sha256": "70900d4f212e2763bccf57552f2bd39619fc03f3b32b6ce5654274e287091887"
+    },
+    {
+      "file": "00152_静形薙刀_head.png",
+      "source": "安装包",
+      "source_sha256": "812dfdff8273a849c93d4d14b6dc1b3097726e3501004c43d90d35e7c2463d8c"
+    },
+    {
+      "file": "00152_静形薙刀_foot.png",
+      "source": "安装包",
+      "source_sha256": "505d7e7bcba6b9e0b622b6094f567fd4ef10dd9c3b2c15e45397e16d4163892f"
+    },
+    {
+      "file": "00153_静形薙刀_head.png",
+      "source": "安装包",
+      "source_sha256": "9f78567a91d6e33706f4e51b4f89c7c3e115711b0743162f6231bcd40da22b52"
+    },
+    {
+      "file": "00154_南泉一文字_head.png",
+      "source": "安装包",
+      "source_sha256": "8aa596e9c949b71316a469aa577a9337521a69ec3ed4f5a60c426d295098c861"
+    },
+    {
+      "file": "00154_南泉一文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "fd787d230e5a4767b59a37fa64069c9a7d98fece2f65ca37b033ea145793e143"
+    },
+    {
+      "file": "00155_南泉一文字_head.png",
+      "source": "安装包",
+      "source_sha256": "41c978f9b87fa7677a45c4f509cea6f9bbe08b9c3e2d2795e8ed1f3e19684efb"
+    },
+    {
+      "file": "00156_千代金丸_head.png",
+      "source": "安装包",
+      "source_sha256": "006e1903395b7f36c4c0c71306779019d427e64d475476557cca328121620052"
+    },
+    {
+      "file": "00156_千代金丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "43062e8db51035edf803d1a943c8079816064a7d81dbe406e2c865e67f8af25f"
+    },
+    {
+      "file": "00157_千代金丸_head.png",
+      "source": "安装包",
+      "source_sha256": "4d5d11a186b3dbaace542407aaacfd8f599c1c5d4072adaee23f8fcb11cc8426"
+    },
+    {
+      "file": "00158_山姥切长义_head.png",
+      "source": "安装包",
+      "source_sha256": "8b08dcef7ba296b3a94aa725765d50207b2ebd56551e332928abbfa7808a9909"
+    },
+    {
+      "file": "00158_山姥切长义_foot.png",
+      "source": "安装包",
+      "source_sha256": "0c2c2f98c047d6e90161efb9ffa36f0a03ac3f7429a359ddff77ba311caa37a5"
+    },
+    {
+      "file": "00159_山姥切长义_head.png",
+      "source": "安装包",
+      "source_sha256": "533239c638718cb6b9ff1daba87eb60f61648aec03aaf85d0043e9f9332e2783"
+    },
+    {
+      "file": "00160_丰前江_head.png",
+      "source": "安装包",
+      "source_sha256": "3c2fd1add4496d924f685a1927486e0b69faa3266e3a1d744738f43d026f1f1f"
+    },
+    {
+      "file": "00160_丰前江_foot.png",
+      "source": "安装包",
+      "source_sha256": "d122695ca01e2622d8dc86411c51dd8c5a3760edb328ebbc6140ab204b902351"
+    },
+    {
+      "file": "00161_丰前江_head.png",
+      "source": "安装包",
+      "source_sha256": "86a50b4d4aaa44a47b8a66eb5ba37f5043afb0674600702faa691021039a87f5"
+    },
+    {
+      "file": "00162_祢祢切丸_head.png",
+      "source": "安装包",
+      "source_sha256": "b285c5254c4845e354394eaf8dd13367d51125f2b2a812591e9f58a4f1cc3211"
+    },
+    {
+      "file": "00162_祢祢切丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "2395bed1fa19dd84c2fcca9bbe174d65f012eb622b3b61ed00016f2b3e47a014"
+    },
+    {
+      "file": "00163_祢祢切丸_head.png",
+      "source": "热更新",
+      "source_sha256": "6a857c5f999395f06bd834a418d297fb90e3bb76e649820a67aff637a4fcfc5d"
+    },
+    {
+      "file": "00164_白山吉光_head.png",
+      "source": "安装包",
+      "source_sha256": "56862b03c003eb29837ad26bd5c44488a65420c3038f2b939c627a9969584984"
+    },
+    {
+      "file": "00164_白山吉光_foot.png",
+      "source": "安装包",
+      "source_sha256": "4201c7c6d0de3755a547c485101a827c8aea54b284034850f13da7727befe66a"
+    },
+    {
+      "file": "00165_白山吉光_head.png",
+      "source": "热更新",
+      "source_sha256": "2b107e9706fa6a53f4b80d1b565d7e0da39b92f9709e6ab330833b9716483e6d"
+    },
+    {
+      "file": "00166_南海太郎朝尊_head.png",
+      "source": "安装包",
+      "source_sha256": "999412ada7dc8d590f38a3af2e0f0d316ae9ac8555d62c68a9e3a0e2929de5be"
+    },
+    {
+      "file": "00166_南海太郎朝尊_foot.png",
+      "source": "安装包",
+      "source_sha256": "87318480d9dfbe5042ec4c97a1da5be8c34d7e2017bfeec74d13720f1c53cd83"
+    },
+    {
+      "file": "00167_南海太郎朝尊_head.png",
+      "source": "热更新",
+      "source_sha256": "73f14f02810f8e83c30f9e11aacbeae23e3bae067b47a35746407725c432b609"
+    },
+    {
+      "file": "00168_肥前忠广_head.png",
+      "source": "安装包",
+      "source_sha256": "f17451551841c7408c405ccf285046ba11fbe4f4cc9bf41587aac836e2e5e9e8"
+    },
+    {
+      "file": "00168_肥前忠广_foot.png",
+      "source": "安装包",
+      "source_sha256": "a63b02fa80940f7f264170e17054a0c58a9cfa1ca835cdec1d86245d6e0acb4a"
+    },
+    {
+      "file": "00169_肥前忠广_head.png",
+      "source": "热更新",
+      "source_sha256": "6bfac9a57230a81bf9054c6286a5acc0fd43c0f58068110d15dc3ab4b494a5c9"
+    },
+    {
+      "file": "00170_北谷菜切_head.png",
+      "source": "安装包",
+      "source_sha256": "44e0498a6661dc6b542ab556766da9d7fed8d71dc2f1f3427e35327b80bddfd7"
+    },
+    {
+      "file": "00170_北谷菜切_foot.png",
+      "source": "安装包",
+      "source_sha256": "2b6b33753566c89155004cca0c54bebe267aae21332266f5bfc97e169256f4e2"
+    },
+    {
+      "file": "00171_北谷菜切_head.png",
+      "source": "安装包",
+      "source_sha256": "a9da12cee48ab7ba6236fc9439460fffed0adf70d0193639a46a58e7bcc23ea5"
+    },
+    {
+      "file": "00172_桑名江_head.png",
+      "source": "安装包",
+      "source_sha256": "697c008715b279324a1b1ac0b7d8dc2624b6dd9e7bb697466627ea9c58074733"
+    },
+    {
+      "file": "00172_桑名江_foot.png",
+      "source": "安装包",
+      "source_sha256": "d1e7d854f874b5e8b6efc1d7e1e21ef19610e47cc3e3b6f5020b80aa3f8a816c"
+    },
+    {
+      "file": "00173_桑名江_head.png",
+      "source": "热更新",
+      "source_sha256": "12a14eedc3cf7cdf2a143354361922e1d11fdb91f1d3f23ec77123b178bb953f"
+    },
+    {
+      "file": "00174_水心子正秀_head.png",
+      "source": "安装包",
+      "source_sha256": "7ee6d04d3d9a0a1837a105dfe257d7e8582226d9390db58c65160687d9cc9891"
+    },
+    {
+      "file": "00174_水心子正秀_foot.png",
+      "source": "安装包",
+      "source_sha256": "1d97d246edc462f9a33b75d4a35b09e9032caf3c06178063966f6b4582cf1802"
+    },
+    {
+      "file": "00175_水心子正秀_head.png",
+      "source": "热更新",
+      "source_sha256": "b864d5d8b9f81012804b3212477f64ee31525b004c8f0ac037a53a42f3501d36"
+    },
+    {
+      "file": "00176_源清麿_head.png",
+      "source": "安装包",
+      "source_sha256": "d9b60e827ca86368967e700b8cb2f18c7c4225997f123cbd9e0154618cd68b34"
+    },
+    {
+      "file": "00176_源清麿_foot.png",
+      "source": "安装包",
+      "source_sha256": "7bd2168407f64b84114ab0b8372ea3c4487c150ced7eb783c687e79167915ed7"
+    },
+    {
+      "file": "00177_源清麿_head.png",
+      "source": "热更新",
+      "source_sha256": "028369958733d531b33046be51dbb7c56dc75994e6bc67ae196b031403155932"
+    },
+    {
+      "file": "00178_松井江_head.png",
+      "source": "安装包",
+      "source_sha256": "06d555f24d9b83fc0da327d8e4c4525f67c39f3d1ed093a833c656b0c816dbf9"
+    },
+    {
+      "file": "00178_松井江_foot.png",
+      "source": "安装包",
+      "source_sha256": "59726af6e5f525c00b819ab5276518a129ec2fca620e662b0bc6462997f931ee"
+    },
+    {
+      "file": "00179_松井江_head.png",
+      "source": "热更新",
+      "source_sha256": "a8cd82482366ee467721e33dc739c3b6efffa05cdd4ac7c1bbeed3a7154422cb"
+    },
+    {
+      "file": "00180_山鸟毛_head.png",
+      "source": "安装包",
+      "source_sha256": "5220442b976b560051d4bacf084b73102d084de3ebda85c3d595bfe4d74fb4a7"
+    },
+    {
+      "file": "00180_山鸟毛_foot.png",
+      "source": "安装包",
+      "source_sha256": "9b25ebaaf924db689836b8ecf5aeb26f65e02516367756b49cb63188973e48a2"
+    },
+    {
+      "file": "00182_古今传授之太刀_head.png",
+      "source": "安装包",
+      "source_sha256": "d25b755ea518fb5770ec07008f8474e8980786026d1d30742b61aa39bb4cd8f8"
+    },
+    {
+      "file": "00182_古今传授之太刀_foot.png",
+      "source": "安装包",
+      "source_sha256": "74784608360c59adf08072f770221e69951b736d09a32a25c735ecd1a64e413a"
+    },
+    {
+      "file": "00184_地藏行平_head.png",
+      "source": "安装包",
+      "source_sha256": "6b3b421f0c326637d589582e28961370e734e08df121fbcd50be8db538558352"
+    },
+    {
+      "file": "00184_地藏行平_foot.png",
+      "source": "安装包",
+      "source_sha256": "4d4dd00ee2f18b1aa3f74c59aad64893ac3ca93fe0e8af2e2f473fd04c1cff24"
+    },
+    {
+      "file": "00186_治金丸_head.png",
+      "source": "安装包",
+      "source_sha256": "65652e7a220aa42b7b0efd4848a67a36779864fa00a251404594be66171cc2ba"
+    },
+    {
+      "file": "00186_治金丸_foot.png",
+      "source": "安装包",
+      "source_sha256": "87b2c0e03c41a7c0386c1a14f0f3927530fc61e9d1c64fd4510082f606d40449"
+    },
+    {
+      "file": "00188_日光一文字_head.png",
+      "source": "安装包",
+      "source_sha256": "548f3ad2102097223813f5bcc52f2f72224be2f8a80e34ea729555307016cc41"
+    },
+    {
+      "file": "00188_日光一文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "6cabdd31260e9c203c81916985be7b8214d70342f5db24220b154f26b2a4cc42"
+    },
+    {
+      "file": "00190_太阁左文字_head.png",
+      "source": "安装包",
+      "source_sha256": "fa3c871a2ce3650876f6051a85bccccf46e16f09d0de7b30e3d344bbbbdcd16a"
+    },
+    {
+      "file": "00190_太阁左文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "950edc42d133b50d54de77333cacf2963dea54a7f973ddab09aa605348955cc6"
+    },
+    {
+      "file": "00192_五月雨江_head.png",
+      "source": "安装包",
+      "source_sha256": "e863c799b39efccd49d8955471a2bece1a09db5e2fb454398cf17650f5d3eda9"
+    },
+    {
+      "file": "00192_五月雨江_foot.png",
+      "source": "安装包",
+      "source_sha256": "fbf23fe6979b0030731d6da97b775e7ddce6b7ea3dbf98d6bf232db4da5cbeb2"
+    },
+    {
+      "file": "00194_大千鸟十文字枪_head.png",
+      "source": "安装包",
+      "source_sha256": "5f686508c97db2e3c9c2eaf58783b6cbeb97d28f507b36f7de4552c815f69a58"
+    },
+    {
+      "file": "00194_大千鸟十文字枪_foot.png",
+      "source": "安装包",
+      "source_sha256": "73f95185202597ab1728adcd9dc5ea0057e15a8270b5b8f1c5e410d9e5c03966"
+    },
+    {
+      "file": "00196_泛尘_head.png",
+      "source": "安装包",
+      "source_sha256": "18c400268ef221d088f4a1e453ed47e343be1bb550a5dec503f30e52148f4788"
+    },
+    {
+      "file": "00196_泛尘_foot.png",
+      "source": "安装包",
+      "source_sha256": "069dab666bc869452b3960dae011aa27abadd6c82f43c709020d30c385781186"
+    },
+    {
+      "file": "00198_一文字则宗_head.png",
+      "source": "安装包",
+      "source_sha256": "38686aab350fe5d0ed5b30b7c4543e5fcbab74f7a14f7f3db02651215e8b1dc6"
+    },
+    {
+      "file": "00198_一文字则宗_foot.png",
+      "source": "安装包",
+      "source_sha256": "354eea126b32ed0a80d1236fa7909d059ef0df9f5ecff468e2969e5db47c909d"
+    },
+    {
+      "file": "00200_村云江_head.png",
+      "source": "安装包",
+      "source_sha256": "bca27264c91f31236ab25321c18d5013b2de0ee8525975652039e1dff34cb895"
+    },
+    {
+      "file": "00200_村云江_foot.png",
+      "source": "安装包",
+      "source_sha256": "58399e55cb4befc0d5fc63eea77ce5734d66023856f20ab203f8bea97922e737"
+    },
+    {
+      "file": "00202_姬鹤一文字_head.png",
+      "source": "安装包",
+      "source_sha256": "f1621cab1ae72a175e54e5dd29eb667bda2045fd97c61283ae9eb1c2181c21ba"
+    },
+    {
+      "file": "00202_姬鹤一文字_foot.png",
+      "source": "安装包",
+      "source_sha256": "faf4fc483ca62714e9b8c8e771906533e12870376030b0b5337a09deef8beb48"
+    },
+    {
+      "file": "00204_福岛光忠_head.png",
+      "source": "安装包",
+      "source_sha256": "8f716bafdbb4df160d02a6359ed54d8903647829db510f119f602c35a7526ea2"
+    },
+    {
+      "file": "00204_福岛光忠_foot.png",
+      "source": "安装包",
+      "source_sha256": "8ed113c499e7d22acd03d7eccdb0816707c963ab477a964d13557a28d41b822b"
+    },
+    {
+      "file": "00206_七星剑_head.png",
+      "source": "安装包",
+      "source_sha256": "4d110d160a5c7051d6c229516a38c2a90d306692df797680e575ee3a428c9712"
+    },
+    {
+      "file": "00208_丙子椒林剑_head.png",
+      "source": "安装包",
+      "source_sha256": "aedc32f6352c2784cbb9e4811e2b0098468896808e93b1f7e1573a2ee1557c30"
+    },
+    {
+      "file": "00210_稻叶江_head.png",
+      "source": "安装包",
+      "source_sha256": "a574024b4b2a2b685e8cb316a44744224215e6e1ae39697ba8c47b64248f43fb"
+    },
+    {
+      "file": "00212_笹贯_head.png",
+      "source": "安装包",
+      "source_sha256": "a47ef790581d9f5019592fafa6e66214bd9faef9e6341139a3f5d721ced68594"
+    },
+    {
+      "file": "00212_笹贯_foot.png",
+      "source": "安装包",
+      "source_sha256": "9d92f6f41757a184a8d21fac658b93109cc800787ff0036f31f739fa90e41e46"
+    },
+    {
+      "file": "00214_人间无骨_head.png",
+      "source": "安装包",
+      "source_sha256": "e3cfadfe552562342e85debaa7972ac97959c028ceb0ba7b751b6e3737db346f"
+    },
+    {
+      "file": "00214_人间无骨_foot.png",
+      "source": "安装包",
+      "source_sha256": "36ed0fb4ddb3683bddef01474917ec6abf4b5209b59faec1b94dfd69ce54461b"
+    },
+    {
+      "file": "00216_八丁念佛_head.png",
+      "source": "安装包",
+      "source_sha256": "7fe2f0f457494b68ba97a027629e6f52343475dc9c2c64765d060b39658d8b61"
+    },
+    {
+      "file": "00216_八丁念佛_foot.png",
+      "source": "安装包",
+      "source_sha256": "aa7b9933771ed0cc030b088c82155ef50ad911a68f410091bbb9cf8da41e89ad"
+    },
+    {
+      "file": "00218_石田正宗_head.png",
+      "source": "安装包",
+      "source_sha256": "7a1b68ac173235164e84b4dec9ae65f248fbba7a4d12eb853e35df49a5afd0f6"
+    },
+    {
+      "file": "00218_石田正宗_foot.png",
+      "source": "安装包",
+      "source_sha256": "804c4e611264c6edb5424d1b1ad35b3d1c64e2b9c9ac4bd26e4db631403dbd37"
+    },
+    {
+      "file": "00220_实休光忠_head.png",
+      "source": "安装包",
+      "source_sha256": "1bde5b920a45486a8de3b7d14b3f5557bac61c4018029991056ad4d13a10013d"
+    },
+    {
+      "file": "00220_实休光忠_foot.png",
+      "source": "热更新",
+      "source_sha256": "074f6a4f48b309d77187dfdfaec3d3774ebe91c15a120e2b44145953c3885107"
+    },
+    {
+      "file": "00222_京极正宗_head.png",
+      "source": "安装包",
+      "source_sha256": "e2241ca1a8897352e50e7c7dde9553c5b0b946a5dd11f69312f4b57d0d322444"
+    },
+    {
+      "file": "00224_孙六兼元_head.png",
+      "source": "安装包",
+      "source_sha256": "37592269bbfa7c4f3589e2a3e876f7c4bea1bb3642416e1834c9cbc131c12614"
+    },
+    {
+      "file": "00226_后家兼光_head.png",
+      "source": "安装包",
+      "source_sha256": "62c4659ac736b71744df2696245a4ca33a0925a00c508ebc8e732db7336de26e"
+    },
+    {
+      "file": "00228_火车切_head.png",
+      "source": "热更新",
+      "source_sha256": "08f116829e8505b79d8587d10272acaea752b1a5952eaf1eb9639616308e7f31"
+    },
+    {
+      "file": "00230_富田江_head.png",
+      "source": "安装包",
+      "source_sha256": "1203f3e289382af5bfbdd0862a2ea41aec942d36a6b18e408cffe6c49319cc6a"
+    },
+    {
+      "file": "00232_大庆直胤_head.png",
+      "source": "安装包",
+      "source_sha256": "156a865911af343bd85f0caaf07aa845456faea5380d9b5680fb75cea7501cda"
+    },
+    {
+      "file": "00234_九鬼正宗_head.png",
+      "source": "热更新",
+      "source_sha256": "08ad9db938683072386d64c6a385d3d1d4bb04341ebc06bca61e331e2f2a6e81"
+    },
+    {
+      "file": "00236_云生_head.png",
+      "source": "安装包",
+      "source_sha256": "43d6a6d6a757f25e3605e39d8a15a4f1eadf55792c1dd0abd7a69325796214ec"
+    },
+    {
+      "file": "00236_云生_foot.png",
+      "source": "安装包",
+      "source_sha256": "1410ccccee5de7b47324f6c5a770aab9e506ee16c47b3e4808c08f547f7e8e00"
+    },
+    {
+      "file": "00238_道誉一文字_head.png",
+      "source": "安装包",
+      "source_sha256": "919c9d9052f93508a5f158e7b0fb4c2c234cf3f535393c911bddb8be04d23142"
+    },
+    {
+      "file": "00240_云次_head.png",
+      "source": "安装包",
+      "source_sha256": "04a751e0482a3e62ccd3554f62a37351ca9dd2e70f7ada5d2b630b0bac89b868"
+    },
+    {
+      "file": "00240_云次_foot.png",
+      "source": "安装包",
+      "source_sha256": "eaaf8214e7aa05088169195cf798ebcec490579812a936432c5bfb1bedec9f68"
+    },
+    {
+      "file": "00242_面影_head.png",
+      "source": "安装包",
+      "source_sha256": "4019ca1336dc918befc9ce1ab3348030e696f98cd95783fd842a41c1320f60ab"
+    },
+    {
+      "file": "00242_面影_foot.png",
+      "source": "安装包",
+      "source_sha256": "f9a8249830d8f6904042e8ec2d852c7790e109b48cf621b1952c61d81438ee85"
+    },
+    {
+      "file": "00244_古备前信房_head.png",
+      "source": "安装包",
+      "source_sha256": "e55400e128c5f2c5052ab595be90dcd40b383523d78e84e7530ac68b0c00e8f4"
+    },
+    {
+      "file": "00246_俱利伽罗江_head.png",
+      "source": "热更新",
+      "source_sha256": "3d6ffb2a0a83a832b97737a7aaed03dcc71fc28db4228b1aa01cf7d3f94a5624"
+    },
+    {
+      "file": "00248_三郎国宗_head.png",
+      "source": "热更新",
+      "source_sha256": "471fdef1af239e76d4190121d0998f7ca13875033dfed8b96cb8cb762ad0cc34"
+    },
+    {
+      "file": "00250_安宅切_head.png",
+      "source": "热更新",
+      "source_sha256": "344961e78e4634dbd75fafa146da4536c7d38a9d716d2169ac06d9748df9df48"
+    },
+    {
+      "file": "00252_二筋樋贞宗_head.png",
+      "source": "热更新",
+      "source_sha256": "ef09b5ba4738bccbc2caf38be7b150994dba7affabd895042513424565fbce9a"
+    },
+    {
+      "file": "00254_云重_head.png",
+      "source": "热更新",
+      "source_sha256": "c8bc80f5066f297d28d0b24737a2a3dba3d4ab6c2c4dec42431f1d05bf35e473"
+    },
+    {
+      "file": "00254_云重_foot.png",
+      "source": "热更新",
+      "source_sha256": "a726998e2cdbc1079d0cce7516d3475bc88f37bc16a74a852d1579f66714ff14"
+    }
+  ]
+}
