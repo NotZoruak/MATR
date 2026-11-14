@@ -237,6 +237,12 @@
         "roi": [593, 58, 93, 39],
         "expected": "更新"
       }
+    },
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[战术强化] 完成一圈",
+        "display": "file"
+      }
     }
   },
   "TT_ClickNonTargetSilhouetteRefresh": {

@@ -665,7 +665,7 @@
       "time": 200,
       "target": [0, 610, 148, 110]
     },
-    "next": ["E_GoHome"]
+    "next": ["E_StandaloneOpenDirectory", "E_GoHome"]
   },
   "E_TrackerOCR": {
     "enabled": false,
@@ -675,7 +675,7 @@
       "custom_action": "ExpeditionTimeTracker"
     },
     "post_delay": 0,
-    "next": ["E_GoHome"]
+    "next": ["E_StandaloneOpenDirectory", "E_GoHome"]
   },
   "E_StartExpedition": {
     "recognition": {
@@ -760,7 +760,7 @@
         "expected": "目录"
       }
     },
-    "next": ["E_ClickBackToHome"]
+    "next": ["E_StandaloneReturnHome", "E_ClickBackToHome"]
   },
   "E_ClickBackToHome": {
     "pre_delay": 1000,
@@ -812,6 +812,49 @@
     },
     "next": ["E_CheckHomeBrightness", "E_ConfirmRetreat"],
     "on_error": ["E_GoHome"]
+  },
+  "E_StandaloneReturnHome": {
+    "desc": "独立后勤从目录返回本丸后重新检查状况面板",
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1037, 169, 110, 44]
+      }
+    },
+    "next": ["E_DetectHome"]
+  },
+  "E_StandaloneOpenDirectory": {
+    "desc": "独立后勤本轮无可处理事项后打开目录",
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "next": ["E_StandaloneWaitMenu"]
+  },
+  "E_StandaloneWaitMenu": {
+    "desc": "独立后勤确认目录画面后开始等待",
+    "enabled": false,
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 34, 83, 49],
+        "expected": "目录"
+      }
+    },
+    "next": ["E_SmartWait", "E_WaitRefresh"]
   },
   "E_WaitRefresh": {
     "post_delay": 60000,
@@ -997,7 +1040,7 @@
         "expected": "目录"
       }
     },
-    "next": ["E_ClickBackToHome"]
+    "next": ["E_StandaloneReturnHome", "E_ClickBackToHome"]
   },
   "E_CheckConfiguredMembers1": {
     "enabled": false,
