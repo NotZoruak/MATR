@@ -1234,7 +1234,7 @@
         <value>CDK 类型与资源不匹配</value>
     </data>
     <data name="Monitor" xml:space="preserve">
-        <value>总控台</value>
+        <value>实时</value>
     </data>
     <data name="StartingAgent" xml:space="preserve">
             <value>正在启动 Agent(耗时可能较久)</value>

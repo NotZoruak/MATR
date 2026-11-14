@@ -56,7 +56,7 @@
                                                                    IconVariant=Regular}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:HonmaruView}}" />
                         <suki:SukiSideMenuItem IsContentMovable="False"
-                                               Header="工具箱"
+                                               Header="工具"
                                                Icon="{fluent:FluentIcon Icon=Toolbox,
                                                                 IconVariant=Regular}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:ToolsView}}" />
