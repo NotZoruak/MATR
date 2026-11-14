@@ -2793,16 +2793,24 @@
     "S_记录不足时自动装备刀装": {
       "name": "S_记录不足时自动装备刀装",
       "label": "记录中刀装不足时使用自动装备刀装",
-      "type": "checkbox",
+      "type": "switch",
       "cases": [
         {
-          "name": "",
+          "name": "Yes",
+          "label": "开启",
           "pipeline_override": {
             "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": false}
+          }
         }
       ],
-      "default_case": []
+      "default_case": "No"
     },
     "S_刀装保护": {
       "name": "S_刀装保护",
@@ -5745,16 +5753,24 @@
     "U_记录不足时自动装备刀装": {
       "name": "U_记录不足时自动装备刀装",
       "label": "记录中刀装不足时使用自动装备刀装",
-      "type": "checkbox",
+      "type": "switch",
       "cases": [
         {
-          "name": "",
+          "name": "Yes",
+          "label": "开启",
           "pipeline_override": {
             "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": false}
+          }
         }
       ],
-      "default_case": []
+      "default_case": "No"
     },
     "U_刀装保护": {
       "name": "U_刀装保护",
@@ -10337,16 +10353,24 @@
     "HV_记录不足时自动装备刀装": {
       "name": "HV_记录不足时自动装备刀装",
       "label": "记录中刀装不足时使用自动装备刀装",
-      "type": "checkbox",
+      "type": "switch",
       "cases": [
         {
-          "name": "",
+          "name": "Yes",
+          "label": "开启",
           "pipeline_override": {
             "ConfirmRecordEquipmentShortage": {"enabled": true}
           }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "ConfirmRecordEquipmentShortage": {"enabled": false}
+          }
         }
       ],
-      "default_case": []
+      "default_case": "No"
     },
     "HV_疲劳撤退": {
       "name": "HV_疲劳撤退",
