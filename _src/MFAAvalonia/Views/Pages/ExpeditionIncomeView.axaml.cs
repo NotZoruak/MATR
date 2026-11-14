@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MFAAvalonia.Views.Pages;
 
-public partial class DataLookupView : UserControl
+public partial class ExpeditionIncomeView : UserControl
 {
-    public DataLookupView()
+    public ExpeditionIncomeView()
     {
         InitializeComponent();
         DataContext = App.Services.GetRequiredService<DataLookupViewModel>();

@@ -1,0 +1,64 @@
+<UserControl
+    d:DesignHeight="700"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="MFAAvalonia.Views.Pages.ExperienceTableView"
+    x:DataType="pages:DataLookupViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:MFAAvalonia.Controls"
+    xmlns:pages="clr-namespace:MFAAvalonia.ViewModels.Pages"
+    xmlns:suki="using:SukiUI.Extensions"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluent="clr-namespace:FluentIcons.Avalonia.Fluent.Markup;assembly=FluentIcons.Avalonia.Fluent">
+
+    <ScrollViewer>
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
+            <!-- 计算区 -->
+            <Border Grid.Row="0" Background="{DynamicResource SukiCardBackground}"
+                    CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="刀种:" VerticalAlignment="Center" />
+                        <ComboBox ItemsSource="{x:Static pages:SwordExpCurves.SwordTypes}"
+                                  SelectedIndex="{Binding SelectedSwordTypeIndex}"
+                                  MinWidth="108" />
+                        <TextBlock Text="当前经验:" VerticalAlignment="Center" />
+                        <NumericUpDown Value="{Binding CurrentExp}" Minimum="0" Maximum="999999999"
+                                       Increment="1000" MinWidth="150" />
+                        <TextBlock Text="目标等级:" VerticalAlignment="Center" />
+                        <NumericUpDown Value="{Binding TargetLevel}" Minimum="1" Maximum="199"
+                                       MinWidth="108" />
+                        <Button Content="计算" Command="{Binding CalculateExpCommand}"
+                                Classes="Accent" MinWidth="98" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding ResultText}" FontWeight="Bold"
+                               IsVisible="{Binding ResultText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Grid.Row="1" Text="完整经验表（参考）" FontSize="12"
+                       Opacity="0.5" Margin="4,0,0,0" />
+
+            <!-- DataGrid -->
+            <controls:ChainedScrollDataGrid Grid.Row="2" ItemsSource="{Binding ExpTableItems}"
+                      IsReadOnly="True" AutoGenerateColumns="False">
+                <DataGrid.Styles>
+                    <Style Selector="DataGridCell">
+                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        <Setter Property="Padding" Value="6,2" />
+                    </Style>
+                </DataGrid.Styles>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="等级" Binding="{Binding Level}" Width="1*"
+                                        FontSize="14" />
+                    <DataGridTextColumn Header="累计经验" Binding="{Binding CumulativeExp}" Width="2*"
+                                        FontSize="14" />
+                    <DataGridTextColumn Header="升级所需" Binding="{Binding RequiredExp}" Width="2*"
+                                        FontSize="14" />
+                </DataGrid.Columns>
+            </controls:ChainedScrollDataGrid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

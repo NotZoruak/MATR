@@ -56,15 +56,10 @@
                                                                    IconVariant=Regular}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:HonmaruView}}" />
                         <suki:SukiSideMenuItem IsContentMovable="False"
-                                               Header="工具"
-                                               Icon="{fluent:FluentIcon Icon=Wrench,
+                                               Header="工具箱"
+                                               Icon="{fluent:FluentIcon Icon=Toolbox,
                                                                 IconVariant=Regular}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:ToolsView}}" />
-                        <suki:SukiSideMenuItem IsContentMovable="False"
-                                               Header="资料库"
-                                               Icon="{fluent:FluentIcon Icon=Library,
-                                                                IconVariant=Regular}"
-                                               PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:DataLookupView}}" />
                         <suki:SukiSideMenuItem IsContentMovable="False"
                                                Header="{markup:I18n {x:Static helper:LangKeys.Monitor}}"
                                                PageContent="{extensions:ServiceProvider ServiceType={x:Type pages:MonitorView}}">

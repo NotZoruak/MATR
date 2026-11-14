@@ -10,19 +10,6 @@ namespace MFAAvalonia.ViewModels.Pages;
 
 public partial class DataLookupViewModel : ViewModelBase
 {
-    // ===== 标签页切换 =====
-
-    [ObservableProperty] private int _selectedTabIndex;
-
-    partial void OnSelectedTabIndexChanged(int value)
-    {
-        ForgeSearchName = "";
-        ForgeSearchCategoryIndex = -1;
-        CurrentExp = 0;
-        TargetLevel = 1;
-        ResultText = "";
-    }
-
     // ===== 锻刀公式 =====
 
     [ObservableProperty] private string _forgeSearchName = "";
