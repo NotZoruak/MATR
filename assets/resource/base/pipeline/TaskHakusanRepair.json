@@ -336,7 +336,7 @@
         "expected": "白山吉光"
       }
     },
-    "next": ["THR_IsSlot2Naginata", "THR_ClickEquipSlot2"],
+    "next": ["THR_ClickEquipSlot2"],
     "focus": {
       "Node.Recognition.Succeeded": {
         "content": "[白山修刀] 已确认白山吉光位于1号位",
@@ -377,21 +377,6 @@
         "content": "[白山修刀] 已确认白山吉光疲劳值高于35",
         "display": "log"
       }
-    }
-  },
-  "THR_IsSlot2Naginata": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [74, 277, 117, 23],
-        "expected": "巴形|静形|岩融",
-        "only_rec": true
-      }
-    },
-    "action": {
-      "type": "Custom",
-      "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "2号位为薙刀，无法通过白山在1-1修复"}
     }
   },
   "THR_ClickEquipSlot2": {
@@ -718,18 +703,218 @@
   },
   "THR_SelectHakusan": {
     "recognition": {
-      "type": "OCR",
+      "type": "Or",
       "param": {
-        "roi": [105, 185, 93, 24],
-        "expected": "白山吉光"
+        "any_of": [
+          {
+            "recognition": {
+              "type": "And",
+              "param": {
+                "all_of": [
+                  {
+                    "recognition": {
+                      "type": "OCR",
+                      "param": {
+                        "roi": [98, 180, 164, 32],
+                        "expected": "^白山吉光$"
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [18, 190, 1, 1],
+                        "lower": [212, 173, 31],
+                        "upper": [212, 173, 31],
+                        "count": 1
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [1191, 190, 1, 1],
+                        "lower": [165, 14, 14],
+                        "upper": [185, 34, 34],
+                        "count": 1
+                      }
+                    }
+                  }
+                ],
+                "box_index": 2
+              }
+            }
+          },
+          {
+            "recognition": {
+              "type": "And",
+              "param": {
+                "all_of": [
+                  {
+                    "recognition": {
+                      "type": "OCR",
+                      "param": {
+                        "roi": [98, 280, 164, 32],
+                        "expected": "^白山吉光$"
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [18, 290, 1, 1],
+                        "lower": [212, 173, 31],
+                        "upper": [212, 173, 31],
+                        "count": 1
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [1191, 290, 1, 1],
+                        "lower": [165, 14, 14],
+                        "upper": [185, 34, 34],
+                        "count": 1
+                      }
+                    }
+                  }
+                ],
+                "box_index": 2
+              }
+            }
+          },
+          {
+            "recognition": {
+              "type": "And",
+              "param": {
+                "all_of": [
+                  {
+                    "recognition": {
+                      "type": "OCR",
+                      "param": {
+                        "roi": [98, 380, 164, 32],
+                        "expected": "^白山吉光$"
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [18, 390, 1, 1],
+                        "lower": [212, 173, 31],
+                        "upper": [212, 173, 31],
+                        "count": 1
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [1191, 390, 1, 1],
+                        "lower": [165, 14, 14],
+                        "upper": [185, 34, 34],
+                        "count": 1
+                      }
+                    }
+                  }
+                ],
+                "box_index": 2
+              }
+            }
+          },
+          {
+            "recognition": {
+              "type": "And",
+              "param": {
+                "all_of": [
+                  {
+                    "recognition": {
+                      "type": "OCR",
+                      "param": {
+                        "roi": [98, 480, 164, 32],
+                        "expected": "^白山吉光$"
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [18, 490, 1, 1],
+                        "lower": [212, 173, 31],
+                        "upper": [212, 173, 31],
+                        "count": 1
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [1191, 490, 1, 1],
+                        "lower": [165, 14, 14],
+                        "upper": [185, 34, 34],
+                        "count": 1
+                      }
+                    }
+                  }
+                ],
+                "box_index": 2
+              }
+            }
+          },
+          {
+            "recognition": {
+              "type": "And",
+              "param": {
+                "all_of": [
+                  {
+                    "recognition": {
+                      "type": "OCR",
+                      "param": {
+                        "roi": [98, 580, 164, 32],
+                        "expected": "^白山吉光$"
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [18, 590, 1, 1],
+                        "lower": [212, 173, 31],
+                        "upper": [212, 173, 31],
+                        "count": 1
+                      }
+                    }
+                  },
+                  {
+                    "recognition": {
+                      "type": "ColorMatch",
+                      "param": {
+                        "roi": [1191, 590, 1, 1],
+                        "lower": [165, 14, 14],
+                        "upper": [185, 34, 34],
+                        "count": 1
+                      }
+                    }
+                  }
+                ],
+                "box_index": 2
+              }
+            }
+          }
+        ]
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1193, 137, 32, 62]
-      }
-    },
+    "action": {"type": "Click"},
     "next": ["THR_IsHakusanInSlot1", "THR_SelectHakusan"],
     "on_error": ["THR_Hub"]
   },
@@ -772,7 +957,7 @@
     "action": {
       "type": "Custom",
       "custom_action": "CompleteCurrentTaskAction",
-      "custom_action_param": {"reason": "未找到白山吉光"}
+      "custom_action_param": {"reason": "第一页未找到带锁且可选的白山吉光"}
     }
   },
   "THR_UseRecord_Step1": {
