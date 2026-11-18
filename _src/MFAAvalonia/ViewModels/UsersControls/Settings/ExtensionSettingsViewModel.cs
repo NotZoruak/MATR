@@ -23,12 +23,13 @@ public partial class ExtensionSettingsViewModel : ViewModelBase
     private bool _autoWarehouseSyncEnabled = ReadFlag(WarehouseEnabledKey);
 
     [ObservableProperty]
-    private decimal _warehouseIntervalSeconds = ReadInterval(WarehouseIntervalKey, 60);
+    private decimal _warehouseIntervalMinutes = decimal.Round(ReadInterval(WarehouseIntervalKey, 60) / 60, 3);
 
     partial void OnAutoReadEnabledChanged(bool value) => GlobalConfiguration.SetValue(ReadEnabledKey, value.ToString());
     partial void OnAutoWarehouseSyncEnabledChanged(bool value) => GlobalConfiguration.SetValue(WarehouseEnabledKey, value.ToString());
     partial void OnReadIntervalSecondsChanged(decimal value) => SaveInterval(ReadIntervalKey, value);
-    partial void OnWarehouseIntervalSecondsChanged(decimal value) => SaveInterval(WarehouseIntervalKey, value);
+    partial void OnWarehouseIntervalMinutesChanged(decimal value) =>
+        SaveInterval(WarehouseIntervalKey, decimal.Round(value * 60, MidpointRounding.AwayFromZero));
 
     private static bool ReadFlag(string key) => bool.TryParse(GlobalConfiguration.GetValue(key, "False"), out var value) && value;
 

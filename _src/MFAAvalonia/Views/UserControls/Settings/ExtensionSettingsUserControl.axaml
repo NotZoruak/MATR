@@ -33,10 +33,10 @@
                 </DockPanel>
                 <DockPanel>
                     <NumericUpDown DockPanel.Dock="Right" Width="215"
-                                   Value="{Binding WarehouseIntervalSeconds, Mode=TwoWay}"
-                                   Minimum="1" Maximum="86400" Increment="1" FormatString="0"
+                                   Value="{Binding WarehouseIntervalMinutes, Mode=TwoWay}"
+                                   Minimum="0.017" Maximum="1440" Increment="1" FormatString="0.###"
                                    IsEnabled="{Binding AutoWarehouseSyncEnabled}" />
-                    <TextBlock Text="同步间隔（秒）" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock Text="同步间隔（分钟）" FontSize="16" FontWeight="SemiBold"
                                VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
                 </DockPanel>
             </StackPanel>
