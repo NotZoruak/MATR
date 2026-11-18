@@ -172,18 +172,28 @@ public static class GameOverviewLogParser
                     activeSortieTeam = null;
                 }
             }
-            if (path == "/sally/forward" && data["reward"] is JArray forwardRewards)
-                AddResourceRewards(forwardRewards, time, lineIndex, sortieMaps.GetValueOrDefault(activeSortieTeam ?? ""),
-                    activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null, "地图奖励");
             var droppedSwordId = data["result"]?["get_sword_id"] ?? data["get_sword_id"];
-            if (path == "/battle/battle" && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
+            if (path is "/battle/battle" or "/battle/alloutbattle"
+                && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
                 result.HarvestRecords.Add(new HarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
                     1, getSwordId.ToString(CultureInfo.InvariantCulture), sortieMaps.GetValueOrDefault(activeSortieTeam ?? ""),
                     activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null, "地图掉落"));
-            if (path is "/conquest/complete" or "/mission/rewards" or "/battle/alloutbattle"
-                or "/startdash/rewards" or "/startdash/reward" or "/receive/get")
+            var itemRewards = data["item"] as JArray;
+            var battleRewards = data["result"]?["reward"] as JArray;
+            if (data["reward"] is JArray || itemRewards != null || battleRewards != null || data["season_reward"] is JArray)
             {
-                var expeditionSource = "远征奖励";
+                var rewardSource = path switch
+                {
+                    "/mission/rewards" => "任务奖励",
+                    "/startdash/rewards" or "/startdash/reward" => "活动奖励",
+                    "/receive/get" => "活动/邮件奖励",
+                    "/sally/forward" => "地图奖励",
+                    "/battle/battle" => "战斗奖励",
+                    "/battle/alloutbattle" => "联队战奖励",
+                    _ => "未知"
+                };
+                string? rewardMap = null;
+                string? rewardPoint = null;
                 if (path == "/conquest/complete")
                 {
                     var partyNo = data["party_no"]?.ToString();
@@ -193,24 +203,53 @@ public static class GameOverviewLogParser
                     var map = fieldId != null ? ExpeditionMap(fieldId.ToString())
                         : maps.GetValueOrDefault(partyNo ?? "") ?? "地图未知";
                     var resultType = data["success"]?.ToString() == "2" ? "大成功" : "成功";
-                    expeditionSource += " · " + map + " · " + resultType;
+                    rewardSource = "远征奖励 · " + map + " · " + resultType;
                 }
-                AddResourceRewards(data["reward"] as JArray, time, lineIndex, null, null,
-                    path == "/conquest/complete" ? expeditionSource : path == "/mission/rewards" ? "任务奖励"
-                    : path is "/startdash/rewards" or "/startdash/reward" ? "活动奖励" : "活动/邮件奖励");
-                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, null, null, "活动奖励");
+                else if (path == "/sally/forward")
+                {
+                    rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
+                    rewardPoint = activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null;
+                }
+                else if (path is "/battle/battle" or "/battle/alloutbattle")
+                {
+                    rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
+                    rewardPoint = activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null;
+                }
+                AddResourceRewards(data["reward"] as JArray, time, lineIndex, rewardMap, rewardPoint, rewardSource);
+                AddResourceRewards(itemRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
+                AddResourceRewards(battleRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource, includeBattleBonus: true);
+                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, null, null,
+                    "活动奖励");
             }
-            void AddResourceRewards(JArray? rewards, string observedAt, int sourceIndex, string? map, string? point, string source)
+            void AddResourceRewards(JArray? rewards, string observedAt, int sourceIndex, string? map, string? point, string source, bool includeBattleBonus = false)
             {
                 if (rewards == null) return;
                 var names = new Dictionary<string, string> { ["1"] = "委托符", ["2"] = "木炭", ["3"] = "玉钢", ["4"] = "冷却材", ["5"] = "砥石" };
                 for (var rewardIndex = 0; rewardIndex < rewards.Count; rewardIndex++)
                 {
                     if (rewards[rewardIndex] is not JObject reward) continue;
-                    if (!names.TryGetValue(reward["item_id"]?.ToString() ?? "", out var name)
-                        || !int.TryParse(reward["item_num"]?.ToString(), out var amount) || amount <= 0) continue;
+                    var itemType = reward["item_type"]?.ToString();
+                    var itemId = reward["item_id"]?.ToString() ?? reward["consumable_id"]?.ToString()
+                        ?? reward["sword_id"]?.ToString() ?? reward["artifact_id"]?.ToString();
+                    var amountText = reward["item_num"]?.ToString() ?? reward["num"]?.ToString() ?? reward["amount"]?.ToString();
+                    _ = int.TryParse(amountText, out var amount);
+                    if (includeBattleBonus)
+                    {
+                        if (int.TryParse(reward["bonus"]?.ToString(), out var bonus)) amount += bonus;
+                        if (int.TryParse(reward["bonus_monthcard_salary"]?.ToString(), out var monthlyBonus)) amount += monthlyBonus;
+                    }
+                    if (amount <= 0) continue;
+                    var name = itemType switch
+                    {
+                        "4" => "小判",
+                        "5" when itemId != null && names.TryGetValue(itemId, out var resourceName) => resourceName,
+                        "1" when itemId == "8" => "加速符",
+                        _ => null
+                    } ?? (itemId == null
+                        ? $"未知物品（类型 {itemType ?? "未知"}）"
+                        : $"未知物品（类型 {itemType ?? "未知"}，ID {itemId}）");
                     var sourceKind = source.Split(" · ", 2, StringSplitOptions.None)[0];
-                    var id = $"{account}:{sourceIndex}:{rewardIndex}:{sourceKind}:{name}";
+                    var id = $"{account}:{sourceIndex}:{rewardIndex}:{sourceKind}:{itemId ?? "未知"}:{itemType ?? "未知"}:{name}";
                     result.HarvestRecords.Add(new HarvestEntry(id, "resource", observedAt, name, amount, null, map, point, source));
                 }
             }

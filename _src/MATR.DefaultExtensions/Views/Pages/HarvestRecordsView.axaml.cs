@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
@@ -80,14 +81,106 @@ public partial class HarvestRecordsView : UserControl
         if (record.Kind == "resource")
         {
             var parts = record.Id.Split(':');
-            if (parts.Length >= 3) return string.Join(':', parts.Take(3)) + ":resource:" + record.Name;
+            if (parts.Length >= 7)
+                return string.Join(':', parts.Take(4)) + ":resource:" + parts[4];
+            if (parts.Length >= 4)
+                return string.Join(':', parts.Take(4)) + ":resource:" + (LegacyRewardItemId(record.Name) ?? record.Name);
         }
         return record.Id;
+    }
+
+    private static string? LegacyRewardItemId(string name)
+    {
+        var knownId = name switch
+        {
+            "委托符" => "1",
+            "木炭" => "2",
+            "玉钢" => "3",
+            "冷却材" => "4",
+            "砥石" => "5",
+            _ => null
+        };
+        if (knownId != null) return knownId;
+        var markerIndex = name.LastIndexOf("ID ", StringComparison.Ordinal);
+        if (markerIndex < 0) return null;
+        var endIndex = name.IndexOf('）', markerIndex);
+        return name[(markerIndex + 3)..(endIndex < 0 ? name.Length : endIndex)];
     }
 
     private void ShowSwords(object? sender, RoutedEventArgs e) { _swords = true; ShowTable(); }
     private void ShowResources(object? sender, RoutedEventArgs e) { _swords = false; ShowTable(); }
     private void SearchChanged(object? sender, TextChangedEventArgs e) => ShowTable();
+    private void SearchClicked(object? sender, RoutedEventArgs e) => ShowTable();
+    private void DateFilterChanged(object? sender, SelectionChangedEventArgs e) => ShowTable();
+    private void ClearDateFilter(object? sender, RoutedEventArgs e)
+    {
+        StartDatePicker.SelectedDate = null;
+        EndDatePicker.SelectedDate = null;
+        ShowTable();
+    }
+
+    private async void SummaryClicked(object? sender, RoutedEventArgs e)
+    {
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return;
+
+        var rows = FilteredRows();
+        var groups = rows.GroupBy(row => row.Name, StringComparer.Ordinal)
+            .Select(group => new { Name = group.Key, Count = _swords ? group.Count() : group.Sum(row => row.Amount), Type = group.First().Type })
+            .OrderByDescending(group => group.Count)
+            .ThenBy(group => group.Name, StringComparer.Ordinal)
+            .ToArray();
+        var total = _swords ? rows.Length : rows.Sum(row => row.Amount);
+        var subtitle = $"时间：{StartDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"} 至 {EndDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"}";
+        if (!string.IsNullOrWhiteSpace(SearchBox.Text)) subtitle += $"\n搜索：{SearchBox.Text}";
+
+        var detailRows = new StackPanel { Spacing = 12 };
+        var sections = _swords
+            ? groups.GroupBy(group => string.IsNullOrWhiteSpace(group.Type) ? "未知" : group.Type)
+                .OrderBy(group => Array.IndexOf(SwordTypes, group.Key) is var i && i >= 0 ? i : int.MaxValue)
+                .ToArray()
+            : groups.GroupBy(_ => "").ToArray();
+        foreach (var section in sections)
+        {
+            var sectionRow = new Grid { ColumnDefinitions = new ColumnDefinitions(_swords ? "64,*" : "*") };
+            if (_swords)
+                sectionRow.Children.Add(new TextBlock { Text = section.Key + "：", FontWeight = Avalonia.Media.FontWeight.Bold });
+            var items = new WrapPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, ItemSpacing = 14, LineSpacing = 6 };
+            foreach (var (group, index) in section.Select((group, index) => (group, index)))
+                items.Children.Add(new TextBlock { Text = _swords ? $"{group.Name}（x{group.Count}）" + (index < section.Count() - 1 ? "，" : "") : $"{group.Name} × {group.Count:N0}" });
+            Grid.SetColumn(items, _swords ? 1 : 0);
+            sectionRow.Children.Add(items);
+            detailRows.Children.Add(sectionRow);
+        }
+        if (groups.Length == 0)
+            detailRows.Children.Add(new TextBlock { Text = "当前筛选条件下没有记录。", Margin = new Avalonia.Thickness(0, 8) });
+
+        var content = new StackPanel { Width = 620, Spacing = 10 };
+        content.Children.Add(new TextBlock { Text = subtitle, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+        content.Children.Add(new TextBlock
+        {
+            Text = _swords ? $"共 {total} 振，{groups.Length} 种刀剑" : $"共 {rows.Length} 条资源记录，{groups.Length} 种资源",
+            FontWeight = Avalonia.Media.FontWeight.SemiBold
+        });
+        content.Children.Add(new Border
+        {
+            Height = 1,
+            Background = Avalonia.Media.Brushes.LightGray
+        });
+        content.Children.Add(new ScrollViewer
+        {
+            Content = detailRows,
+            MaxHeight = 360,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
+        });
+        await SukiMessageBox.ShowDialog(owner, new SukiMessageBoxHost
+        {
+            Content = content,
+            ActionButtonsPreset = SukiMessageBoxButtons.OK,
+            IconPreset = null
+        }, new SukiMessageBoxOptions { Title = "收获数据汇总", CanMinimize = false });
+    }
+
     private async void ClearClicked(object? sender, RoutedEventArgs e)
     {
         var owner = TopLevel.GetTopLevel(this) as Window;
@@ -111,31 +204,60 @@ public partial class HarvestRecordsView : UserControl
         if (_columnsConfiguredForSwords != _swords)
         {
             RecordsGrid.Columns.Clear();
-            AddColumn("时间", nameof(Row.Time), 176);
-            AddColumn(_swords ? "刀剑名" : "资源种类", nameof(Row.Name), _swords ? new DataGridLength(1, DataGridLengthUnitType.Star) : new DataGridLength(115));
-            if (_swords) AddColumn("刀种", nameof(Row.Type), 92);
-            else AddColumn("数量", nameof(Row.Amount), 92);
+            AddColumn("时间", nameof(Row.Time), 164);
+            AddColumn(_swords ? "刀剑名" : "资源种类", nameof(Row.Name), _swords ? new DataGridLength(1, DataGridLengthUnitType.Star) : new DataGridLength(105));
+            if (_swords) AddColumn("刀种", nameof(Row.Type), 84);
+            else AddColumn("数量", nameof(Row.Amount), 80);
             AddColumn("来源", nameof(Row.SourceText), new DataGridLength(1, DataGridLengthUnitType.Star));
+            RecordsGrid.Columns.Add(new DataGridTextColumn
+            {
+                Header = "",
+                Width = new DataGridLength(16),
+                IsReadOnly = true,
+                CanUserResize = false,
+                CanUserReorder = false,
+                CanUserSort = false
+            });
             _columnsConfiguredForSwords = _swords;
         }
-        var rows = _records.Where(record => record.Kind == (_swords ? "sword" : "resource"))
-            .Select(record => new Row(record.Id, record.Time, DisplayName(record), SwordType(record), record.Amount,
-                record.Source + (record.Map == null ? "" : " · " + record.Map) + (record.Point == null ? "" : " 点位 " + record.Point)))
-            .Where(row => MatchesSearch(row, SearchBox?.Text))
-            .OrderByDescending(row => row.Time).ToArray();
+        var rows = FilteredRows();
         UpdateVisibleRows(rows, preservePosition);
         EmptyText.Text = rows.Length == 0
-            ? _swords ? "暂无刀剑获取记录；当前游戏日志中没有检测到刀剑掉落。" : "暂无资源获取记录"
+            ? _swords ? "当前筛选条件下暂无刀剑获取记录。" : "当前筛选条件下暂无资源获取记录。"
             : "";
         EmptyText.IsVisible = rows.Length == 0;
+    }
+
+    private Row[] FilteredRows() => _records.Where(record => record.Kind == (_swords ? "sword" : "resource"))
+        .Select(record => new Row(record.Id, record.Time, DisplayName(record), SwordType(record), record.Amount,
+            record.Source + (record.Map == null ? "" : " · " + record.Map) + (record.Point == null ? "" : " 点位 " + record.Point)))
+        .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, SearchBox?.Text))
+        .OrderByDescending(row => row.Time).ToArray();
+
+    private bool MatchesDateRange(string value)
+    {
+        if (!DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var timestamp)) return false;
+        var start = StartDatePicker.SelectedDate?.Date;
+        var end = EndDatePicker.SelectedDate?.Date;
+        return (start == null || timestamp.Date >= start.Value)
+            && (end == null || timestamp.Date <= end.Value);
     }
 
     private static bool MatchesSearch(Row row, string? search)
     {
         if (string.IsNullOrWhiteSpace(search)) return true;
         var searchable = string.Join(" ", row.Time, row.Name, row.Type, row.Amount, row.SourceText);
-        if (search == "成功") searchable = searchable.Replace("大成功", "", StringComparison.Ordinal);
-        return searchable.Contains(search, StringComparison.OrdinalIgnoreCase);
+        foreach (var token in search.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var excluded = token[0] == '-';
+            var term = token[0] is '+' or '-' ? token[1..] : token;
+            if (term.Length == 0) continue;
+            var searchText = term == "成功" ? searchable.Replace("大成功", "", StringComparison.Ordinal) : searchable;
+            var contains = searchText.Contains(term, StringComparison.OrdinalIgnoreCase);
+            if (excluded ? contains : !contains) return false;
+        }
+        return true;
     }
 
     private void UpdateVisibleRows(IReadOnlyList<Row> rows, bool preservePosition)
