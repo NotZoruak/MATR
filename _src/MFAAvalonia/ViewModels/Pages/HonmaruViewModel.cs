@@ -10,5 +10,5 @@ public partial class HonmaruViewModel : ViewModelBase
 
     /// <summary>当前选中的页签索引，默认打开仓库。</summary>
     [ObservableProperty]
-    private int _selectedTabIndex = 1;
+    private int _selectedTabIndex = 0;
 }

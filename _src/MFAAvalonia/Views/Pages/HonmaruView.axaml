@@ -22,12 +22,6 @@
                     <Setter Property="TextBlock.FontSize" Value="20" />
                 </Style>
             </TabControl.Styles>
-                <TabItem Classes="honmaru-tab" IsVisible="{Binding HasExtensionContent}">
-                    <TabItem.Header>
-                        <TextBlock Text="扩展" FontSize="20" />
-                    </TabItem.Header>
-                    <views:ExtensionOverviewView />
-                </TabItem>
                 <TabItem Classes="honmaru-tab">
                     <TabItem.Header>
                         <TextBlock Text="仓库" FontSize="20" />
@@ -45,6 +39,12 @@
                         <TextBlock Text="工作记录" FontSize="20" />
                     </TabItem.Header>
                     <views:WorkRecordsView />
+                </TabItem>
+                <TabItem Classes="honmaru-tab" IsVisible="{Binding HasExtensionContent}">
+                    <TabItem.Header>
+                        <TextBlock Text="扩展" FontSize="20" />
+                    </TabItem.Header>
+                    <views:ExtensionOverviewView />
                 </TabItem>
         </TabControl>
     </Grid>
