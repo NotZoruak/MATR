@@ -9,9 +9,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Controls.Documents;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.VisualTree;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Models;
 using MFAAvalonia.Services;
@@ -46,6 +48,7 @@ public partial class TeamStatusView : UserControl
     private bool _loadingLayout;
     private ContextMenu? _headerMenu;
     private DateTimeOffset _now = DateTimeOffset.UtcNow;
+    private bool _experienceMode;
 
     public TeamStatusView(string dataDirectory)
     {
@@ -55,6 +58,18 @@ public partial class TeamStatusView : UserControl
         BuildCards();
         LoadLayout();
         TeamGrid.ColumnReordered += (_, _) => SaveLayout();
+        TeamGrid.AddHandler(PointerPressedEvent, (_, e) =>
+        {
+            if (e.ClickCount != 2 || !e.GetCurrentPoint(TeamGrid).Properties.IsLeftButtonPressed) return;
+            var levelCell = (e.Source as Visual)?.GetVisualAncestors().OfType<Border>().FirstOrDefault(x => Equals(x.Tag, "Level"));
+            if (levelCell == null) return;
+            _experienceMode = !_experienceMode;
+            _columns["Level"].Header = Header(_experienceMode ? "累计经验" : "等级");
+            if (_experienceMode && _columns["Level"].ActualWidth < 130) _columns["Level"].Width = new DataGridLength(130);
+            else if (!_experienceMode && _columns["Level"].Width.Value == 130) _columns["Level"].Width = new DataGridLength(58);
+            RefreshMembers();
+            e.Handled = true;
+        }, RoutingStrategies.Tunnel, true);
         DetachedFromVisualTree += (_, _) => CloseHeaderMenu();
         PropertyChanged += (_, e) =>
         {
@@ -112,7 +127,6 @@ public partial class TeamStatusView : UserControl
                 : null;
             var map = entry?.Status switch
             {
-                "2" => entry.ExpeditionMap ?? "地图未知",
                 "3" => (entry.SortieMap ?? "地图未知") + (entry.SortiePoint == null ? "" : " · 点位 " + entry.SortiePoint),
                 _ => ""
             };
@@ -124,11 +138,22 @@ public partial class TeamStatusView : UserControl
             });
             var statusText = new TextBlock
             {
-                Text = expedition?.Text ?? status, FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center
+                Text = entry?.Status == "2"
+                    ? (expedition?.Text ?? status) + " · " + (entry.ExpeditionMap ?? "地图未知")
+                    : status,
+                FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap, MaxWidth = 174
             };
             if (expedition?.Completed == true)
                 statusText.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension("OverviewSuccessBrush"));
             details.Children.Add(statusText);
+            if (entry?.Status == "2")
+                details.Children.Add(new TextBlock
+                {
+                    Text = FormatReturnTime(entry.FinishedAt), FontSize = 11, Foreground = Brushes.Gray,
+                    HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap, MaxWidth = 174
+                });
             details.Children.Add(new TextBlock { Text = map, FontSize = 12, Foreground = Brushes.Gray, HorizontalAlignment = HorizontalAlignment.Center });
             details.Children.Add(new TextBlock { Text = $"{members}/6", FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center });
             var button = new Button
@@ -162,6 +187,11 @@ public partial class TeamStatusView : UserControl
     }
 
     private static string ChineseNumber(int number) => number switch { 1 => "一", 2 => "二", 3 => "三", 4 => "四", _ => "五" };
+
+    private static string FormatReturnTime(string? finishedAt) =>
+        DateTime.TryParseExact(finishedAt, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var time)
+            ? time.ToString("MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+            : "归来时间未知";
 
     private void BuildColumns()
     {
@@ -213,7 +243,8 @@ public partial class TeamStatusView : UserControl
         var textValue = column.Key switch
         {
             "Name" => row.Name,
-            "Level" or "Fatigue" or "mobile" or "Book" or "Protect" or "Ranbu" or "hp" or "atk" or "def" or "back" or "scout" or "hide" or "loyalties" => row.SortValue(column.Key, false)?.ToString() ?? "—",
+            "Level" => HeldSwordRow.Text(_experienceMode ? row.Number("exp") : row.Number("level")),
+            "Fatigue" or "mobile" or "Book" or "Protect" or "Ranbu" or "hp" or "atk" or "def" or "back" or "scout" or "hide" or "loyalties" => row.SortValue(column.Key, false)?.ToString() ?? "—",
             "Health" => HeldSwordRow.Text(row.Number("hp")) + "/" + HeldSwordRow.Text(row.Number("hp_max")),
             "Horse" => row.Horse,
             "Charm" => row.Charm,
@@ -229,6 +260,8 @@ public partial class TeamStatusView : UserControl
             VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis
         };
         var cell = new Border { Child = content, Background = Brushes.Transparent, Padding = new Thickness(1, 2) };
+        if (column.Key == "Name") ToolTip.SetTip(cell, row.NameTip);
+        if (column.Key == "Level") ToolTip.SetTip(cell, row.LevelTip);
         if (column.Key == "Treasure" && row.Treasure != "—") ToolTip.SetTip(cell, row.Treasure);
         return cell;
     }

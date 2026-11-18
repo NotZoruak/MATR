@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using MATR.ExtensionSdk;
 using MFAAvalonia.Configuration;
+using MFAAvalonia.Extensions;
 using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using MFAAvalonia.Services;
+using MFAAvalonia.Views.UserControls;
 using Newtonsoft.Json;
 
 namespace MFAAvalonia.Views.Pages;
@@ -21,6 +27,9 @@ namespace MFAAvalonia.Views.Pages;
 public partial class ExtensionOverviewView : UserControl
 {
     private const string HeldSwordsWorkspaceId = "matr.held-swords";
+    private const string NavigationOrderKey = "Extension.NavigationOrder";
+    private const string DisabledPackagesKey = "Extension.DisabledPackages";
+    private const double DragStartThreshold = 6;
     private bool _navigationExpanded = true;
     private GameOverviewLogParser.Snapshot? _snapshot;
     private bool _reading;
@@ -37,19 +46,31 @@ public partial class ExtensionOverviewView : UserControl
     private readonly DispatcherTimer _readTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly Dictionary<string, LoadedExtension> _loaded = new();
     private readonly Dictionary<string, Control> _views = new();
+    private readonly Dictionary<string, RadioButton> _navigationButtons = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, MenuItem> _navigationMenuItems = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<TextBlock> _navigationLabels = [];
+    private readonly List<ExtensionPackage> _packages;
+    private readonly HashSet<string> _disabledPackages;
+    private string? _dragCandidate;
+    private Avalonia.Point _dragStart;
+    private bool _dragging;
+    private bool _navigationDragMoved;
+    private bool _suppressNavigationClick;
+    private int _dragOriginalIndex = -1;
+    private int _dragTargetIndex = -1;
+    private DragAdorner? _navigationAdorner;
 
-    private readonly ExtensionPackageCatalog _catalog;
     private readonly string _configDirectory;
 
     public ExtensionOverviewView() : this(ExtensionContentService.Content, AppPaths.ConfigDirectory, true) { }
 
     public ExtensionOverviewView(ExtensionPackageCatalog catalog, string configDirectory, bool startServices = false)
     {
-        _catalog = catalog;
         _configDirectory = configDirectory;
+        _packages = OrderPackages(catalog.Packages);
+        _disabledPackages = ReadIdSet(DisabledPackagesKey);
         InitializeComponent();
-        foreach (var package in _catalog.Packages)
+        foreach (var package in _packages)
         {
             var label = new TextBlock { Text = package.Manifest.Name, VerticalAlignment = VerticalAlignment.Center };
             _navigationLabels.Add(label);
@@ -59,21 +80,41 @@ public partial class ExtensionOverviewView : UserControl
             content.Children.Add(label);
             var button = new RadioButton { Content = content, GroupName = "ExtensionNavigation" };
             button.Classes.Add("extension-navigation");
-            ToolTip.SetTip(button, package.Manifest.Name);
+            _navigationButtons[package.Manifest.Id] = button;
+            var menuItem = new MenuItem();
+            menuItem.Click += (_, _) => TogglePackage(package);
+            _navigationMenuItems[package.Manifest.Id] = menuItem;
+            button.ContextMenu = new ContextMenu { Items = { menuItem } };
+            UpdateNavigationButton(package);
             Avalonia.Automation.AutomationProperties.SetName(button, package.Manifest.Name);
-            button.Click += (_, _) => SelectWorkspace(package);
+            button.Click += (_, _) =>
+            {
+                if (_suppressNavigationClick)
+                {
+                    _suppressNavigationClick = false;
+                    return;
+                }
+                SelectWorkspace(package);
+            };
             WorkspaceNavigation.Children.Add(button);
         }
-        if (WorkspaceNavigation.Children.FirstOrDefault() is RadioButton first)
+        WorkspaceNavigation.AddHandler(InputElement.PointerPressedEvent, NavigationPointerPressed, RoutingStrategies.Tunnel, true);
+        WorkspaceNavigation.AddHandler(InputElement.PointerMovedEvent, NavigationPointerMoved, RoutingStrategies.Tunnel, true);
+        WorkspaceNavigation.AddHandler(InputElement.PointerReleasedEvent, NavigationPointerReleased, RoutingStrategies.Tunnel, true);
+        WorkspaceNavigation.AddHandler(InputElement.PointerCaptureLostEvent, NavigationPointerCaptureLost, RoutingStrategies.Bubble, true);
+        var firstWorkspace = _packages.FirstOrDefault(IsPackageEnabled) ?? _packages.FirstOrDefault();
+        if (firstWorkspace != null && _navigationButtons.TryGetValue(firstWorkspace.Manifest.Id, out var first))
         {
             first.IsChecked = true;
         }
         WorkspaceContent.AttachedToVisualTree += (_, _) =>
         {
-            if (_selected.Length == 0 && _catalog.Packages.Count > 0)
-                SelectWorkspace(_catalog.Packages[0]);
+            if (_selected.Length == 0 && firstWorkspace != null)
+                SelectWorkspace(firstWorkspace);
+            else if (firstWorkspace == null && WorkspaceContent.Children.Count == 0)
+                ShowNoEnabledPackages();
         };
-        if (startServices && _catalog.Packages.Count > 0)
+        if (startServices && _packages.Count > 0)
         {
             LoadSavedSnapshot();
             _readTimer.Tick += async (_, _) => await PollAsync();
@@ -144,6 +185,7 @@ public partial class ExtensionOverviewView : UserControl
 
         foreach (var entry in _loaded.ToArray())
         {
+            if (_disabledPackages.Contains(entry.Key)) continue;
             var isHeldSwords = entry.Key == HeldSwordsWorkspaceId;
             if (isHeldSwords && !refreshHeldSwords && !clearHeldSwords) continue;
             try { entry.Value.Workspace.Update(isHeldSwords ? _heldSwordsState : _state); }
@@ -162,6 +204,200 @@ public partial class ExtensionOverviewView : UserControl
     private sealed record WorkspaceContext(string DataDirectory, string PackageDirectory, Func<Task> Synchronize) : IExtensionContext
     {
         public Task SyncWarehouseAsync() => Synchronize();
+    }
+
+    private static List<ExtensionPackage> OrderPackages(IEnumerable<ExtensionPackage> packages)
+    {
+        var available = packages.ToArray();
+        List<string> savedOrder;
+        try { savedOrder = JsonConvert.DeserializeObject<List<string>>(GlobalConfiguration.GetValue(NavigationOrderKey, "[]")) ?? []; }
+        catch (JsonException) { savedOrder = []; }
+
+        var byId = available.ToDictionary(package => package.Manifest.Id, StringComparer.OrdinalIgnoreCase);
+        var ordered = new List<ExtensionPackage>(available.Length);
+        foreach (var id in savedOrder)
+            if (byId.TryGetValue(id, out var package) && !ordered.Contains(package)) ordered.Add(package);
+        ordered.AddRange(available.Where(package => !ordered.Contains(package)));
+        return ordered;
+    }
+
+    private static HashSet<string> ReadIdSet(string key)
+    {
+        try
+        {
+            return new HashSet<string>(
+                JsonConvert.DeserializeObject<List<string>>(GlobalConfiguration.GetValue(key, "[]")) ?? [],
+                StringComparer.OrdinalIgnoreCase);
+        }
+        catch (JsonException) { return new HashSet<string>(StringComparer.OrdinalIgnoreCase); }
+    }
+
+    private bool IsPackageEnabled(ExtensionPackage package) => !_disabledPackages.Contains(package.Manifest.Id);
+
+    private void UpdateNavigationButton(ExtensionPackage package)
+    {
+        var id = package.Manifest.Id;
+        var enabled = IsPackageEnabled(package);
+        if (_navigationButtons.TryGetValue(id, out var button))
+        {
+            button.Classes.Set("inactive", !enabled);
+            ToolTip.SetTip(button, enabled ? package.Manifest.Name : package.Manifest.Name + "（已停用，右键启用扩展）");
+            Avalonia.Automation.AutomationProperties.SetName(button, enabled ? package.Manifest.Name : package.Manifest.Name + "（已停用）");
+        }
+        if (_navigationMenuItems.TryGetValue(id, out var menuItem))
+            menuItem.Header = enabled ? "停用扩展" : "启用扩展";
+    }
+
+    private void TogglePackage(ExtensionPackage package)
+    {
+        var id = package.Manifest.Id;
+        var disabling = IsPackageEnabled(package);
+        if (disabling) _disabledPackages.Add(id);
+        else _disabledPackages.Remove(id);
+        UpdateNavigationButton(package);
+        GlobalConfiguration.SetValue(DisabledPackagesKey, JsonConvert.SerializeObject(_disabledPackages.Order(StringComparer.OrdinalIgnoreCase)));
+
+        if (disabling || !_loaded.TryGetValue(id, out var loaded)) return;
+        try { loaded.Workspace.Update(id == HeldSwordsWorkspaceId ? _heldSwordsState : _state); }
+        catch (Exception exception) { FailWorkspace(id, exception); }
+    }
+
+    private void ShowNoEnabledPackages()
+    {
+        WorkspaceContent.Children.Clear();
+        WorkspaceContent.Children.Add(new Border
+        {
+            Padding = new Avalonia.Thickness(24),
+            Child = new TextBlock
+            {
+                Text = "当前没有启用的扩展，可在左侧导航中右键启用。",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = Brushes.Gray
+            }
+        });
+    }
+
+    private void NavigationPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(WorkspaceNavigation).Properties.IsLeftButtonPressed) return;
+        var position = e.GetPosition(WorkspaceNavigation);
+        var package = _packages.FirstOrDefault(item => _navigationButtons[item.Manifest.Id].Bounds.Contains(position));
+        _dragCandidate = package?.Manifest.Id;
+        _dragStart = position;
+        _dragging = false;
+        _navigationDragMoved = false;
+        _dragOriginalIndex = package == null ? -1 : _packages.IndexOf(package);
+        _dragTargetIndex = _dragOriginalIndex;
+    }
+
+    private void NavigationPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_dragCandidate is not { } id || !e.GetCurrentPoint(WorkspaceNavigation).Properties.IsLeftButtonPressed) return;
+        var position = e.GetPosition(WorkspaceNavigation);
+        if (!_dragging)
+        {
+            var dx = position.X - _dragStart.X;
+            var dy = position.Y - _dragStart.Y;
+            if (dx * dx + dy * dy < DragStartThreshold * DragStartThreshold) return;
+            _dragging = true;
+            e.Pointer.Capture(WorkspaceNavigation);
+        }
+
+        if (position.Y < 0 || position.Y > WorkspaceNavigation.Bounds.Height) return;
+        var targetIndex = GetNavigationInsertionIndex(id, position.Y);
+        if (targetIndex < 0) return;
+        _dragTargetIndex = targetIndex;
+        _navigationDragMoved = targetIndex != _dragOriginalIndex;
+        UpdateNavigationAdorner(id, targetIndex);
+        if (_navigationDragMoved) e.Handled = true;
+    }
+
+    private void NavigationPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        var wasDragging = _dragging;
+        if (_dragging && _dragCandidate is { } id && _navigationDragMoved && _dragTargetIndex >= 0)
+        {
+            ReorderNavigationItem(id, _dragTargetIndex);
+            GlobalConfiguration.SetValue(NavigationOrderKey, JsonConvert.SerializeObject(_packages.Select(item => item.Manifest.Id)));
+            _suppressNavigationClick = true;
+            Dispatcher.UIThread.Post(() => _suppressNavigationClick = false, DispatcherPriority.Background);
+        }
+        ClearNavigationAdorner();
+        _dragCandidate = null;
+        _dragging = false;
+        _navigationDragMoved = false;
+        _dragOriginalIndex = _dragTargetIndex = -1;
+        if (wasDragging) e.Pointer.Capture(null);
+    }
+
+    private void NavigationPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        if (ReferenceEquals(e.Pointer.Captured, WorkspaceNavigation)) return;
+        if (!_dragging) return;
+        ClearNavigationAdorner();
+        _dragCandidate = null;
+        _dragging = false;
+        _navigationDragMoved = false;
+        _dragOriginalIndex = _dragTargetIndex = -1;
+    }
+
+    private int GetNavigationInsertionIndex(string id, double pointerY)
+    {
+        if (!_navigationButtons.TryGetValue(id, out var draggedButton)) return -1;
+
+        var insertionIndex = 0;
+        foreach (var child in WorkspaceNavigation.Children)
+        {
+            if (ReferenceEquals(child, draggedButton)) continue;
+            if (pointerY < child.Bounds.Y + child.Bounds.Height / 2) break;
+            insertionIndex++;
+        }
+        return Math.Clamp(insertionIndex, 0, _packages.Count - 1);
+    }
+
+    private void UpdateNavigationAdorner(string id, int insertionIndex)
+    {
+        var layer = AdornerLayer.GetAdornerLayer(WorkspaceNavigation);
+        if (layer == null || !_navigationButtons.TryGetValue(id, out var draggedButton)) return;
+        var remaining = WorkspaceNavigation.Children.Where(child => !ReferenceEquals(child, draggedButton)).ToArray();
+        if (remaining.Length == 0) return;
+        var end = insertionIndex >= remaining.Length;
+        var reference = remaining[end ? ^1 : insertionIndex];
+        var origin = ((Visual)reference).TranslatePoint(new Avalonia.Point(0, 0), layer) ?? new Avalonia.Point();
+        var y = origin.Y + (end ? reference.Bounds.Height : 0);
+        if (_navigationAdorner == null)
+        {
+            _navigationAdorner = new DragAdorner(origin.X, reference.Bounds.Width, Brushes.DodgerBlue);
+            layer.Children.Add(_navigationAdorner);
+        }
+        else
+        {
+            _navigationAdorner.UpdateXPosition(origin.X);
+            _navigationAdorner.UpdateWidth(reference.Bounds.Width);
+            if (!layer.Children.Contains(_navigationAdorner)) layer.Children.Add(_navigationAdorner);
+        }
+        _navigationAdorner.UpdatePosition(y, begin: insertionIndex == 0, end: end);
+    }
+
+    private void ClearNavigationAdorner()
+    {
+        if (_navigationAdorner == null) return;
+        AdornerLayer.GetAdornerLayer(WorkspaceNavigation)?.Children.Remove(_navigationAdorner);
+        _navigationAdorner = null;
+    }
+
+    private void ReorderNavigationItem(string id, int targetIndex)
+    {
+        var sourceIndex = _packages.FindIndex(package => string.Equals(package.Manifest.Id, id, StringComparison.OrdinalIgnoreCase));
+        if (sourceIndex < 0 || sourceIndex == targetIndex || targetIndex < 0 || targetIndex >= _packages.Count) return;
+
+        var package = _packages[sourceIndex];
+        _packages.RemoveAt(sourceIndex);
+        _packages.Insert(targetIndex, package);
+        var button = _navigationButtons[id];
+        WorkspaceNavigation.Children.Remove(button);
+        WorkspaceNavigation.Children.Insert(targetIndex, button);
     }
 
     private async Task SyncWarehouseAsync(bool automatic)
@@ -210,8 +446,11 @@ public partial class ExtensionOverviewView : UserControl
     private void TickWorkspaces()
     {
         foreach (var entry in _loaded.ToArray())
+        {
+            if (_disabledPackages.Contains(entry.Key)) continue;
             try { entry.Value.Workspace.Tick(DateTimeOffset.UtcNow); }
             catch (Exception exception) { FailWorkspace(entry.Key, exception); }
+        }
     }
 
     private async Task PollAsync()
@@ -251,7 +490,7 @@ public partial class ExtensionOverviewView : UserControl
         if (_reading) return;
         _reading = true;
         ReadDataButton.IsEnabled = false;
-        ReadStatusText.Text = "正在读取游戏日志…";
+        ReadStatusText.Text = "正在读取日志…";
         try
         {
             var taskQueue = Instances.InstanceTabBarViewModel.ActiveTab?.TaskQueueViewModel;
@@ -273,7 +512,7 @@ public partial class ExtensionOverviewView : UserControl
             _snapshot = snapshot;
             _displayedDevice = key;
             LastReadText.Text = DateTime.Now.ToString("MM-dd HH:mm:ss");
-            PublishState("最近一次读取的账号状态", refreshHeldSwords: !automatic,
+            PublishState("最近一次读取的账号状态", refreshHeldSwords: true,
                 clearHeldSwords: automatic && accountChanged);
             try
             {
@@ -322,7 +561,7 @@ public partial class ExtensionOverviewView : UserControl
     {
         _navigationExpanded = !_navigationExpanded;
         NavigationPane.Width = _navigationExpanded ? 174 : 58;
-        NavigationHeading.IsVisible = SyncButtonLabel.IsVisible = SyncDetails.IsVisible = _navigationExpanded;
+        NavigationHeading.IsVisible = SyncButtonLabel.IsVisible = SyncDetails.IsVisible = SyncDivider.IsVisible = _navigationExpanded;
         foreach (var label in _navigationLabels) label.IsVisible = _navigationExpanded;
         NavigationToggleIcon.RenderTransform = new RotateTransform(_navigationExpanded ? 0 : 180);
         var description = _navigationExpanded ? "收起功能导航" : "展开功能导航";

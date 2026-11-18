@@ -38,10 +38,10 @@
             <TextBox x:Name="SearchBox" Watermark="搜索刀名、刀帐或唯一 ID" TextChanged="SearchChanged" />
             <TextBlock x:Name="CountText" Grid.Column="1" Text="尚未同步刀剑列表" VerticalAlignment="Center" Foreground="{DynamicResource SukiLowText}" />
         </Grid>
-        <DataGrid x:Name="SwordGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
+        <DataGrid x:Name="SwordGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" FontSize="14"
                   CanUserSortColumns="True" CanUserReorderColumns="True" CanUserResizeColumns="True"
                   HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"
-                  GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" RowHeight="34">
+                  GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" RowHeight="40" ColumnHeaderHeight="36">
 
         </DataGrid>
     </Grid>

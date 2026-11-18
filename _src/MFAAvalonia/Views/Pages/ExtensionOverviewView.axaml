@@ -98,6 +98,10 @@
         <Style Selector="RadioButton.extension-navigation:disabled">
             <Setter Property="Opacity" Value="0.45" />
         </Style>
+        <Style Selector="RadioButton.extension-navigation.inactive">
+            <Setter Property="Opacity" Value="0.45" />
+            <Setter Property="Foreground" Value="{DynamicResource OverviewMutedBrush}" />
+        </Style>
     </UserControl.Styles>
     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="0,12,0,0">
         <Border x:Name="NavigationPane" Width="174" Classes="overview-section" Padding="8">
@@ -127,6 +131,7 @@
                             <TextBlock Text="最后同步时间" Classes="caption" />
                             <TextBlock x:Name="LastReadText" Text="尚未同步" TextWrapping="Wrap" />
                             <TextBlock x:Name="ReadStatusText" Text="" Classes="caption" />
+                            <Border x:Name="SyncDivider" Classes="overview-header-divider" Margin="0,8,0,8" />
                         </StackPanel>
                     </StackPanel>
                     <StackPanel x:Name="WorkspaceNavigation" Spacing="4" />

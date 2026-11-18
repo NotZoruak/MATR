@@ -14,6 +14,7 @@ public static class GameOverviewLogParser
     public sealed record Value(string Text, string ObservedAt);
     public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
+    public sealed record HarvestEntry(string Id, string Kind, string Time, string Name, int Amount, string? SwordId, string? Map, string? Point, string Source);
     public sealed class Snapshot
     {
         public string Account { get; set; } = "";
@@ -25,27 +26,45 @@ public static class GameOverviewLogParser
         public Dictionary<string, string> SwordTeams { get; } = new();
         public Dictionary<string, string> SwordTeamPositions { get; } = new();
         public Dictionary<string, string> EquipmentKinds { get; } = new();
+        public List<HarvestEntry> HarvestRecords { get; } = new();
         public bool HasFullSwordPool { get; set; }
         public string SwordObservedAt { get; set; } = "";
         public int Responses { get; set; }
     }
 
-    public static Snapshot Parse(string log)
+    public static Snapshot Parse(string log) => new IncrementalParser().Append(log, flushIncompleteLine: true);
+
+    public sealed class IncrementalParser
     {
-        var result = new Snapshot();
-        var teams = new Dictionary<string, (string Status, string? Finish, string Time)>();
-        var maps = new Dictionary<string, string>();
-        var sortieMaps = new Dictionary<string, string>();
-        var pendingSortieMaps = new Dictionary<string, string>();
-        var sortiePoints = new Dictionary<string, string>();
-        string? pendingSortieTeam = null;
-        string? activeSortieTeam = null;
-        var swords = new Dictionary<string, string>();
-        JObject? dutyDetails = null;
-        int? repairCapacity = null;
-        var requests = new Dictionary<string, JObject>();
-        foreach (var line in log.Split('\n'))
+        private Snapshot result = new();
+        private readonly Dictionary<string, (string Status, string? Finish, string Time)> teams = new();
+        private readonly Dictionary<string, string> maps = new();
+        private readonly Dictionary<string, string> sortieMaps = new();
+        private readonly Dictionary<string, string> pendingSortieMaps = new();
+        private readonly Dictionary<string, string> sortiePoints = new();
+        private string? pendingSortieTeam;
+        private string? pendingSortieAccount;
+        private string? activeSortieTeam;
+        private readonly Dictionary<string, string> swords = new();
+        private JObject? dutyDetails;
+        private int? repairCapacity;
+        private readonly Dictionary<string, JObject> requests = new();
+        private string pendingLine = "";
+        private int nextLineIndex;
+
+        public Snapshot Append(string log, bool flushIncompleteLine = false)
         {
+            var combined = pendingLine + log;
+            if (flushIncompleteLine && combined.Length > 0 && combined[^1] != '\n')
+                combined += '\n';
+            var logLines = combined.Split('\n');
+            var lineCount = logLines.Length - 1;
+            if (flushIncompleteLine && logLines[^1].Length > 0) lineCount++;
+            pendingLine = flushIncompleteLine ? "" : logLines[^1];
+            for (var inputLineIndex = 0; inputLineIndex < lineCount; inputLineIndex++)
+            {
+                var line = logLines[inputLineIndex];
+                var lineIndex = nextLineIndex++;
             var response = line.Contains("S->C", StringComparison.Ordinal);
             var request = line.Contains("C->S", StringComparison.Ordinal);
             if (!response && !request) continue;
@@ -62,6 +81,7 @@ public static class GameOverviewLogParser
                         && int.TryParse(field, out var fieldNo) && fieldNo > 0)
                     {
                         pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
+                        pendingSortieAccount = Regex.Match(line, @"[?&]uid=(\d+)").Groups[1].Value;
                         pendingSortieMaps[pendingSortieTeam] = $"{episodeNo}-{fieldNo}";
                     }
                 }
@@ -90,6 +110,7 @@ public static class GameOverviewLogParser
                         && int.TryParse(field, out var fieldNo) && fieldNo > 0)
                     {
                         pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
+                        pendingSortieAccount = account;
                         pendingSortieMaps[pendingSortieTeam] = $"{episodeNo}-{fieldNo}";
                     }
                 }
@@ -110,10 +131,14 @@ public static class GameOverviewLogParser
                 teams.Clear();
                 maps.Clear();
                 sortieMaps.Clear();
-                pendingSortieMaps.Clear();
+                if (pendingSortieAccount != account) pendingSortieMaps.Clear();
                 sortiePoints.Clear();
-                pendingSortieTeam = null;
-                activeSortieTeam = null;
+                if (pendingSortieAccount != account)
+                {
+                    pendingSortieTeam = null;
+                    pendingSortieAccount = null;
+                    activeSortieTeam = null;
+                }
                 swords.Clear();
                 dutyDetails = null;
                 repairCapacity = null;
@@ -128,6 +153,7 @@ public static class GameOverviewLogParser
                 teams[dispatchedTeam] = ("3", null, time);
                 activeSortieTeam = dispatchedTeam;
                 pendingSortieTeam = null;
+                pendingSortieAccount = null;
             }
             if (activeSortieTeam is { } sortieTeam)
             {
@@ -144,6 +170,48 @@ public static class GameOverviewLogParser
                     sortieMaps.Remove(sortieTeam);
                     sortiePoints.Remove(sortieTeam);
                     activeSortieTeam = null;
+                }
+            }
+            if (path == "/sally/forward" && data["reward"] is JArray forwardRewards)
+                AddResourceRewards(forwardRewards, time, lineIndex, sortieMaps.GetValueOrDefault(activeSortieTeam ?? ""),
+                    activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null, "地图奖励");
+            var droppedSwordId = data["result"]?["get_sword_id"] ?? data["get_sword_id"];
+            if (path == "/battle/battle" && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
+                result.HarvestRecords.Add(new HarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
+                    1, getSwordId.ToString(CultureInfo.InvariantCulture), sortieMaps.GetValueOrDefault(activeSortieTeam ?? ""),
+                    activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null, "地图掉落"));
+            if (path is "/conquest/complete" or "/mission/rewards" or "/battle/alloutbattle"
+                or "/startdash/rewards" or "/startdash/reward" or "/receive/get")
+            {
+                var expeditionSource = "远征奖励";
+                if (path == "/conquest/complete")
+                {
+                    var partyNo = data["party_no"]?.ToString();
+                    var fieldId = data["field_id"]
+                        ?? data["summary"]?.Children().OfType<JObject>()
+                            .FirstOrDefault(row => partyNo == null || row["party_no"]?.ToString() == partyNo)?["field_id"];
+                    var map = fieldId != null ? ExpeditionMap(fieldId.ToString())
+                        : maps.GetValueOrDefault(partyNo ?? "") ?? "地图未知";
+                    var resultType = data["success"]?.ToString() == "2" ? "大成功" : "成功";
+                    expeditionSource += " · " + map + " · " + resultType;
+                }
+                AddResourceRewards(data["reward"] as JArray, time, lineIndex, null, null,
+                    path == "/conquest/complete" ? expeditionSource : path == "/mission/rewards" ? "任务奖励"
+                    : path is "/startdash/rewards" or "/startdash/reward" ? "活动奖励" : "活动/邮件奖励");
+                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, null, null, "活动奖励");
+            }
+            void AddResourceRewards(JArray? rewards, string observedAt, int sourceIndex, string? map, string? point, string source)
+            {
+                if (rewards == null) return;
+                var names = new Dictionary<string, string> { ["1"] = "委托符", ["2"] = "木炭", ["3"] = "玉钢", ["4"] = "冷却材", ["5"] = "砥石" };
+                for (var rewardIndex = 0; rewardIndex < rewards.Count; rewardIndex++)
+                {
+                    if (rewards[rewardIndex] is not JObject reward) continue;
+                    if (!names.TryGetValue(reward["item_id"]?.ToString() ?? "", out var name)
+                        || !int.TryParse(reward["item_num"]?.ToString(), out var amount) || amount <= 0) continue;
+                    var sourceKind = source.Split(" · ", 2, StringSplitOptions.None)[0];
+                    var id = $"{account}:{sourceIndex}:{rewardIndex}:{sourceKind}:{name}";
+                    result.HarvestRecords.Add(new HarvestEntry(id, "resource", observedAt, name, amount, null, map, point, source));
                 }
             }
             void Set(string key, string? value)
@@ -258,6 +326,13 @@ public static class GameOverviewLogParser
                     if (row["party_no"] is { } no && row["field_id"] is { } field)
                         maps[no.ToString()] = ExpeditionMap(field.ToString());
             }
+            if (path == "/push" && data["conquest"] is JArray expeditions)
+            {
+                maps.Clear();
+                foreach (var expedition in expeditions.OfType<JObject>())
+                    if (expedition["party_no"] is { } no && expedition["field_id"] is { } field)
+                        maps[no.ToString()] = ExpeditionMap(field.ToString());
+            }
             if (path == "/conquest/start")
             {
                 // 只在成功响应后采信派遣请求，不能将失败派遣当作实际目的地。
@@ -338,7 +413,29 @@ public static class GameOverviewLogParser
             result.Teams[pair.Key] = new TeamEntry(status, finish, expeditionMap, sortieMap, sortiePoint);
             result.Values["Team" + pair.Key] = new Value(label, time);
         }
-        return result;
+        return CopySnapshot();
+        }
+
+        private Snapshot CopySnapshot()
+        {
+            var copy = new Snapshot
+            {
+                Account = result.Account,
+                HasFullSwordPool = result.HasFullSwordPool,
+                SwordObservedAt = result.SwordObservedAt,
+                Responses = result.Responses
+            };
+            foreach (var pair in result.Values) copy.Values[pair.Key] = pair.Value;
+            foreach (var pair in result.WorkItems) copy.WorkItems[pair.Key] = [.. pair.Value];
+            foreach (var pair in result.DutyMembers) copy.DutyMembers[pair.Key] = [.. pair.Value];
+            foreach (var pair in result.Teams) copy.Teams[pair.Key] = pair.Value;
+            foreach (var pair in result.HeldSwords) copy.HeldSwords[pair.Key] = (JObject)pair.Value.DeepClone();
+            foreach (var pair in result.SwordTeams) copy.SwordTeams[pair.Key] = pair.Value;
+            foreach (var pair in result.SwordTeamPositions) copy.SwordTeamPositions[pair.Key] = pair.Value;
+            foreach (var pair in result.EquipmentKinds) copy.EquipmentKinds[pair.Key] = pair.Value;
+            copy.HarvestRecords.AddRange(result.HarvestRecords);
+            return copy;
+        }
     }
 
     private static int SlotNumber(string label) =>

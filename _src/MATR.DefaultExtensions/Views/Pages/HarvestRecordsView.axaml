@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="MFAAvalonia.Views.Pages.HarvestRecordsView">
+  <UserControl.Styles>
+    <Style Selector="DataGrid#RecordsGrid[GridLinesVisibility=All] DataGridRow /template/ DataGridCellsPresenter#PART_CellsPresenter">
+      <Setter Property="Margin" Value="0" />
+    </Style>
+    <Style Selector="DataGrid#RecordsGrid DataGridColumnHeader">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="Transparent" Padding="0,7" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="0,0,0,1.5">
+            <Grid HorizontalAlignment="Stretch">
+              <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center" />
+              <Border Width="1" Margin="0,-7,0,-7" HorizontalAlignment="Right" Background="{DynamicResource SukiBorderBrush}" IsHitTestVisible="False" />
+              <Path Name="SortIcon" Width="8" Margin="0,0,2,0" HorizontalAlignment="Right" VerticalAlignment="Center" Stretch="Uniform" Fill="{DynamicResource SukiText}" Data="M -5,6 L 5,6 L 0,0 Z" />
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+      <Style Selector="^ /template/ Path#SortIcon"><Setter Property="IsVisible" Value="False" /></Style>
+      <Style Selector="^:sortascending /template/ Path#SortIcon"><Setter Property="IsVisible" Value="True" /></Style>
+      <Style Selector="^:sortdescending /template/ Path#SortIcon"><Setter Property="IsVisible" Value="True" /></Style>
+    </Style>
+    <Style Selector="DataGrid#RecordsGrid DataGridCell TextBlock">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="DataGrid#RecordsGrid DataGridColumnHeader TextBlock">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+    <Style Selector="DataGrid#RecordsGrid DataGridCell TextBlock">
+      <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.harvest-tab.selected">
+      <Setter Property="Background" Value="#DCE8FF" />
+      <Setter Property="Foreground" Value="#2864E8" />
+      <Setter Property="BorderBrush" Value="#4B79FF" />
+    </Style>
+  </UserControl.Styles>
+  <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,8,0">
+    <Grid RowDefinitions="Auto,*" RowSpacing="12">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+        <Button x:Name="SwordTab" Classes="harvest-tab" Content="刀剑" Click="ShowSwords" />
+        <Button x:Name="ResourceTab" Grid.Column="1" Classes="harvest-tab" Content="资源" Click="ShowResources" />
+        <TextBox x:Name="SearchBox" Grid.Column="2" Watermark="搜索名称、来源、地图或点位" TextChanged="SearchChanged" />
+        <Button Grid.Column="3" Content="清除数据" Click="ClearClicked" />
+      </Grid>
+      <Grid Grid.Row="1">
+        <DataGrid x:Name="RecordsGrid" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="True" CanUserReorderColumns="True" CanUserResizeColumns="True" GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" RowHeight="40" ColumnHeaderHeight="36" FontSize="14" />
+        <TextBlock x:Name="EmptyText" IsVisible="False" Text="当前视图暂无记录" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource SukiLowText}" IsHitTestVisible="False" />
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>

@@ -10,6 +10,7 @@ PACKAGES = [
     ('status-overview', '状态总览', 'OverviewWorkspace', 'DataBarVertical', 10),
     ('team-status', '部队状况', 'TeamsWorkspace', 'PeopleTeam', 20),
     ('held-swords', '所持刀剑', 'SwordsWorkspace', 'List', 30),
+    ('harvest-records', '收获记录', 'HarvestWorkspace', 'History', 40),
 ]
 
 def main():

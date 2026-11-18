@@ -9,6 +9,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.Styles>
+        <Style Selector="DataGrid#TeamGrid DataGridCell TextBlock">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="DataGrid#TeamGrid DataGridColumnHeader TextBlock">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
         <Style Selector="DataGrid#TeamGrid[GridLinesVisibility=All] DataGridRow /template/ DataGridCellsPresenter#PART_CellsPresenter">
             <Setter Property="Margin" Value="0" />
         </Style>
@@ -33,7 +39,7 @@
             <DataGrid x:Name="TeamGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
                       CanUserSortColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True"
                       HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"
-                      GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" RowHeight="40" />
+                      GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" RowHeight="40" FontSize="14" />
         </Grid>
     </Border>
 </UserControl>

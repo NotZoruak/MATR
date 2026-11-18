@@ -77,3 +77,24 @@ public sealed class SwordsWorkspace : IExtensionWorkspace
     public void Tick(DateTimeOffset now) { }
     public void Dispose() { _view = null; _snapshot = null; }
 }
+
+/// <summary>收获记录入口，按账号保存日志明确给出的奖励事件。</summary>
+public sealed class HarvestWorkspace : IExtensionWorkspace
+{
+    private MFAAvalonia.Views.Pages.HarvestRecordsView? _view;
+    private string? _dataDirectory;
+    public Control CreateView(IExtensionContext context)
+    {
+        _dataDirectory = context.DataDirectory;
+        _view ??= new MFAAvalonia.Views.Pages.HarvestRecordsView(context.DataDirectory);
+        return _view;
+    }
+    public void Update(ExtensionState state)
+    {
+        if (_view == null || string.IsNullOrWhiteSpace(state.SnapshotJson)) return;
+        var snapshot = JsonConvert.DeserializeObject<GameOverviewLogParser.Snapshot>(state.SnapshotJson);
+        if (snapshot != null) _view.AddRecords(snapshot.Account, snapshot.HarvestRecords);
+    }
+    public void Tick(DateTimeOffset now) { }
+    public void Dispose() { _view = null; _dataDirectory = null; }
+}

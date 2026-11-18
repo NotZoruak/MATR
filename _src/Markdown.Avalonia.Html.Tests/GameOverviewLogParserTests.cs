@@ -13,6 +13,21 @@ public class GameOverviewLogParserTests
     }
 
     [Fact]
+    public void 收获事件仅从成功战斗和明确资源奖励提取()
+    {
+        var log = "2026-11-18 10:00:00 C->S /sally/sally?uid=1&party_no=1&episode_id=8&field_id=4\n" +
+            "2026-11-18 10:00:01 S->C /sally/sally?uid=1 readyState:4 status:200 data:{\"status\":0}\n" +
+            "2026-11-18 10:00:02 S->C /sally/forward?uid=1 readyState:4 status:200 data:{\"status\":0,\"square_id\":21,\"reward\":[{\"item_type\":\"5\",\"item_id\":\"2\",\"item_num\":\"135\"}]}\n" +
+            "2026-11-18 10:00:03 S->C /battle/battle?uid=1 readyState:4 status:200 data:{\"status\":0,\"get_sword_id\":49}\n" +
+            "2026-11-18 10:00:04 S->C /battle/battle?uid=1 readyState:4 status:200 data:{\"status\":1,\"get_sword_id\":88}\n" +
+            "2026-11-18 10:00:05 S->C /home?uid=1 readyState:4 status:200 data:{\"status\":0,\"resource\":{\"charcoal\":999}}";
+        var records = GameOverviewLogParser.Parse(log).HarvestRecords;
+        Assert.Collection(records,
+            item => { Assert.Equal("resource", item.Kind); Assert.Equal("木炭", item.Name); Assert.Equal(135, item.Amount); Assert.Equal("8-4", item.Map); Assert.Equal("21", item.Point); },
+            item => { Assert.Equal("sword", item.Kind); Assert.Equal("49", item.SwordId); Assert.Equal("8-4", item.Map); Assert.Equal("21", item.Point); });
+    }
+
+    [Fact]
     public void 切换账号清空上一账号字段()
     {
         var log = Line("1", "0", "10") + "\n" +
