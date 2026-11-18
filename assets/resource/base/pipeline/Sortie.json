@@ -13,6 +13,7 @@
     },
     "timeout": 120000,
     "next": [
+      "S_ConfirmRetreat",
       "S_IsMarching",
       "S_IsSwordDropColor",
       "S_IsResourcePoint",
