@@ -38,7 +38,8 @@ public partial class HeldSwordsView : UserControl
         new("hp", "生存"), new("atk", "打击"), new("def", "防御"), new("mobile", "机动"), new("back", "冲力"),
         new("scout", "侦察"), new("hide", "隐蔽"), new("loyalties", "必杀"),
         new("Team", "部队", false, "部队"), new("Serial", "唯一 ID", false), new("Type", "刀种", false, "刀种"),
-        new("Troops", "刀装", false), new("Horse", "马匹", false), new("Charm", "御守", false), new("Appeared", "显现", false)
+        new("Troops", "刀装", false), new("Horse", "马匹", false), new("Charm", "御守", false),
+        new("Treasure", "宝物", false), new("Appeared", "显现", false)
     ];
     private static readonly string[] TypeOrder = ["短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
     private static readonly string[] TeamFilterOrder = ["部队一", "部队二", "部队三", "部队四", "部队五", "未编队"];
@@ -96,7 +97,8 @@ public partial class HeldSwordsView : UserControl
             var levelCell = (e.Source as Visual)?.GetVisualAncestors().OfType<Border>().FirstOrDefault(x => Equals(x.Tag, "Level"));
             if (levelCell == null) return;
             _experienceMode = !_experienceMode;
-            _columns["Level"].Header = _experienceMode ? "累计经验" : "等级";
+            var levelDefinition = Definitions.First(x => x.Key == "Level");
+            _columns["Level"].Header = BuildHeader(levelDefinition, _experienceMode ? "累计经验" : "等级");
             if (_experienceMode && _columns["Level"].ActualWidth < 130) _columns["Level"].Width = new DataGridLength(130);
             else if (!_experienceMode && _columns["Level"].Width.Value == 130) _columns["Level"].Width = new DataGridLength(DefaultWidth("Level"));
             RefreshCells();
@@ -220,6 +222,7 @@ public partial class HeldSwordsView : UserControl
         }
         var value = row.SortValue(column.Key, _experienceMode);
         var content = new TextBlock { FontSize = 14, Margin = new Thickness(0), TextAlignment = TextAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+        object? toolTip = null;
         content.Text = column.Key switch
         {
             "Protect" => row.Protection,
@@ -234,16 +237,17 @@ public partial class HeldSwordsView : UserControl
             content.Inlines ??= new InlineCollection();
             content.Inlines.Add(new Run(main));
             content.Inlines.Add(BuildRatio(bonus.Gained, bonus.Total));
-            ToolTip.SetTip(content, $"内番已提升：{bonus.Gained}\n可提升总量：{bonus.Total}");
+            toolTip = $"内番已提升：{bonus.Gained}\n可提升总量：{bonus.Total}";
         }
-        if (column.Key == "Name") ToolTip.SetTip(content, row.NameTip);
+        if (column.Key == "Name") toolTip = row.NameTip;
+        if (column.Key == "Treasure" && row.Treasure != "—") toolTip = row.Treasure;
 
         if (column.Key == "Level")
         {
-            ToolTip.SetTip(content, row.LevelTip);
+            toolTip = BuildLevelTip(row);
         }
         var border = new Border { Tag = column.Key, Background = Brushes.Transparent, Padding = new Thickness(1, 2), Child = content, HorizontalAlignment = HorizontalAlignment.Stretch };
-        ToolTip.SetTip(border, ToolTip.GetTip(content));
+        ToolTip.SetTip(border, toolTip);
         if (column.Key is "hp" or "atk" or "def" or "mobile" or "back" or "scout" or "hide" or "loyalties" && row.IsMaximum(column.Key))
             border.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SwordMaximumBrush"));
         return border;
@@ -252,7 +256,17 @@ public partial class HeldSwordsView : UserControl
     private static Run BuildRatio(object current, object maximum) =>
         new($" ({current}⁄{maximum})") { FontSize = 10, FontStyle = FontStyle.Italic };
 
-    private static Control BuildHeader(Column column, bool isFiltered = false)
+    private static StackPanel BuildLevelTip(HeldSwordRow row)
+    {
+        var tip = new StackPanel { Spacing = 2, HorizontalAlignment = HorizontalAlignment.Left };
+        foreach (var line in row.LevelTip.Split('\n'))
+            tip.Children.Add(new TextBlock { Text = line, TextAlignment = TextAlignment.Left, HorizontalAlignment = HorizontalAlignment.Left });
+        return tip;
+    }
+
+    private static Control BuildHeader(Column column, bool isFiltered = false) => BuildHeader(column, column.Title, isFiltered);
+
+    private static Control BuildHeader(Column column, string title, bool isFiltered = false)
     {
         var content = new Grid
         {
@@ -262,7 +276,7 @@ public partial class HeldSwordsView : UserControl
         };
         var caption = new TextBlock
         {
-            Text = column.Title,
+            Text = title,
             Margin = new Thickness(0),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
@@ -459,7 +473,7 @@ public partial class HeldSwordsView : UserControl
     {
         "Protect" => 72, "Book" => 56, "Name" => 160, "Level" => 60, "Ranbu" => 56,
         "Health" => 68, "Fatigue" => 56, "hp" or "scout" => 92,
-        "Troops" => 330, "Horse" or "Charm" => 105, "Serial" => 130, "Appeared" => 155, "Team" => 80, "Type" => 72,
+        "Troops" => 330, "Horse" or "Charm" => 105, "Treasure" => 130, "Serial" => 130, "Appeared" => 155, "Team" => 80, "Type" => 72,
         _ => 56
     };
 

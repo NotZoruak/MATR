@@ -2,14 +2,9 @@
              xmlns:icons="clr-namespace:FluentIcons.Avalonia.Fluent;assembly=FluentIcons.Avalonia.Fluent" x:Class="MFAAvalonia.Views.Pages.DefaultOverviewView" Foreground="{DynamicResource OverviewBodyBrush}" FontSize="14">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="OverviewSuccessBrush" Color="#21854A" />
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="OverviewSuccessBrush" Color="#7BD5A0" />
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Views/Pages/OverviewStatusBrushes.axaml" />
+            </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="OverviewHeadingBrush" Color="{DynamicResource SukiText}" />
             <SolidColorBrush x:Key="OverviewBodyBrush" Color="{DynamicResource SukiText}" Opacity="0.88" />
             <SolidColorBrush x:Key="OverviewMutedBrush" Color="{DynamicResource SukiLowText}" />

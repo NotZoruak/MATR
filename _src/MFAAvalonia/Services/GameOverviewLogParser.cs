@@ -12,7 +12,7 @@ public static class GameOverviewLogParser
 {
     private static readonly string[] SwordFields = ["sword_id", "level", "exp", "ranbu_level", "hp", "hp_max", "fatigue", "protect", "hp_up", "atk", "atk_up", "def", "def_up", "mobile", "mobile_up", "back", "back_up", "scout", "scout_up", "hide", "hide_up", "loyalties", "created_at", "equip_serial_id1", "equip_serial_id2", "equip_serial_id3", "horse_serial_id", "item_id", "artifact_serial_id1", "artifact_serial_id2"];
     public sealed record Value(string Text, string ObservedAt);
-    public sealed record TeamEntry(string Status, string? FinishedAt);
+    public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
     public sealed class Snapshot
     {
@@ -35,6 +35,11 @@ public static class GameOverviewLogParser
         var result = new Snapshot();
         var teams = new Dictionary<string, (string Status, string? Finish, string Time)>();
         var maps = new Dictionary<string, string>();
+        var sortieMaps = new Dictionary<string, string>();
+        var pendingSortieMaps = new Dictionary<string, string>();
+        var sortiePoints = new Dictionary<string, string>();
+        string? pendingSortieTeam = null;
+        string? activeSortieTeam = null;
         var swords = new Dictionary<string, string>();
         JObject? dutyDetails = null;
         int? repairCapacity = null;
@@ -44,8 +49,24 @@ public static class GameOverviewLogParser
             var response = line.Contains("S->C", StringComparison.Ordinal);
             var request = line.Contains("C->S", StringComparison.Ordinal);
             if (!response && !request) continue;
+            var requestRoute = Regex.Match(line, @"(/[a-zA-Z_]+(?:/[a-zA-Z_]+)*)(?:\?|\s)");
             var start = line.IndexOf('{');
-            if (start < 0) continue;
+            if (start < 0)
+            {
+                if (request && requestRoute.Success && requestRoute.Groups[1].Value == "/sally/sally")
+                {
+                    var values = RequestValues(line);
+                    if (values.TryGetValue("party_no", out var party) && values.TryGetValue("episode_id", out var episode)
+                        && values.TryGetValue("field_id", out var field) && int.TryParse(party, out var partyNo)
+                        && partyNo is >= 1 and <= 5 && int.TryParse(episode, out var episodeNo) && episodeNo > 0
+                        && int.TryParse(field, out var fieldNo) && fieldNo > 0)
+                    {
+                        pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
+                        pendingSortieMaps[pendingSortieTeam] = $"{episodeNo}-{fieldNo}";
+                    }
+                }
+                continue;
+            }
             JObject data;
             try { data = JObject.Parse(line[start..]); }
             catch (Newtonsoft.Json.JsonException) { continue; }
@@ -60,20 +81,71 @@ public static class GameOverviewLogParser
             if (request)
             {
                 if (path == "/conquest/start") requests[account] = data;
+                if (path == "/sally/sally")
+                {
+                    var values = RequestValues(line);
+                    if (values.TryGetValue("party_no", out var party) && values.TryGetValue("episode_id", out var episode)
+                        && values.TryGetValue("field_id", out var field) && int.TryParse(party, out var partyNo)
+                        && partyNo is >= 1 and <= 5 && int.TryParse(episode, out var episodeNo) && episodeNo > 0
+                        && int.TryParse(field, out var fieldNo) && fieldNo > 0)
+                    {
+                        pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
+                        pendingSortieMaps[pendingSortieTeam] = $"{episodeNo}-{fieldNo}";
+                    }
+                }
                 continue;
             }
-            if (!Regex.IsMatch(line[..start], @"status:200\b") || data["status"]?.ToString() != "0") continue;
+            if (!Regex.IsMatch(line[..start], @"status:200\b") || data["status"]?.ToString() != "0")
+            {
+                if (path == "/sally/sally" && pendingSortieTeam != null)
+                {
+                    pendingSortieMaps.Remove(pendingSortieTeam);
+                    pendingSortieTeam = null;
+                }
+                continue;
+            }
             if (result.Account != account)
             {
                 result = new Snapshot { Account = account };
                 teams.Clear();
                 maps.Clear();
+                sortieMaps.Clear();
+                pendingSortieMaps.Clear();
+                sortiePoints.Clear();
+                pendingSortieTeam = null;
+                activeSortieTeam = null;
                 swords.Clear();
                 dutyDetails = null;
                 repairCapacity = null;
             }
             result.Responses++;
             var time = Regex.Match(line, @"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}").Value;
+            if (path == "/sally/sally" && pendingSortieTeam is { } dispatchedTeam)
+            {
+                if (pendingSortieMaps.Remove(dispatchedTeam, out var dispatchedMap))
+                    sortieMaps[dispatchedTeam] = dispatchedMap;
+                sortiePoints.Remove(dispatchedTeam);
+                teams[dispatchedTeam] = ("3", null, time);
+                activeSortieTeam = dispatchedTeam;
+                pendingSortieTeam = null;
+            }
+            if (activeSortieTeam is { } sortieTeam)
+            {
+                if (path == "/sally/forward"
+                    && int.TryParse(data["square_id"]?.ToString(), out var squareId) && squareId > 0)
+                {
+                    sortiePoints[sortieTeam] = squareId.ToString(CultureInfo.InvariantCulture);
+                    teams[sortieTeam] = ("3", null, time);
+                }
+                else if (path == "/home" || path == "/battle/battle"
+                    && data["finish"] is JObject battleFinish && battleFinish.Value<bool?>("is_finish") == true)
+                {
+                    teams[sortieTeam] = ("1", null, time);
+                    sortieMaps.Remove(sortieTeam);
+                    sortiePoints.Remove(sortieTeam);
+                    activeSortieTeam = null;
+                }
+            }
             void Set(string key, string? value)
             {
                 if (value != null) result.Values[key] = new Value(value, time);
@@ -170,6 +242,12 @@ public static class GameOverviewLogParser
                             finish = previous.Finish;
                         teams[number] = (status, finish, time);
                         if (status != "2") maps.Remove(number);
+                        if (status != "3")
+                        {
+                            sortieMaps.Remove(number);
+                            sortiePoints.Remove(number);
+                            if (activeSortieTeam == number) activeSortieTeam = null;
+                        }
                     }
                 }
             if (path is "/conquest" or "/conquest/start" or "/conquest/complete" or "/conquest/cancel" && data["summary"] is JContainer summary)
@@ -242,9 +320,22 @@ public static class GameOverviewLogParser
         {
             var (status, finish, time) = pair.Value;
             var label = status switch { "0" => "未知", "1" => "待命", "2" => "远征中", "3" => "出阵中", _ => "未知状态（" + status + "）" };
+            string? expeditionMap = null;
+            string? sortieMap = null;
+            string? sortiePoint = null;
             if (status == "2")
+            {
+                expeditionMap = maps.GetValueOrDefault(pair.Key);
                 label += "，" + maps.GetValueOrDefault(pair.Key, "地图未知") + Finish(finish == null ? null : new JValue(finish)).Replace("结束时间：", "", StringComparison.Ordinal);
-            result.Teams[pair.Key] = new TeamEntry(status, finish);
+            }
+            if (status == "3")
+            {
+                sortieMap = sortieMaps.GetValueOrDefault(pair.Key);
+                sortiePoint = sortiePoints.GetValueOrDefault(pair.Key);
+                label += "，" + (sortieMap ?? "地图未知");
+                if (sortiePoint != null) label += "，点位 " + sortiePoint;
+            }
+            result.Teams[pair.Key] = new TeamEntry(status, finish, expeditionMap, sortieMap, sortiePoint);
             result.Values["Team" + pair.Key] = new Value(label, time);
         }
         return result;
@@ -252,6 +343,36 @@ public static class GameOverviewLogParser
 
     private static int SlotNumber(string label) =>
         int.TryParse(Regex.Match(label, @"\d+").Value, out var number) ? number : int.MaxValue;
+
+    private static Dictionary<string, string> RequestValues(string line)
+    {
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (Match match in Regex.Matches(line, @"(?:[?&]|\b)(party_no|episode_id|field_id)=([^&\s,}]+)"))
+            values[match.Groups[1].Value] = Uri.UnescapeDataString(match.Groups[2].Value);
+        var form = Regex.Match(line, @"\bData:\[(?<data>[^]]*)\]");
+        if (form.Success)
+            foreach (var pair in form.Groups["data"].Value.Split('&', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var parts = pair.Split('=', 2);
+                if (parts.Length == 2 && parts[0] is "party_no" or "episode_id" or "field_id")
+                    values[parts[0]] = Uri.UnescapeDataString(parts[1]);
+            }
+        var data = Regex.Match(line, @"(?:Data|data)\s*[:=]\s*(\[[^]]*\]|\{[^}]*\})");
+        if (!data.Success) return values;
+        try
+        {
+            var token = JToken.Parse(data.Groups[1].Value);
+            if (token is JArray array)
+                for (var index = 0; index + 1 < array.Count; index += 2)
+                    if (array[index]?.ToString() is "party_no" or "episode_id" or "field_id")
+                        values[array[index]!.ToString()] = array[index + 1]?.ToString() ?? "";
+            if (token is JObject obj)
+                foreach (var key in new[] { "party_no", "episode_id", "field_id" })
+                    if (obj[key] != null) values[key] = obj[key]!.ToString();
+        }
+        catch (Newtonsoft.Json.JsonException) { }
+        return values;
+    }
 
     private static string ExpeditionMap(string id) =>
         int.TryParse(id, out var value) && value is >= 1 and <= 20

@@ -9,6 +9,10 @@ namespace MFAAvalonia.Services;
 public static class HeldSwordTableData
 {
     private static readonly string[] ChineseNumbers = ["零", "一", "二", "三", "四", "五", "六"];
+    private static readonly Dictionary<string, string> CharmNames = new()
+    {
+        ["1"] = "御守", ["2"] = "御守·极", ["3155"] = "御守·桃"
+    };
 
     public static List<HeldSwordRow> Build(GameOverviewLogParser.Snapshot snapshot, JObject catalog)
     {
@@ -44,6 +48,9 @@ public static class HeldSwordTableData
 
             var horseId = EquippedId("horse_serial_id");
             var charmId = EquippedId("item_id");
+            var treasureId = EquippedId("artifact_serial_id1");
+            var treasureKind = treasureId == null ? null : snapshot.EquipmentKinds.GetValueOrDefault("artifact:" + treasureId);
+            var treasureName = treasureKind == null ? null : catalog["equipment"]?["artifact_master"]?[treasureKind]?.ToString();
             var nameText = definition?["name"]?.ToString() ?? "刀剑 ID：" + raw["sword_id"];
             if (definition?["symbol"]?.ToString() == "2") nameText += "·极";
             return new HeldSwordRow
@@ -53,7 +60,8 @@ public static class HeldSwordTableData
                 TeamFilter = FormatTeamFilter(snapshot, pair.Key),
                 Troops = [ReadTroop(1), ReadTroop(2), ReadTroop(3)],
                 Horse = horseId == null ? "—" : EquipmentName(EquipmentKind(horseId)) ?? "马匹 #" + horseId,
-                Charm = charmId == null ? "—" : "御守 #" + charmId,
+                Charm = charmId == null ? "—" : CharmNames.GetValueOrDefault(charmId) ?? "御守 #" + charmId,
+                Treasure = treasureId == null ? "—" : treasureName ?? "未知宝物",
                 NeededExperience = max > 0 && level >= max ? 0 : next.HasValue ? Math.Max(0, next.Value - experience) : null
             };
         }).ToList();

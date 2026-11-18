@@ -23,22 +23,28 @@ public sealed class OverviewWorkspace : IExtensionWorkspace
     public void Dispose() { _view = null; _state = null; }
 }
 
-/// <summary>默认部队页面入口，提供尚未实现的提示。</summary>
+/// <summary>默认部队页面入口，显示五支部队状态和成员详情。</summary>
 public sealed class TeamsWorkspace : IExtensionWorkspace
 {
-    public Control CreateView(IExtensionContext context) => new StackPanel
+    private TeamStatusView? _view;
+    private GameOverviewLogParser.Snapshot? _snapshot;
+
+    public Control CreateView(IExtensionContext context)
     {
-        Spacing = 12, Margin = new Avalonia.Thickness(24),
-        HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
-        Children =
-        {
-            new TextBlock { Text = "部队状况", FontSize = 22 },
-            new TextBlock { Text = "部队详情功能正在准备中，可先在状态总览查看部队摘要。", TextWrapping = Avalonia.Media.TextWrapping.Wrap }
-        }
-    };
-    public void Update(ExtensionState state) { }
-    public void Tick(DateTimeOffset now) { }
-    public void Dispose() { }
+        _view ??= new TeamStatusView(context.DataDirectory);
+        if (_snapshot != null) _view.SetSnapshot(_snapshot);
+        return _view;
+    }
+
+    public void Update(ExtensionState state)
+    {
+        _snapshot = string.IsNullOrWhiteSpace(state.SnapshotJson)
+            ? null : JsonConvert.DeserializeObject<GameOverviewLogParser.Snapshot>(state.SnapshotJson);
+        if (_snapshot == null) _view?.ClearSnapshot(); else _view?.SetSnapshot(_snapshot);
+    }
+
+    public void Tick(DateTimeOffset now) => _view?.Tick(now);
+    public void Dispose() { _view = null; _snapshot = null; }
 }
 
 /// <summary>默认所持刀剑入口，独立管理快照和页面设置。</summary>

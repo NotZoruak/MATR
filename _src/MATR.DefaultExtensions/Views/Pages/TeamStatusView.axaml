@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MFAAvalonia.Views.Pages.TeamStatusView">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Views/Pages/OverviewStatusBrushes.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="DataGrid#TeamGrid[GridLinesVisibility=All] DataGridRow /template/ DataGridCellsPresenter#PART_CellsPresenter">
+            <Setter Property="Margin" Value="0" />
+        </Style>
+        <Style Selector="DataGrid#TeamGrid DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="Transparent" Padding="0,7" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="0,0,0,1.5">
+                        <Grid HorizontalAlignment="Stretch">
+                            <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center" />
+                            <Border Width="1" Margin="0,-7,0,-7" HorizontalAlignment="Right" Background="{DynamicResource SukiBorderBrush}" IsHitTestVisible="False" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,8,0">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12">
+            <Grid x:Name="TeamCards" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="10" />
+            <DataGrid x:Name="TeamGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserSortColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True"
+                      HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"
+                      GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" RowHeight="40" />
+        </Grid>
+    </Border>
+</UserControl>

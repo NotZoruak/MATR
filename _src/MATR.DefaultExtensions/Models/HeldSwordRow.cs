@@ -19,6 +19,7 @@ public sealed class HeldSwordRow
     public Troop?[] Troops { get; init; } = new Troop?[3];
     public string Horse { get; init; } = "—";
     public string Charm { get; init; } = "—";
+    public string Treasure { get; init; } = "—";
     public long? Number(string key) => long.TryParse(Data[key]?.ToString(), out var value) ? value : null;
     public long? StaticNumber(string key) => long.TryParse(Definition?[key]?.ToString(), out var value) ? value : null;
     public string Protection => Number("protect") switch { 0 => "无锁", 1 => "上锁", 2 => "喜爱", _ => "未知" };
@@ -51,7 +52,8 @@ public sealed class HeldSwordRow
         "Book" => Number("sword_id"), "Serial" => long.TryParse(Serial, out var id) ? id : null,
         "Type" => Type, "Level" => Number(experience ? "exp" : "level"),
         "Ranbu" => Number("ranbu_level"), "Health" => Number("hp"), "Fatigue" => Number("fatigue"),
-        "hp" => Number("hp_max"), "Troops" => string.Join("/", Troops.Select(x => x?.Kind)), "Horse" => Horse, "Charm" => Charm, "Appeared" => Data["created_at"]?.ToString(),
+        "hp" => Number("hp_max"), "Troops" => string.Join("/", Troops.Select(x => x?.Kind)), "Horse" => Horse, "Charm" => Charm,
+        "Treasure" => Treasure, "Appeared" => Data["created_at"]?.ToString(),
         _ => Number(key)
     };
 }
