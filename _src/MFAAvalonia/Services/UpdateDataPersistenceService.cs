@@ -18,6 +18,8 @@ public static class UpdateDataPersistenceService
     /// <summary>仓库正式数据保存完成时触发。</summary>
     public static event Action? WarehouseDataSaved;
 
+    public static void NotifyWarehouseDataSaved() => WarehouseDataSaved?.Invoke();
+
     /// <summary>刀帐正式数据保存完成时触发。</summary>
     public static event Action? SwordBookDataSaved;
 

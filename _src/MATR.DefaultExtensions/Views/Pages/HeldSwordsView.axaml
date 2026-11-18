@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MFAAvalonia.Views.Pages.HeldSwordsView">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light"><SolidColorBrush x:Key="SwordMaximumBrush" Color="#F4E4AB" /></ResourceDictionary>
+                <ResourceDictionary x:Key="Dark"><SolidColorBrush x:Key="SwordMaximumBrush" Color="#625329" /></ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Styles>
+                <Style Selector="DataGrid#SwordGrid[GridLinesVisibility=All] DataGridRow /template/ DataGridCellsPresenter#PART_CellsPresenter">
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+                <Style Selector="DataGrid#SwordGrid DataGridColumnHeader">
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Border Background="Transparent" Padding="0,7" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="0,0,0,1.5">
+                                <Grid HorizontalAlignment="Stretch">
+                                    <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center" />
+                                    <Border Width="1" Margin="0,-7,0,-7" HorizontalAlignment="Right" Background="{DynamicResource SukiBorderBrush}" IsHitTestVisible="False" />
+                                    <Path Name="SortIcon" Width="8" Margin="0,0,2,0" HorizontalAlignment="Right" VerticalAlignment="Center" Stretch="Uniform" Fill="{DynamicResource SukiText}" Data="M -5,6 L 5,6 L 0,0 Z" />
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                    <Style Selector="^ /template/ Path#SortIcon"><Setter Property="IsVisible" Value="False" /></Style>
+                    <Style Selector="^:sortascending /template/ Path#SortIcon"><Setter Property="IsVisible" Value="True" /></Style>
+                    <Style Selector="^:sortdescending /template/ Path#SortIcon"><Setter Property="IsVisible" Value="True" /></Style>
+                </Style>
+    </UserControl.Styles>
+    <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,8,0">
+    <Grid RowDefinitions="Auto,*" RowSpacing="12">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <TextBox x:Name="SearchBox" Watermark="搜索刀名、刀帐或唯一 ID" TextChanged="SearchChanged" />
+            <TextBlock x:Name="CountText" Grid.Column="1" Text="尚未同步刀剑列表" VerticalAlignment="Center" Foreground="{DynamicResource SukiLowText}" />
+        </Grid>
+        <DataGrid x:Name="SwordGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserSortColumns="True" CanUserReorderColumns="True" CanUserResizeColumns="True"
+                  HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"
+                  GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" RowHeight="34">
+
+        </DataGrid>
+    </Grid>
+    </Border>
+</UserControl>

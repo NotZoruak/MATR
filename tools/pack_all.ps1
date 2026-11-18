@@ -18,6 +18,11 @@ function Invoke-Dotnet {
     if ($LASTEXITCODE -ne 0) { throw "dotnet 命令失败（退出码 $LASTEXITCODE）: dotnet $($Arguments -join ' ')" }
 }
 
+Write-Host "构建独立默认扩展"
+Invoke-Dotnet @('restore', (Join-Path $Root '_src/MATR.DefaultExtensions/MATR.DefaultExtensions.csproj'))
+python (Join-Path $Root 'tools/build_extensions.py')
+if ($LASTEXITCODE -ne 0) { throw '默认扩展构建失败。' }
+
 Write-Host "== Windows x64 发布 =="
 Invoke-Dotnet @('publish', $Project, '-c', 'Release', '-p:Platform=AnyCPU', '-r', 'win-x64',
     "-p:PublishDir=$(Join-Path $PublishBase 'win-x64\publish')", '--self-contained', 'false')

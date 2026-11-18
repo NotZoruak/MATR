@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Avalonia.Headless" Version="11.3.12" />
     <PackageReference Include="xunit.v3" Version="3.0.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
   </ItemGroup>
@@ -16,5 +17,6 @@
     <ProjectReference Include="..\Markdown.Avalonia.Html\Markdown.Avalonia.Html.csproj" />
     <ProjectReference Include="..\Markdown.Avalonia\Markdown.Avalonia.csproj" />
     <ProjectReference Include="..\MFAAvalonia\MFAAvalonia.csproj" />
+    <ProjectReference Include="../MATR.DefaultExtensions/MATR.DefaultExtensions.csproj" />
   </ItemGroup>
 </Project>
