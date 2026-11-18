@@ -20,6 +20,7 @@ namespace MFAAvalonia.Views.Pages;
 /// <summary>独立扩展的导航与共享数据宿主，页面内容完全由包提供。</summary>
 public partial class ExtensionOverviewView : UserControl
 {
+    private const string HeldSwordsWorkspaceId = "matr.held-swords";
     private bool _navigationExpanded = true;
     private GameOverviewLogParser.Snapshot? _snapshot;
     private bool _reading;
@@ -32,6 +33,7 @@ public partial class ExtensionOverviewView : UserControl
     private string _displayedDevice = "";
     private string _selected = "";
     private ExtensionState _state = new(null, "等待首次同步");
+    private ExtensionState _heldSwordsState = new(null, "等待手动同步");
     private readonly DispatcherTimer _readTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly Dictionary<string, LoadedExtension> _loaded = new();
     private readonly Dictionary<string, Control> _views = new();
@@ -94,7 +96,7 @@ public partial class ExtensionOverviewView : UserControl
                 Directory.CreateDirectory(dataDirectory);
                 view = loaded.Workspace.CreateView(new WorkspaceContext(dataDirectory, loaded.Directory, () => SyncWarehouseAsync(false)))
                     ?? throw new InvalidDataException("扩展没有返回页面。");
-                loaded.Workspace.Update(_state);
+                loaded.Workspace.Update(_selected == HeldSwordsWorkspaceId ? _heldSwordsState : _state);
                 _views[_selected] = view;
             }
             catch (Exception exception)
@@ -121,6 +123,8 @@ public partial class ExtensionOverviewView : UserControl
     private void FailWorkspace(string id, Exception exception)
     {
         LoggerHelper.Warning("扩展工作区失败：" + id + "，类型：" + exception.GetType().Name);
+        if (exception is MissingMethodException)
+            LoggerHelper.Warning("扩展缺少运行时方法：" + exception.Message);
         if (_loaded.Remove(id, out var loaded))
             try { loaded.Dispose(); } catch (Exception disposeError) { LoggerHelper.Warning("释放扩展失败：" + disposeError.GetType().Name); }
         var view = new Border { Padding = new Avalonia.Thickness(20), Child = new TextBlock { Text = "此扩展未能加载或运行，请检查扩展包与 MATR 的接口版本。\n扩展：" + id + "\n错误类型：" + exception.GetType().Name, TextWrapping = TextWrapping.Wrap } };
@@ -130,12 +134,21 @@ public partial class ExtensionOverviewView : UserControl
             catch (Exception detachError) { LoggerHelper.Warning("替换扩展错误页面失败：" + detachError.GetType().Name); }
     }
 
-    private void PublishState(string status)
+    private void PublishState(string status, bool refreshHeldSwords = true, bool clearHeldSwords = false)
     {
         _state = new ExtensionState(_snapshot == null ? null : JsonConvert.SerializeObject(_snapshot), status);
+        if (clearHeldSwords)
+            _heldSwordsState = new ExtensionState(null, "等待手动同步");
+        else if (refreshHeldSwords)
+            _heldSwordsState = _state;
+
         foreach (var entry in _loaded.ToArray())
-            try { entry.Value.Workspace.Update(_state); }
+        {
+            var isHeldSwords = entry.Key == HeldSwordsWorkspaceId;
+            if (isHeldSwords && !refreshHeldSwords && !clearHeldSwords) continue;
+            try { entry.Value.Workspace.Update(isHeldSwords ? _heldSwordsState : _state); }
             catch (Exception exception) { FailWorkspace(entry.Key, exception); }
+        }
     }
 
     private void ReleaseWorkspaces()
@@ -192,7 +205,7 @@ public partial class ExtensionOverviewView : UserControl
         }
     }
 
-    private async void ReadData(object? sender, RoutedEventArgs e) => await ReadAsync();
+    private async void ReadData(object? sender, RoutedEventArgs e) => await ReadAsync(automatic: false);
 
     private void TickWorkspaces()
     {
@@ -204,7 +217,7 @@ public partial class ExtensionOverviewView : UserControl
     private async Task PollAsync()
     {
         TickWorkspaces();
-        var enabled = bool.TryParse(GlobalConfiguration.GetValue("Extension.AutoReadEnabled", "False"), out var value) && value;
+        var enabled = IsAutomaticReadEnabled();
         var device = CurrentDeviceKey();
         if (_displayedDevice.Length > 0 && device != _displayedDevice)
         {
@@ -217,12 +230,15 @@ public partial class ExtensionOverviewView : UserControl
         var stopped = !enabled && _automaticWasEnabled;
         _automaticWasEnabled = enabled;
         if (stopped) await GameOverviewReader.Instance.StopAsync();
-        if (enabled && !_reading && DateTime.UtcNow >= _nextRead) await ReadAsync();
+        if (enabled && !_reading && DateTime.UtcNow >= _nextRead) await ReadAsync(automatic: true);
         var autoWarehouse = bool.TryParse(GlobalConfiguration.GetValue("Extension.AutoWarehouseSyncEnabled", "False"), out var warehouseEnabled) && warehouseEnabled;
         if (autoWarehouse && !_warehouseAutomaticWasEnabled) _nextWarehouseSync = DateTime.MinValue;
         _warehouseAutomaticWasEnabled = autoWarehouse;
         if (autoWarehouse && _snapshot != null && !_syncingWarehouse && DateTime.UtcNow >= _nextWarehouseSync) await SyncWarehouseAsync(true);
     }
+
+    private static bool IsAutomaticReadEnabled() =>
+        bool.TryParse(GlobalConfiguration.GetValue("Extension.AutoReadEnabled", "False"), out var enabled) && enabled;
 
     private static string CurrentDeviceKey()
     {
@@ -230,7 +246,7 @@ public partial class ExtensionOverviewView : UserControl
         return device == null ? "" : device.AdbPath + "|" + device.AdbSerial;
     }
 
-    private async Task ReadAsync()
+    private async Task ReadAsync(bool automatic)
     {
         if (_reading) return;
         _reading = true;
@@ -243,7 +259,9 @@ public partial class ExtensionOverviewView : UserControl
             var device = taskQueue.Processor.Config.AdbDevice;
             if (device == null || string.IsNullOrWhiteSpace(device.AdbSerial) || string.IsNullOrWhiteSpace(device.AdbPath)) throw new InvalidOperationException("请先在主页选择 ADB 设备。");
             var key = CurrentDeviceKey();
-            var snapshot = await GameOverviewReader.Instance.ReadAsync(device.AdbPath, device.AdbSerial);
+            var keepRoot = IsAutomaticReadEnabled();
+            _automaticWasEnabled |= keepRoot;
+            var snapshot = await GameOverviewReader.Instance.ReadAsync(device.AdbPath, device.AdbSerial, keepRoot);
             if (key != CurrentDeviceKey())
             {
                 _snapshot = null;
@@ -251,10 +269,12 @@ public partial class ExtensionOverviewView : UserControl
                 ReadStatusText.Text = "设备已切换，请重新同步。";
                 return;
             }
+            var accountChanged = _snapshot != null && _snapshot.Account != snapshot.Account;
             _snapshot = snapshot;
             _displayedDevice = key;
             LastReadText.Text = DateTime.Now.ToString("MM-dd HH:mm:ss");
-            PublishState("最近一次读取的账号状态");
+            PublishState("最近一次读取的账号状态", refreshHeldSwords: !automatic,
+                clearHeldSwords: automatic && accountChanged);
             try
             {
                 await Task.Run(() => new GameOverviewDataStore(_configDirectory).Save(snapshot));
@@ -269,7 +289,7 @@ public partial class ExtensionOverviewView : UserControl
         catch (Exception exception)
         {
             ReadStatusText.Text = exception is InvalidOperationException ? exception.Message : "读取失败，请检查模拟器连接。";
-            PublishState("读取失败，保留上次结果");
+            PublishState("读取失败，保留上次结果", refreshHeldSwords: false);
             LoggerHelper.Warning("扩展游戏数据读取失败，类型：" + exception.GetType().Name);
         }
         finally

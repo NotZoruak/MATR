@@ -35,7 +35,7 @@ public sealed class GameOverviewReader
         };
     }
 
-    public async Task<GameOverviewLogParser.Snapshot> ReadAsync(string adb, string serial)
+    public async Task<GameOverviewLogParser.Snapshot> ReadAsync(string adb, string serial, bool keepRoot)
     {
         await _gate.WaitAsync();
         try
@@ -88,7 +88,15 @@ public sealed class GameOverviewReader
             _prefix = prefix;
             return snapshot;
         }
-        finally { _gate.Release(); }
+        finally
+        {
+            // 自动读取期间复用本服务申请的权限，单次手动读取结束后恢复。
+            try
+            {
+                if (!keepRoot) await ReleaseRootAsync();
+            }
+            finally { _gate.Release(); }
+        }
     }
 
     public async Task StopAsync()
