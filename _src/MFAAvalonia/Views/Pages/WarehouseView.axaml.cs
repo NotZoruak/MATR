@@ -41,7 +41,7 @@ public partial class WarehouseView : UserControl
         OtherResourcesPanel.Padding = _isOtherResourcesCollapsed ? new Thickness(4) : new Thickness(14, 12);
         OtherResourcesTitle.IsVisible = !_isOtherResourcesCollapsed;
         OtherItemsScrollViewer.IsVisible = !_isOtherResourcesCollapsed;
-        OtherResourcesToggleButton.Content = _isOtherResourcesCollapsed ? "›" : "◀";
+        OtherResourcesToggleIcon.RenderTransform = new Avalonia.Media.RotateTransform(_isOtherResourcesCollapsed ? 180 : 0);
         ToolTip.SetTip(OtherResourcesToggleButton, _isOtherResourcesCollapsed ? "展开其他资源" : "收起其他资源");
     }
 
