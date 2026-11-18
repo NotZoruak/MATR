@@ -8,6 +8,8 @@ namespace MFAAvalonia.Services;
 
 public static class HeldSwordTableData
 {
+    private static readonly string[] ChineseNumbers = ["零", "一", "二", "三", "四", "五", "六"];
+
     public static List<HeldSwordRow> Build(GameOverviewLogParser.Snapshot snapshot, JObject catalog)
     {
         if (!snapshot.HasFullSwordPool) return [];
@@ -47,13 +49,34 @@ public static class HeldSwordTableData
             return new HeldSwordRow
             {
                 Serial = pair.Key, Data = raw, Definition = definition, Name = nameText,
-                Team = snapshot.SwordTeams.TryGetValue(pair.Key, out var team) ? "部队 " + team : "未编队",
+                Team = FormatTeamPosition(snapshot, pair.Key),
+                TeamFilter = FormatTeamFilter(snapshot, pair.Key),
                 Troops = [ReadTroop(1), ReadTroop(2), ReadTroop(3)],
                 Horse = horseId == null ? "—" : EquipmentName(EquipmentKind(horseId)) ?? "马匹 #" + horseId,
                 Charm = charmId == null ? "—" : "御守 #" + charmId,
                 NeededExperience = max > 0 && level >= max ? 0 : next.HasValue ? Math.Max(0, next.Value - experience) : null
             };
         }).ToList();
+    }
+
+    private static string FormatTeamPosition(GameOverviewLogParser.Snapshot snapshot, string serial)
+    {
+        if (!snapshot.SwordTeams.TryGetValue(serial, out var team)) return "未编队";
+        if (!snapshot.SwordTeamPositions.TryGetValue(serial, out var position)
+            || !int.TryParse(team, out var teamNumber)
+            || !int.TryParse(position, out var slotNumber)
+            || teamNumber < 1 || teamNumber >= ChineseNumbers.Length
+            || slotNumber < 1 || slotNumber >= ChineseNumbers.Length)
+            return "部队 " + team;
+        return ChineseNumbers[slotNumber] + "之" + ChineseNumbers[teamNumber];
+    }
+
+    private static string FormatTeamFilter(GameOverviewLogParser.Snapshot snapshot, string serial)
+    {
+        if (!snapshot.SwordTeams.TryGetValue(serial, out var team)) return "未编队";
+        return int.TryParse(team, out var teamNumber) && teamNumber > 0 && teamNumber < ChineseNumbers.Length
+            ? "部队" + ChineseNumbers[teamNumber]
+            : "部队 " + team;
     }
 
     public static JObject LoadCatalog()

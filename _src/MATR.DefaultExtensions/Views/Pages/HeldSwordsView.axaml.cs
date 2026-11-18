@@ -40,6 +40,8 @@ public partial class HeldSwordsView : UserControl
         new("Team", "部队", false, "部队"), new("Serial", "唯一 ID", false), new("Type", "刀种", false, "刀种"),
         new("Troops", "刀装", false), new("Horse", "马匹", false), new("Charm", "御守", false), new("Appeared", "显现", false)
     ];
+    private static readonly string[] TypeOrder = ["短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
+    private static readonly string[] TeamFilterOrder = ["部队一", "部队二", "部队三", "部队四", "部队五", "未编队"];
     private sealed record ColumnLayout(bool Visible, int Order, double Width);
     private readonly Dictionary<string, DataGridColumn> _columns = new();
     private readonly Dictionary<string, HashSet<string>> _filters = new();
@@ -116,7 +118,7 @@ public partial class HeldSwordsView : UserControl
     public void SetSnapshot(GameOverviewLogParser.Snapshot snapshot)
     {
         var signature = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
-            snapshot.Account + snapshot.HasFullSwordPool + JsonConvert.SerializeObject(snapshot.HeldSwords) + JsonConvert.SerializeObject(snapshot.SwordTeams) + JsonConvert.SerializeObject(snapshot.EquipmentKinds))));
+            snapshot.Account + snapshot.HasFullSwordPool + JsonConvert.SerializeObject(snapshot.HeldSwords) + JsonConvert.SerializeObject(snapshot.SwordTeams) + JsonConvert.SerializeObject(snapshot.SwordTeamPositions) + JsonConvert.SerializeObject(snapshot.EquipmentKinds))));
         if (signature == _signature) return;
         _signature = signature;
         _observedAt = snapshot.SwordObservedAt;
@@ -250,7 +252,7 @@ public partial class HeldSwordsView : UserControl
     private static Run BuildRatio(object current, object maximum) =>
         new($" ({current}⁄{maximum})") { FontSize = 10, FontStyle = FontStyle.Italic };
 
-    private static Control BuildHeader(Column column)
+    private static Control BuildHeader(Column column, bool isFiltered = false)
     {
         var content = new Grid
         {
@@ -258,13 +260,16 @@ public partial class HeldSwordsView : UserControl
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Center
         };
-        content.Children.Add(new TextBlock
+        var caption = new TextBlock
         {
             Text = column.Title,
             Margin = new Thickness(0),
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        });
+            VerticalAlignment = VerticalAlignment.Center,
+            FontWeight = isFiltered ? FontWeight.SemiBold : FontWeight.Normal
+        };
+        caption.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension(isFiltered ? "SukiPrimaryColor" : "SukiText"));
+        content.Children.Add(caption);
         if (column.Filter != null)
         {
             var filterIcon = new Avalonia.Controls.Shapes.Path
@@ -277,7 +282,7 @@ public partial class HeldSwordsView : UserControl
                 Stretch = Stretch.Fill,
                 Data = Geometry.Parse("M 0,0 L 8,0 L 4,5 Z")
             };
-            filterIcon.Bind(Avalonia.Controls.Shapes.Path.FillProperty, new DynamicResourceExtension("SukiText"));
+            filterIcon.Bind(Avalonia.Controls.Shapes.Path.FillProperty, new DynamicResourceExtension(isFiltered ? "SukiPrimaryColor" : "SukiText"));
             content.Children.Add(filterIcon);
         }
         return content;
@@ -307,7 +312,7 @@ public partial class HeldSwordsView : UserControl
                 var state = row.Number("protect");
                 if (!((filter.Value.Contains("无锁") && state == 0) || (filter.Value.Contains("上锁") && state >= 1) || (filter.Value.Contains("喜爱") && state == 2))) return false;
             }
-            else if (!filter.Value.Contains(filter.Key == "Team" ? row.Team : row.Type)) return false;
+            else if (!filter.Value.Contains(filter.Key == "Team" ? row.TeamFilter : row.Type)) return false;
         }
         return true;
     }
@@ -340,7 +345,9 @@ public partial class HeldSwordsView : UserControl
         clear.Click += (_, _) => { selected.Clear(); RefreshFilter(column); };
         menu.Items.Add(clear);
         var values = column.Key == "Protect" ? new[] { "无锁", "上锁", "喜爱" }
-            : _rows.Select(x => column.Key == "Team" ? x.Team : x.Type).Distinct().Order().ToArray();
+            : column.Key == "Team"
+                ? _rows.Select(x => x.TeamFilter).Distinct().OrderBy(x => OrderIndex(TeamFilterOrder, x)).ToArray()
+                : _rows.Select(x => x.Type).Distinct().OrderBy(x => Array.IndexOf(TypeOrder, x)).ToArray();
         foreach (var value in values)
         {
             var item = new MenuItem { Header = value, ToggleType = MenuItemToggleType.CheckBox, IsChecked = selected.Contains(value) };
@@ -355,10 +362,15 @@ public partial class HeldSwordsView : UserControl
         return menu;
     }
 
+    private static int OrderIndex(string[] order, string value)
+    {
+        var index = Array.IndexOf(order, value);
+        return index < 0 ? int.MaxValue : index;
+    }
+
     private void RefreshFilter(Column column)
     {
-        if (column.Key != "Protect")
-            _columns[column.Key].Header = column.Title + (_filters[column.Key].Count > 0 ? " ▾ ●" : " ▾");
+        _columns[column.Key].Header = BuildHeader(column, _filters[column.Key].Count > 0);
         _view?.Refresh();
         UpdateCount();
     }

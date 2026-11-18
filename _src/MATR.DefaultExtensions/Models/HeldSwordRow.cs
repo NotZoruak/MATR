@@ -14,6 +14,7 @@ public sealed class HeldSwordRow
     public JObject? Definition { get; init; }
     public required string Name { get; init; }
     public string Team { get; init; } = "未编队";
+    public string TeamFilter { get; init; } = "未编队";
     public sealed record Troop(string Kind, string Current, string Maximum);
     public Troop?[] Troops { get; init; } = new Troop?[3];
     public string Horse { get; init; } = "—";
@@ -21,7 +22,7 @@ public sealed class HeldSwordRow
     public long? Number(string key) => long.TryParse(Data[key]?.ToString(), out var value) ? value : null;
     public long? StaticNumber(string key) => long.TryParse(Definition?[key]?.ToString(), out var value) ? value : null;
     public string Protection => Number("protect") switch { 0 => "无锁", 1 => "上锁", 2 => "喜爱", _ => "未知" };
-    public string Type => StaticNumber("type") switch { 1 => "短刀", 2 => "胁差", 3 => "打刀", 4 => "太刀", 5 => "大太刀", 6 => "枪", 7 => "薙刀", 8 => "剑", _ => "未知" };
+    public string Type => StaticNumber("type") switch { 1 => "短刀", 2 => "胁差", 3 => "打刀", 4 => "太刀", 5 => "大太刀", 6 => "枪", 7 => "薙刀", _ => "剑" };
     public long? NeededExperience { get; init; }
     public string LevelTip => $"等级：{Text(Number("level"))}\n升级还需：{Text(NeededExperience)}\n累计经验：{Text(Number("exp"))}";
     public string NameTip => $"刀名：{Name}\n刀帐号：{Text(Number("sword_id"))}\n唯一 ID：{Serial}";

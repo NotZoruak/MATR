@@ -23,6 +23,7 @@ public static class GameOverviewLogParser
         public Dictionary<string, TeamEntry> Teams { get; } = new();
         public Dictionary<string, JObject> HeldSwords { get; } = new();
         public Dictionary<string, string> SwordTeams { get; } = new();
+        public Dictionary<string, string> SwordTeamPositions { get; } = new();
         public Dictionary<string, string> EquipmentKinds { get; } = new();
         public bool HasFullSwordPool { get; set; }
         public string SwordObservedAt { get; set; } = "";
@@ -146,10 +147,20 @@ public static class GameOverviewLogParser
                     if (item["slot"] is JObject members)
                     {
                         foreach (var serial in result.SwordTeams.Where(x => x.Value == number).Select(x => x.Key).ToArray())
+                        {
                             result.SwordTeams.Remove(serial);
-                        foreach (var member in members.Properties().Select(x => x.Value).OfType<JObject>())
-                            if (member["serial_id"] is { } serial && serial.Type != JTokenType.Null)
-                                result.SwordTeams[serial.ToString()] = number;
+                            result.SwordTeamPositions.Remove(serial);
+                        }
+                        foreach (var (member, index) in members.Properties().Select((value, index) => (value, index)))
+                            if (member.Value is JObject sword
+                                && sword["serial_id"] is { } serial
+                                && serial.Type != JTokenType.Null)
+                            {
+                                var serialId = serial.ToString();
+                                result.SwordTeams[serialId] = number;
+                                var position = int.TryParse(member.Name, out var slotNumber) ? slotNumber : index + 1;
+                                result.SwordTeamPositions[serialId] = position.ToString(CultureInfo.InvariantCulture);
+                            }
                     }
                     if (item["status"] != null)
                     {
