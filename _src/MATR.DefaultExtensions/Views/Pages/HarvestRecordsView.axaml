@@ -45,7 +45,7 @@
       <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
         <Button x:Name="SwordTab" Classes="harvest-tab" Content="刀剑" Click="ShowSwords" />
         <Button x:Name="ResourceTab" Grid.Column="1" Classes="harvest-tab" Content="资源" Click="ShowResources" />
-        <TextBox x:Name="SearchBox" Grid.Column="2" MinWidth="0" Watermark="搜索名称、来源、地图或点位" TextChanged="SearchChanged">
+        <TextBox x:Name="SearchBox" Grid.Column="2" MinWidth="0" Watermark="搜索名称、来源、地图或点位">
           <ToolTip.Tip>
             <Border Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" MaxWidth="360">
               <StackPanel Spacing="6">

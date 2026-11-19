@@ -20,6 +20,7 @@ public partial class HarvestRecordsView : UserControl
     private readonly List<GameOverviewLogParser.HarvestEntry> _records = [];
     private readonly ObservableCollection<Row> _visibleRows = [];
     private string _account = "";
+    private string _appliedSearch = "";
     private bool _swords;
     private bool? _columnsConfiguredForSwords;
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
@@ -82,14 +83,14 @@ public partial class HarvestRecordsView : UserControl
         {
             var parts = record.Id.Split(':');
             if (parts.Length >= 7)
-                return string.Join(':', parts.Take(IsTreasureFragmentId(parts[4]) ? 3 : 4)) + ":resource:" + parts[4];
+                return string.Join(':', parts.Take(UsesStableResourceIdentity(parts[4]) ? 3 : 4)) + ":resource:" + parts[4];
             if (parts.Length >= 4)
                 return string.Join(':', parts.Take(4)) + ":resource:" + (LegacyRewardItemId(record.Name) ?? record.Name);
         }
         return record.Id;
     }
 
-    private static bool IsTreasureFragmentId(string itemId) => itemId is "6101" or "6103" or "6105" or "6107" or "6109" or "6111" or "6113";
+    private static bool UsesStableResourceIdentity(string itemId) => itemId is "4206" or "6101" or "6103" or "6105" or "6107" or "6109" or "6111" or "6113";
 
     private static string? LegacyRewardItemId(string name)
     {
@@ -111,8 +112,11 @@ public partial class HarvestRecordsView : UserControl
 
     private void ShowSwords(object? sender, RoutedEventArgs e) { _swords = true; ShowTable(); }
     private void ShowResources(object? sender, RoutedEventArgs e) { _swords = false; ShowTable(); }
-    private void SearchChanged(object? sender, TextChangedEventArgs e) => ShowTable();
-    private void SearchClicked(object? sender, RoutedEventArgs e) => ShowTable();
+    private void SearchClicked(object? sender, RoutedEventArgs e)
+    {
+        _appliedSearch = SearchBox.Text ?? "";
+        ShowTable();
+    }
     private void DateFilterChanged(object? sender, SelectionChangedEventArgs e) => ShowTable();
     private void ClearDateFilter(object? sender, RoutedEventArgs e)
     {
@@ -134,7 +138,7 @@ public partial class HarvestRecordsView : UserControl
             .ToArray();
         var total = _swords ? rows.Length : rows.Sum(row => row.Amount);
         var subtitle = $"时间：{StartDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"} 至 {EndDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"}";
-        if (!string.IsNullOrWhiteSpace(SearchBox.Text)) subtitle += $"\n搜索：{SearchBox.Text}";
+        if (!string.IsNullOrWhiteSpace(_appliedSearch)) subtitle += $"\n搜索：{_appliedSearch}";
 
         var detailRows = new StackPanel { Spacing = 12 };
         var sections = _swords
@@ -234,7 +238,7 @@ public partial class HarvestRecordsView : UserControl
     private Row[] FilteredRows() => _records.Where(record => record.Kind == (_swords ? "sword" : "resource"))
         .Select(record => new Row(record.Id, record.Time, DisplayName(record), SwordType(record), record.Amount,
             FormatSource(record)))
-        .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, SearchBox?.Text))
+        .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, _appliedSearch))
         .OrderByDescending(row => row.Time).ToArray();
 
     private static string FormatSource(GameOverviewLogParser.HarvestEntry record)

@@ -21,6 +21,10 @@ public static class GameOverviewLogParser
         ["6111"] = "三所物·菊碎片",
         ["6113"] = "三所物·狮子碎片"
     };
+    private static readonly Dictionary<string, string> SeasonalRewardNames = new()
+    {
+        ["4206"] = "天竺牡丹"
+    };
     public sealed record Value(string Text, string ObservedAt);
     public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
@@ -240,8 +244,8 @@ public static class GameOverviewLogParser
                 AddResourceRewards(itemRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(battleRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource, includeBattleBonus: true);
                 AddResourceRewards(battleDropRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
-                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, null, null,
-                    "活动奖励");
+                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, rewardMap, rewardPoint,
+                    rewardSource);
             }
             void AddResourceRewards(JArray? rewards, string observedAt, int sourceIndex, string? map, string? point, string source, bool includeBattleBonus = false)
             {
@@ -253,6 +257,8 @@ public static class GameOverviewLogParser
                     var itemType = reward["item_type"]?.ToString();
                     var itemId = reward["item_id"]?.ToString() ?? reward["consumable_id"]?.ToString()
                         ?? reward["sword_id"]?.ToString() ?? reward["artifact_id"]?.ToString();
+                    var mappedItemName = itemId == null ? null
+                        : TreasureFragmentNames.GetValueOrDefault(itemId) ?? SeasonalRewardNames.GetValueOrDefault(itemId);
                     var amountText = reward["item_num"]?.ToString() ?? reward["num"]?.ToString() ?? reward["amount"]?.ToString();
                     _ = int.TryParse(amountText, out var amount);
                     if (includeBattleBonus)
@@ -267,8 +273,8 @@ public static class GameOverviewLogParser
                         "5" when itemId != null && names.TryGetValue(itemId, out var resourceName) => resourceName,
                         "1" when itemId == "8" => "加速符",
                         _ => null
-                    } ?? (itemId != null && TreasureFragmentNames.TryGetValue(itemId, out var fragmentName)
-                        ? fragmentName
+                    } ?? (mappedItemName != null
+                        ? mappedItemName
                         : itemId == null
                         ? $"未知物品（类型 {itemType ?? "未知"}）"
                         : $"未知物品（类型 {itemType ?? "未知"}，ID {itemId}）");
