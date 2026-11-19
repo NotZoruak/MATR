@@ -3,9 +3,13 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="OverviewSuccessBrush" Color="#21854A" />
+            <SolidColorBrush x:Key="OverviewWarningBrush" Color="#C77700" />
+            <SolidColorBrush x:Key="OverviewCriticalBrush" Color="#C62828" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
             <SolidColorBrush x:Key="OverviewSuccessBrush" Color="#7BD5A0" />
+            <SolidColorBrush x:Key="OverviewWarningBrush" Color="#FFB74D" />
+            <SolidColorBrush x:Key="OverviewCriticalBrush" Color="#EF5350" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>
