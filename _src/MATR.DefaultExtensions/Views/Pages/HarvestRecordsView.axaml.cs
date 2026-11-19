@@ -82,12 +82,14 @@ public partial class HarvestRecordsView : UserControl
         {
             var parts = record.Id.Split(':');
             if (parts.Length >= 7)
-                return string.Join(':', parts.Take(4)) + ":resource:" + parts[4];
+                return string.Join(':', parts.Take(IsTreasureFragmentId(parts[4]) ? 3 : 4)) + ":resource:" + parts[4];
             if (parts.Length >= 4)
                 return string.Join(':', parts.Take(4)) + ":resource:" + (LegacyRewardItemId(record.Name) ?? record.Name);
         }
         return record.Id;
     }
+
+    private static bool IsTreasureFragmentId(string itemId) => itemId is "6101" or "6103" or "6105" or "6107" or "6109" or "6111" or "6113";
 
     private static string? LegacyRewardItemId(string name)
     {
@@ -231,9 +233,17 @@ public partial class HarvestRecordsView : UserControl
 
     private Row[] FilteredRows() => _records.Where(record => record.Kind == (_swords ? "sword" : "resource"))
         .Select(record => new Row(record.Id, record.Time, DisplayName(record), SwordType(record), record.Amount,
-            record.Source + (record.Map == null ? "" : " · " + record.Map) + (record.Point == null ? "" : " 点位 " + record.Point)))
+            FormatSource(record)))
         .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, SearchBox?.Text))
         .OrderByDescending(row => row.Time).ToArray();
+
+    private static string FormatSource(GameOverviewLogParser.HarvestEntry record)
+    {
+        var map = record.Map;
+        if (record.Source == "异去掉落" && map?.StartsWith("异去 ", StringComparison.Ordinal) == true)
+            map = map[3..];
+        return record.Source + (map == null ? "" : " · " + map) + (record.Point == null ? "" : " 点位 " + record.Point);
+    }
 
     private bool MatchesDateRange(string value)
     {

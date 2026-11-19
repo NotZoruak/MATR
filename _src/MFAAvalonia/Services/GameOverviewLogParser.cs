@@ -169,6 +169,8 @@ public static class GameOverviewLogParser
                 pendingSortieTeam = null;
                 pendingSortieAccount = null;
             }
+            var currentSortieMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
+            var currentSortiePoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
             if (activeSortieTeam is { } sortieTeam)
             {
                 if (path is "/sally/forward" or "/sally/parallelpastforward"
@@ -190,14 +192,15 @@ public static class GameOverviewLogParser
             if (path is "/battle/battle" or "/battle/alloutbattle"
                 && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
             {
-                var dropMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
+                var dropMap = currentSortieMap;
                 result.HarvestRecords.Add(new HarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
                     1, getSwordId.ToString(CultureInfo.InvariantCulture), dropMap,
-                    sortiePoints.GetValueOrDefault(activeSortieTeam ?? ""), dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
+                    currentSortiePoint, dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
             }
             var itemRewards = data["item"] as JArray;
             var battleRewards = data["result"]?["reward"] as JArray;
-            if (data["reward"] is JArray || itemRewards != null || battleRewards != null || data["season_reward"] is JArray)
+            var battleDropRewards = data["result"]?["drop_reward"] as JArray;
+            if (data["reward"] is JArray || itemRewards != null || battleRewards != null || battleDropRewards != null || data["season_reward"] is JArray)
             {
                 var rewardSource = path switch
                 {
@@ -206,7 +209,7 @@ public static class GameOverviewLogParser
                     "/receive/get" => "活动/邮件奖励",
                     "/sally/forward" => "过去掉落",
                     "/sally/parallelpastforward" => "异去掉落",
-                    "/battle/battle" => sortieMaps.GetValueOrDefault(activeSortieTeam ?? "")?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落",
+                    "/battle/battle" => currentSortieMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落",
                     "/battle/alloutbattle" => "联队战奖励",
                     _ => "未知"
                 };
@@ -230,12 +233,13 @@ public static class GameOverviewLogParser
                 }
                 else if (path is "/battle/battle" or "/battle/alloutbattle")
                 {
-                    rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
-                    rewardPoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
+                    rewardMap = currentSortieMap;
+                    rewardPoint = currentSortiePoint;
                 }
                 AddResourceRewards(data["reward"] as JArray, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(itemRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(battleRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource, includeBattleBonus: true);
+                AddResourceRewards(battleDropRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, null, null,
                     "活动奖励");
             }
