@@ -248,6 +248,10 @@
         "target": [1052, 601, 117, 55]
       }
     },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1052, 601, 117, 55]
+    },
     "next": ["HK_SelectDefenseLineDifficulty", "HK_SelectEnemyTeamDifficulty", "HK_ExitWrongDefenseLineDifficulty"],
     "on_error": ["HK_DetectWhereAmI"]
   },
