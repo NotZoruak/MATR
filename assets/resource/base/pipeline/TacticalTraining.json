@@ -129,6 +129,7 @@
       "TT_CheckGoalPt",
       "TT_ClickDifficulty",
       "TT_ClickChocolateKunaiTraining",
+      "TT_ClickFixedPosition",
       "TT_VerifyEventPage",
       "TT_DetectWhereAmI"
     ]
@@ -163,7 +164,19 @@
       "time": 200,
       "target": [143, 213, 16, 2]
     },
-    "next": ["TT_ClickChocolateKunaiTraining", "TT_VerifyEventPage", "TT_DetectWhereAmI"]
+    "next": ["TT_ClickChocolateKunaiTraining", "TT_ClickFixedPosition", "TT_VerifyEventPage", "TT_DetectWhereAmI"]
+  },
+  "TT_ClickFixedPosition": {
+    "enabled": false,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [759, 295, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["TT_EnterEvent", "TT_DetectWhereAmI"]
   },
   "TT_ClickChocolateKunaiTraining": {
     "recognition": {

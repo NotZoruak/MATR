@@ -44,7 +44,7 @@
                     </StackPanel>
                 </DockPanel>
                 <StackPanel Spacing="6">
-                    <TextBlock FontSize="16" Text="推送内容拓展" />
+                    <TextBlock FontSize="16" Text="推送内容扩展" />
                     <WrapPanel ItemHeight="32" ItemWidth="130">
                         <CheckBox Content="任务收获" IsChecked="{Binding IncludeTaskHarvest}" />
                         <CheckBox Content="后勤动态" IsChecked="{Binding IncludeLogistics}" />

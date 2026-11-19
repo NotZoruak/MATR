@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:suki="https://github.com/kikipoulet/SukiUI"
+             xmlns:vm="clr-namespace:MFAAvalonia.ViewModels.UsersControls.Settings"
+             x:DataType="vm:ExtensionSettingsViewModel"
+             x:Class="MFAAvalonia.Views.UserControls.Settings.ExtensionSettingsUserControl">
+    <StackPanel Spacing="25">
+        <suki:GlassCard Padding="25">
+            <StackPanel Spacing="16">
+                <DockPanel>
+                    <ToggleSwitch DockPanel.Dock="Right" VerticalAlignment="Center"
+                                  IsChecked="{Binding AutoReadEnabled, Mode=TwoWay}" />
+                    <TextBlock Text="自动读取游戏数据" FontSize="16" FontWeight="SemiBold"
+                               VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
+                </DockPanel>
+                <DockPanel>
+                    <NumericUpDown DockPanel.Dock="Right" Width="215"
+                                   Value="{Binding ReadIntervalSeconds, Mode=TwoWay}"
+                                   Minimum="1" Maximum="86400" Increment="1" FormatString="0"
+                                   IsEnabled="{Binding AutoReadEnabled}" />
+                    <TextBlock Text="读取间隔（秒）" FontSize="16" FontWeight="SemiBold"
+                               VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
+                </DockPanel>
+            </StackPanel>
+        </suki:GlassCard>
+        <suki:GlassCard Padding="25">
+            <StackPanel Spacing="16">
+                <DockPanel>
+                    <ToggleSwitch DockPanel.Dock="Right" VerticalAlignment="Center"
+                                  IsChecked="{Binding AutoWarehouseSyncEnabled, Mode=TwoWay}" />
+                    <TextBlock Text="自动同步资源到仓库" FontSize="16" FontWeight="SemiBold"
+                               VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
+                </DockPanel>
+                <DockPanel>
+                    <NumericUpDown DockPanel.Dock="Right" Width="215"
+                                   Value="{Binding WarehouseIntervalMinutes, Mode=TwoWay}"
+                                   Minimum="0.017" Maximum="1440" Increment="1" FormatString="0.###"
+                                   IsEnabled="{Binding AutoWarehouseSyncEnabled}" />
+                    <TextBlock Text="同步间隔（分钟）" FontSize="16" FontWeight="SemiBold"
+                               VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
+                </DockPanel>
+            </StackPanel>
+        </suki:GlassCard>
+    </StackPanel>
+</UserControl>

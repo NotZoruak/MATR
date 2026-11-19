@@ -6,6 +6,7 @@ using MFAAvalonia.Extensions.MaaFW;
 using MFAAvalonia.Helper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -46,10 +47,14 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
 
     private const byte EmptyLower = 218;
     private const byte EmptyUpper = 222;
+    private const byte UnlockedLower = 41;
+    private const byte UnlockedUpper = 45;
     private const byte LockedR = 212;
     private const byte LockedG = 173;
     private const byte LockedB = 31;
     private const byte ColorTolerance = 2;
+    private const int ScanTimeoutMs = 20000;
+    private const int ScanIntervalMs = 200;
     private const int LevelOcrAttempts = 5;
     private const int ExpandedLevelOcrMargin = 4;
 
@@ -60,7 +65,7 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
         try
         {
             ActionParamHelper.ThrowIfStopping(context);
-            var slots = ReadSlots(context);
+            var slots = ReadSlotsUntilConfirmed(context);
             var plan = NewMixTargetSelectionDecision.Decide(slots);
             NewMixTargetSelectionState.Current = plan;
 
@@ -92,22 +97,57 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
         }
     }
 
-    private static List<NewMixTargetSlot> ReadSlots<T>(T context) where T : IMaaContext
+    private static List<NewMixTargetSlot> ReadSlotsUntilConfirmed<T>(T context) where T : IMaaContext
+    {
+        var timer = Stopwatch.StartNew();
+        while (true)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            try
+            {
+                var slots = ReadSlots(context, timer);
+                if (timer.ElapsedMilliseconds >= ScanTimeoutMs)
+                    throw new TimeoutException("习合目标扫描超过 20 秒");
+                return slots;
+            }
+            catch (InvalidOperationException e)
+            {
+                var remaining = ScanTimeoutMs - timer.ElapsedMilliseconds;
+                if (remaining <= 0)
+                    throw new TimeoutException($"习合目标扫描超过 20 秒：{e.Message}", e);
+
+                LoggerHelper.Warning($"[新习合] {e.Message}，重新扫描");
+                ActionParamHelper.SleepWithStopCheck(context, (int)Math.Min(ScanIntervalMs, remaining));
+            }
+        }
+    }
+
+    private static List<NewMixTargetSlot> ReadSlots<T>(T context, Stopwatch timer) where T : IMaaContext
     {
         var slots = new List<NewMixTargetSlot>(MarkerRois.Length);
+        using var image = context.GetImage();
+        using var bitmap = image?.ToBitmap();
+        if (bitmap == null)
+            throw new InvalidOperationException("无法获取习合目标列表截图");
+
         for (var index = 0; index < MarkerRois.Length; index++)
         {
             ActionParamHelper.ThrowIfStopping(context);
-            using var image = context.GetImage();
-            using var bitmap = image?.ToBitmap();
-            if (bitmap == null)
-                throw new InvalidOperationException("无法获取习合目标列表截图");
+            // 同一帧内正向确认锁定、未上锁或空位，避免把过渡画面当作刀剑。
+            var isLocked = ContainsColor(bitmap, MarkerRois[index], LockedR, LockedG, LockedB, ColorTolerance);
+            var isUnlocked = ContainsGray(bitmap, MarkerRois[index], UnlockedLower, UnlockedUpper);
+            var isEmpty = ContainsGray(bitmap, MarkerRois[index], EmptyLower, EmptyUpper);
+            if ((isLocked ? 1 : 0) + (isUnlocked ? 1 : 0) + (isEmpty ? 1 : 0) != 1)
+                throw new InvalidOperationException($"第 {index + 1} 位标记颜色无法确认：上锁={isLocked}，未上锁={isUnlocked}，空位={isEmpty}");
 
-            var hasSword = !ContainsGray(bitmap, MarkerRois[index], EmptyLower, EmptyUpper);
-            var isLocked = hasSword && ContainsColor(bitmap, MarkerRois[index], LockedR, LockedG, LockedB, ColorTolerance);
+            var hasSword = isLocked || isUnlocked;
             int? level = null;
-            if (hasSword && !isLocked)
-                level = TryReadLevel(context, LevelRois[index]);
+            if (isUnlocked)
+            {
+                level = TryReadLevel(context, LevelRois[index], timer);
+                if (!level.HasValue)
+                    throw new InvalidOperationException($"第 {index + 1} 位未上锁刀剑的乱舞等级无法识别");
+            }
 
             slots.Add(new(hasSword, isLocked, level));
             LoggerHelper.Info($"[新习合] 第 {index + 1} 位：有刀={hasSword}，上锁={isLocked}，乱舞={level?.ToString() ?? "未识别"}");
@@ -116,9 +156,9 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
         return slots;
     }
 
-    private static int? TryReadLevel<T>(T context, int[] roi) where T : IMaaContext
+    private static int? TryReadLevel<T>(T context, int[] roi, Stopwatch timer) where T : IMaaContext
     {
-        var level = TryReadLevel(context, roi, LevelOcrAttempts);
+        var level = TryReadLevel(context, roi, LevelOcrAttempts, timer);
         if (level.HasValue)
             return level;
 
@@ -130,14 +170,16 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
             roi[3] + ExpandedLevelOcrMargin * 2
         };
         LoggerHelper.Warning($"[新习合] 乱舞等级常规 OCR 未命中，尝试扩大区域：[{expandedRoi[0]},{expandedRoi[1]},{expandedRoi[2]},{expandedRoi[3]}]");
-        return TryReadLevel(context, expandedRoi, LevelOcrAttempts);
+        return TryReadLevel(context, expandedRoi, LevelOcrAttempts, timer);
     }
 
-    private static int? TryReadLevel<T>(T context, int[] roi, int attempts) where T : IMaaContext
+    private static int? TryReadLevel<T>(T context, int[] roi, int attempts, Stopwatch timer) where T : IMaaContext
     {
         for (var attempt = 0; attempt < attempts; attempt++)
         {
             ActionParamHelper.ThrowIfStopping(context);
+            if (timer.ElapsedMilliseconds >= ScanTimeoutMs)
+                return null;
             using var image = context.GetImage();
             if (image != null)
             {
@@ -148,7 +190,7 @@ public sealed class NewMixTargetSelectionAction : IMaaCustomAction
             }
 
             if (attempt < attempts - 1)
-                ActionParamHelper.SleepWithStopCheck(context, 200);
+                ActionParamHelper.SleepWithStopCheck(context, (int)Math.Min(ScanIntervalMs, Math.Max(0, ScanTimeoutMs - timer.ElapsedMilliseconds)));
         }
 
         return null;

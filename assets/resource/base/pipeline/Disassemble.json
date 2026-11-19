@@ -38,35 +38,73 @@
     "recognition": {
       "type": "ColorMatch",
       "param": {
-        "roi": [142, 178, 82, 75],
-        "lower": [206, 204, 197],
-        "upper": [216, 214, 207],
-        "count": 6150
+        "roi": [1147, 612, 19, 14],
+        "lower": [148, 148, 148],
+        "upper": [154, 154, 154]
       }
     },
-    "action": {
-      "type": "Click",
-      "param": {
-        "target": [1231, 8, 38, 39]
-      }
-    },
-    "post_wait_freezes": {
-      "time": 200,
-      "target": [1231, 8, 38, 39]
-    },
-    "next": ["D_EmptyMailboxClick2"],
+    "next": ["D_EmptyMailboxHub"],
     "on_error": ["D_DetectWhereAmI"]
   },
-  "D_EmptyMailboxClick2": {
-    "pre_delay": 0,
-    "action": {
-      "type": "Click",
+  "D_EmptyMailboxHub": {
+    "next": ["D_IsHomeAfterEmptyMailbox", "D_ClickHomeAfterEmptyMailbox", "D_OpenMenuAfterEmptyMailbox", "D_CloseEmptyMailbox"]
+  },
+  "D_IsHomeAfterEmptyMailbox": {
+    "recognition": {
+      "type": "TemplateMatch",
       "param": {
-        "target": [1231, 8, 38, 39]
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    }
+  },
+  "D_ClickHomeAfterEmptyMailbox": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1040, 165, 94, 48],
+        "expected": "本丸"
       }
     },
-    "next": [],
-    "on_error": ["D_DetectWhereAmI"]
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1040, 165, 94, 48]
+    },
+    "next": ["D_EmptyMailboxHub"]
+  },
+  "D_OpenMenuAfterEmptyMailbox": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1179, 8, 95, 56],
+        "expected": "目"
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1179, 8, 95, 56]
+    },
+    "next": ["D_EmptyMailboxHub"]
+  },
+  "D_CloseEmptyMailbox": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1248, 11, 5, 6],
+        "lower": [40, 40, 40],
+        "upper": [46, 46, 46]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1248, 11, 5, 6]
+    },
+    "next": ["D_EmptyMailboxHub"]
   },
   "D_DetectHome": {
     "recognition": {
@@ -389,10 +427,11 @@
   },
   "D_ClickClaimMailboxItems": {
     "recognition": {
-      "type": "OCR",
+      "type": "ColorMatch",
       "param": {
-        "roi": [1129, 627, 81, 37],
-        "expected": "领取"
+        "roi": [1147, 612, 19, 14],
+        "lower": [127, 167, 18],
+        "upper": [133, 173, 24]
       }
     },
     "action": {"type": "Click"},

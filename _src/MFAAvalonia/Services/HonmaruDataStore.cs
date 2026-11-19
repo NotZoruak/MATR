@@ -116,6 +116,30 @@ public sealed class HonmaruDataStore
         }
     }
 
+    /// <summary>在同一保存锁内验证数据时间并原子写入扩展资源。</summary>
+    public GameOverviewWarehouseSync.Result SyncExtension(GameOverviewLogParser.Snapshot snapshot)
+    {
+        lock (_syncRoot)
+        {
+            if (!EnsureMigrated()) throw new IOException("本丸仓库未能初始化。");
+            var existing = JsonConvert.DeserializeObject<WarehouseDocument>(File.ReadAllText(WarehousePath))
+                ?? throw new InvalidDataException("仓库数据无效，未执行同步。");
+            var fingerprint = GameOverviewWarehouseSync.Fingerprint(snapshot);
+            if (existing.ExtensionFingerprint == fingerprint) return new(GameOverviewWarehouseSync.State.Unchanged);
+            var lastTime = DateTimeOffset.TryParse(existing.LastUpdatedAt, out var parsed)
+                ? parsed.ToOffset(TimeSpan.FromHours(8)).DateTime : (DateTime?)null;
+            var result = GameOverviewWarehouseSync.Prepare(snapshot, existing.Data ?? new WarehouseData(), lastTime);
+            if (result.Status == GameOverviewWarehouseSync.State.Saved)
+                WriteJsonAtomically(WarehousePath, new WarehouseDocument
+                {
+                    Data = result.Data!,
+                    LastUpdatedAt = new DateTimeOffset(DateTime.SpecifyKind(result.ObservedAt!.Value, DateTimeKind.Unspecified), TimeSpan.FromHours(8)).ToString("O"),
+                    ExtensionFingerprint = fingerprint
+                });
+            return result;
+        }
+    }
+
     /// <summary>读取刀帐状态。</summary>
     public List<SwordBookPortraitState> GetSwordBookEntries()
     {
@@ -361,6 +385,7 @@ public sealed class HonmaruDataStore
 
     private sealed class WarehouseDocument
     {
+        public string? ExtensionFingerprint { get; set; }
         public WarehouseData Data { get; set; } = new();
         public string? LastUpdatedAt { get; set; }
     }
@@ -393,6 +418,15 @@ public static class HonmaruDataStoreService
 
             _store = store;
             return true;
+        }
+    }
+
+    public static GameOverviewWarehouseSync.Result SyncExtension(GameOverviewLogParser.Snapshot snapshot)
+    {
+        lock (SyncRoot)
+        {
+            if (!Initialize() || _store == null) throw new IOException("本丸仓库未能初始化。");
+            return _store.SyncExtension(snapshot);
         }
     }
 

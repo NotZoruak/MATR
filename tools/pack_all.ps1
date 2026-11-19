@@ -1,5 +1,5 @@
 ﻿# 一键打包 win-x64 与 macos-arm64 两个发布包（本地手动发布用）
-# 用法: pwsh tools/pack_all.ps1 -Version v1.0.0-beta.1
+# 用法: pwsh tools/pack_all.ps1 -Version v1.0.0-beta.2
 # 产物: MATR-$Version-win-x64.zip 与 MATR-$Version-macos-arm64.zip（仓库根目录）
 param(
     [Parameter(Mandatory = $true)]
@@ -17,6 +17,11 @@ function Invoke-Dotnet {
     dotnet @Arguments
     if ($LASTEXITCODE -ne 0) { throw "dotnet 命令失败（退出码 $LASTEXITCODE）: dotnet $($Arguments -join ' ')" }
 }
+
+Write-Host "构建独立默认扩展"
+Invoke-Dotnet @('restore', (Join-Path $Root '_src/MATR.DefaultExtensions/MATR.DefaultExtensions.csproj'))
+python (Join-Path $Root 'tools/build_extensions.py')
+if ($LASTEXITCODE -ne 0) { throw '默认扩展构建失败。' }
 
 Write-Host "== Windows x64 发布 =="
 Invoke-Dotnet @('publish', $Project, '-c', 'Release', '-p:Platform=AnyCPU', '-r', 'win-x64',

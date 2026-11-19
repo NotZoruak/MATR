@@ -40,6 +40,12 @@
                     </TabItem.Header>
                     <views:WorkRecordsView />
                 </TabItem>
+                <TabItem Classes="honmaru-tab" IsVisible="{Binding HasExtensionContent}">
+                    <TabItem.Header>
+                        <TextBlock Text="扩展" FontSize="20" />
+                    </TabItem.Header>
+                    <views:ExtensionOverviewView />
+                </TabItem>
         </TabControl>
     </Grid>
 </UserControl>

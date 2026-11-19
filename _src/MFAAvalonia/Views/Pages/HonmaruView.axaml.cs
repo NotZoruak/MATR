@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MFAAvalonia.Views.Pages;
 
-/// <summary>本丸页面容器：提供三个固定顺序的下级页面。</summary>
+/// <summary>本丸页面容器：提供扩展及现有本丸功能的下级页面。</summary>
 public partial class HonmaruView : UserControl
 {
     public HonmaruView()

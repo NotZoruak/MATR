@@ -1,0 +1,143 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="clr-namespace:MFAAvalonia.Views.Pages"
+             xmlns:icons="clr-namespace:FluentIcons.Avalonia.Fluent;assembly=FluentIcons.Avalonia.Fluent" x:Class="MFAAvalonia.Views.Pages.ExtensionOverviewView" Foreground="{DynamicResource OverviewBodyBrush}" FontSize="14">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="OverviewSuccessBrush" Color="#21854A" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="OverviewSuccessBrush" Color="#7BD5A0" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            <SolidColorBrush x:Key="OverviewHeadingBrush" Color="{DynamicResource SukiText}" />
+            <SolidColorBrush x:Key="OverviewBodyBrush" Color="{DynamicResource SukiText}" Opacity="0.88" />
+            <SolidColorBrush x:Key="OverviewMutedBrush" Color="{DynamicResource SukiLowText}" />
+            <SolidColorBrush x:Key="OverviewAccentBrush" Color="{DynamicResource SukiLowText}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Border.overview-section">
+            <Setter Property="Background" Value="{DynamicResource SukiCardBackground}" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+        <Style Selector="TextBlock.caption">
+            <Setter Property="Foreground" Value="{DynamicResource OverviewMutedBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="TextBlock.section-title">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource OverviewHeadingBrush}" />
+        </Style>
+        <Style Selector="TextBlock.overview-detail">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource OverviewBodyBrush}" />
+        </Style>
+        <Style Selector="TextBlock.overview-label">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource OverviewHeadingBrush}" />
+        </Style>
+        <Style Selector="TextBlock.resource-value">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource OverviewAccentBrush}" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        <Style Selector="TextBlock.overview-running">
+            <Setter Property="Foreground" Value="{DynamicResource OverviewAccentBrush}" />
+        </Style>
+        <Style Selector="TextBlock.overview-idle">
+            <Setter Property="Foreground" Value="{DynamicResource OverviewMutedBrush}" />
+        </Style>
+        <Style Selector="TextBlock.overview-complete">
+            <Setter Property="Foreground" Value="{DynamicResource OverviewSuccessBrush}" />
+        </Style>
+        <Style Selector="Border.overview-header-divider">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{DynamicResource SukiControlBorderBrush}" />
+        </Style>
+        <Style Selector="Border.overview-inset">
+            <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor5}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor15}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12,10" />
+        </Style>
+        <Style Selector="RadioButton.extension-navigation">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="MinHeight" Value="42" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="NavigationBackground" Background="Transparent" CornerRadius="6" MinHeight="42">
+                        <Grid ColumnDefinitions="3,*">
+                            <Border Name="SelectionIndicator" Background="Transparent" CornerRadius="2" Height="22" VerticalAlignment="Center" />
+                            <ContentPresenter Grid.Column="1" Margin="9,8" VerticalAlignment="Center" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="RadioButton.extension-navigation:pointerover /template/ Border#NavigationBackground">
+            <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor5}" />
+        </Style>
+        <Style Selector="RadioButton.extension-navigation:checked">
+            <Setter Property="Foreground" Value="{DynamicResource SukiPrimaryColor}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="RadioButton.extension-navigation:checked /template/ Border#NavigationBackground">
+            <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor15}" />
+        </Style>
+        <Style Selector="RadioButton.extension-navigation:checked /template/ Border#SelectionIndicator">
+            <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor}" />
+        </Style>
+        <Style Selector="RadioButton.extension-navigation:disabled">
+            <Setter Property="Opacity" Value="0.45" />
+        </Style>
+        <Style Selector="RadioButton.extension-navigation.inactive">
+            <Setter Property="Opacity" Value="0.45" />
+            <Setter Property="Foreground" Value="{DynamicResource OverviewMutedBrush}" />
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="0,12,0,0">
+        <Border x:Name="NavigationPane" Width="174" Classes="overview-section" Padding="8">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="16">
+                    <Button x:Name="NavigationToggle" Click="ToggleNavigation" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" ToolTip.Tip="收起功能导航" AutomationProperties.Name="收起功能导航" Padding="9,8">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" HorizontalContentAlignment="Stretch" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <TextBlock x:Name="NavigationHeading" Text="功能导航" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" VerticalAlignment="Center" />
+                            <icons:FluentIcon x:Name="NavigationToggleIcon" Grid.Column="1" Icon="ChevronLeft" IconSize="Size20" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+                    <StackPanel Spacing="6">
+                        <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="9,8" x:Name="ReadDataButton" Click="ReadData" ToolTip.Tip="读取当前设备的游戏日志" AutomationProperties.Name="同步数据">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <icons:FluentIcon Icon="ArrowSync" IconSize="Size20" />
+                                <TextBlock x:Name="SyncButtonLabel" Text="同步数据" />
+                            </StackPanel>
+                        </Button>
+                        <StackPanel x:Name="SyncDetails" Margin="10,2,0,0" Spacing="4">
+                            <TextBlock Text="最后同步时间" Classes="caption" />
+                            <TextBlock x:Name="LastReadText" Text="尚未同步" TextWrapping="Wrap" />
+                            <TextBlock x:Name="ReadStatusText" Text="" Classes="caption" />
+                            <Border x:Name="SyncDivider" Classes="overview-header-divider" Margin="0,8,0,8" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel x:Name="WorkspaceNavigation" Spacing="4" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+        <Grid x:Name="WorkspaceContent" Grid.Column="1" />
+    </Grid>
+</UserControl>

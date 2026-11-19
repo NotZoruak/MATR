@@ -1,0 +1,10 @@
+{
+  "id": "example.hello",
+  "name": "示例工作区",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "order": 100,
+  "icon": "Apps",
+  "entryAssembly": "HelloWorkspace.dll",
+  "entryType": "ExampleExtensions.HelloWorkspace"
+}

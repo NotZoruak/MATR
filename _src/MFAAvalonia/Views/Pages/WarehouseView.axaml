@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:icons="clr-namespace:FluentIcons.Avalonia.Fluent;assembly=FluentIcons.Avalonia.Fluent"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -80,10 +81,12 @@
                 <Grid RowDefinitions="Auto,*" RowSpacing="8">
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBlock x:Name="OtherResourcesTitle" Text="其他资源" FontSize="15" FontWeight="SemiBold" Foreground="#7B8798" VerticalAlignment="Center" />
-                        <Button x:Name="OtherResourcesToggleButton" Grid.Column="1" Content="◀"
+                        <Button x:Name="OtherResourcesToggleButton" Grid.Column="1"
                                 Click="OtherResourcesToggleButton_OnClick"
                                 Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
-                                Foreground="#7B8798" Padding="4,2" ToolTip.Tip="收起其他资源" />
+                                Foreground="#7B8798" Padding="4,2" ToolTip.Tip="收起其他资源">
+                            <icons:FluentIcon x:Name="OtherResourcesToggleIcon" Icon="ChevronLeft" IconSize="Size20" />
+                        </Button>
                     </Grid>
                     <ScrollViewer x:Name="OtherItemsScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>

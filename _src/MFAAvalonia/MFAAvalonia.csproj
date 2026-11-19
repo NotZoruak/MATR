@@ -32,6 +32,10 @@
         <NoWarn>NU1701;NU1510</NoWarn>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="../MATR.ExtensionSdk/MATR.ExtensionSdk.csproj" />
+    </ItemGroup>
+
     <!-- Version -->
     <PropertyGroup>
         <ApplicationRevision>0</ApplicationRevision>

@@ -26,6 +26,8 @@ public static class PendingUpdateDeletionHelper
     {
         var normalizedPath = NormalizeRelativePath(relativePath);
         var root = IsDataRootRelativePath(normalizedPath) ? "data" : "install";
+        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, ResolveSafePath(new PendingDeletionEntry { Root = root, RelativePath = normalizedPath })))
+            return;
 
         lock (SyncRoot)
         {
@@ -57,6 +59,8 @@ public static class PendingUpdateDeletionHelper
                     try
                     {
                         var directoryPath = ResolveSafePath(entry);
+                        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, directoryPath))
+                            continue;
                         // Only remove an empty directory. The update may have written new files to
                         // the same path after this entry was queued; recursively deleting here
                         // would remove those new files on the next launch.
@@ -130,7 +134,7 @@ public static class PendingUpdateDeletionHelper
     {
         if (string.IsNullOrWhiteSpace(relativePath) || Path.IsPathRooted(relativePath))
             throw new InvalidDataException($"无效的待删除目录相对路径：{relativePath}");
-        return relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
+        return relativePath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
             .TrimStart(Path.DirectorySeparatorChar);
     }
 
