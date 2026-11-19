@@ -11,6 +11,16 @@ namespace MFAAvalonia.Services;
 public static class GameOverviewLogParser
 {
     private static readonly string[] SwordFields = ["sword_id", "level", "exp", "ranbu_level", "hp", "hp_max", "fatigue", "protect", "hp_up", "atk", "atk_up", "def", "def_up", "mobile", "mobile_up", "back", "back_up", "scout", "scout_up", "hide", "hide_up", "loyalties", "created_at", "equip_serial_id1", "equip_serial_id2", "equip_serial_id3", "horse_serial_id", "item_id", "artifact_serial_id1", "artifact_serial_id2"];
+    private static readonly Dictionary<string, string> TreasureFragmentNames = new()
+    {
+        ["6101"] = "曜变天目碎片",
+        ["6103"] = "狮子螺钿鞍碎片",
+        ["6105"] = "南蛮胴具足碎片",
+        ["6107"] = "锷·月下梅树透图碎片",
+        ["6109"] = "锷·双鹤图碎片",
+        ["6111"] = "三所物·菊碎片",
+        ["6113"] = "三所物·狮子碎片"
+    };
     public sealed record Value(string Text, string ObservedAt);
     public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
@@ -42,6 +52,7 @@ public static class GameOverviewLogParser
         private readonly Dictionary<string, string> sortieMaps = new();
         private readonly Dictionary<string, string> pendingSortieMaps = new();
         private readonly Dictionary<string, string> sortiePoints = new();
+        private readonly HashSet<string> parallelPastTeams = new();
         private string? pendingSortieTeam;
         private string? pendingSortieAccount;
         private string? activeSortieTeam;
@@ -72,7 +83,7 @@ public static class GameOverviewLogParser
             var start = line.IndexOf('{');
             if (start < 0)
             {
-                if (request && requestRoute.Success && requestRoute.Groups[1].Value == "/sally/sally")
+                if (request && requestRoute.Success && requestRoute.Groups[1].Value is "/sally/sally" or "/sally/parallelpastsally")
                 {
                     var values = RequestValues(line);
                     if (values.TryGetValue("party_no", out var party) && values.TryGetValue("episode_id", out var episode)
@@ -82,7 +93,8 @@ public static class GameOverviewLogParser
                     {
                         pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
                         pendingSortieAccount = Regex.Match(line, @"[?&]uid=(\d+)").Groups[1].Value;
-                        pendingSortieMaps[pendingSortieTeam] = $"{episodeNo}-{fieldNo}";
+                        var isParallelPast = requestRoute.Groups[1].Value == "/sally/parallelpastsally";
+                        pendingSortieMaps[pendingSortieTeam] = (isParallelPast ? "异去 " : "") + $"{episodeNo}-{fieldNo}";
                     }
                 }
                 continue;
@@ -101,7 +113,7 @@ public static class GameOverviewLogParser
             if (request)
             {
                 if (path == "/conquest/start") requests[account] = data;
-                if (path == "/sally/sally")
+                if (path is "/sally/sally" or "/sally/parallelpastsally")
                 {
                     var values = RequestValues(line);
                     if (values.TryGetValue("party_no", out var party) && values.TryGetValue("episode_id", out var episode)
@@ -111,14 +123,15 @@ public static class GameOverviewLogParser
                     {
                         pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
                         pendingSortieAccount = account;
-                        pendingSortieMaps[pendingSortieTeam] = $"{episodeNo}-{fieldNo}";
+                        var isParallelPast = path == "/sally/parallelpastsally";
+                        pendingSortieMaps[pendingSortieTeam] = (isParallelPast ? "异去 " : "") + $"{episodeNo}-{fieldNo}";
                     }
                 }
                 continue;
             }
             if (!Regex.IsMatch(line[..start], @"status:200\b") || data["status"]?.ToString() != "0")
             {
-                if (path == "/sally/sally" && pendingSortieTeam != null)
+                if (path is "/sally/sally" or "/sally/parallelpastsally" && pendingSortieTeam != null)
                 {
                     pendingSortieMaps.Remove(pendingSortieTeam);
                     pendingSortieTeam = null;
@@ -133,6 +146,7 @@ public static class GameOverviewLogParser
                 sortieMaps.Clear();
                 if (pendingSortieAccount != account) pendingSortieMaps.Clear();
                 sortiePoints.Clear();
+                parallelPastTeams.Clear();
                 if (pendingSortieAccount != account)
                 {
                     pendingSortieTeam = null;
@@ -145,10 +159,14 @@ public static class GameOverviewLogParser
             }
             result.Responses++;
             var time = Regex.Match(line, @"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}").Value;
-            if (path == "/sally/sally" && pendingSortieTeam is { } dispatchedTeam)
+            if (path is "/sally/sally" or "/sally/parallelpastsally" && pendingSortieTeam is { } dispatchedTeam)
             {
                 if (pendingSortieMaps.Remove(dispatchedTeam, out var dispatchedMap))
+                {
                     sortieMaps[dispatchedTeam] = dispatchedMap;
+                    if (dispatchedMap.StartsWith("异去 ", StringComparison.Ordinal)) parallelPastTeams.Add(dispatchedTeam);
+                    else parallelPastTeams.Remove(dispatchedTeam);
+                }
                 sortiePoints.Remove(dispatchedTeam);
                 teams[dispatchedTeam] = ("3", null, time);
                 activeSortieTeam = dispatchedTeam;
@@ -157,7 +175,7 @@ public static class GameOverviewLogParser
             }
             if (activeSortieTeam is { } sortieTeam)
             {
-                if (path == "/sally/forward"
+                if (path is "/sally/forward" or "/sally/parallelpastforward"
                     && int.TryParse(data["square_id"]?.ToString(), out var squareId) && squareId > 0)
                 {
                     sortiePoints[sortieTeam] = squareId.ToString(CultureInfo.InvariantCulture);
@@ -169,15 +187,19 @@ public static class GameOverviewLogParser
                     teams[sortieTeam] = ("1", null, time);
                     sortieMaps.Remove(sortieTeam);
                     sortiePoints.Remove(sortieTeam);
+                    parallelPastTeams.Remove(sortieTeam);
                     activeSortieTeam = null;
                 }
             }
             var droppedSwordId = data["result"]?["get_sword_id"] ?? data["get_sword_id"];
             if (path is "/battle/battle" or "/battle/alloutbattle"
                 && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
+            {
+                var dropMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
                 result.HarvestRecords.Add(new HarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
-                    1, getSwordId.ToString(CultureInfo.InvariantCulture), sortieMaps.GetValueOrDefault(activeSortieTeam ?? ""),
-                    activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null, "地图掉落"));
+                    1, getSwordId.ToString(CultureInfo.InvariantCulture), dropMap,
+                    sortiePoints.GetValueOrDefault(activeSortieTeam ?? ""), dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
+            }
             var itemRewards = data["item"] as JArray;
             var battleRewards = data["result"]?["reward"] as JArray;
             if (data["reward"] is JArray || itemRewards != null || battleRewards != null || data["season_reward"] is JArray)
@@ -187,8 +209,9 @@ public static class GameOverviewLogParser
                     "/mission/rewards" => "任务奖励",
                     "/startdash/rewards" or "/startdash/reward" => "活动奖励",
                     "/receive/get" => "活动/邮件奖励",
-                    "/sally/forward" => "地图奖励",
-                    "/battle/battle" => "战斗奖励",
+                    "/sally/forward" => "过去掉落",
+                    "/sally/parallelpastforward" => "异去掉落",
+                    "/battle/battle" => sortieMaps.GetValueOrDefault(activeSortieTeam ?? "")?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落",
                     "/battle/alloutbattle" => "联队战奖励",
                     _ => "未知"
                 };
@@ -205,15 +228,15 @@ public static class GameOverviewLogParser
                     var resultType = data["success"]?.ToString() == "2" ? "大成功" : "成功";
                     rewardSource = "远征奖励 · " + map + " · " + resultType;
                 }
-                else if (path == "/sally/forward")
+                else if (path is "/sally/forward" or "/sally/parallelpastforward")
                 {
                     rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
-                    rewardPoint = activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null;
+                    rewardPoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
                 }
                 else if (path is "/battle/battle" or "/battle/alloutbattle")
                 {
                     rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
-                    rewardPoint = activeSortieTeam == "1" ? sortiePoints.GetValueOrDefault("1") : null;
+                    rewardPoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
                 }
                 AddResourceRewards(data["reward"] as JArray, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(itemRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
@@ -245,12 +268,18 @@ public static class GameOverviewLogParser
                         "5" when itemId != null && names.TryGetValue(itemId, out var resourceName) => resourceName,
                         "1" when itemId == "8" => "加速符",
                         _ => null
-                    } ?? (itemId == null
+                    } ?? (itemId != null && TreasureFragmentNames.TryGetValue(itemId, out var fragmentName)
+                        ? fragmentName
+                        : itemId == null
                         ? $"未知物品（类型 {itemType ?? "未知"}）"
                         : $"未知物品（类型 {itemType ?? "未知"}，ID {itemId}）");
-                    var sourceKind = source.Split(" · ", 2, StringSplitOptions.None)[0];
+                    var isTreasureFragment = itemId != null && TreasureFragmentNames.ContainsKey(itemId);
+                    var recordSource = isTreasureFragment && map?.StartsWith("异去 ", StringComparison.Ordinal) == true
+                        ? "异去掉落"
+                        : source;
+                    var sourceKind = recordSource.Split(" · ", 2, StringSplitOptions.None)[0];
                     var id = $"{account}:{sourceIndex}:{rewardIndex}:{sourceKind}:{itemId ?? "未知"}:{itemType ?? "未知"}:{name}";
-                    result.HarvestRecords.Add(new HarvestEntry(id, "resource", observedAt, name, amount, null, map, point, source));
+                    result.HarvestRecords.Add(new HarvestEntry(id, "resource", observedAt, name, amount, null, map, point, recordSource));
                 }
             }
             void Set(string key, string? value)
@@ -345,6 +374,7 @@ public static class GameOverviewLogParser
                     {
                         var status = item["status"]!.ToString();
                         var finish = item["finished_at"]?.ToString();
+                        if (status == "1" && parallelPastTeams.Contains(number)) status = "3";
                         if (finish == null && teams.TryGetValue(number, out var previous) && previous.Status == status)
                             finish = previous.Finish;
                         teams[number] = (status, finish, time);
@@ -353,6 +383,7 @@ public static class GameOverviewLogParser
                         {
                             sortieMaps.Remove(number);
                             sortiePoints.Remove(number);
+                            parallelPastTeams.Remove(number);
                             if (activeSortieTeam == number) activeSortieTeam = null;
                         }
                     }
