@@ -73,6 +73,7 @@ public static class CaptainSettingsHelper
         "Underground" => "U_换队长",
         "RegimentBattle" => "RB_更换队长",
         "Hanapai" => "HP_换队长",
+        "Hyakki" => "HK_换队长",
         "EdoCastle" => "EC_换队长",
         "TacticalTraining" => "TT_换队长",
         _ => null

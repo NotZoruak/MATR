@@ -4561,7 +4561,7 @@ public class MaaProcessor
         }
 
         // 5. 同步后勤任务复用当前实例的远征队伍、修刀、内番和刷新间隔配置
-        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "RegimentBattle" or "Hanapai" or "TacticalTraining" or "EdoCastle" or "DailyTask")
+        if (task.InterfaceItem?.Entry is "Sortie" or "Underground" or "RegimentBattle" or "Hanapai" or "Hyakki" or "TacticalTraining" or "EdoCastle" or "DailyTask")
         {
             var syncExpEnabled = task.InterfaceItem.Option
                 ?.FirstOrDefault(o => (o.Name ?? string.Empty).EndsWith("同步远征")
@@ -4600,6 +4600,7 @@ public class MaaProcessor
                             "Sortie" => "S_NavigateToSortie",
                             "Underground" => "U_NavigateToActivity",
                             "Hanapai" => "HP_NavigateToActivity",
+                            "Hyakki" => "HK_NavigateToActivity",
                             "TacticalTraining" => "TT_NavigateToActivity",
                             "EdoCastle" => "EC_NavigateToActivity",
                             "DailyTask" => "DT_ProjectRouter",

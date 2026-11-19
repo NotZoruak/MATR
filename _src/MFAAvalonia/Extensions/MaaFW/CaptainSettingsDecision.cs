@@ -16,6 +16,7 @@ public static class CaptainSettingsDecision
         "Underground" => "U_DragCaptain",
         "RegimentBattle" => "RB_DragCaptain",
         "Hanapai" => "HP_DragCaptain",
+        "Hyakki" => "HK_DragCaptain",
         "EdoCastle" => "EC_DragCaptain",
         "TacticalTraining" => "TT_DragCaptain",
         _ => null
@@ -30,6 +31,7 @@ public static class CaptainSettingsDecision
         "Underground" => "U_跳过位置",
         "RegimentBattle" => "RB_跳过位置",
         "Hanapai" => "HP_跳过位置",
+        "Hyakki" => "HK_跳过位置",
         "EdoCastle" => "EC_跳过位置",
         _ => null
     };
