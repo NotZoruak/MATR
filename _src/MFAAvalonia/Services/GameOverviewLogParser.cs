@@ -52,7 +52,6 @@ public static class GameOverviewLogParser
         private readonly Dictionary<string, string> sortieMaps = new();
         private readonly Dictionary<string, string> pendingSortieMaps = new();
         private readonly Dictionary<string, string> sortiePoints = new();
-        private readonly HashSet<string> parallelPastTeams = new();
         private string? pendingSortieTeam;
         private string? pendingSortieAccount;
         private string? activeSortieTeam;
@@ -146,7 +145,6 @@ public static class GameOverviewLogParser
                 sortieMaps.Clear();
                 if (pendingSortieAccount != account) pendingSortieMaps.Clear();
                 sortiePoints.Clear();
-                parallelPastTeams.Clear();
                 if (pendingSortieAccount != account)
                 {
                     pendingSortieTeam = null;
@@ -164,8 +162,6 @@ public static class GameOverviewLogParser
                 if (pendingSortieMaps.Remove(dispatchedTeam, out var dispatchedMap))
                 {
                     sortieMaps[dispatchedTeam] = dispatchedMap;
-                    if (dispatchedMap.StartsWith("异去 ", StringComparison.Ordinal)) parallelPastTeams.Add(dispatchedTeam);
-                    else parallelPastTeams.Remove(dispatchedTeam);
                 }
                 sortiePoints.Remove(dispatchedTeam);
                 teams[dispatchedTeam] = ("3", null, time);
@@ -187,7 +183,6 @@ public static class GameOverviewLogParser
                     teams[sortieTeam] = ("1", null, time);
                     sortieMaps.Remove(sortieTeam);
                     sortiePoints.Remove(sortieTeam);
-                    parallelPastTeams.Remove(sortieTeam);
                     activeSortieTeam = null;
                 }
             }
@@ -374,7 +369,9 @@ public static class GameOverviewLogParser
                     {
                         var status = item["status"]!.ToString();
                         var finish = item["finished_at"]?.ToString();
-                        if (status == "1" && parallelPastTeams.Contains(number)) status = "3";
+                        if (status == "1" && activeSortieTeam == number
+                            && sortieMaps.GetValueOrDefault(number)?.StartsWith("异去 ", StringComparison.Ordinal) == true)
+                            status = "3";
                         if (finish == null && teams.TryGetValue(number, out var previous) && previous.Status == status)
                             finish = previous.Finish;
                         teams[number] = (status, finish, time);
@@ -383,7 +380,6 @@ public static class GameOverviewLogParser
                         {
                             sortieMaps.Remove(number);
                             sortiePoints.Remove(number);
-                            parallelPastTeams.Remove(number);
                             if (activeSortieTeam == number) activeSortieTeam = null;
                         }
                     }
