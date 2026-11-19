@@ -187,13 +187,14 @@ public partial class HarvestRecordsView : UserControl
         if (owner == null) return;
         var result = await SukiMessageBox.ShowDialog(owner, new SukiMessageBoxHost
         {
-            Content = "确定清除所有账号保存的刀剑与资源记录？此操作无法撤销。",
+            Content = "确定清除当前账号保存的刀剑与资源记录？此操作无法撤销。",
             ActionButtonsPreset = SukiMessageBoxButtons.YesNo,
             IconPreset = SukiMessageBoxIcons.Warning,
         }, new SukiMessageBoxOptions { Title = "清除收获记录" });
         if (result is not SukiMessageBoxResult.Yes) return;
         _records.Clear();
-        foreach (var path in Directory.GetFiles(_directory, "harvest-*.json")) File.Delete(path);
+        var path = StorePath();
+        if (File.Exists(path)) File.Delete(path);
         ShowTable();
     }
 
