@@ -1,5 +1,5 @@
 ﻿param(
-[string]$Version = "v1.0.0-beta.1",
+[string]$Version = "v1.0.0-beta.2",
     [string]$PublishDir = ""
 )
 
@@ -65,10 +65,6 @@ foreach ($name in @("MATR.exe", "MATR.dll", "libloader.dll")) {
         throw "发布产物缺失: $SourceDir\$name（请先执行 dotnet publish）"
     }
 }
-
-# 安装包只携带三份官方默认扩展，不打包本机用户额外安装的包。
-python (Join-Path $Root 'tools/build_extensions.py') --no-build --output (Join-Path $TempDir 'extension')
-if ($LASTEXITCODE -ne 0) { throw '默认扩展包生成失败，请先构建 MATR.DefaultExtensions。' }
 
 # Copy files
 Copy-Item "$SourceDir\MATR.exe" $TempDir
