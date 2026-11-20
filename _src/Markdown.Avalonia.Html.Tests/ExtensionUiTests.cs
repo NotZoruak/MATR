@@ -26,6 +26,53 @@ public sealed class ExtensionUiTests
     internal static readonly HeadlessUnitTestSession Session = HeadlessUnitTestSession.StartNew(typeof(ExtensionTestAppBuilder));
 
     [Fact]
+    public async Task 部队生存颜色随伤势和主题更新()
+    {
+        await Session.Dispatch(() =>
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "MATR-team-health-" + Guid.NewGuid().ToString("N"));
+            var view = new TeamStatusView(directory);
+            var snapshot = new GameOverviewLogParser.Snapshot { HasFullSwordPool = true };
+            foreach (var (serial, hp) in new[] { ("1", 30), ("2", 65), ("3", 100) })
+            {
+                snapshot.HeldSwords[serial] = JObject.FromObject(new { sword_id = 3, hp, hp_max = 100 });
+                snapshot.SwordTeams[serial] = "1";
+                snapshot.SwordTeamPositions[serial] = serial;
+            }
+            var window = new Window { Width = 1400, Height = 700, Content = view };
+            try
+            {
+                view.SetSnapshot(snapshot);
+                window.Show();
+                ((Button)view.FindControl<Grid>("TeamCards")!.Children[0]).RaiseEvent(
+                    new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+                foreach (var (theme, critical, warning) in new[]
+                {
+                    (global::Avalonia.Styling.ThemeVariant.Light, "#C62828", "#C77700"),
+                    (global::Avalonia.Styling.ThemeVariant.Dark, "#EF5350", "#FFB74D")
+                })
+                {
+                    window.RequestedThemeVariant = theme;
+                    window.UpdateLayout();
+                    Dispatcher.UIThread.RunJobs();
+                    var texts = view.FindControl<DataGrid>("TeamGrid")!.GetVisualDescendants().OfType<TextBlock>().ToArray();
+                    Assert.Equal(Color.Parse(critical), Assert.IsAssignableFrom<ISolidColorBrush>(texts.Single(x => x.Text == "30/100").Foreground).Color);
+                    Assert.Equal(Color.Parse(warning), Assert.IsAssignableFrom<ISolidColorBrush>(texts.Single(x => x.Text == "65/100").Foreground).Color);
+                }
+                snapshot.HeldSwords["1"]["hp"] = 100;
+                snapshot.HeldSwords["2"]["hp"] = 30;
+                view.SetSnapshot(snapshot);
+                window.UpdateLayout();
+                Dispatcher.UIThread.RunJobs();
+                var updated = view.FindControl<DataGrid>("TeamGrid")!.GetVisualDescendants().OfType<TextBlock>().ToArray();
+                Assert.Equal(Color.Parse("#EF5350"), Assert.IsAssignableFrom<ISolidColorBrush>(updated.Single(x => x.Text == "30/100").Foreground).Color);
+                Assert.All(updated.Where(x => x.Text == "100/100"), text => Assert.NotEqual(Color.Parse("#EF5350"), Assert.IsAssignableFrom<ISolidColorBrush>(text.Foreground).Color));
+            }
+            finally { window.Close(); }
+        }, CancellationToken.None);
+    }
+
+    [Fact]
     public async Task 默认独立页面能够真实挂载且保护表头紧凑完整与满值金色生效()
     {
         await Session.Dispatch(() =>
