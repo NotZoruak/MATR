@@ -209,12 +209,12 @@
       }
     },
     "next": [
-      "[Anchor]HK_RoundDone", 
-      "HK_CheckGoalPt", 
+      "[Anchor]HK_RoundDone",
+      "HK_CheckGoalPt",
       "HK_StrongEnemy",
-      "HK_SelectDefenseLineDifficulty", 
-      "HK_SelectEnemyTeamDifficulty", 
-      "HK_ExitWrongDefenseLineDifficulty", 
+      "HK_SelectDefenseLineDifficulty",
+      "HK_SelectEnemyTeamDifficulty",
+      "HK_ExitWrongDefenseLineDifficulty",
       "HK_DetectWhereAmI"
     ]
   },
@@ -546,7 +546,7 @@
       "type": "TemplateMatch",
       "param": {
         "roi": [427, 69, 388, 52],
-        "template": "Activity/百鬼迎击.png",
+        "template": "Activity/秘宝之里.png",
         "green_mask": true,
         "threshold": [0.97]
       }
