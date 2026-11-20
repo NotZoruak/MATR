@@ -211,6 +211,7 @@
     "next": [
       "[Anchor]HK_RoundDone", 
       "HK_CheckGoalPt", 
+      "HK_StrongEnemy",
       "HK_SelectDefenseLineDifficulty", 
       "HK_SelectEnemyTeamDifficulty", 
       "HK_ExitWrongDefenseLineDifficulty", 
@@ -233,6 +234,23 @@
       "custom_action": "CompleteCurrentTaskAction",
       "custom_action_param": {"reason": "目标 PT 已达成"}
     }
+  },
+  "HK_StrongEnemy": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1017, 433, 161, 31],
+        "expected": ["请选择迎击目标"],
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1145, 528, 23, 20]
+      }
+    },
+    "next": ["HK_StrongEnemy", "HK_IsTeamSelect", "HK_DetectWhereAmI"]
   },
   "HK_SelectDefenseLineDifficulty": {
     "recognition": {
