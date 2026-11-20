@@ -40,6 +40,9 @@ def main():
     preview = args.output / 'overview-preview.matrext'
     if preview.is_file():
         preview.unlink()
+    duty_package = args.output / 'duty-records.matrext'
+    if duty_package.is_file():
+        duty_package.unlink()
 
 if __name__ == '__main__':
     main()

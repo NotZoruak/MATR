@@ -29,6 +29,7 @@ public static class GameOverviewLogParser
     public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
     public sealed record HarvestEntry(string Id, string Kind, string Time, string Name, int Amount, string? SwordId, string? Map, string? Point, string Source);
+    public sealed record DutyRecord(string Id, string Time, string DutyType, string SwordSerial, string SwordId, int UpType, int UpValue, bool Success, bool IsMaximum, JObject SwordData);
     public sealed class Snapshot
     {
         public string Account { get; set; } = "";
@@ -41,6 +42,7 @@ public static class GameOverviewLogParser
         public Dictionary<string, string> SwordTeamPositions { get; } = new();
         public Dictionary<string, string> EquipmentKinds { get; } = new();
         public List<HarvestEntry> HarvestRecords { get; } = new();
+        public List<DutyRecord> DutyRecords { get; } = new();
         public bool HasFullSwordPool { get; set; }
         public string SwordObservedAt { get; set; } = "";
         public int Responses { get; set; }
@@ -423,6 +425,27 @@ public static class GameOverviewLogParser
             {
                 if (path == "/duty/complete")
                 {
+                    if (data["param"] is JObject dutyParams && data["sword"] is JObject dutySwords)
+                    {
+                        var dutyKinds = new Dictionary<string, string>(StringComparer.Ordinal);
+                        foreach (var (prefix, label) in new[] { ("horse", "饲马"), ("field", "耕作"), ("bout", "手合") })
+                            for (var slot = 1; slot <= 2; slot++)
+                                if (data[$"{prefix}_id{slot}"] is { } member) dutyKinds[member.ToString()] = label;
+                        foreach (var pair in dutyParams.Properties())
+                        {
+                            if (pair.Value is not JObject growth || dutySwords[pair.Name] is not JObject sword
+                                || !int.TryParse(growth["up_type"]?.ToString(), out var upType)
+                                || !int.TryParse(growth["up_value"]?.ToString(), out var upValue)
+                                || sword["sword_id"] == null) continue;
+                            var serial = sword["serial_id"]?.ToString() ?? pair.Name;
+                            var swordId = sword["sword_id"]!.ToString();
+                            var timeKey = data["now"]?.ToString() ?? time;
+                            result.DutyRecords.Add(new DutyRecord(
+                                $"{account}:{timeKey}:{serial}", timeKey, dutyKinds.GetValueOrDefault(pair.Name, "内番"),
+                                serial, swordId, upType, upValue, growth.Value<bool?>("success") ?? false,
+                                growth.Value<bool?>("is_max") ?? false, (JObject)sword.DeepClone()));
+                        }
+                    }
                     dutyDetails = null;
                     result.WorkItems["Duty"] = [];
                     Set("Duty", "未使用");
@@ -510,6 +533,7 @@ public static class GameOverviewLogParser
             foreach (var pair in result.SwordTeamPositions) copy.SwordTeamPositions[pair.Key] = pair.Value;
             foreach (var pair in result.EquipmentKinds) copy.EquipmentKinds[pair.Key] = pair.Value;
             copy.HarvestRecords.AddRange(result.HarvestRecords);
+            copy.DutyRecords.AddRange(result.DutyRecords.Select(record => record with { SwordData = (JObject)record.SwordData.DeepClone() }));
             return copy;
         }
     }
