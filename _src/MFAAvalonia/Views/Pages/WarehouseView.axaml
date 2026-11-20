@@ -43,7 +43,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="pages:WarehouseCoreResourceViewModel">
-                            <Border Background="#F4F5F7" BorderBrush="#D8DCE2" BorderThickness="1" CornerRadius="5" Padding="4,3" Margin="0,0,6,0">
+                            <Border Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiBorderBrush}" BorderThickness="1" CornerRadius="5" Padding="4,3" Margin="0,0,6,0">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4" VerticalAlignment="Center">
                                     <Image Source="{Binding Icon}" Width="24" Height="24" Stretch="Uniform" VerticalAlignment="Center" />
                                     <NumericUpDown Value="{Binding Count, Mode=TwoWay}" Minimum="0" Maximum="{Binding Maximum}"
@@ -62,7 +62,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="pages:WarehouseCoreResourceViewModel">
-                            <Border Background="#F4F5F7" BorderBrush="#D8DCE2" BorderThickness="1" CornerRadius="5" Padding="4,3" Margin="0,0,6,0">
+                            <Border Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiBorderBrush}" BorderThickness="1" CornerRadius="5" Padding="4,3" Margin="0,0,6,0">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
                                     <NumericUpDown Value="{Binding Count, Mode=TwoWay}" Minimum="0" Maximum="{Binding Maximum}"

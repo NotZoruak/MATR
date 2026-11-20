@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v1.0.0-beta.2",
+  "version": "v1.0.0-beta.4",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v1.0.0-beta.2 | 刀剑乱舞小助手",
+  "custom_title": "MATR v1.0.0-beta.4 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -195,6 +195,43 @@
         "HP_同步远征"
       ],
       "description": "秘宝之里/花牌 活动自动化出阵。\n\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **购买门票**：通行令牌不足时自动购买门票，一次购买90+（活动结束后，未使用的非免费门票会退钱，不会损失小判）；未启用时，检测到令牌不足会停止任务。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+    },
+    {
+      "name": "百鬼强化",
+      "entry": "HyakkiEnhance",
+      "default_check": false,
+      "repeatable": true,
+      "repeat_count": 1,
+      "option": [
+        "HE_目标PT",
+        "HE_选择部队",
+        "HE_部队记录",
+        "HE_选择难度",
+        "HE_疲劳处理",
+        "HE_换队长",
+        "HE_购买门票",
+        "HE_同步远征"
+      ],
+      "description": "百鬼强化 活动自动化出阵。\n\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **购买门票**：通行令牌不足时自动购买门票，一次购买90+（活动结束后，未使用的非免费门票会退钱，不会损失小判）；未启用时，检测到令牌不足会停止任务。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
+    },
+    {
+      "name": "百鬼迎击",
+      "entry": "Hyakki",
+      "default_check": false,
+      "repeatable": true,
+      "repeat_count": 1,
+      "option": [
+        "HK_目标PT",
+        "HK_选择部队",
+        "HK_部队记录",
+        "HK_防卫线难度",
+        "HK_敌人部队难度",
+        "HK_疲劳处理",
+        "HK_换队长",
+        "HK_购买门票",
+        "HK_同步远征"
+      ],
+      "description": "百鬼迎击 活动自动化出阵。\n\n* **疲劳处理**：该功能较脆弱，建议在有人值守时使用，需要同时开启「更换队长」。使用前请将部队保存至对应的记录槽。\n* **更换队长**：可点击右侧齿轮配置需要跳过疲劳检测与更换的位置\n* **购买门票**：通行令牌不足时自动购买门票，一次购买90+（活动结束后，未使用的非免费门票会退钱，不会损失小判）；未启用时，检测到令牌不足会停止任务。\n* **同步后勤**：使用「本丸后勤」任务中的设置，回本丸后自动检查队伍状态并派遣远征，同时处理修刀与内番。请确保使用的队伍在远征任务中设置为休息。"
     },
     {
       "name": "江户潜入",
@@ -10717,6 +10754,1161 @@
           }
         }
       ]
+    },
+    "HK_目标PT": {
+      "name": "HK_目标PT",
+      "label": "达到目标PT后跳过任务",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["HK_目标总PT", "HK_日期计划"],
+          "pipeline_override": {
+            "HK_CheckGoalPt": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HK_目标总PT": {
+      "name": "HK_目标总PT",
+      "label": "目标总 PT",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "total_goal",
+          "label": "目标总 PT",
+          "default": "300000",
+          "pipeline_type": "int"
+        }
+      ]
+    },
+    "HK_日期计划": {
+      "name": "HK_日期计划",
+      "label": "使用日期计划",
+      "type": "switch",
+      "inline_sub_options": true,
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["HK_计划开始日期", "HK_计划截至日期"]
+        }
+      ]
+    },
+    "HK_计划开始日期": {
+      "name": "HK_计划开始日期",
+      "label": "开始日期",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "start_date",
+          "label": "开始日期",
+          "default": "",
+          "control": "date"
+        }
+      ]
+    },
+    "HK_计划截至日期": {
+      "name": "HK_计划截至日期",
+      "label": "截至日期",
+      "description": "开启后目标会随日期线性放宽。\n今日目标 = 向上取整(总目标 × 已过天数 ÷ 总天数)，开始日与截至日均计入天数。\n每天 5:00 切换计划日，5:00 前仍按前一天计算。当日早于开始日期时不作检查，晚于截至日期时固定按总目标比较。\n活动多在早上 5:00 结束，建议将截至日期填为活动实际结束日期的前一天。",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "end_date",
+          "label": "截至日期",
+          "default": "",
+          "control": "date"
+        }
+      ]
+    },
+    "HK_选择部队": {
+      "name": "HK_选择部队",
+      "label": "选择部队",
+      "default_case": "部队一",
+      "cases": [
+        {
+          "name": "部队一",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "HK_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "HK_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队二",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "HK_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "HK_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队三",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "HK_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "HK_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队四",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "HK_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "HK_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队五",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "HK_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "HK_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "HK_部队记录": {
+      "name": "HK_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            }
+          }
+        }
+      ]
+    },
+    "HK_疲劳处理": {
+      "name": "HK_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {
+          "name": "无",
+          "DisplayName": "无"
+        },
+        {
+          "name": "刷花",
+          "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
+          "pipeline_override": {
+            "HK_FatigueCheck": {"enabled": true}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
+          "pipeline_override": {
+            "HK_FatigueCheck": {"enabled": true},
+            "HK_CompleteCurrentTaskAfterFatigue": {"enabled": true}
+          }
+        }
+      ],
+      "inline_sub_options": true
+    },
+    "HK_换队长": {
+      "name": "HK_换队长",
+      "label": "更换队长",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "option": ["HK_跳过位置"],
+          "pipeline_override": {
+            "HK_DragCaptain": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HK_购买门票": {
+      "name": "HK_购买门票",
+      "label": "购买门票",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HK_IsTicketShortagePopup": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [452, 452, 88, 34]
+                }
+              },
+              "post_wait_freezes": {
+                "time": 100,
+                "target": [452, 452, 88, 34]
+              }
+            },
+            "HK_CompleteCurrentTaskAfterNoTicket": {"enabled": false}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HK_同步远征": {
+      "name": "HK_同步远征",
+      "label": "同步后勤",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HK_IsHome": {
+              "next": ["Expedition"]
+            },
+            "E_SelectMap1": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 1}
+              },
+              "next": ["E_ConfirmDispatch1"]
+            },
+            "E_ClickSmallMap1": {"enabled": false},
+            "E_SelectMap2": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 2}
+              },
+              "next": ["E_ConfirmDispatch2"]
+            },
+            "E_ClickSmallMap2": {"enabled": false},
+            "E_SelectMap3": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 3}
+              },
+              "next": ["E_ConfirmDispatch3"]
+            },
+            "E_ClickSmallMap3": {"enabled": false},
+            "E_SelectMap4": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 4}
+              },
+              "next": ["E_ConfirmDispatch4"]
+            },
+            "E_ClickSmallMap4": {"enabled": false},
+            "E_SelectMap5": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 5}
+              },
+              "next": ["E_ConfirmDispatch5"]
+            },
+            "E_ClickSmallMap5": {"enabled": false},
+            "E_VerifyScreen1": {
+              "on_error": ["E_CheckTeamStatus"]
+            },
+            "E_VerifyScreen2": {
+              "on_error": ["E_CheckTeamStatus"]
+            },
+            "E_VerifyScreen3": {
+              "on_error": ["E_CheckTeamStatus"]
+            },
+            "E_VerifyScreen4": {
+              "on_error": ["E_CheckTeamStatus"]
+            },
+            "E_VerifyScreen5": {
+              "on_error": ["E_CheckTeamStatus"]
+            },
+            "E_ClickBackToHome": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1037, 169, 110, 44]
+                }
+              },
+              "next": ["HK_WaitRefresh"],
+              "on_error": ["HK_DetectWhereAmI"]
+            },
+            "E_AllTeamsBusy": {
+              "next": ["E_TimerStart"]
+            },
+            "E_TimerStart": {
+              "next": ["HK_NavigateToActivity"]
+            },
+            "E_CheckTimerExpired": {
+              "next": ["E_GoHome"]
+            },
+            "HK_WaitRefresh": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HK_跳过位置": {
+      "name": "HK_跳过位置",
+      "label": "跳过位置",
+      "type": "checkbox",
+      "description": "换队长时跳过指定位置。",
+      "cases": [
+        {"name": "位置一"},
+        {"name": "位置二"},
+        {"name": "位置三"},
+        {"name": "位置四"},
+        {"name": "位置五"},
+        {"name": "位置六"}
+      ],
+      "default_case": []
+    },
+    "HK_防卫线难度": {
+      "name": "HK_防卫线难度",
+      "label": "防卫线难度",
+      "default_case": "低",
+      "cases": [
+        {
+          "name": "高",
+          "pipeline_override": {
+            "HK_SelectDefenseLineDifficulty": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1044, 346, 118, 56]
+                }
+              }
+            },
+            "HK_SelectEnemyTeamDifficulty": {
+              "recognition": {
+                "type": "OCR",
+                "param": {"expected": "高难度"}
+              }
+            },
+            "HK_ExitWrongDefenseLineDifficulty": {
+              "recognition": {
+                "type": "OCR",
+                "param": {
+                  "expected": ["低难度", "中难度"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "中",
+          "pipeline_override": {
+            "HK_SelectDefenseLineDifficulty": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1040, 474, 118, 56]
+                }
+              }
+            },
+            "HK_SelectEnemyTeamDifficulty": {
+              "recognition": {
+                "type": "OCR",
+                "param": {"expected": "中难度"}
+              }
+            },
+            "HK_ExitWrongDefenseLineDifficulty": {
+              "recognition": {
+                "type": "OCR",
+                "param": {
+                  "expected": ["低难度", "高难度"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "低",
+          "pipeline_override": {
+            "HK_SelectDefenseLineDifficulty": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1052, 601, 117, 55]
+                }
+              }
+            },
+            "HK_SelectEnemyTeamDifficulty": {
+              "recognition": {
+                "type": "OCR",
+                "param": {"expected": "低难度"}
+              }
+            },
+            "HK_ExitWrongDefenseLineDifficulty": {
+              "recognition": {
+                "type": "OCR",
+                "param": {
+                  "expected": ["中难度", "高难度"]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "HK_敌人部队难度": {
+      "name": "HK_敌人部队难度",
+      "label": "敌人部队难度",
+      "default_case": "丙",
+      "cases": [
+        {
+          "name": "甲",
+          "pipeline_override": {
+            "HK_SelectEnemyTeamDifficulty": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1129, 414, 18, 14]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "乙",
+          "pipeline_override": {
+            "HK_SelectEnemyTeamDifficulty": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1109, 473, 18, 22]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "丙",
+          "pipeline_override": {
+            "HK_SelectEnemyTeamDifficulty": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1106, 642, 10, 15]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "HE_目标PT": {
+      "name": "HE_目标PT",
+      "label": "达到目标PT后跳过任务",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["HE_目标总PT", "HE_日期计划"],
+          "pipeline_override": {
+            "HE_CheckGoalPt": {"enabled": true}
+          }
+        }
+      ]
+    },
+    "HE_目标总PT": {
+      "name": "HE_目标总PT",
+      "label": "目标总 PT",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "total_goal",
+          "label": "目标总 PT",
+          "default": "300000",
+          "pipeline_type": "int"
+        }
+      ]
+    },
+    "HE_日期计划": {
+      "name": "HE_日期计划",
+      "label": "使用日期计划",
+      "type": "switch",
+      "inline_sub_options": true,
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "No",
+          "label": "关闭"
+        },
+        {
+          "name": "Yes",
+          "label": "开启",
+          "option": ["HE_计划开始日期", "HE_计划截至日期"]
+        }
+      ]
+    },
+    "HE_计划开始日期": {
+      "name": "HE_计划开始日期",
+      "label": "开始日期",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "start_date",
+          "label": "开始日期",
+          "default": "",
+          "control": "date"
+        }
+      ]
+    },
+    "HE_计划截至日期": {
+      "name": "HE_计划截至日期",
+      "label": "截至日期",
+      "description": "开启后目标会随日期线性放宽。\n今日目标 = 向上取整(总目标 × 已过天数 ÷ 总天数)，开始日与截至日均计入天数。\n每天 5:00 切换计划日，5:00 前仍按前一天计算。当日早于开始日期时不作检查，晚于截至日期时固定按总目标比较。\n活动多在早上 5:00 结束，建议将截至日期填为活动实际结束日期的前一天。",
+      "type": "input",
+      "inputs": [
+        {
+          "name": "end_date",
+          "label": "截至日期",
+          "default": "",
+          "control": "date"
+        }
+      ]
+    },
+    "HE_选择难度": {
+      "name": "HE_选择难度",
+      "label": "选择难度",
+      "default_case": "超难",
+      "cases": [
+        {
+          "name": "易",
+          "pipeline_override": {
+            "HE_SelectDifficulty": {
+              "target": [191, 308, 62, 3]
+            }
+          }
+        },
+        {
+          "name": "普",
+          "pipeline_override": {
+            "HE_SelectDifficulty": {
+              "target": [495, 307, 42, 3]
+            }
+          }
+        },
+        {
+          "name": "难",
+          "pipeline_override": {
+            "HE_SelectDifficulty": {
+              "target": [804, 307, 53, 3]
+            }
+          }
+        },
+        {
+          "name": "超难",
+          "pipeline_override": {
+            "HE_SelectDifficulty": {
+              "target": [984, 307, 48, 3]
+            }
+          }
+        }
+      ]
+    },
+    "HE_选择部队": {
+      "name": "HE_选择部队",
+      "label": "选择部队",
+      "default_case": "部队一",
+      "cases": [
+        {
+          "name": "部队一",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "HE_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [108, 76, 106, 6]
+              },
+              "target": [154, 93, 1, 1]
+            },
+            "HE_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [89, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队二",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "HE_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [229, 76, 105, 6]
+              },
+              "target": [282, 94, 1, 1]
+            },
+            "HE_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [210, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队三",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "HE_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [351, 76, 106, 6]
+              },
+              "target": [398, 91, 1, 1]
+            },
+            "HE_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [332, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队四",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "HE_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [471, 76, 106, 6]
+              },
+              "target": [519, 89, 1, 1]
+            },
+            "HE_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [453, 109, 1, 1]
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "部队五",
+          "pipeline_override": {
+            "TF_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "HE_IsTeamSelect": {
+              "post_wait_freezes": {
+                "target": [594, 75, 106, 7]
+              },
+              "target": [635, 91, 1, 1]
+            },
+            "HE_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            },
+            "TF_ConfirmTeam": {
+              "recognition": {
+                "param": {
+                  "roi": [576, 109, 1, 1]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "HE_部队记录": {
+      "name": "HE_部队记录",
+      "label": "部队记录槽",
+      "description": "选择恢复编队时使用的部队记录，与上方操作部队独立设置。",
+      "default_case": "记录一",
+      "cases": [
+        {
+          "name": "记录一",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 140, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 140, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录二",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 250, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 250, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录三",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 360, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 360, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录四",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 465, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 465, 30, 71]
+            }
+          }
+        },
+        {
+          "name": "记录五",
+          "pipeline_override": {
+            "SelectRecordSlot": {
+              "target": [1209, 575, 30, 71]
+            },
+            "TF_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            },
+            "THR_UseRecord_Step2": {
+              "target": [1209, 575, 30, 71]
+            }
+          }
+        }
+      ]
+    },
+    "HE_疲劳处理": {
+      "name": "HE_疲劳处理",
+      "label": "疲劳处理",
+      "default_case": "无",
+      "cases": [
+        {
+          "name": "无",
+          "DisplayName": "无"
+        },
+        {
+          "name": "刷花",
+          "DisplayName": "刷花",
+          "option": ["疲劳处理刷花阈值"],
+          "pipeline_override": {
+            "HE_FatigueCheck": {"enabled": true}
+          }
+        },
+        {
+          "name": "停止",
+          "DisplayName": "停止",
+          "option": ["疲劳处理刷花阈值"],
+          "pipeline_override": {
+            "HE_FatigueCheck": {"enabled": true},
+            "HE_CompleteCurrentTaskAfterFatigue": {"enabled": true}
+          }
+        }
+      ],
+      "inline_sub_options": true
+    },
+    "HE_换队长": {
+      "name": "HE_换队长",
+      "label": "更换队长",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "option": ["HE_跳过位置"],
+          "pipeline_override": {
+            "HE_DragCaptain": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HE_购买门票": {
+      "name": "HE_购买门票",
+      "label": "购买门票",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HE_IsTicketShortagePopup": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [452, 452, 88, 34]
+                }
+              },
+              "post_wait_freezes": {
+                "time": 100,
+                "target": [452, 452, 88, 34]
+              }
+            },
+            "HE_CompleteCurrentTaskAfterNoTicket": {"enabled": false}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HE_同步远征": {
+      "name": "HE_同步远征",
+      "label": "同步后勤",
+      "type": "checkbox",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HE_IsHome": {
+              "next": ["Expedition"]
+            },
+            "E_SelectMap1": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 1}
+              },
+              "next": ["E_ConfirmDispatch1"]
+            },
+            "E_ClickSmallMap1": {"enabled": false},
+            "E_SelectMap2": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 2}
+              },
+              "next": ["E_ConfirmDispatch2"]
+            },
+            "E_ClickSmallMap2": {"enabled": false},
+            "E_SelectMap3": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 3}
+              },
+              "next": ["E_ConfirmDispatch3"]
+            },
+            "E_ClickSmallMap3": {"enabled": false},
+            "E_SelectMap4": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 4}
+              },
+              "next": ["E_ConfirmDispatch4"]
+            },
+            "E_ClickSmallMap4": {"enabled": false},
+            "E_SelectMap5": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "ExpeditionMapSelectAction",
+                "custom_action_param": {"team": 5}
+              },
+              "next": ["E_ConfirmDispatch5"]
+            },
+            "E_ClickSmallMap5": {"enabled": false},
+            "E_ClickBackToHome": {
+              "action": {
+                "type": "Click",
+                "param": {
+                  "target": [1037, 169, 110, 44]
+                }
+              },
+              "next": ["HE_WaitRefresh"]
+            },
+            "E_AllTeamsBusy": {
+              "next": ["E_TimerStart"]
+            },
+            "E_TimerStart": {
+              "next": ["HE_NavigateToActivity"]
+            },
+            "E_CheckTimerExpired": {
+              "next": ["E_GoHome"]
+            },
+            "HE_WaitRefresh": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HE_跳过位置": {
+      "name": "HE_跳过位置",
+      "label": "跳过位置",
+      "type": "checkbox",
+      "description": "换队长时跳过指定位置。",
+      "cases": [
+        {"name": "位置一"},
+        {"name": "位置二"},
+        {"name": "位置三"},
+        {"name": "位置四"},
+        {"name": "位置五"},
+        {"name": "位置六"}
+      ],
+      "default_case": []
     }
   },
   "github": "https://github.com/NotZoruak/MATR"

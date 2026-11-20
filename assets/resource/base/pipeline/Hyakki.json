@@ -1,0 +1,562 @@
+{
+  "Hyakki": {
+    "anchor": {"HK_RoundDone": ""},
+    "next": ["HK_DetectWhereAmI"]
+  },
+  "HK_DetectWhereAmI": {
+    "pre_delay": 0,
+    "anchor": {
+      "Hub": "HK_DetectWhereAmI",
+      "PublicFlowDone": "HK_DetectWhereAmI",
+      "SupplyDone": "HK_IsPreSortieConfirm",
+      "GrindDone": "HK_DetectWhereAmI"
+    },
+    "timeout": 120000,
+    "next": [
+      "HK_IsMarching",
+      "HK_IsEventPage1",
+      "HK_IsEventPage2",
+      "HK_CheckHomeBrightness",
+      "[JumpBack]IsFatigueRecoveryPage",
+      "HK_IsTeamSelect",
+      "HK_IsSwordDropColor",
+      "[JumpBack]IsExpeditionReturn_Exp",
+      "[JumpBack]IsExpeditionReturn_Title",
+      "[JumpBack]IsInSortie",
+      "[JumpBack]IsInMenu",
+      "[JumpBack]IsBattleResult_Exp",
+      "[JumpBack]IsBattleResult_Title",
+      "[JumpBack]IsAnnouncementPopup",
+      "IsTeamStatusPanel",
+      "[JumpBack]IsTrainingLetter",
+      "[JumpBack]IsLoginReward",
+      "[JumpBack]IsAdvertisementPopup",
+      "[JumpBack]IsGameIcon",
+      "[JumpBack]IsServerSelection",
+      "[JumpBack]IsLoginButton",
+      "[JumpBack]IsOtherDeviceLogin",
+      "[JumpBack]IsSystemErrorFeedback",
+      "[JumpBack]IsGameUpdatePopup",
+      "[JumpBack]IsInGameUpdatePopup",
+      "[JumpBack]IsInternalReport",
+      "[JumpBack]IsTrainingApplication",
+      "[JumpBack]IsNetworkRequestTimeout",
+      "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]FallbackWait"
+    ],
+    "on_error": ["HK_RestartGame"]
+  },
+  "HK_CheckHomeBrightness": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [66, 58, 11, 13],
+        "lower": [23, 95, 15],
+        "upper": [40, 155, 30]
+      }
+    },
+    "next": ["HK_IsHome", "HK_DetectWhereAmI"]
+  },
+  "HK_IsHome": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "next": ["HK_NavigateToActivity", "HK_DetectWhereAmI"]
+  },
+  "HK_IsMarching": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1067, 558, 120, 79],
+        "template": "Common/合战场_行军.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1072, 563, 110, 69]
+      }
+    },
+    "next": ["HK_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[百鬼迎击] 点击行军",
+        "display": "file"
+      }
+    }
+  },
+  "HK_IsSwordDropColor": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [598, 543, 66, 1],
+        "lower": [88, 48, 2],
+        "upper": [96, 56, 10]
+      }
+    },
+    "pre_delay": 100,
+    "action": {
+      "type": "Custom",
+      "custom_action": "SwordDropLogAction",
+      "custom_action_param": {
+        "task": "百鬼迎击",
+        "roi": [52, 509, 282, 34],
+        "click": [947, 533, 67, 75],
+        "timeout": 120000
+      }
+    },
+    "next": ["HK_DetectWhereAmI"],
+    "on_error": ["HK_RestartGame"]
+  },
+  "HK_IsTeamSelect": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [561, 1, 160, 49],
+        "expected": "部队选择"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [154, 93, 1, 1]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["HK_ConfirmTeam", "E_CheckTimerExpired", "HK_EnableAutoMarch", "HK_CaptainHub"]
+  },
+  "HK_ConfirmTeam": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [89, 109, 1, 1],
+        "lower": [165, 14, 14],
+        "upper": [185, 34, 34]
+      }
+    },
+    "next": ["HK_IsTeamSelect"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_EnableAutoMarch": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [1176, 390, 1, 2],
+        "lower": [221, 107, 14],
+        "upper": [223, 109, 16]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1176, 390, 1, 2]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1176, 390, 1, 2]
+    },
+    "next": ["HK_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_ClickAutoMarchNoOrYesDelegate": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [713, 580, 150, 50],
+        "expected": ["委托", "不委托"]
+      }
+    },
+    "action": {"type": "Click"},
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [713, 580, 150, 50]
+    },
+    "next": ["HK_ReturnFromAutoMarch"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_ReturnFromAutoMarch": {
+    "pre_delay": 100,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1024, 30, 35, 36]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1024, 30, 35, 36]
+    },
+    "next": ["HK_IsTeamSelect"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_IsEventPage2": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [111, 171, 186, 23],
+        "expected": "自本丸的敌击破数",
+        "only_rec": true
+      }
+    },
+    "next": [
+      "[Anchor]HK_RoundDone",
+      "HK_CheckGoalPt",
+      "HK_StrongEnemy",
+      "HK_SelectDefenseLineDifficulty",
+      "HK_SelectEnemyTeamDifficulty",
+      "HK_ExitWrongDefenseLineDifficulty",
+      "HK_DetectWhereAmI"
+    ]
+  },
+  "HK_CheckGoalPt": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "GoalPtCheckRecognition",
+        "custom_recognition_param": {
+          "roi": [117, 204, 183, 28]
+        }
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "目标 PT 已达成"}
+    }
+  },
+  "HK_StrongEnemy": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1017, 433, 161, 31],
+        "expected": ["请选择迎击目标"],
+        "only_rec": true
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1145, 528, 23, 20]
+      }
+    },
+    "next": ["HK_StrongEnemy", "HK_IsTeamSelect", "HK_DetectWhereAmI"]
+  },
+  "HK_SelectDefenseLineDifficulty": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [993, 278, 208, 28],
+        "expected": "请选择出阵的防卫线"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1052, 601, 117, 55]
+      }
+    },
+    "timeout": 3000,
+    "next": ["HK_SelectEnemyTeamDifficulty", "HK_ExitWrongDefenseLineDifficulty"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_SelectEnemyTeamDifficulty": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [513, 204, 78, 25],
+        "expected": "低难度"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1106, 642, 10, 15]
+      }
+    },
+    "next": ["HK_SelectEnemyTeamDifficulty", "HK_IsTeamSelect"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_ExitWrongDefenseLineDifficulty": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [513, 204, 78, 25],
+        "expected": ["中难度", "高难度"]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [588, 459, 105, 79]
+      }
+    },
+    "next": ["HK_ExitWrongDefenseLineDifficulty", "HK_DetectWhereAmI"]
+  },
+  "HK_ClickMenu": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1183, 18, 87, 40],
+        "expected": "目"
+      }
+    },
+    "pre_delay": 100,
+    "action": {"type": "Click"},
+    "next": ["HK_DetectWhereAmI"]
+  },
+  "HK_IsPreSortieConfirm": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [1156, 584, 96, 47],
+        "expected": "即刻"
+      }
+    },
+    "next": ["HK_ClickSortieNow"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_ClickSortieNow": {
+    "pre_delay": 100,
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1204, 629, 10, 10]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [1204, 629, 10, 10]
+    },
+    "next": ["HK_PostSortieHub"]
+  },
+  "HK_CaptainHub": {
+    "next": ["HK_DragCaptain", "HK_IsPreSortieConfirm"]
+  },
+  "HK_TerminateRound": {
+    "anchor": {"HK_RoundDone": ""},
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[百鬼迎击] 完成一圈",
+        "display": "file"
+      }
+    }
+  },
+  "HK_IsTicketConfirm": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 36, 83, 39],
+        "expected": "出阵"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [568, 603, 152, 49]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [568, 603, 152, 49]
+    },
+    "next": ["HK_SortieSuccess", "HK_IsTicketConfirm"]
+  },
+  "HK_IsTicketShortagePopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [526, 202, 231, 56],
+        "expected": "通行令牌不足"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [750, 448, 75, 40]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [750, 448, 75, 40]
+    },
+    "next": ["HK_CompleteCurrentTaskAfterNoTicket", "HK_ReplenishTicket"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_ReplenishTicket": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [578, 61, 127, 34],
+        "expected": "通行令牌"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [792, 509, 1, 3]
+      }
+    },
+    "repeat": 2,
+    "repeat_delay": 500,
+    "next": ["HK_ClickTicketConfirm"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_ClickTicketConfirm": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [604, 588, 66, 42]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 100,
+      "target": [604, 588, 66, 42]
+    },
+    "next": ["HK_IsConfirmPurchase"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_IsConfirmPurchase": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [600, 58, 78, 36],
+        "expected": "确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [729, 581, 101, 43]
+      }
+    },
+    "next": ["HK_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "special:[百鬼迎击] 补充门票",
+        "display": "log"
+      }
+    }
+  },
+  "HK_CompleteCurrentTaskAfterNoTicket": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "通行令牌不足"}
+    }
+  },
+  "HK_PostSortieHub": {
+    "timeout": 30000,
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HK_IsTicketConfirm", "HK_IsTicketShortagePopup", "HK_SortieSuccess"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_SortieSuccess": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [539, 3, 87, 6],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "anchor": {"HK_RoundDone": "HK_TerminateRound"},
+    "next": ["HK_DetectWhereAmI"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[百鬼迎击] 出阵",
+        "display": "file"
+      }
+    }
+  },
+  "HK_RestartGame": {
+    "action": {
+      "type": "Custom",
+      "custom_action": "RestartGameAction"
+    },
+    "next": ["HK_DetectWhereAmI"]
+  },
+  "HK_DragCaptain": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "DragCaptainAction"
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [301, 169, 115, 50]
+    },
+    "next": ["HK_FatigueCheck", "HK_IsPreSortieConfirm"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_CompleteCurrentTaskAfterFatigue": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "疲劳停止"}
+    },
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_FatigueCheck": {
+    "enabled": false,
+    "recognition": {
+      "type": "Custom",
+      "param": {
+        "custom_recognition": "FatigueCheckRecognition",
+        "custom_recognition_param": {
+          "mode": "check_sortie_first",
+          "threshold": 30
+        }
+      }
+    },
+    "next": ["HK_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_WaitRefresh": {
+    "enabled": false,
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [8, 1, 71, 107],
+        "template": "Common/本丸.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "pre_delay": 500,
+    "post_delay": 500,
+    "next": ["HK_DetectWhereAmI"],
+    "on_error": ["HK_DetectWhereAmI"]
+  },
+  "HK_NavigateToActivity": {
+    "next": ["HK_ClickMenu", "HK_DetectWhereAmI"]
+  },
+  "HK_IsEventPage1": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/秘宝之里.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1150, 612, 110, 58]
+      }
+    },
+    "next": ["HK_DetectWhereAmI"]
+  }
+}

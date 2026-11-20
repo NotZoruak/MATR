@@ -21,10 +21,15 @@ public static class GameOverviewLogParser
         ["6111"] = "三所物·菊碎片",
         ["6113"] = "三所物·狮子碎片"
     };
+    private static readonly Dictionary<string, string> SeasonalRewardNames = new()
+    {
+        ["4206"] = "天竺牡丹"
+    };
     public sealed record Value(string Text, string ObservedAt);
     public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
     public sealed record HarvestEntry(string Id, string Kind, string Time, string Name, int Amount, string? SwordId, string? Map, string? Point, string Source);
+    public sealed record DutyRecord(string Id, string Time, string DutyType, string SwordSerial, string SwordId, int UpType, int UpValue, bool Success, bool IsMaximum, JObject SwordData);
     public sealed class Snapshot
     {
         public string Account { get; set; } = "";
@@ -37,6 +42,7 @@ public static class GameOverviewLogParser
         public Dictionary<string, string> SwordTeamPositions { get; } = new();
         public Dictionary<string, string> EquipmentKinds { get; } = new();
         public List<HarvestEntry> HarvestRecords { get; } = new();
+        public List<DutyRecord> DutyRecords { get; } = new();
         public bool HasFullSwordPool { get; set; }
         public string SwordObservedAt { get; set; } = "";
         public int Responses { get; set; }
@@ -169,6 +175,8 @@ public static class GameOverviewLogParser
                 pendingSortieTeam = null;
                 pendingSortieAccount = null;
             }
+            var currentSortieMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
+            var currentSortiePoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
             if (activeSortieTeam is { } sortieTeam)
             {
                 if (path is "/sally/forward" or "/sally/parallelpastforward"
@@ -190,14 +198,15 @@ public static class GameOverviewLogParser
             if (path is "/battle/battle" or "/battle/alloutbattle"
                 && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
             {
-                var dropMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
+                var dropMap = currentSortieMap;
                 result.HarvestRecords.Add(new HarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
                     1, getSwordId.ToString(CultureInfo.InvariantCulture), dropMap,
-                    sortiePoints.GetValueOrDefault(activeSortieTeam ?? ""), dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
+                    currentSortiePoint, dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
             }
             var itemRewards = data["item"] as JArray;
             var battleRewards = data["result"]?["reward"] as JArray;
-            if (data["reward"] is JArray || itemRewards != null || battleRewards != null || data["season_reward"] is JArray)
+            var battleDropRewards = data["result"]?["drop_reward"] as JArray;
+            if (data["reward"] is JArray || itemRewards != null || battleRewards != null || battleDropRewards != null || data["season_reward"] is JArray)
             {
                 var rewardSource = path switch
                 {
@@ -206,7 +215,7 @@ public static class GameOverviewLogParser
                     "/receive/get" => "活动/邮件奖励",
                     "/sally/forward" => "过去掉落",
                     "/sally/parallelpastforward" => "异去掉落",
-                    "/battle/battle" => sortieMaps.GetValueOrDefault(activeSortieTeam ?? "")?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落",
+                    "/battle/battle" => currentSortieMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落",
                     "/battle/alloutbattle" => "联队战奖励",
                     _ => "未知"
                 };
@@ -230,14 +239,15 @@ public static class GameOverviewLogParser
                 }
                 else if (path is "/battle/battle" or "/battle/alloutbattle")
                 {
-                    rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
-                    rewardPoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
+                    rewardMap = currentSortieMap;
+                    rewardPoint = currentSortiePoint;
                 }
                 AddResourceRewards(data["reward"] as JArray, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(itemRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
                 AddResourceRewards(battleRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource, includeBattleBonus: true);
-                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, null, null,
-                    "活动奖励");
+                AddResourceRewards(battleDropRewards, time, lineIndex, rewardMap, rewardPoint, rewardSource);
+                AddResourceRewards(data["season_reward"] as JArray, time, lineIndex, rewardMap, rewardPoint,
+                    rewardSource);
             }
             void AddResourceRewards(JArray? rewards, string observedAt, int sourceIndex, string? map, string? point, string source, bool includeBattleBonus = false)
             {
@@ -249,6 +259,8 @@ public static class GameOverviewLogParser
                     var itemType = reward["item_type"]?.ToString();
                     var itemId = reward["item_id"]?.ToString() ?? reward["consumable_id"]?.ToString()
                         ?? reward["sword_id"]?.ToString() ?? reward["artifact_id"]?.ToString();
+                    var mappedItemName = itemId == null ? null
+                        : TreasureFragmentNames.GetValueOrDefault(itemId) ?? SeasonalRewardNames.GetValueOrDefault(itemId);
                     var amountText = reward["item_num"]?.ToString() ?? reward["num"]?.ToString() ?? reward["amount"]?.ToString();
                     _ = int.TryParse(amountText, out var amount);
                     if (includeBattleBonus)
@@ -263,8 +275,8 @@ public static class GameOverviewLogParser
                         "5" when itemId != null && names.TryGetValue(itemId, out var resourceName) => resourceName,
                         "1" when itemId == "8" => "加速符",
                         _ => null
-                    } ?? (itemId != null && TreasureFragmentNames.TryGetValue(itemId, out var fragmentName)
-                        ? fragmentName
+                    } ?? (mappedItemName != null
+                        ? mappedItemName
                         : itemId == null
                         ? $"未知物品（类型 {itemType ?? "未知"}）"
                         : $"未知物品（类型 {itemType ?? "未知"}，ID {itemId}）");
@@ -413,6 +425,27 @@ public static class GameOverviewLogParser
             {
                 if (path == "/duty/complete")
                 {
+                    if (data["param"] is JObject dutyParams && data["sword"] is JObject dutySwords)
+                    {
+                        var dutyKinds = new Dictionary<string, string>(StringComparer.Ordinal);
+                        foreach (var (prefix, label) in new[] { ("horse", "饲马"), ("field", "耕作"), ("bout", "手合") })
+                            for (var slot = 1; slot <= 2; slot++)
+                                if (data[$"{prefix}_id{slot}"] is { } member) dutyKinds[member.ToString()] = label;
+                        foreach (var pair in dutyParams.Properties())
+                        {
+                            if (pair.Value is not JObject growth || dutySwords[pair.Name] is not JObject sword
+                                || !int.TryParse(growth["up_type"]?.ToString(), out var upType)
+                                || !int.TryParse(growth["up_value"]?.ToString(), out var upValue)
+                                || sword["sword_id"] == null) continue;
+                            var serial = sword["serial_id"]?.ToString() ?? pair.Name;
+                            var swordId = sword["sword_id"]!.ToString();
+                            var timeKey = data["now"]?.ToString() ?? time;
+                            result.DutyRecords.Add(new DutyRecord(
+                                $"{account}:{timeKey}:{serial}", timeKey, dutyKinds.GetValueOrDefault(pair.Name, "内番"),
+                                serial, swordId, upType, upValue, growth.Value<bool?>("success") ?? false,
+                                growth.Value<bool?>("is_max") ?? false, (JObject)sword.DeepClone()));
+                        }
+                    }
                     dutyDetails = null;
                     result.WorkItems["Duty"] = [];
                     Set("Duty", "未使用");
@@ -500,6 +533,7 @@ public static class GameOverviewLogParser
             foreach (var pair in result.SwordTeamPositions) copy.SwordTeamPositions[pair.Key] = pair.Value;
             foreach (var pair in result.EquipmentKinds) copy.EquipmentKinds[pair.Key] = pair.Value;
             copy.HarvestRecords.AddRange(result.HarvestRecords);
+            copy.DutyRecords.AddRange(result.DutyRecords.Select(record => record with { SwordData = (JObject)record.SwordData.DeepClone() }));
             return copy;
         }
     }

@@ -41,11 +41,12 @@
     </Style>
   </UserControl.Styles>
   <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,8,0">
-    <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,100,100" RowSpacing="10" ColumnSpacing="8">
-      <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+    <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,100" RowSpacing="10" ColumnSpacing="8">
+      <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="8">
         <Button x:Name="SwordTab" Classes="harvest-tab" Content="刀剑" Click="ShowSwords" />
-        <Button x:Name="ResourceTab" Grid.Column="1" Classes="harvest-tab" Content="资源" Click="ShowResources" />
-        <TextBox x:Name="SearchBox" Grid.Column="2" MinWidth="0" Watermark="搜索名称、来源、地图或点位" TextChanged="SearchChanged">
+        <Button x:Name="ItemTab" Grid.Column="1" Classes="harvest-tab" Content="物品" Click="ShowItems" />
+        <Button x:Name="DutyTab" Grid.Column="2" Classes="harvest-tab" Content="内番" Click="ShowDutyRecords" />
+        <TextBox x:Name="SearchBox" Grid.Column="3" MinWidth="0" Watermark="搜索名称、来源、地图或点位" TextChanged="SearchChanged">
           <ToolTip.Tip>
             <Border Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" MaxWidth="360">
               <StackPanel Spacing="6">
@@ -58,19 +59,19 @@
           </ToolTip.Tip>
         </TextBox>
       </Grid>
-      <Button Grid.Column="1" Content="搜索" Click="SearchClicked" />
-      <Button Grid.Column="2" Content="清除数据" Click="ClearClicked" />
-      <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="8">
+      <Button x:Name="ClearButton" Grid.Column="1" Content="清除数据" Click="ClearClicked" />
+      <Grid x:Name="DateFilterGrid" Grid.Row="1" Column="0" ColumnDefinitions="Auto,*,Auto,*,Auto" ColumnSpacing="8">
         <TextBlock Text="时间范围" VerticalAlignment="Center" />
         <CalendarDatePicker Grid.Column="1" x:Name="StartDatePicker" Watermark="开始日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
         <TextBlock Grid.Column="2" Text="至" VerticalAlignment="Center" />
         <CalendarDatePicker Grid.Column="3" x:Name="EndDatePicker" Watermark="结束日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
+        <Button x:Name="AllTimeButton" Grid.Column="4" Content="全部时间" Click="ClearDateFilter" />
       </Grid>
-      <Button Grid.Row="1" Grid.Column="1" Content="全部时间" Click="ClearDateFilter" />
-      <Button Grid.Row="1" Grid.Column="2" Content="数据汇总" Click="SummaryClicked" />
+      <Button x:Name="SummaryButton" Grid.Row="1" Grid.Column="1" Content="数据汇总" Click="SummaryClicked" />
       <Grid Grid.Row="2" Grid.ColumnSpan="3">
         <DataGrid x:Name="RecordsGrid" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="True" CanUserReorderColumns="True" CanUserResizeColumns="True" GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" RowHeight="40" ColumnHeaderHeight="36" FontSize="14" />
         <TextBlock x:Name="EmptyText" IsVisible="False" Text="当前视图暂无记录" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource SukiLowText}" IsHitTestVisible="False" />
+        <ContentControl x:Name="DutyContent" IsVisible="False" />
       </Grid>
     </Grid>
   </Border>

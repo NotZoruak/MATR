@@ -259,6 +259,16 @@ public partial class TeamStatusView : UserControl
             Text = textValue, FontSize = 14, TextAlignment = TextAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis
         };
+        if (column.Key == "Health"
+            && row.Number("hp") is { } health
+            && row.Number("hp_max") is { } maximumHealth
+            && maximumHealth > 0)
+        {
+            if (health * 100 <= maximumHealth * 30)
+                content.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension("OverviewCriticalBrush"));
+            else if (health * 100 <= maximumHealth * 65)
+                content.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension("OverviewWarningBrush"));
+        }
         var cell = new Border { Child = content, Background = Brushes.Transparent, Padding = new Thickness(1, 2) };
         if (column.Key == "Name") ToolTip.SetTip(cell, row.NameTip);
         if (column.Key == "Level") ToolTip.SetTip(cell, row.LevelTip);

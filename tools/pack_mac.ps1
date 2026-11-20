@@ -49,10 +49,6 @@ if (Test-Path $ZipFile) { Remove-Item -LiteralPath $ZipFile -Force }
 
 New-Item -ItemType Directory -Force -Path $MacOsDir, $ResourcesDir, (Join-Path $MacOsDir 'assets') | Out-Null
 Copy-Item (Join-Path $PublishDir '*') -Destination $MacOsDir -Recurse -Force
-# 安装包只携带三份官方默认扩展，不打包本机用户额外安装的包。
-python (Join-Path $Root 'tools/build_extensions.py') --no-build --output (Join-Path $MacOsDir 'extension')
-if ($LASTEXITCODE -ne 0) { throw '默认扩展包生成失败，请先构建 MATR.DefaultExtensions。' }
-
 $AgentTarget = Join-Path $MacOsDir 'MaaAgentBinary'
 if (Test-Path $AgentTarget) {
     Remove-Item -LiteralPath $AgentTarget -Recurse -Force

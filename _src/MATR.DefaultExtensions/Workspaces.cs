@@ -93,7 +93,11 @@ public sealed class HarvestWorkspace : IExtensionWorkspace
     {
         if (_view == null || string.IsNullOrWhiteSpace(state.SnapshotJson)) return;
         var snapshot = JsonConvert.DeserializeObject<GameOverviewLogParser.Snapshot>(state.SnapshotJson);
-        if (snapshot != null) _view.AddRecords(snapshot.Account, snapshot.HarvestRecords);
+        if (snapshot != null)
+        {
+            _view.AddRecords(snapshot.Account, snapshot.HarvestRecords);
+            _view.AddDutyRecords(snapshot.Account, snapshot.DutyRecords);
+        }
     }
     public void Tick(DateTimeOffset now) { }
     public void Dispose() { _view = null; _dataDirectory = null; }

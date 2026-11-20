@@ -17,10 +17,13 @@ namespace MFAAvalonia.Views.Pages;
 public partial class HarvestRecordsView : UserControl
 {
     private readonly string _directory;
+    private readonly DutyRecordsView _dutyRecordsView;
     private readonly List<GameOverviewLogParser.HarvestEntry> _records = [];
     private readonly ObservableCollection<Row> _visibleRows = [];
     private string _account = "";
+    private string _appliedSearch = "";
     private bool _swords;
+    private bool _duties;
     private bool? _columnsConfiguredForSwords;
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
     private static readonly string[] SwordTypes = ["未知", "短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
@@ -29,9 +32,14 @@ public partial class HarvestRecordsView : UserControl
     {
         _directory = directory;
         InitializeComponent();
+        _dutyRecordsView = new DutyRecordsView(directory);
+        DutyContent.Content = _dutyRecordsView;
         RecordsGrid.ItemsSource = _visibleRows;
         ShowTable();
     }
+
+    public void AddDutyRecords(string account, IEnumerable<GameOverviewLogParser.DutyRecord> records) =>
+        _dutyRecordsView.AddRecords(account, records);
 
     public void AddRecords(string account, IEnumerable<GameOverviewLogParser.HarvestEntry> records)
     {
@@ -82,12 +90,14 @@ public partial class HarvestRecordsView : UserControl
         {
             var parts = record.Id.Split(':');
             if (parts.Length >= 7)
-                return string.Join(':', parts.Take(4)) + ":resource:" + parts[4];
+                return string.Join(':', parts.Take(UsesStableResourceIdentity(parts[4]) ? 3 : 4)) + ":resource:" + parts[4];
             if (parts.Length >= 4)
                 return string.Join(':', parts.Take(4)) + ":resource:" + (LegacyRewardItemId(record.Name) ?? record.Name);
         }
         return record.Id;
     }
+
+    private static bool UsesStableResourceIdentity(string itemId) => itemId is "4206" or "6101" or "6103" or "6105" or "6107" or "6109" or "6111" or "6113";
 
     private static string? LegacyRewardItemId(string name)
     {
@@ -107,10 +117,14 @@ public partial class HarvestRecordsView : UserControl
         return name[(markerIndex + 3)..(endIndex < 0 ? name.Length : endIndex)];
     }
 
-    private void ShowSwords(object? sender, RoutedEventArgs e) { _swords = true; ShowTable(); }
-    private void ShowResources(object? sender, RoutedEventArgs e) { _swords = false; ShowTable(); }
-    private void SearchChanged(object? sender, TextChangedEventArgs e) => ShowTable();
-    private void SearchClicked(object? sender, RoutedEventArgs e) => ShowTable();
+    private void ShowSwords(object? sender, RoutedEventArgs e) { _swords = true; _duties = false; ShowTable(); }
+    private void ShowItems(object? sender, RoutedEventArgs e) { _swords = false; _duties = false; ShowTable(); }
+    private void ShowDutyRecords(object? sender, RoutedEventArgs e) { _duties = true; ShowTable(); }
+    private void SearchChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        _appliedSearch = SearchBox.Text ?? "";
+        ShowTable();
+    }
     private void DateFilterChanged(object? sender, SelectionChangedEventArgs e) => ShowTable();
     private void ClearDateFilter(object? sender, RoutedEventArgs e)
     {
@@ -124,6 +138,41 @@ public partial class HarvestRecordsView : UserControl
         var owner = TopLevel.GetTopLevel(this) as Window;
         if (owner == null) return;
 
+        if (_duties)
+        {
+            var summary = _dutyRecordsView.CreateSummary();
+            var dutyContent = new StackPanel { Width = 620, Spacing = 10 };
+            var dutySubtitle = $"时间：{StartDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"} 至 {EndDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"}";
+            if (!string.IsNullOrWhiteSpace(_appliedSearch)) dutySubtitle += $"\n搜索：{_appliedSearch}";
+            dutyContent.Children.Add(new TextBlock { Text = dutySubtitle, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+            dutyContent.Children.Add(new TextBlock
+            {
+                Text = $"共 {summary.RecordCount} 条刀剑结算记录，{summary.DateCount} 个日期，{summary.NoGrowthCount} 条未增长",
+                FontWeight = Avalonia.Media.FontWeight.SemiBold
+            });
+            dutyContent.Children.Add(new Border { Height = 1, Background = Avalonia.Media.Brushes.LightGray });
+            var dutyDetailRows = new StackPanel { Spacing = 8 };
+            foreach (var gain in summary.Gains.OrderByDescending(pair => pair.Value).ThenBy(pair => pair.Key, StringComparer.Ordinal))
+                dutyDetailRows.Children.Add(new TextBlock { Text = $"{gain.Key}：+{gain.Value:N0}" });
+            if (summary.RecordCount == 0)
+                dutyDetailRows.Children.Add(new TextBlock { Text = "当前筛选条件下没有记录。", Margin = new Avalonia.Thickness(0, 8) });
+            else if (summary.Gains.Count == 0)
+                dutyDetailRows.Children.Add(new TextBlock { Text = "当前筛选条件下没有属性增长记录。", Margin = new Avalonia.Thickness(0, 8) });
+            dutyContent.Children.Add(new ScrollViewer
+            {
+                Content = dutyDetailRows,
+                MaxHeight = 360,
+                VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
+            });
+            await SukiMessageBox.ShowDialog(owner, new SukiMessageBoxHost
+            {
+                Content = dutyContent,
+                ActionButtonsPreset = SukiMessageBoxButtons.OK,
+                IconPreset = null
+            }, new SukiMessageBoxOptions { Title = "内番数据汇总", CanMinimize = false });
+            return;
+        }
+
         var rows = FilteredRows();
         var groups = rows.GroupBy(row => row.Name, StringComparer.Ordinal)
             .Select(group => new { Name = group.Key, Count = _swords ? group.Count() : group.Sum(row => row.Amount), Type = group.First().Type })
@@ -132,7 +181,7 @@ public partial class HarvestRecordsView : UserControl
             .ToArray();
         var total = _swords ? rows.Length : rows.Sum(row => row.Amount);
         var subtitle = $"时间：{StartDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"} 至 {EndDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"}";
-        if (!string.IsNullOrWhiteSpace(SearchBox.Text)) subtitle += $"\n搜索：{SearchBox.Text}";
+        if (!string.IsNullOrWhiteSpace(_appliedSearch)) subtitle += $"\n搜索：{_appliedSearch}";
 
         var detailRows = new StackPanel { Spacing = 12 };
         var sections = _swords
@@ -187,25 +236,44 @@ public partial class HarvestRecordsView : UserControl
         if (owner == null) return;
         var result = await SukiMessageBox.ShowDialog(owner, new SukiMessageBoxHost
         {
-            Content = "确定清除所有账号保存的刀剑与资源记录？此操作无法撤销。",
+            Content = _duties ? "确定清除当前账号保存的内番记录？此操作无法撤销。" : "确定清除当前账号保存的刀剑与物品记录？此操作无法撤销。",
             ActionButtonsPreset = SukiMessageBoxButtons.YesNo,
             IconPreset = SukiMessageBoxIcons.Warning,
         }, new SukiMessageBoxOptions { Title = "清除收获记录" });
         if (result is not SukiMessageBoxResult.Yes) return;
-        _records.Clear();
-        foreach (var path in Directory.GetFiles(_directory, "harvest-*.json")) File.Delete(path);
+        if (_duties)
+        {
+            _dutyRecordsView.ClearRecords();
+        }
+        else
+        {
+            _records.Clear();
+            var path = StorePath();
+            if (File.Exists(path)) File.Delete(path);
+        }
         ShowTable();
     }
 
     private void ShowTable(bool preservePosition = false)
     {
         SwordTab.Classes.Set("selected", _swords);
-        ResourceTab.Classes.Set("selected", !_swords);
+        ItemTab.Classes.Set("selected", !_swords && !_duties);
+        DutyTab.Classes.Set("selected", _duties);
+        RecordsGrid.IsVisible = !_duties;
+        EmptyText.IsVisible = !_duties && _visibleRows.Count == 0;
+        DutyContent.IsVisible = _duties;
+        SearchBox.IsVisible = true;
+        DateFilterGrid.IsVisible = true;
+        AllTimeButton.IsVisible = true;
+        SummaryButton.IsVisible = true;
+        SearchBox.Watermark = _duties ? "搜索刀剑、内番、属性或日期" : "搜索名称、来源、地图或点位";
+        _dutyRecordsView.SetFilters(_appliedSearch, StartDatePicker.SelectedDate?.Date, EndDatePicker.SelectedDate?.Date);
+        if (_duties) return;
         if (_columnsConfiguredForSwords != _swords)
         {
             RecordsGrid.Columns.Clear();
             AddColumn("时间", nameof(Row.Time), 164);
-            AddColumn(_swords ? "刀剑名" : "资源种类", nameof(Row.Name), _swords ? new DataGridLength(1, DataGridLengthUnitType.Star) : new DataGridLength(105));
+            AddColumn(_swords ? "刀剑名" : "物品", nameof(Row.Name), _swords ? new DataGridLength(1, DataGridLengthUnitType.Star) : new DataGridLength(150));
             if (_swords) AddColumn("刀种", nameof(Row.Type), 84);
             else AddColumn("数量", nameof(Row.Amount), 80);
             AddColumn("来源", nameof(Row.SourceText), new DataGridLength(1, DataGridLengthUnitType.Star));
@@ -223,16 +291,24 @@ public partial class HarvestRecordsView : UserControl
         var rows = FilteredRows();
         UpdateVisibleRows(rows, preservePosition);
         EmptyText.Text = rows.Length == 0
-            ? _swords ? "当前筛选条件下暂无刀剑获取记录。" : "当前筛选条件下暂无资源获取记录。"
+            ? _swords ? "当前筛选条件下暂无刀剑获取记录。" : "当前筛选条件下暂无物品获取记录。"
             : "";
         EmptyText.IsVisible = rows.Length == 0;
     }
 
     private Row[] FilteredRows() => _records.Where(record => record.Kind == (_swords ? "sword" : "resource"))
         .Select(record => new Row(record.Id, record.Time, DisplayName(record), SwordType(record), record.Amount,
-            record.Source + (record.Map == null ? "" : " · " + record.Map) + (record.Point == null ? "" : " 点位 " + record.Point)))
-        .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, SearchBox?.Text))
+            FormatSource(record)))
+        .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, _appliedSearch))
         .OrderByDescending(row => row.Time).ToArray();
+
+    private static string FormatSource(GameOverviewLogParser.HarvestEntry record)
+    {
+        var map = record.Map;
+        if (record.Source == "异去掉落" && map?.StartsWith("异去 ", StringComparison.Ordinal) == true)
+            map = map[3..];
+        return record.Source + (map == null ? "" : " · " + map) + (record.Point == null ? "" : " 点位 " + record.Point);
+    }
 
     private bool MatchesDateRange(string value)
     {
