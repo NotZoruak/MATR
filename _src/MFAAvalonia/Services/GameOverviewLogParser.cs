@@ -162,6 +162,27 @@ public static class GameOverviewLogParser
             }
             result.Responses++;
             var time = Regex.Match(line, @"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}").Value;
+            if (path is "/forge/complete" or "/forge/completemultiple" or "/forge/fast" or "/forge/fastmultiple"
+                or "/forge/start" or "/forge/startmultiple")
+            {
+                // 仅成功响应明确返回新刀剑及个体编号时，确认实际获取。
+                void RecordForgedSword(JObject sword)
+                {
+                    var swordId = sword["sword_id"]?.ToString();
+                    var serial = sword["serial_id"]?.ToString();
+                    if (!int.TryParse(swordId, out var number) || number <= 0
+                        || !long.TryParse(serial, out var serialNumber) || serialNumber <= 0) return;
+                    var id = $"{account}:forge:{serial}";
+                    if (result.HarvestRecords.Any(entry => entry.Id == id)) return;
+                    result.HarvestRecords.Add(new HarvestEntry(id, "sword", time,
+                        GameItemNames.Find("2", swordId) ?? "刀剑 ID：" + swordId, 1, swordId, null, null, "锻刀"));
+                }
+                RecordForgedSword(data);
+                if (data["sword"] is JObject pool)
+                    foreach (var sword in pool.Properties().Select(pair => pair.Value).OfType<JObject>()) RecordForgedSword(sword);
+                if (data["sword"] is JArray list)
+                    foreach (var sword in list.OfType<JObject>()) RecordForgedSword(sword);
+            }
             if (path is "/sally/sally" or "/sally/parallelpastsally" or "/sally/eventsally" && pendingSortieTeam is { } dispatchedTeam)
             {
                 if (pendingSortieMaps.Remove(dispatchedTeam, out var dispatchedMap))
@@ -544,14 +565,14 @@ public static class GameOverviewLogParser
     private static Dictionary<string, string> RequestValues(string line)
     {
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (Match match in Regex.Matches(line, @"(?:[?&]|\b)(party_no|episode_id|event_id|event_field_id|field_id)=([^&\s,}]+)"))
+        foreach (Match match in Regex.Matches(line, @"(?:[?&]|\b)(slot_no|charcoal|steel|coolant|file|party_no|episode_id|event_id|event_field_id|field_id)=([^&\s,}\]]+)"))
             values[match.Groups[1].Value] = Uri.UnescapeDataString(match.Groups[2].Value);
         var form = Regex.Match(line, @"\bData:\[(?<data>[^]]*)\]");
         if (form.Success)
             foreach (var pair in form.Groups["data"].Value.Split('&', StringSplitOptions.RemoveEmptyEntries))
             {
                 var parts = pair.Split('=', 2);
-                if (parts.Length == 2 && parts[0] is "party_no" or "episode_id" or "event_id" or "event_field_id" or "field_id")
+                if (parts.Length == 2 && parts[0] is "slot_no" or "charcoal" or "steel" or "coolant" or "file" or "party_no" or "episode_id" or "event_id" or "event_field_id" or "field_id")
                     values[parts[0]] = Uri.UnescapeDataString(parts[1]);
             }
         var data = Regex.Match(line, @"(?:Data|data)\s*[:=]\s*(\[[^]]*\]|\{[^}]*\})");
@@ -561,10 +582,10 @@ public static class GameOverviewLogParser
             var token = JToken.Parse(data.Groups[1].Value);
             if (token is JArray array)
                 for (var index = 0; index + 1 < array.Count; index += 2)
-                    if (array[index]?.ToString() is "party_no" or "episode_id" or "event_id" or "event_field_id" or "field_id")
+                    if (array[index]?.ToString() is "slot_no" or "charcoal" or "steel" or "coolant" or "file" or "party_no" or "episode_id" or "event_id" or "event_field_id" or "field_id")
                         values[array[index]!.ToString()] = array[index + 1]?.ToString() ?? "";
             if (token is JObject obj)
-                foreach (var key in new[] { "party_no", "episode_id", "event_id", "event_field_id", "field_id" })
+                foreach (var key in new[] { "slot_no", "charcoal", "steel", "coolant", "file", "party_no", "episode_id", "event_id", "event_field_id", "field_id" })
                     if (obj[key] != null) values[key] = obj[key]!.ToString();
         }
         catch (Newtonsoft.Json.JsonException) { }
