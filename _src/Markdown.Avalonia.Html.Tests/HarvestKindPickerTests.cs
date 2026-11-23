@@ -10,6 +10,26 @@ namespace Markdown.Avalonia.Html.Tests;
 public class HarvestKindPickerTests
 {
     [Fact]
+    public async Task 筛选控件边框高度一致且操作按钮等宽()
+    {
+        await ExtensionUiTests.Session.Dispatch(() =>
+        {
+            var view = new HarvestRecordsView(Path.GetTempPath());
+            var window = new Window { Content = view, Width = 900, Height = 675 };
+            try
+            {
+                window.Show();
+                window.UpdateLayout();
+                foreach (var name in new[] { "HarvestKindPicker", "SearchBox", "ClearButton", "AllTimeButton", "SummaryButton", "StartDatePicker", "EndDatePicker" })
+                    Assert.Equal(38, view.FindControl<Control>(name)!.Bounds.Height);
+                foreach (var name in new[] { "HarvestKindPicker", "ClearButton", "AllTimeButton", "SummaryButton" })
+                    Assert.Equal(100, view.FindControl<Control>(name)!.Bounds.Width);
+            }
+            finally { window.Close(); }
+        }, CancellationToken.None);
+    }
+
+    [Fact]
     public async Task 下拉选择切换三类收获且全部时间位于日期左侧()
     {
         await ExtensionUiTests.Session.Dispatch(() =>

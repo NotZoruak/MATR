@@ -4,6 +4,7 @@ using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
 using MFAAvalonia.Services;
@@ -36,6 +37,12 @@ public partial class HarvestRecordsView : UserControl
         DutyContent.Content = _dutyRecordsView;
         HarvestKindPicker.SelectedIndex = 1;
         HarvestKindPicker.SelectionChanged += HarvestKindChanged;
+        // 主题下拉框外层额外留有五像素内边距，移除后与同高输入框的边框对齐。
+        HarvestKindPicker.TemplateApplied += (_, e) =>
+        {
+            if (e.NameScope.Find<Control>("border")?.GetVisualParent() is Border wrapper)
+                wrapper.Padding = new Avalonia.Thickness(0);
+        };
         RecordsGrid.ItemsSource = _visibleRows;
         ShowTable();
     }
@@ -55,15 +62,16 @@ public partial class HarvestRecordsView : UserControl
             try
             {
                 var path = StorePath();
-                if (File.Exists(path)) _records.AddRange(JsonConvert.DeserializeObject<List<GameOverviewLogParser.HarvestEntry>>(File.ReadAllText(path)) ?? []);
+                if (File.Exists(path)) _records.AddRange((JsonConvert.DeserializeObject<List<GameOverviewLogParser.HarvestEntry>>(File.ReadAllText(path)) ?? []).Where(record => !record.Id.Contains(":forge-history:", StringComparison.Ordinal)));
             }
             catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { }
         }
         var known = new Dictionary<string, int>(StringComparer.Ordinal);
         for (var index = 0; index < _records.Count; index++)
             known.TryAdd(EventIdentity(_records[index]), index);
-        foreach (var record in records)
+        foreach (var incoming in records)
         {
+            var record = incoming;
             var identity = EventIdentity(record);
             if (known.TryGetValue(identity, out var index))
             {
