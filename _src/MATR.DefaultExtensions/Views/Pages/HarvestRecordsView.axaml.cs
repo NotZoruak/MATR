@@ -34,6 +34,8 @@ public partial class HarvestRecordsView : UserControl
         InitializeComponent();
         _dutyRecordsView = new DutyRecordsView(directory);
         DutyContent.Content = _dutyRecordsView;
+        HarvestKindPicker.SelectedIndex = 1;
+        HarvestKindPicker.SelectionChanged += HarvestKindChanged;
         RecordsGrid.ItemsSource = _visibleRows;
         ShowTable();
     }
@@ -90,7 +92,7 @@ public partial class HarvestRecordsView : UserControl
         {
             var parts = record.Id.Split(':');
             if (parts.Length >= 7)
-                return string.Join(':', parts.Take(UsesStableResourceIdentity(parts[4]) ? 3 : 4)) + ":resource:" + parts[4];
+                return string.Join(':', parts.Take(parts[5] == "1" && UsesStableResourceIdentity(parts[4]) ? 3 : 4)) + ":resource:" + parts[5] + ":" + parts[4];
             if (parts.Length >= 4)
                 return string.Join(':', parts.Take(4)) + ":resource:" + (LegacyRewardItemId(record.Name) ?? record.Name);
         }
@@ -117,9 +119,12 @@ public partial class HarvestRecordsView : UserControl
         return name[(markerIndex + 3)..(endIndex < 0 ? name.Length : endIndex)];
     }
 
-    private void ShowSwords(object? sender, RoutedEventArgs e) { _swords = true; _duties = false; ShowTable(); }
-    private void ShowItems(object? sender, RoutedEventArgs e) { _swords = false; _duties = false; ShowTable(); }
-    private void ShowDutyRecords(object? sender, RoutedEventArgs e) { _duties = true; ShowTable(); }
+    private void HarvestKindChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        _swords = HarvestKindPicker.SelectedIndex == 0;
+        _duties = HarvestKindPicker.SelectedIndex == 2;
+        ShowTable();
+    }
     private void SearchChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
     {
         _appliedSearch = SearchBox.Text ?? "";
@@ -256,9 +261,6 @@ public partial class HarvestRecordsView : UserControl
 
     private void ShowTable(bool preservePosition = false)
     {
-        SwordTab.Classes.Set("selected", _swords);
-        ItemTab.Classes.Set("selected", !_swords && !_duties);
-        DutyTab.Classes.Set("selected", _duties);
         RecordsGrid.IsVisible = !_duties;
         EmptyText.IsVisible = !_duties && _visibleRows.Count == 0;
         DutyContent.IsVisible = _duties;
@@ -304,7 +306,7 @@ public partial class HarvestRecordsView : UserControl
 
     private static string FormatSource(GameOverviewLogParser.HarvestEntry record)
     {
-        var map = record.Map;
+        var map = GameEventNames.FormatMap(record.Map);
         if (record.Source == "异去掉落" && map?.StartsWith("异去 ", StringComparison.Ordinal) == true)
             map = map[3..];
         return record.Source + (map == null ? "" : " · " + map) + (record.Point == null ? "" : " 点位 " + record.Point);
@@ -390,7 +392,7 @@ public partial class HarvestRecordsView : UserControl
 
     private static string DisplayName(GameOverviewLogParser.HarvestEntry entry)
     {
-        if (entry.Kind != "sword" || entry.SwordId == null) return entry.Name;
+        if (entry.Kind != "sword" || entry.SwordId == null) return GameItemNames.DisplayName(entry.Name);
         var definition = SwordCatalog["swords"]?[entry.SwordId] as JObject;
         var name = definition?["name"]?.ToString() ?? entry.Name;
         return definition?["symbol"]?.ToString() == "2" ? name + "·极" : name;

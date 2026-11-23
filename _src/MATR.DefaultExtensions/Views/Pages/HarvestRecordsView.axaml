@@ -34,19 +34,16 @@
     <Style Selector="DataGrid#RecordsGrid DataGridCell TextBlock">
       <Setter Property="TextAlignment" Value="Center" />
     </Style>
-    <Style Selector="Button.harvest-tab.selected">
-      <Setter Property="Background" Value="#DCE8FF" />
-      <Setter Property="Foreground" Value="#2864E8" />
-      <Setter Property="BorderBrush" Value="#4B79FF" />
-    </Style>
   </UserControl.Styles>
   <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,8,0">
     <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,100" RowSpacing="10" ColumnSpacing="8">
-      <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="8">
-        <Button x:Name="SwordTab" Classes="harvest-tab" Content="刀剑" Click="ShowSwords" />
-        <Button x:Name="ItemTab" Grid.Column="1" Classes="harvest-tab" Content="物品" Click="ShowItems" />
-        <Button x:Name="DutyTab" Grid.Column="2" Classes="harvest-tab" Content="内番" Click="ShowDutyRecords" />
-        <TextBox x:Name="SearchBox" Grid.Column="3" MinWidth="0" Watermark="搜索名称、来源、地图或点位" TextChanged="SearchChanged">
+      <Grid ColumnDefinitions="120,*" ColumnSpacing="8">
+        <ComboBox x:Name="HarvestKindPicker" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center">
+          <ComboBoxItem Content="刀剑" />
+          <ComboBoxItem Content="物品" />
+          <ComboBoxItem Content="内番" />
+        </ComboBox>
+        <TextBox x:Name="SearchBox" Grid.Column="1" MinWidth="0" Watermark="搜索名称、来源、地图或点位" TextChanged="SearchChanged">
           <ToolTip.Tip>
             <Border Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" MaxWidth="360">
               <StackPanel Spacing="6">
@@ -60,12 +57,12 @@
         </TextBox>
       </Grid>
       <Button x:Name="ClearButton" Grid.Column="1" Content="清除数据" Click="ClearClicked" />
-      <Grid x:Name="DateFilterGrid" Grid.Row="1" Column="0" ColumnDefinitions="Auto,*,Auto,*,Auto" ColumnSpacing="8">
-        <TextBlock Text="时间范围" VerticalAlignment="Center" />
-        <CalendarDatePicker Grid.Column="1" x:Name="StartDatePicker" Watermark="开始日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
-        <TextBlock Grid.Column="2" Text="至" VerticalAlignment="Center" />
-        <CalendarDatePicker Grid.Column="3" x:Name="EndDatePicker" Watermark="结束日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
-        <Button x:Name="AllTimeButton" Grid.Column="4" Content="全部时间" Click="ClearDateFilter" />
+      <Grid x:Name="DateFilterGrid" Grid.Row="1" Column="0" ColumnDefinitions="Auto,Auto,*,Auto,*" ColumnSpacing="8">
+        <Button x:Name="AllTimeButton" Content="全部时间" Click="ClearDateFilter" />
+        <TextBlock Grid.Column="1" Text="时间范围" VerticalAlignment="Center" />
+        <CalendarDatePicker Grid.Column="2" x:Name="StartDatePicker" Watermark="开始日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
+        <TextBlock Grid.Column="3" Text="至" VerticalAlignment="Center" />
+        <CalendarDatePicker Grid.Column="4" x:Name="EndDatePicker" Watermark="结束日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
       </Grid>
       <Button x:Name="SummaryButton" Grid.Row="1" Grid.Column="1" Content="数据汇总" Click="SummaryClicked" />
       <Grid Grid.Row="2" Grid.ColumnSpan="3">
