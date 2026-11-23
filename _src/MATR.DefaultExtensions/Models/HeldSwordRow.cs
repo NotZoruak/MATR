@@ -20,6 +20,8 @@ public sealed class HeldSwordRow
     public string Horse { get; init; } = "—";
     public string Charm { get; init; } = "—";
     public string Treasure { get; init; } = "—";
+    public long? EquippedMobility { get; init; }
+    public string MobilityTip { get; init; } = "装备属性尚未读取";
     public long? Number(string key) => long.TryParse(Data[key]?.ToString(), out var value) ? value : null;
     public long? StaticNumber(string key) => long.TryParse(Definition?[key]?.ToString(), out var value) ? value : null;
     public string Protection => Number("protect") switch { 0 => "无锁", 1 => "上锁", 2 => "喜爱", _ => "未知" };

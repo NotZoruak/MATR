@@ -51,6 +51,19 @@ public static class HeldSwordTableData
             var treasureId = EquippedId("artifact_serial_id1");
             var treasureKind = treasureId == null ? null : snapshot.EquipmentKinds.GetValueOrDefault("artifact:" + treasureId);
             var treasureName = treasureKind == null ? null : catalog["equipment"]?["artifact_master"]?[treasureKind]?.ToString();
+            long? EquipmentMobility(string? serial)
+            {
+                if (serial == null) return 0;
+                var kind = EquipmentKind(serial);
+                return long.TryParse(kind == null ? null : catalog["equipment"]?["equip_mobile"]?[kind]?.ToString(), out var value) ? value : null;
+            }
+            long? baseMobility = long.TryParse(raw["mobile"]?.ToString(), out var baseMobile) ? baseMobile : null;
+            long? troopMobility = 0;
+            for (var slot = 1; slot <= 3; slot++) troopMobility += EquipmentMobility(EquippedId("equip_serial_id" + slot));
+            var horseMobility = EquipmentMobility(horseId);
+            // 宝物响应已包含强化后的属性，不能再次叠加强化表。
+            long? treasureMobility = treasureId == null ? 0 : long.TryParse(snapshot.EquipmentKinds.GetValueOrDefault("mobile:artifact:" + treasureId), out var artifactMobile) ? artifactMobile : null;
+            var equippedMobility = baseMobility + troopMobility + horseMobility + treasureMobility;
             var nameText = definition?["name"]?.ToString() ?? "刀剑 ID：" + raw["sword_id"];
             if (definition?["symbol"]?.ToString() == "2") nameText += "·极";
             return new HeldSwordRow
@@ -62,6 +75,8 @@ public static class HeldSwordTableData
                 Horse = horseId == null ? "—" : EquipmentName(EquipmentKind(horseId)) ?? "马匹 #" + horseId,
                 Charm = charmId == null ? "—" : CharmNames.GetValueOrDefault(charmId) ?? "御守 #" + charmId,
                 Treasure = treasureId == null ? "—" : treasureName ?? "未知宝物",
+                EquippedMobility = equippedMobility,
+                MobilityTip = $"本体：{HeldSwordRow.Text(baseMobility)}\n刀装：{HeldSwordRow.Text(troopMobility)}\n马匹：{HeldSwordRow.Text(horseMobility)}\n宝物：{HeldSwordRow.Text(treasureMobility)}\n装备后机动：{HeldSwordRow.Text(equippedMobility)}",
                 NeededExperience = max > 0 && level >= max ? 0 : next.HasValue ? Math.Max(0, next.Value - experience) : null
             };
         }).ToList();

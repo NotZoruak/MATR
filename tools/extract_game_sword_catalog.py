@@ -37,6 +37,7 @@ def main():
         equipment[name] = {str(row[id_key]): row.get("name", str(row[id_key])) for row in rows}
         if name == "equip_master":
             equipment["equip_soldier"] = {str(row[id_key]): row["soldier"] for row in rows if "soldier" in row}
+            equipment["equip_mobile"] = {str(row[id_key]): row["mobile"] for row in rows}
     sources = {name: hashlib.sha256((args.cfg_dir / (name + ".lua")).read_bytes()).hexdigest()
                for name in ["sword_master", "sword_level_master", "equip_master", "artifact_master"]}
     document = {"sources": sources, "swords": swords, "levels": levels, "equipment": equipment}
