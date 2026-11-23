@@ -105,7 +105,7 @@ public class HarvestPipelineTests
                 "[1206,642,1,1]",
                 pipeline[$"{prefix}_Confirm"]!["post_wait_freezes"]!["target"]!.ToJsonString());
             Assert.Equal(
-                $"[刷收获物]时代{era}收获物已获取",
+                $"[刷收获物] 时代{era}收获物已获取",
                 pipeline[$"{prefix}_Done"]!["focus"]!["Node.Action.Succeeded"]!["content"]!.GetValue<string>());
             Assert.Equal(
                 "log",
