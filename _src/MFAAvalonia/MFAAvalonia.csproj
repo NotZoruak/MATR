@@ -162,6 +162,7 @@
             <LastGenOutput>Strings.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Remove="%(_MaaFrameworkRuntime.DestinationFolder)AnyCPU\**" />
+        <EmbeddedResource Include="Assets/GameItemCatalog.json" LogicalName="MFAAvalonia.GameItemCatalog.json" />
     </ItemGroup>
 
     <ItemGroup>

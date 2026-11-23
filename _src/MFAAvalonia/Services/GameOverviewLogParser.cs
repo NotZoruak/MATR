@@ -21,10 +21,6 @@ public static class GameOverviewLogParser
         ["6111"] = "三所物·菊碎片",
         ["6113"] = "三所物·狮子碎片"
     };
-    private static readonly Dictionary<string, string> SeasonalRewardNames = new()
-    {
-        ["4206"] = "天竺牡丹"
-    };
     public sealed record Value(string Text, string ObservedAt);
     public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
     public sealed record WorkEntry(string Label, string? FinishedAt);
@@ -36,6 +32,7 @@ public static class GameOverviewLogParser
         public Dictionary<string, Value> Values { get; } = new();
         public Dictionary<string, List<WorkEntry>> WorkItems { get; } = new();
         public Dictionary<string, List<string?>> DutyMembers { get; } = new();
+        public Dictionary<string, List<string?>> DutyMemberSerials { get; } = new();
         public Dictionary<string, TeamEntry> Teams { get; } = new();
         public Dictionary<string, JObject> HeldSwords { get; } = new();
         public Dictionary<string, string> SwordTeams { get; } = new();
@@ -88,18 +85,19 @@ public static class GameOverviewLogParser
             var start = line.IndexOf('{');
             if (start < 0)
             {
-                if (request && requestRoute.Success && requestRoute.Groups[1].Value is "/sally/sally" or "/sally/parallelpastsally")
+                if (request && requestRoute.Success && requestRoute.Groups[1].Value is "/sally/sally" or "/sally/parallelpastsally" or "/sally/eventsally")
                 {
                     var values = RequestValues(line);
-                    if (values.TryGetValue("party_no", out var party) && values.TryGetValue("episode_id", out var episode)
-                        && values.TryGetValue("field_id", out var field) && int.TryParse(party, out var partyNo)
+                    if (values.TryGetValue("party_no", out var party) && (values.TryGetValue("episode_id", out var episode) || values.TryGetValue("event_id", out episode))
+                        && (values.TryGetValue("event_field_id", out var field) || values.TryGetValue("field_id", out field)) && int.TryParse(party, out var partyNo)
                         && partyNo is >= 1 and <= 5 && int.TryParse(episode, out var episodeNo) && episodeNo > 0
                         && int.TryParse(field, out var fieldNo) && fieldNo > 0)
                     {
                         pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
                         pendingSortieAccount = Regex.Match(line, @"[?&]uid=(\d+)").Groups[1].Value;
                         var isParallelPast = requestRoute.Groups[1].Value == "/sally/parallelpastsally";
-                        pendingSortieMaps[pendingSortieTeam] = (isParallelPast ? "异去 " : "") + $"{episodeNo}-{fieldNo}";
+                        var isEvent = requestRoute.Groups[1].Value == "/sally/eventsally";
+                        pendingSortieMaps[pendingSortieTeam] = (isParallelPast ? "异去 " : isEvent ? "活动 " : "") + $"{episodeNo}-{fieldNo}";
                     }
                 }
                 continue;
@@ -118,25 +116,26 @@ public static class GameOverviewLogParser
             if (request)
             {
                 if (path == "/conquest/start") requests[account] = data;
-                if (path is "/sally/sally" or "/sally/parallelpastsally")
+                if (path is "/sally/sally" or "/sally/parallelpastsally" or "/sally/eventsally")
                 {
                     var values = RequestValues(line);
-                    if (values.TryGetValue("party_no", out var party) && values.TryGetValue("episode_id", out var episode)
-                        && values.TryGetValue("field_id", out var field) && int.TryParse(party, out var partyNo)
+                    if (values.TryGetValue("party_no", out var party) && (values.TryGetValue("episode_id", out var episode) || values.TryGetValue("event_id", out episode))
+                        && (values.TryGetValue("event_field_id", out var field) || values.TryGetValue("field_id", out field)) && int.TryParse(party, out var partyNo)
                         && partyNo is >= 1 and <= 5 && int.TryParse(episode, out var episodeNo) && episodeNo > 0
                         && int.TryParse(field, out var fieldNo) && fieldNo > 0)
                     {
                         pendingSortieTeam = partyNo.ToString(CultureInfo.InvariantCulture);
                         pendingSortieAccount = account;
                         var isParallelPast = path == "/sally/parallelpastsally";
-                        pendingSortieMaps[pendingSortieTeam] = (isParallelPast ? "异去 " : "") + $"{episodeNo}-{fieldNo}";
+                        var isEvent = path == "/sally/eventsally";
+                        pendingSortieMaps[pendingSortieTeam] = (isParallelPast ? "异去 " : isEvent ? "活动 " : "") + $"{episodeNo}-{fieldNo}";
                     }
                 }
                 continue;
             }
             if (!Regex.IsMatch(line[..start], @"status:200\b") || data["status"]?.ToString() != "0")
             {
-                if (path is "/sally/sally" or "/sally/parallelpastsally" && pendingSortieTeam != null)
+                if (path is "/sally/sally" or "/sally/parallelpastsally" or "/sally/eventsally" && pendingSortieTeam != null)
                 {
                     pendingSortieMaps.Remove(pendingSortieTeam);
                     pendingSortieTeam = null;
@@ -163,7 +162,7 @@ public static class GameOverviewLogParser
             }
             result.Responses++;
             var time = Regex.Match(line, @"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}").Value;
-            if (path is "/sally/sally" or "/sally/parallelpastsally" && pendingSortieTeam is { } dispatchedTeam)
+            if (path is "/sally/sally" or "/sally/parallelpastsally" or "/sally/eventsally" && pendingSortieTeam is { } dispatchedTeam)
             {
                 if (pendingSortieMaps.Remove(dispatchedTeam, out var dispatchedMap))
                 {
@@ -179,14 +178,16 @@ public static class GameOverviewLogParser
             var currentSortiePoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
             if (activeSortieTeam is { } sortieTeam)
             {
-                if (path is "/sally/forward" or "/sally/parallelpastforward"
+                if (path is "/sally/forward" or "/sally/parallelpastforward" or "/sally/eventforward"
                     && int.TryParse(data["square_id"]?.ToString(), out var squareId) && squareId > 0)
                 {
                     sortiePoints[sortieTeam] = squareId.ToString(CultureInfo.InvariantCulture);
                     teams[sortieTeam] = ("3", null, time);
                 }
                 else if (path == "/home" || path == "/battle/battle"
-                    && data["finish"] is JObject battleFinish && battleFinish.Value<bool?>("is_finish") == true)
+                    && data["finish"] is JObject battleFinish && battleFinish.Value<bool?>("is_finish") == true
+                    && (sortieMaps.GetValueOrDefault(sortieTeam)?.StartsWith("活动 ", StringComparison.Ordinal) != true
+                        || battleFinish.Value<bool?>("is_event_finish") == true))
                 {
                     teams[sortieTeam] = ("1", null, time);
                     sortieMaps.Remove(sortieTeam);
@@ -232,7 +233,7 @@ public static class GameOverviewLogParser
                     var resultType = data["success"]?.ToString() == "2" ? "大成功" : "成功";
                     rewardSource = "远征奖励 · " + map + " · " + resultType;
                 }
-                else if (path is "/sally/forward" or "/sally/parallelpastforward")
+                else if (path is "/sally/forward" or "/sally/parallelpastforward" or "/sally/eventforward")
                 {
                     rewardMap = sortieMaps.GetValueOrDefault(activeSortieTeam ?? "");
                     rewardPoint = sortiePoints.GetValueOrDefault(activeSortieTeam ?? "");
@@ -252,15 +253,13 @@ public static class GameOverviewLogParser
             void AddResourceRewards(JArray? rewards, string observedAt, int sourceIndex, string? map, string? point, string source, bool includeBattleBonus = false)
             {
                 if (rewards == null) return;
-                var names = new Dictionary<string, string> { ["1"] = "委托符", ["2"] = "木炭", ["3"] = "玉钢", ["4"] = "冷却材", ["5"] = "砥石" };
                 for (var rewardIndex = 0; rewardIndex < rewards.Count; rewardIndex++)
                 {
                     if (rewards[rewardIndex] is not JObject reward) continue;
                     var itemType = reward["item_type"]?.ToString();
                     var itemId = reward["item_id"]?.ToString() ?? reward["consumable_id"]?.ToString()
                         ?? reward["sword_id"]?.ToString() ?? reward["artifact_id"]?.ToString();
-                    var mappedItemName = itemId == null ? null
-                        : TreasureFragmentNames.GetValueOrDefault(itemId) ?? SeasonalRewardNames.GetValueOrDefault(itemId);
+                    var mappedItemName = GameItemNames.Find(itemType, itemId);
                     var amountText = reward["item_num"]?.ToString() ?? reward["num"]?.ToString() ?? reward["amount"]?.ToString();
                     _ = int.TryParse(amountText, out var amount);
                     if (includeBattleBonus)
@@ -269,18 +268,12 @@ public static class GameOverviewLogParser
                         if (int.TryParse(reward["bonus_monthcard_salary"]?.ToString(), out var monthlyBonus)) amount += monthlyBonus;
                     }
                     if (amount <= 0) continue;
-                    var name = itemType switch
-                    {
-                        "4" => "小判",
-                        "5" when itemId != null && names.TryGetValue(itemId, out var resourceName) => resourceName,
-                        "1" when itemId == "8" => "加速符",
-                        _ => null
-                    } ?? (mappedItemName != null
+                    var name = (mappedItemName != null
                         ? mappedItemName
                         : itemId == null
                         ? $"未知物品（类型 {itemType ?? "未知"}）"
                         : $"未知物品（类型 {itemType ?? "未知"}，ID {itemId}）");
-                    var isTreasureFragment = itemId != null && TreasureFragmentNames.ContainsKey(itemId);
+                    var isTreasureFragment = itemType == "1" && itemId != null && TreasureFragmentNames.ContainsKey(itemId);
                     var recordSource = isTreasureFragment && map?.StartsWith("异去 ", StringComparison.Ordinal) == true
                         ? "异去掉落"
                         : source;
@@ -327,6 +320,8 @@ public static class GameOverviewLogParser
                                 result.EquipmentKinds[key] = kind.ToString();
                             if (equipmentField == "equip" && long.TryParse(item["soldier"]?.ToString(), out var soldier))
                                 result.EquipmentKinds["soldier:" + id] = soldier.ToString();
+                            if (equipmentField == "artifact" && long.TryParse(item["mobile"]?.ToString(), out var mobile))
+                                result.EquipmentKinds["mobile:artifact:" + id] = mobile.ToString(CultureInfo.InvariantCulture);
                         }
             foreach (var swordField in new[] { "sword_all", "sword" })
                 if (data[swordField] is JObject records)
@@ -382,7 +377,8 @@ public static class GameOverviewLogParser
                         var status = item["status"]!.ToString();
                         var finish = item["finished_at"]?.ToString();
                         if (status == "1" && activeSortieTeam == number
-                            && sortieMaps.GetValueOrDefault(number)?.StartsWith("异去 ", StringComparison.Ordinal) == true)
+                            && (sortieMaps.GetValueOrDefault(number)?.StartsWith("异去 ", StringComparison.Ordinal) == true
+                                || sortieMaps.GetValueOrDefault(number)?.StartsWith("活动 ", StringComparison.Ordinal) == true))
                             status = "3";
                         if (finish == null && teams.TryGetValue(number, out var previous) && previous.Status == status)
                             finish = previous.Finish;
@@ -470,15 +466,18 @@ public static class GameOverviewLogParser
             foreach (var job in new[] { "horse", "field", "bout" })
             {
                 var members = new List<string?>();
+                var serials = new List<string?>();
                 for (var index = 1; index <= 2; index++)
                 {
                     var serial = dutyDetails[job + "_id" + index]?.ToString();
                     var id = dutyDetails[job + "_sword_id" + index]?.ToString();
+                    serials.Add(string.IsNullOrEmpty(serial) || serial == "0" ? null : serial);
                     if (string.IsNullOrEmpty(id) || id == "0")
                         id = string.IsNullOrEmpty(serial) || serial == "0" ? null : swords.GetValueOrDefault(serial, "个体：" + serial);
                     members.Add(id);
                 }
                 result.DutyMembers[job] = members;
+                result.DutyMemberSerials[job] = serials;
             }
         foreach (var key in new[] { "Forge", "Repair" })
             if (result.WorkItems.TryGetValue(key, out var entries))
@@ -527,6 +526,7 @@ public static class GameOverviewLogParser
             foreach (var pair in result.Values) copy.Values[pair.Key] = pair.Value;
             foreach (var pair in result.WorkItems) copy.WorkItems[pair.Key] = [.. pair.Value];
             foreach (var pair in result.DutyMembers) copy.DutyMembers[pair.Key] = [.. pair.Value];
+            foreach (var pair in result.DutyMemberSerials) copy.DutyMemberSerials[pair.Key] = [.. pair.Value];
             foreach (var pair in result.Teams) copy.Teams[pair.Key] = pair.Value;
             foreach (var pair in result.HeldSwords) copy.HeldSwords[pair.Key] = (JObject)pair.Value.DeepClone();
             foreach (var pair in result.SwordTeams) copy.SwordTeams[pair.Key] = pair.Value;
@@ -544,14 +544,14 @@ public static class GameOverviewLogParser
     private static Dictionary<string, string> RequestValues(string line)
     {
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (Match match in Regex.Matches(line, @"(?:[?&]|\b)(party_no|episode_id|field_id)=([^&\s,}]+)"))
+        foreach (Match match in Regex.Matches(line, @"(?:[?&]|\b)(party_no|episode_id|event_id|event_field_id|field_id)=([^&\s,}]+)"))
             values[match.Groups[1].Value] = Uri.UnescapeDataString(match.Groups[2].Value);
         var form = Regex.Match(line, @"\bData:\[(?<data>[^]]*)\]");
         if (form.Success)
             foreach (var pair in form.Groups["data"].Value.Split('&', StringSplitOptions.RemoveEmptyEntries))
             {
                 var parts = pair.Split('=', 2);
-                if (parts.Length == 2 && parts[0] is "party_no" or "episode_id" or "field_id")
+                if (parts.Length == 2 && parts[0] is "party_no" or "episode_id" or "event_id" or "event_field_id" or "field_id")
                     values[parts[0]] = Uri.UnescapeDataString(parts[1]);
             }
         var data = Regex.Match(line, @"(?:Data|data)\s*[:=]\s*(\[[^]]*\]|\{[^}]*\})");
@@ -561,10 +561,10 @@ public static class GameOverviewLogParser
             var token = JToken.Parse(data.Groups[1].Value);
             if (token is JArray array)
                 for (var index = 0; index + 1 < array.Count; index += 2)
-                    if (array[index]?.ToString() is "party_no" or "episode_id" or "field_id")
+                    if (array[index]?.ToString() is "party_no" or "episode_id" or "event_id" or "event_field_id" or "field_id")
                         values[array[index]!.ToString()] = array[index + 1]?.ToString() ?? "";
             if (token is JObject obj)
-                foreach (var key in new[] { "party_no", "episode_id", "field_id" })
+                foreach (var key in new[] { "party_no", "episode_id", "event_id", "event_field_id", "field_id" })
                     if (obj[key] != null) values[key] = obj[key]!.ToString();
         }
         catch (Newtonsoft.Json.JsonException) { }
