@@ -194,22 +194,26 @@
                             </Grid>
                             <StackPanel x:Name="DutyCardBody" Spacing="14">
                             <Border Classes="overview-header-divider" Margin="0,-6,0,0" />
-                                <Border Classes="overview-inset" Padding="14">
-                                    <UniformGrid Columns="3">
-                                        <StackPanel Spacing="8" Margin="0,0,12,0">
+                                    <UniformGrid x:Name="DutyJobs" Columns="3">
+                                      <Border x:Name="DutyHorseCard" Classes="overview-inset" Margin="0,0,8,8" ClipToBounds="True">
+                                        <StackPanel Spacing="10">
                                             <TextBlock Text="饲马" Classes="overview-label" />
-                                            <TextBlock x:Name="DutyHorseMembers" Text="未读取" Classes="overview-detail" TextWrapping="Wrap" />
+                                            <StackPanel x:Name="DutyHorseMembers" Spacing="10" />
                                         </StackPanel>
-                                        <StackPanel Spacing="8" Margin="0,0,12,0">
+                                      </Border>
+                                      <Border x:Name="DutyFieldCard" Classes="overview-inset" Margin="0,0,8,8" ClipToBounds="True">
+                                        <StackPanel Spacing="10">
                                             <TextBlock Text="耕作" Classes="overview-label" />
-                                            <TextBlock x:Name="DutyFieldMembers" Text="未读取" Classes="overview-detail" TextWrapping="Wrap" />
+                                            <StackPanel x:Name="DutyFieldMembers" Spacing="10" />
                                         </StackPanel>
-                                        <StackPanel Spacing="8">
+                                      </Border>
+                                      <Border x:Name="DutyBoutCard" Classes="overview-inset" Margin="0,0,0,8" ClipToBounds="True">
+                                        <StackPanel Spacing="10">
                                             <TextBlock Text="切磋" Classes="overview-label" />
-                                            <TextBlock x:Name="DutyBoutMembers" Text="未读取" Classes="overview-detail" TextWrapping="Wrap" />
+                                            <StackPanel x:Name="DutyBoutMembers" Spacing="10" />
                                         </StackPanel>
+                                      </Border>
                                     </UniformGrid>
-                                </Border>
                             </StackPanel>
                         </StackPanel>
                     </Border>

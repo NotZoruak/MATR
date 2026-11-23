@@ -20,7 +20,8 @@ namespace MFAAvalonia.Views.Pages;
 /// <summary>按日期分组显示每振刀剑的内番结算结果。</summary>
 public partial class DutyRecordsView : UserControl
 {
-    private sealed record Row(GameOverviewLogParser.DutyRecord Record, string Name, string Growth, string Outcome, bool IsMaximum);
+    private sealed record Settlement(string Text, bool IsMaximum, bool Increased);
+    private sealed record Row(GameOverviewLogParser.DutyRecord Record, string Name, Settlement First, Settlement Second);
     public sealed record DutySummary(int RecordCount, int DateCount, int NoGrowthCount, IReadOnlyDictionary<string, long> Gains);
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
     private readonly string _directory;
@@ -137,12 +138,24 @@ public partial class DutyRecordsView : UserControl
             return name;
         }) });
         grid.Columns.Add(new DataGridTextColumn { Header = "项目", Binding = new Avalonia.Data.Binding(nameof(Row.Record) + ".DutyType"), Width = new DataGridLength(84) });
-        grid.Columns.Add(new DataGridTemplateColumn { Header = "结算结果", Width = new DataGridLength(1, DataGridLengthUnitType.Star), CellTemplate = new FuncDataTemplate<Row>((row, _) => {
-            var border = new Border { Background = Brushes.Transparent, Padding = new Thickness(1, 2), HorizontalAlignment = HorizontalAlignment.Stretch };
-            border.Child = new TextBlock { Text = row?.Outcome ?? "—", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
-            if (row?.IsMaximum == true) border.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SwordMaximumBrush"));
-            return border;
-        }) });
+        for (var index = 0; index < 2; index++)
+        {
+            var resultIndex = index;
+            grid.Columns.Add(new DataGridTemplateColumn
+            {
+                Header = "结算结果 " + (index + 1), Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                CellTemplate = new FuncDataTemplate<Row>((row, _) =>
+                {
+                    var result = resultIndex == 0 ? row?.First : row?.Second;
+                    var border = new Border { Background = Brushes.Transparent, Padding = new Thickness(1, 2), HorizontalAlignment = HorizontalAlignment.Stretch };
+                    var text = new TextBlock { Text = result?.Text ?? "—", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
+                    if (result?.Increased == true) text.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension("OverviewSuccessBrush"));
+                    border.Child = text;
+                    if (result?.IsMaximum == true) border.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SwordMaximumBrush"));
+                    return border;
+                })
+            });
+        }
         grid.Columns.Add(new DataGridTextColumn { Header = "", Width = new DataGridLength(16), IsReadOnly = true, CanUserResize = false, CanUserReorder = false, CanUserSort = false });
         return grid;
     }
@@ -153,7 +166,7 @@ public partial class DutyRecordsView : UserControl
         if (_startDate.HasValue && timestamp.Date < _startDate.Value) return false;
         if (_endDate.HasValue && timestamp.Date > _endDate.Value) return false;
         if (string.IsNullOrWhiteSpace(_search)) return true;
-        var searchable = string.Join(" ", row.Record.Time, row.Record.DutyType, row.Name, row.Growth, row.Outcome);
+        var searchable = string.Join(" ", row.Record.Time, row.Record.DutyType, row.Name, row.First.Text, row.Second.Text);
         foreach (var token in _search.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
         {
             var excluded = token[0] == '-';
@@ -170,20 +183,37 @@ public partial class DutyRecordsView : UserControl
         var sword = SwordCatalog["swords"]?[record.SwordId] as JObject;
         var name = sword?["name"]?.ToString() ?? "刀剑 ID：" + record.SwordId;
         if (sword?["symbol"]?.ToString() == "2") name += "·极";
-        var (key, label) = record.UpType switch { 2 => ("def", "防御"), 3 => ("hp", "生存"), _ => ("", $"未知属性（类型 {record.UpType}）") };
-        var growth = record.Success && record.UpValue > 0 ? $"{label}+{record.UpValue}" : $"{label}未增长";
-        var data = record.SwordData;
-        var current = long.TryParse(data[key == "hp" ? "hp_max" : key]?.ToString(), out var hp) && key == "hp"
-            ? hp : long.TryParse(data[key]?.ToString(), out var stat) ? stat : (long?)null;
-        long? total = long.TryParse(sword?[key + "_up"]?.ToString(), out var cap) ? cap : null;
-        long? remaining = long.TryParse(data[key + "_up"]?.ToString(), out var left) ? left : null;
-        var gained = total.HasValue && remaining.HasValue && total >= remaining ? total - remaining : null;
-        var result = current?.ToString(CultureInfo.InvariantCulture) ?? "—";
-        if (gained.HasValue && total.HasValue) result += $"（{gained}/{total}）";
-        var maximum = record.IsMaximum || remaining == 0;
-        var outcome = growth + "，" + result;
-        return new Row(record, name, growth, outcome, maximum);
+        var attributes = record.DutyType switch
+        {
+            "饲马" => new[] { ("def", "防御"), ("mobile", "机动") },
+            "耕作" => new[] { ("hp", "生存"), ("scout", "侦察") },
+            "手合" or "切磋" => new[] { ("atk", "打击"), ("back", "冲力") },
+            _ => new[] { GrowthAttribute(record.UpType), ("", "未知属性") }
+        };
+        return new Row(record, name,
+            BuildSettlement(record, sword, attributes[0].Item1, attributes[0].Item2),
+            BuildSettlement(record, sword, attributes[1].Item1, attributes[1].Item2));
     }
 
-    private static string AttributeName(int type) => type switch { 2 => "防御", 3 => "生存", _ => $"未知属性（类型 {type}）" };
+    private static Settlement BuildSettlement(GameOverviewLogParser.DutyRecord record, JObject? sword, string key, string label)
+    {
+        var isGrowthAttribute = GrowthAttribute(record.UpType).Key == key;
+        var increased = isGrowthAttribute && record.Success && record.UpValue > 0;
+        long? total = long.TryParse(sword?[key + "_up"]?.ToString(), out var cap) ? cap : null;
+        long? remaining = long.TryParse(record.SwordData[key + "_up"]?.ToString(), out var left) ? left : null;
+        var ratio = total.HasValue && remaining.HasValue && remaining >= 0 && total >= remaining
+            ? $"{total - remaining}/{total}" : "—";
+        var maximum = remaining == 0 || isGrowthAttribute && record.IsMaximum;
+        return new Settlement(label + (increased ? "+" + record.UpValue.ToString(CultureInfo.InvariantCulture) : "-") + "（" + ratio + "）", maximum, increased);
+    }
+
+    // 客户端结算类型顺序：机动、防御、侦察、生存、打击、冲力。
+    private static (string Key, string Label) GrowthAttribute(int type) => type switch
+    {
+        1 => ("mobile", "机动"), 2 => ("def", "防御"), 3 => ("scout", "侦察"),
+        4 => ("hp", "生存"), 5 => ("atk", "打击"), 6 => ("back", "冲力"),
+        _ => ("", $"未知属性（类型 {type}）")
+    };
+
+    private static string AttributeName(int type) => GrowthAttribute(type).Label;
 }

@@ -29,6 +29,9 @@
   </UserControl.Styles>
   <UserControl.Resources>
     <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Views/Pages/OverviewStatusBrushes.axaml" />
+      </ResourceDictionary.MergedDictionaries>
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light"><SolidColorBrush x:Key="SwordMaximumBrush" Color="#F4E4AB" /></ResourceDictionary>
         <ResourceDictionary x:Key="Dark"><SolidColorBrush x:Key="SwordMaximumBrush" Color="#625329" /></ResourceDictionary>

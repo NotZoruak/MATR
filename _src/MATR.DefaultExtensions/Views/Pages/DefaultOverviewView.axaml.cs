@@ -8,6 +8,7 @@ using MFAAvalonia.Services;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Layout;
 
 namespace MFAAvalonia.Views.Pages;
 
@@ -15,6 +16,7 @@ namespace MFAAvalonia.Views.Pages;
 public partial class DefaultOverviewView : UserControl
 {
     private static readonly string[] OverviewKeys = ["PlayerName", "Country", "Level", "Charcoal", "Steel", "Coolant", "File", "Money", "Bill", "Accelerator", "Team1", "Team2", "Team3", "Team4", "Team5", "Duty", "Forge", "Repair"];
+    private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
 
     private string _paletteKey = "";
     private GameOverviewLogParser.Snapshot? _snapshot;
@@ -91,7 +93,9 @@ public partial class DefaultOverviewView : UserControl
     {
         _snapshot = null;
         WarehouseSyncButton.IsEnabled = false;
-        DutyHorseMembers.Text = DutyFieldMembers.Text = DutyBoutMembers.Text = "未读取";
+        DutyHorseMembers.Children.Clear();
+        DutyFieldMembers.Children.Clear();
+        DutyBoutMembers.Children.Clear();
         ForgeSlots.Children.Clear();
         RepairSlots.Children.Clear();
         foreach (var key in OverviewKeys)
@@ -115,12 +119,109 @@ public partial class DefaultOverviewView : UserControl
             }
         _snapshot = snapshot;
         WarehouseSyncButton.IsEnabled = !_syncingWarehouse;
-        foreach (var job in new[] { ("horse", DutyHorseMembers), ("field", DutyFieldMembers), ("bout", DutyBoutMembers) })
-            if (snapshot.DutyMembers.TryGetValue(job.Item1, out var members))
-                job.Item2.Text = members.All(id => id == null) ? "未指派" : string.Join("\n", members.Select(id => id == null ? "未指派" :
-                    id.StartsWith("个体：", StringComparison.Ordinal) ? "未识别刀剑" : SecretaryName("刀剑 ID：" + id)));
+        RenderDutyMembers(snapshot);
         RenderWorkStatus();
         RenderTeamStatus();
+    }
+
+    private void RenderDutyMembers(GameOverviewLogParser.Snapshot snapshot)
+    {
+        foreach (var (job, panel, jobCard) in new[] { ("horse", DutyHorseMembers, DutyHorseCard), ("field", DutyFieldMembers, DutyFieldCard), ("bout", DutyBoutMembers, DutyBoutCard) })
+        {
+            panel.Children.Clear();
+            jobCard.IsVisible = true;
+            if (!snapshot.DutyMembers.TryGetValue(job, out var members))
+            {
+                panel.Children.Add(new TextBlock { Text = "未读取", Classes = { "overview-detail" } });
+                continue;
+            }
+            if (members.All(id => id == null))
+            {
+                jobCard.IsVisible = false;
+                continue;
+            }
+
+            var attributes = job switch
+            {
+                "horse" => new[] { ("def", "防御"), ("mobile", "机动") },
+                "field" => new[] { ("hp", "生存"), ("scout", "侦察") },
+                _ => new[] { ("atk", "打击"), ("back", "冲力") }
+            };
+            snapshot.DutyMemberSerials.TryGetValue(job, out var serials);
+            for (var index = 0; index < members.Count; index++)
+            {
+                var swordId = members[index];
+                if (swordId == null)
+                {
+                    continue;
+                }
+                if (swordId.StartsWith("个体：", StringComparison.Ordinal))
+                {
+                    panel.Children.Add(new TextBlock { Text = "未识别刀剑", Classes = { "overview-detail" } });
+                    continue;
+                }
+                var serial = serials != null && index < serials.Count ? serials[index] : null;
+                var swordData = serial != null && snapshot.HeldSwords.TryGetValue(serial, out var raw) ? raw : null;
+                var definition = SwordCatalog["swords"]?[swordId] as JObject;
+                var member = new StackPanel { Spacing = 8 };
+                var name = definition?["name"]?.ToString() ?? "刀剑 ID：" + swordId;
+                if (definition?["symbol"]?.ToString() == "2") name += "·极";
+                var nameText = new TextBlock { Text = name, FontWeight = Avalonia.Media.FontWeight.SemiBold, Classes = { "overview-detail" } };
+                member.Children.Add(nameText);
+                var stats = new Avalonia.Controls.Primitives.UniformGrid { Columns = 1 };
+                // 按成员卡片的实际可用宽度切换，不依赖窗口或侧栏宽度。
+                stats.SizeChanged += (_, args) => stats.Columns = args.NewSize.Width >= 260 ? 2 : 1;
+                for (var attributeIndex = 0; attributeIndex < attributes.Length; attributeIndex++)
+                {
+                    var attribute = attributes[attributeIndex];
+                    var stat = CreateDutyProgress(attribute.Item1, attribute.Item2, swordData, definition);
+                    stats.Children.Add(new Border { Child = stat, Padding = new Avalonia.Thickness(4), ClipToBounds = true });
+                }
+                member.Children.Add(stats);
+                var card = new Border { Child = member, Padding = new Avalonia.Thickness(10), CornerRadius = new Avalonia.CornerRadius(6), BorderThickness = new Avalonia.Thickness(1), ClipToBounds = true };
+                card.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SukiCardBackground"));
+                card.Bind(Border.BorderBrushProperty, new DynamicResourceExtension("SukiControlBorderBrush"));
+                panel.Children.Add(card);
+            }
+        }
+        DutyJobs.Columns = Math.Max(1, DutyJobs.Children.Count(card => card.IsVisible));
+    }
+
+    private Control CreateDutyProgress(string key, string label, JObject? data, JObject? definition)
+    {
+        long? remaining = long.TryParse(data?[key + "_up"]?.ToString(), out var left) ? left : null;
+        long? maximum = long.TryParse(definition?[key + "_up"]?.ToString(), out var total) ? total : null;
+        // 静态表记录可提升总量，个体记录剩余量，两者之差为已提升值。
+        long? current = maximum.HasValue && remaining.HasValue && remaining >= 0 && maximum >= remaining
+            ? maximum - remaining : null;
+        var box = new StackPanel { Spacing = 4 };
+        var header = new Grid { ColumnDefinitions = new ColumnDefinitions(remaining == 0 ? "Auto,*,Auto" : "Auto,*"), ColumnSpacing = 6 };
+        header.Children.Add(new TextBlock { Text = label, FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Classes = { "caption" } });
+        var number = new TextBlock { Text = current.HasValue && maximum.HasValue ? $"{current}/{maximum}" : "未读取", FontSize = 12, HorizontalAlignment = HorizontalAlignment.Right };
+        Grid.SetColumn(number, 1);
+        header.Children.Add(number);
+        if (remaining == 0)
+        {
+            var footer = new TextBlock { Text = "MAX", HorizontalAlignment = HorizontalAlignment.Right, FontSize = 11 };
+            footer.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension("OverviewSuccessBrush"));
+            Grid.SetColumn(footer, 2);
+            header.Children.Add(footer);
+        }
+        box.Children.Add(header);
+        if (current.HasValue && maximum.HasValue)
+        {
+            var ratio = maximum > 0 ? Math.Clamp((double)current.Value / maximum.Value, 0, 1) : 1;
+            var bar = new Grid { Height = 3, ColumnDefinitions = new ColumnDefinitions() };
+            bar.ColumnDefinitions.Add(new ColumnDefinition(ratio, GridUnitType.Star));
+            bar.ColumnDefinitions.Add(new ColumnDefinition(1 - ratio, GridUnitType.Star));
+            var fill = new Border();
+            fill.Bind(Border.BackgroundProperty, new DynamicResourceExtension(remaining == 0 ? "OverviewSuccessBrush" : "OverviewAccentBrush"));
+            bar.Children.Add(fill);
+            var track = new Border { Child = bar, Height = 3, CornerRadius = new Avalonia.CornerRadius(1.5), ClipToBounds = true };
+            track.Bind(Border.BackgroundProperty, new DynamicResourceExtension("SukiControlBorderBrush"));
+            box.Children.Add(track);
+        }
+        return box;
     }
 
     private void RenderTeamStatus()
@@ -133,17 +234,26 @@ public partial class DefaultOverviewView : UserControl
                 || this.FindControl<TextBlock>("Value" + key) is not { } text) continue;
             var display = GameOverviewWorkStatus.FormatExpedition(team.Value, original.Text, _now);
             text.Classes.Set("overview-running", team.Value.Status == "2" && !display.Completed);
+            var displayText = display.Text;
+            if (team.Value.Status == "3" && team.Value.SortieMap is { } rawMap)
+                displayText = displayText.Replace(rawMap, GameEventNames.FormatMap(rawMap), StringComparison.Ordinal);
+            if (team.Value.Status == "2" && !display.Completed)
+            {
+                displayText = "远征中，" + (team.Value.ExpeditionMap ?? "地图未知");
+                displayText += "，" + GameOverviewWorkStatus.FormatSchedule(team.Value.FinishedAt, _now).Text;
+            }
             text.Text = null;
             text.Inlines ??= new InlineCollection();
             text.Inlines.Clear();
             if (display.Completed)
             {
-                var returned = new Run("远征已归来");
+                var returned = new Run("远征归来");
                 returned.Bind(Run.ForegroundProperty, new DynamicResourceExtension("OverviewSuccessBrush"));
                 text.Inlines.Add(returned);
-                text.Inlines.Add(new Run(display.Text[5..]));
+                if (!string.IsNullOrWhiteSpace(team.Value.ExpeditionMap))
+                    text.Inlines.Add(new Run("，" + team.Value.ExpeditionMap));
             }
-            else text.Inlines.Add(new Run(display.Text));
+            else text.Inlines.Add(new Run(displayText));
         }
     }
 
@@ -159,11 +269,11 @@ public partial class DefaultOverviewView : UserControl
                 panel.Columns = Math.Max(1, group.Value.Count);
                 foreach (var entry in group.Value)
                 {
-                    var status = GameOverviewWorkStatus.Format(entry.FinishedAt, _now);
-                    var statusText = new TextBlock { Text = status.Text == "未使用" ? "空闲" : status.Text.Replace("结束时间：", "", StringComparison.Ordinal), TextWrapping = TextWrapping.Wrap };
+                    var status = GameOverviewWorkStatus.FormatSchedule(entry.FinishedAt, _now);
+                    var statusText = new TextBlock { Text = status.Text == "未使用" ? "空闲" : status.Text.Replace("，剩余：", "\n剩余：", StringComparison.Ordinal), TextWrapping = TextWrapping.Wrap };
                     statusText.Classes.Add("overview-detail");
                     statusText.Classes.Add(status.Completed ? "overview-complete" :
-                        status.Text.StartsWith("结束时间：", StringComparison.Ordinal) ? "overview-running" : "overview-idle");
+                        status.Text.Contains("剩余：", StringComparison.Ordinal) ? "overview-running" : "overview-idle");
                     var item = new StackPanel { Spacing = 8, Margin = new Avalonia.Thickness(0, 0, 12, 0) };
                     var slotLabel = new TextBlock { Text = entry.Label };
                     slotLabel.Classes.Add("overview-label");
@@ -192,10 +302,10 @@ public partial class DefaultOverviewView : UserControl
                 if (index > 0) text.Inlines.Add(new LineBreak());
                 var entry = group.Value[index];
                 if (entry.Label.Length > 0) text.Inlines.Add(new Run(entry.Label + "　"));
-                var status = GameOverviewWorkStatus.Format(entry.FinishedAt, _now);
+                var status = GameOverviewWorkStatus.FormatSchedule(entry.FinishedAt, _now);
                 var run = new Run(status.Text);
                 run.Bind(Run.ForegroundProperty, new DynamicResourceExtension(status.Completed ? "OverviewSuccessBrush" :
-                    status.Text.StartsWith("结束时间：", StringComparison.Ordinal) ? "OverviewAccentBrush" : "OverviewMutedBrush"));
+                    status.Text.Contains("剩余：", StringComparison.Ordinal) ? "OverviewAccentBrush" : "OverviewMutedBrush"));
                 text.Inlines.Add(run);
             }
         }

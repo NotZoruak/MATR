@@ -43,11 +43,12 @@ public partial class TeamStatusView : UserControl
     private readonly string _layoutPath;
     private List<HeldSwordRow> _rows = [];
     private GameOverviewLogParser.Snapshot? _snapshot;
-    private string? _expandedTeam;
+    private string? _expandedTeam = "1";
     private string _signature = "";
     private bool _loadingLayout;
     private ContextMenu? _headerMenu;
     private DateTimeOffset _now = DateTimeOffset.UtcNow;
+    private readonly Dictionary<string, TextBlock> _countdowns = new();
     private bool _experienceMode;
 
     public TeamStatusView(string dataDirectory)
@@ -107,11 +108,14 @@ public partial class TeamStatusView : UserControl
             && GameOverviewWorkStatus.Format(team.FinishedAt, previous).Completed
                 != GameOverviewWorkStatus.Format(team.FinishedAt, now).Completed) == true)
             BuildCards();
+        foreach (var (team, text) in _countdowns)
+            text.Text = RemainingText(_snapshot?.Teams.GetValueOrDefault(team)?.FinishedAt);
     }
 
     private void BuildCards()
     {
         TeamCards.Children.Clear();
+        _countdowns.Clear();
         for (var number = 1; number <= 5; number++)
         {
             var team = number.ToString(CultureInfo.InvariantCulture);
@@ -127,44 +131,57 @@ public partial class TeamStatusView : UserControl
                 : null;
             var map = entry?.Status switch
             {
-                "3" => (entry.SortieMap ?? "地图未知") + (entry.SortiePoint == null ? "" : " · 点位 " + entry.SortiePoint),
+                "3" => (GameEventNames.FormatMap(entry.SortieMap) ?? "地图未知") + (entry.SortiePoint == null ? "" : " · 点位 " + entry.SortiePoint),
                 _ => ""
             };
-            var details = new StackPanel { Spacing = 3, VerticalAlignment = VerticalAlignment.Center };
+            var details = new StackPanel { Spacing = 2, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center };
             details.Children.Add(new TextBlock
             {
                 Text = $"部队{ChineseNumber(number)}", FontSize = 16, FontWeight = FontWeight.SemiBold,
-                HorizontalAlignment = HorizontalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Stretch, TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap
             });
             var statusText = new TextBlock
             {
                 Text = entry?.Status == "2"
                     ? (expedition?.Text ?? status) + " · " + (entry.ExpeditionMap ?? "地图未知")
                     : status,
-                FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center,
-                TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap, MaxWidth = 174
+                FontSize = 13, HorizontalAlignment = HorizontalAlignment.Stretch,
+                TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap
             };
             if (expedition?.Completed == true)
                 statusText.Bind(TextBlock.ForegroundProperty, new DynamicResourceExtension("OverviewSuccessBrush"));
             details.Children.Add(statusText);
-            if (entry?.Status == "2")
-                details.Children.Add(new TextBlock
+            if (entry?.Status == "2" && expedition?.Completed != true)
+            {
+                details.Children.Add(CardTimeText(FormatReturnTime(entry.FinishedAt)));
+                var remaining = RemainingText(entry.FinishedAt);
+                if (remaining.Length > 0)
                 {
-                    Text = FormatReturnTime(entry.FinishedAt), FontSize = 11, Foreground = Brushes.Gray,
-                    HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center,
-                    TextWrapping = TextWrapping.Wrap, MaxWidth = 174
-                });
-            details.Children.Add(new TextBlock { Text = map, FontSize = 12, Foreground = Brushes.Gray, HorizontalAlignment = HorizontalAlignment.Center });
+                    var countdown = CardTimeText(remaining);
+                    details.Children.Add(countdown);
+                    _countdowns[team] = countdown;
+                }
+            }
+            if (map.Length > 0)
+            {
+                var mapText = new TextBlock { Text = map, FontSize = 12, Foreground = Brushes.Gray, HorizontalAlignment = HorizontalAlignment.Stretch, TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap };
+                ToolTip.SetTip(mapText, entry?.SortieMap);
+                details.Children.Add(mapText);
+            }
             details.Children.Add(new TextBlock { Text = $"{members}/6", FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center });
             var button = new Button
             {
-                Content = details, Padding = new Thickness(8), MinHeight = 92,
+                Content = details, Padding = new Thickness(8, 6), MinHeight = 80,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 Background = Brushes.Transparent, BorderThickness = new Thickness(1),
                 Tag = team
             };
+            // 按按钮实际宽度限制内容测量，避免长名称先撑宽内容后被模板裁切。
+            button.SizeChanged += (_, args) => details.MaxWidth = Math.Max(1,
+                args.NewSize.Width - button.Padding.Left - button.Padding.Right
+                - button.BorderThickness.Left - button.BorderThickness.Right);
             button.Click += (_, _) =>
             {
                 _expandedTeam = _expandedTeam == team ? null : team;
@@ -187,6 +204,20 @@ public partial class TeamStatusView : UserControl
     }
 
     private static string ChineseNumber(int number) => number switch { 1 => "一", 2 => "二", 3 => "三", 4 => "四", _ => "五" };
+
+    private static TextBlock CardTimeText(string text) => new()
+    {
+        Text = text, FontSize = 11, FontWeight = FontWeight.Normal, Foreground = Brushes.Gray,
+        LineHeight = 14, HorizontalAlignment = HorizontalAlignment.Stretch, TextAlignment = TextAlignment.Center,
+        TextWrapping = TextWrapping.Wrap
+    };
+
+    private string RemainingText(string? finishedAt)
+    {
+        var status = GameOverviewWorkStatus.FormatSchedule(finishedAt, _now);
+        var index = status.Text.IndexOf("剩余：", StringComparison.Ordinal);
+        return index >= 0 ? status.Text[index..] : "";
+    }
 
     private static string FormatReturnTime(string? finishedAt) =>
         DateTime.TryParseExact(finishedAt, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var time)
@@ -244,7 +275,8 @@ public partial class TeamStatusView : UserControl
         {
             "Name" => row.Name,
             "Level" => HeldSwordRow.Text(_experienceMode ? row.Number("exp") : row.Number("level")),
-            "Fatigue" or "mobile" or "Book" or "Protect" or "Ranbu" or "hp" or "atk" or "def" or "back" or "scout" or "hide" or "loyalties" => row.SortValue(column.Key, false)?.ToString() ?? "—",
+            "mobile" => HeldSwordRow.Text(row.EquippedMobility),
+            "Fatigue" or "Book" or "Protect" or "Ranbu" or "hp" or "atk" or "def" or "back" or "scout" or "hide" or "loyalties" => row.SortValue(column.Key, false)?.ToString() ?? "—",
             "Health" => HeldSwordRow.Text(row.Number("hp")) + "/" + HeldSwordRow.Text(row.Number("hp_max")),
             "Horse" => row.Horse,
             "Charm" => row.Charm,
@@ -272,6 +304,7 @@ public partial class TeamStatusView : UserControl
         var cell = new Border { Child = content, Background = Brushes.Transparent, Padding = new Thickness(1, 2) };
         if (column.Key == "Name") ToolTip.SetTip(cell, row.NameTip);
         if (column.Key == "Level") ToolTip.SetTip(cell, row.LevelTip);
+        if (column.Key == "mobile") ToolTip.SetTip(cell, row.MobilityTip);
         if (column.Key == "Treasure" && row.Treasure != "—") ToolTip.SetTip(cell, row.Treasure);
         return cell;
     }
@@ -295,6 +328,7 @@ public partial class TeamStatusView : UserControl
     {
         CloseHeaderMenu();
         var menu = new ContextMenu();
+        var attributes = new MenuItem { Header = "属性数值" };
         foreach (var definition in Definitions)
         {
             var column = _columns[definition.Key];
@@ -305,8 +339,12 @@ public partial class TeamStatusView : UserControl
                 column.IsVisible = item.IsChecked;
                 SaveLayout();
             };
-            menu.Items.Add(item);
+            if (definition.Key is "Name" or "Level" or "Health" or "Fatigue" or "mobile" or "Troops")
+                menu.Items.Add(item);
+            else
+                attributes.Items.Add(item);
         }
+        menu.Items.Add(attributes);
         menu.Items.Add(new Separator());
         var reset = new MenuItem { Header = "恢复默认列和顺序" };
         reset.Click += (_, _) =>

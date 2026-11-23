@@ -44,8 +44,6 @@ public sealed class ExtensionUiTests
             {
                 view.SetSnapshot(snapshot);
                 window.Show();
-                ((Button)view.FindControl<Grid>("TeamCards")!.Children[0]).RaiseEvent(
-                    new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
                 foreach (var (theme, critical, warning) in new[]
                 {
                     (global::Avalonia.Styling.ThemeVariant.Light, "#C62828", "#C77700"),

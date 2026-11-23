@@ -40,7 +40,6 @@ public sealed class TeamStatusPackageUiTests
             try
             {
                 window.Show();
-                ((Button)((Control)page).FindControl<Grid>("TeamCards")!.Children[0]).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 window.UpdateLayout();
                 Dispatcher.UIThread.RunJobs();
                 var text = ((Control)page).GetVisualDescendants().OfType<TextBlock>().Single(x => x.Text == "30/100");
