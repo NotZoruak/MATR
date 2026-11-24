@@ -479,6 +479,7 @@
     }
   },
   "HK_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

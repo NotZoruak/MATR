@@ -1449,6 +1449,7 @@
     "next": ["Expedition"]
   },
   "E_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
@@ -1861,6 +1862,7 @@
     "next": ["E_FlowerBattleHub"]
   },
   "E_FlowerRestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
