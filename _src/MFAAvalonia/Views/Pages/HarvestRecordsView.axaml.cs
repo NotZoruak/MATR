@@ -34,7 +34,7 @@ public partial class HarvestRecordsView : UserControl
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
     private static readonly string[] SwordTypes = ["未知", "短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
 
-    public HarvestRecordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "harvest")) { }
+    public HarvestRecordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "default", "harvest")) { }
 
     public HarvestRecordsView(string directory)
     {

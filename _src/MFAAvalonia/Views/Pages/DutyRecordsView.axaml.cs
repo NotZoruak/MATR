@@ -32,7 +32,7 @@ public partial class DutyRecordsView : UserControl
     private DateTime? _startDate;
     private DateTime? _endDate;
 
-    public DutyRecordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "duty")) { }
+    public DutyRecordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "default", "harvest")) { }
 
     public DutyRecordsView(string directory)
     {

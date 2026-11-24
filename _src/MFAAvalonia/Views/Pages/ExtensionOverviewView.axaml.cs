@@ -78,14 +78,12 @@ public partial class ExtensionOverviewView : UserControl
     {
         if (!_views.TryGetValue(id, out var view))
         {
-            var dataDirectory = Path.Combine(_configDirectory, "honmaru", "integrated", id);
-            Directory.CreateDirectory(dataDirectory);
             view = id switch
             {
                 "overview" => new DefaultOverviewView(() => SyncWarehouseAsync(false)),
-                "teams" => new TeamStatusView(dataDirectory),
-                "swords" => new HeldSwordsView(dataDirectory),
-                "harvest" => new HarvestRecordsView(dataDirectory),
+                "teams" => new TeamStatusView(),
+                "swords" => new HeldSwordsView(),
+                "harvest" => new HarvestRecordsView(),
                 _ => throw new InvalidOperationException("未知的本丸扩展页面：" + id)
             };
             _views[id] = view;

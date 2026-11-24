@@ -16,7 +16,7 @@ public sealed class GameOverviewDataStore(string configDirectory)
     /// <summary>加载最近保存的账号快照，不修改原采集时间。</summary>
     public SavedSnapshot? LoadLatest()
     {
-        var directory = Path.Combine(configDirectory, "honmaru", "extension");
+        var directory = Path.Combine(configDirectory, "honmaru", "default", "snapshots");
         if (!Directory.Exists(directory)) return null;
         SavedSnapshot? latest = null;
         foreach (var file in Directory.EnumerateFiles(directory, "*.json"))
@@ -35,7 +35,7 @@ public sealed class GameOverviewDataStore(string configDirectory)
     public void Save(GameOverviewSnapshot snapshot, DateTimeOffset? collectedAt = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(snapshot.Account);
-        var directory = Path.Combine(configDirectory, "honmaru", "extension");
+        var directory = Path.Combine(configDirectory, "honmaru", "default", "snapshots");
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, Hash(snapshot.Account) + ".json");
         var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";

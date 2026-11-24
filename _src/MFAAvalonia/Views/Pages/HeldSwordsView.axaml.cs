@@ -57,7 +57,7 @@ public partial class HeldSwordsView : UserControl
     private readonly string _dataDirectory;
     private string LayoutPath => Path.Combine(_dataDirectory, "held-swords-view.json");
 
-    public HeldSwordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "swords")) { }
+    public HeldSwordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "ui")) { }
 
     public HeldSwordsView(string dataDirectory)
     {

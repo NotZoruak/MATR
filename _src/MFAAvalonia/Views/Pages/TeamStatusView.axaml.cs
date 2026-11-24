@@ -51,7 +51,7 @@ public partial class TeamStatusView : UserControl
     private readonly Dictionary<string, TextBlock> _countdowns = new();
     private bool _experienceMode;
 
-    public TeamStatusView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "teams")) { }
+    public TeamStatusView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "ui")) { }
 
     public TeamStatusView(string dataDirectory)
     {
