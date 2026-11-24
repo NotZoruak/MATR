@@ -38,6 +38,9 @@ public static class GameOverviewLogParser
         public Dictionary<string, string> SwordTeams { get; } = new();
         public Dictionary<string, string> SwordTeamPositions { get; } = new();
         public Dictionary<string, string> EquipmentKinds { get; } = new();
+        public Dictionary<string, Value> InventoryItems { get; } = new(StringComparer.Ordinal);
+        public bool HasInventorySnapshot { get; set; }
+        public DateTimeOffset? LatestResponseAt { get; set; }
         public List<HarvestEntry> HarvestRecords { get; } = new();
         public List<DutyRecord> DutyRecords { get; } = new();
         public bool HasFullSwordPool { get; set; }
@@ -162,6 +165,8 @@ public static class GameOverviewLogParser
             }
             result.Responses++;
             var time = Regex.Match(line, @"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}").Value;
+            if (DateTime.TryParseExact(time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var responseTime))
+                result.LatestResponseAt = new DateTimeOffset(DateTime.SpecifyKind(responseTime, DateTimeKind.Unspecified), TimeSpan.FromHours(8));
             if (path is "/forge/complete" or "/forge/completemultiple" or "/forge/fast" or "/forge/fastmultiple"
                 or "/forge/start" or "/forge/startmultiple")
             {
@@ -216,7 +221,8 @@ public static class GameOverviewLogParser
                     activeSortieTeam = null;
                 }
             }
-            var droppedSwordId = data["result"]?["get_sword_id"] ?? data["get_sword_id"];
+            var resultData = data["result"] as JObject;
+            var droppedSwordId = resultData?["get_sword_id"] ?? data["get_sword_id"];
             if (path is "/battle/battle" or "/battle/alloutbattle"
                 && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
             {
@@ -226,8 +232,8 @@ public static class GameOverviewLogParser
                     currentSortiePoint, dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
             }
             var itemRewards = data["item"] as JArray;
-            var battleRewards = data["result"]?["reward"] as JArray;
-            var battleDropRewards = data["result"]?["drop_reward"] as JArray;
+            var battleRewards = resultData?["reward"] as JArray;
+            var battleDropRewards = resultData?["drop_reward"] as JArray;
             if (data["reward"] is JArray || itemRewards != null || battleRewards != null || battleDropRewards != null || data["season_reward"] is JArray)
             {
                 var rewardSource = path switch
@@ -363,10 +369,30 @@ public static class GameOverviewLogParser
                         Set(pair.Item2, amount.ToString("N0", CultureInfo.InvariantCulture));
             if (data["currency"] is JObject currency && long.TryParse(currency["money"]?.ToString(), out var money))
                 Set("Money", money.ToString("N0", CultureInfo.InvariantCulture));
-            if (data["item"] is JObject items)
+            if (path == "/home" && data["item"] is JObject items)
+            {
+                result.InventoryItems.Clear();
+                result.HasInventorySnapshot = true;
                 foreach (var item in items.Properties().Select(x => x.Value).OfType<JObject>())
-                    if (item["consumable_id"]?.ToString() == "8" && long.TryParse(item["num"]?.ToString(), out var count))
+                {
+                    var itemId = item["consumable_id"]?.ToString();
+                    if (!int.TryParse(itemId, out var itemNumber) || itemNumber <= 0
+                        || !int.TryParse(item["num"]?.ToString(), NumberStyles.Integer | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var count)
+                        || count < 0)
+                        continue;
+                    var name = GameItemNames.Find("1", itemId) ?? $"未知物品（类型 1，ID {itemId}）";
+                    if (itemId == "8")
+                    {
                         Set("Accelerator", count.ToString("N0", CultureInfo.InvariantCulture));
+                        continue;
+                    }
+                    var total = count;
+                    if (result.InventoryItems.TryGetValue(name, out var previous)
+                        && int.TryParse(previous.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var previousCount))
+                        total = (int)Math.Min(int.MaxValue, (long)previousCount + count);
+                    result.InventoryItems[name] = new Value(total.ToString(CultureInfo.InvariantCulture), time);
+                }
+            }
             if (data["assist_item_id"]?.ToString() == "8" && long.TryParse(data["assist_item_num"]?.ToString(), out var remaining))
                 Set("Accelerator", remaining.ToString("N0", CultureInfo.InvariantCulture));
             if (data["party"] is JObject parties && path is "/login/start" or "/home/situation" or "/sally" or "/party/list" or "/conquest" or "/conquest/start" or "/conquest/complete" or "/conquest/cancel")
@@ -541,6 +567,8 @@ public static class GameOverviewLogParser
             {
                 Account = result.Account,
                 HasFullSwordPool = result.HasFullSwordPool,
+                HasInventorySnapshot = result.HasInventorySnapshot,
+                LatestResponseAt = result.LatestResponseAt,
                 SwordObservedAt = result.SwordObservedAt,
                 Responses = result.Responses
             };
@@ -553,6 +581,7 @@ public static class GameOverviewLogParser
             foreach (var pair in result.SwordTeams) copy.SwordTeams[pair.Key] = pair.Value;
             foreach (var pair in result.SwordTeamPositions) copy.SwordTeamPositions[pair.Key] = pair.Value;
             foreach (var pair in result.EquipmentKinds) copy.EquipmentKinds[pair.Key] = pair.Value;
+            foreach (var pair in result.InventoryItems) copy.InventoryItems[pair.Key] = pair.Value;
             copy.HarvestRecords.AddRange(result.HarvestRecords);
             copy.DutyRecords.AddRange(result.DutyRecords.Select(record => record with { SwordData = (JObject)record.SwordData.DeepClone() }));
             return copy;

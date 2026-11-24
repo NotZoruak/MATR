@@ -32,7 +32,7 @@ public sealed class GameOverviewDataStore(string configDirectory)
         return latest;
     }
 
-    public void Save(GameOverviewLogParser.Snapshot snapshot)
+    public void Save(GameOverviewLogParser.Snapshot snapshot, DateTimeOffset? collectedAt = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(snapshot.Account);
         var directory = Path.Combine(configDirectory, "honmaru", "extension");
@@ -41,7 +41,7 @@ public sealed class GameOverviewDataStore(string configDirectory)
         var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
-            var document = new SavedSnapshot(1, DateTimeOffset.Now, snapshot);
+            var document = new SavedSnapshot(1, collectedAt ?? DateTimeOffset.Now, snapshot);
             File.WriteAllText(temporary, JsonConvert.SerializeObject(document, Formatting.Indented), new UTF8Encoding(false));
             File.Move(temporary, path, overwrite: true);
         }

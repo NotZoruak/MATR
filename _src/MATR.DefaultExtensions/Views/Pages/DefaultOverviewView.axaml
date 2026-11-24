@@ -97,7 +97,7 @@
                     <StackPanel Spacing="14">
                         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                             <TextBlock Text="资源摘要" Classes="section-title" VerticalAlignment="Center" />
-                            <Button Grid.Column="1" x:Name="WarehouseSyncButton" Content="同步到仓库" Click="SyncWarehouse" IsEnabled="False" Padding="12,6" ToolTip.Tip="将最近读取的资源数据保存到仓库" />
+                            <Button Grid.Column="1" x:Name="WarehouseSyncButton" Content="同步到仓库" Click="SyncWarehouse" IsEnabled="False" Padding="12,6" ToolTip.Tip="将最近读取的资源和道具数量保存到仓库" />
                             <Button Grid.Column="2" Classes="BasicTight" Tag="ResourcesCardBody" Click="ToggleCard" Width="24" Height="24" Padding="0" CornerRadius="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="{DynamicResource SukiPrimaryColor}" ToolTip.Tip="收起卡片" AutomationProperties.Name="收起资源摘要">
                                 <icons:FluentIcon Icon="ChevronUp" IconSize="Size16" />
                             </Button>

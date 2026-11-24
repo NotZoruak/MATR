@@ -32,6 +32,7 @@ public partial class ExtensionOverviewView : UserControl
     private const double DragStartThreshold = 6;
     private bool _navigationExpanded = true;
     private GameOverviewLogParser.Snapshot? _snapshot;
+    private DateTimeOffset? _snapshotCollectedAt;
     private bool _reading;
     private bool _syncingWarehouse;
     private DateTime _nextWarehouseSync = DateTime.MinValue;
@@ -405,15 +406,16 @@ public partial class ExtensionOverviewView : UserControl
         if (_syncingWarehouse || _snapshot == null) return;
         _syncingWarehouse = true;
         var snapshot = _snapshot;
+        var snapshotAt = snapshot.LatestResponseAt ?? _snapshotCollectedAt;
         try
         {
-            var result = await Task.Run(() => HonmaruDataStoreService.SyncExtension(snapshot));
+            var result = await Task.Run(() => HonmaruDataStoreService.SyncExtension(snapshot, snapshotAt));
             switch (result.Status)
             {
                 case GameOverviewWarehouseSync.State.Saved:
                     _lastStaleWarning = "";
                     UpdateDataPersistenceService.NotifyWarehouseDataSaved();
-                    if (!automatic) ToastHelper.Success("仓库同步", "资源已同步并保存。");
+                    if (!automatic) ToastHelper.Success("仓库同步", "仓库数据已同步并保存。");
                     break;
                 case GameOverviewWarehouseSync.State.Unchanged:
                     if (!automatic) ToastHelper.Info("仓库同步", "没有新的资源数据，无需重复保存。");
@@ -510,13 +512,14 @@ public partial class ExtensionOverviewView : UserControl
             }
             var accountChanged = _snapshot != null && _snapshot.Account != snapshot.Account;
             _snapshot = snapshot;
+            _snapshotCollectedAt = DateTimeOffset.Now;
             _displayedDevice = key;
-            LastReadText.Text = DateTime.Now.ToString("MM-dd HH:mm:ss");
+            LastReadText.Text = _snapshotCollectedAt.Value.ToLocalTime().ToString("MM-dd HH:mm:ss");
             PublishState("最近一次读取的账号状态", refreshHeldSwords: true,
                 clearHeldSwords: automatic && accountChanged);
             try
             {
-                await Task.Run(() => new GameOverviewDataStore(_configDirectory).Save(snapshot));
+                await Task.Run(() => new GameOverviewDataStore(_configDirectory).Save(snapshot, _snapshotCollectedAt));
                 ReadStatusText.Text = "";
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -547,6 +550,7 @@ public partial class ExtensionOverviewView : UserControl
             var saved = new GameOverviewDataStore(_configDirectory).LoadLatest();
             if (saved == null) return;
             _snapshot = saved.Snapshot;
+            _snapshotCollectedAt = saved.CollectedAt;
             LastReadText.Text = saved.CollectedAt.ToLocalTime().ToString("MM-dd HH:mm:ss");
             PublishState("上次保存的数据");
         }
