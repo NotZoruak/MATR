@@ -666,6 +666,16 @@
       }
     },
     "post_delay": 500,
+    "next": ["THR_ClickHakusanTypeFilter"]
+  },
+  "THR_ClickHakusanTypeFilter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [242, 436, 70, 35]
+      }
+    },
+    "post_delay": 500,
     "next": ["THR_ClickFavoriteFilter"]
   },
   "THR_ClickFavoriteFilter": {

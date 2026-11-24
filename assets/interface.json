@@ -5121,12 +5121,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "S_StopOnDamagePopup": {"enabled": false}
+            "S_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "S_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
@@ -5499,12 +5517,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "U_StopOnDamagePopup": {"enabled": false}
+            "U_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "U_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
@@ -8633,12 +8669,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "FB_StopOnDamagePopup": {"enabled": false}
+            "FB_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "FB_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
@@ -10388,12 +10442,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "HV_StopOnDamagePopup": {"enabled": false}
+            "HV_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "HV_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
