@@ -16,7 +16,7 @@ public static class GameOverviewWarehouseSync
     private static readonly (string Source, string Target)[] Fields =
     [("Charcoal", "木炭"), ("Steel", "玉钢"), ("Coolant", "冷却材"), ("File", "砥石"), ("Bill", "委托符"), ("Accelerator", "加速符"), ("Money", "小判")];
 
-    public static string Fingerprint(GameOverviewLogParser.Snapshot snapshot)
+    public static string Fingerprint(GameOverviewSnapshot snapshot)
     {
         var content = snapshot.Account
             + string.Concat(Fields.Select(pair => snapshot.Values.TryGetValue(pair.Source, out var value)
@@ -27,7 +27,7 @@ public static class GameOverviewWarehouseSync
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content)));
     }
 
-    public static Result Prepare(GameOverviewLogParser.Snapshot snapshot, WarehouseData existing, DateTime? lastUpdated, DateTimeOffset? snapshotAt = null)
+    public static Result Prepare(GameOverviewSnapshot snapshot, WarehouseData existing, DateTime? lastUpdated, DateTimeOffset? snapshotAt = null)
     {
         var fields = new List<(string Key, int Value, DateTime Time)>();
         foreach (var pair in Fields)

@@ -3,6 +3,8 @@ using MFAAvalonia.Services;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Linq;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -11,7 +13,7 @@ public class HeldSwordTests
     [Fact]
     public void 部队机动合计刀装马匹和强化后的宝物且不改写本体()
     {
-        var snapshot = new GameOverviewLogParser.Snapshot { HasFullSwordPool = true };
+        var snapshot = new GameOverviewSnapshot { HasFullSwordPool = true };
         snapshot.HeldSwords["1"] = JObject.Parse("{\"sword_id\":3,\"mobile\":74,\"equip_serial_id1\":11,\"equip_serial_id2\":12,\"horse_serial_id\":20,\"artifact_serial_id1\":30}");
         snapshot.EquipmentKinds["equip:11"] = "9";
         snapshot.EquipmentKinds["equip:12"] = "9";
@@ -89,7 +91,7 @@ public class HeldSwordTests
     [Fact]
     public void 升级经验使用静态累计经验阈值()
     {
-        var snapshot = new GameOverviewLogParser.Snapshot { HasFullSwordPool = true };
+        var snapshot = new GameOverviewSnapshot { HasFullSwordPool = true };
         snapshot.HeldSwords["1"] = JObject.Parse("{\"sword_id\":3,\"level\":1,\"exp\":40}");
         var catalog = JObject.Parse("{\"swords\":{\"3\":{\"name\":\"测试\",\"grow_type\":0,\"max_level\":99}},\"levels\":{\"0:2\":100}}");
         var row = Assert.Single(HeldSwordTableData.Build(snapshot, catalog));

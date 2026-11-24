@@ -11,7 +11,7 @@ namespace MFAAvalonia.Services;
 /// <summary>在本丸目录中按账号保存扩展快照，不保存原始日志。</summary>
 public sealed class GameOverviewDataStore(string configDirectory)
 {
-    public sealed record SavedSnapshot(int Version, DateTimeOffset CollectedAt, GameOverviewLogParser.Snapshot Snapshot);
+    public sealed record SavedSnapshot(int Version, DateTimeOffset CollectedAt, GameOverviewSnapshot Snapshot);
 
     /// <summary>加载最近保存的账号快照，不修改原采集时间。</summary>
     public SavedSnapshot? LoadLatest()
@@ -32,7 +32,7 @@ public sealed class GameOverviewDataStore(string configDirectory)
         return latest;
     }
 
-    public void Save(GameOverviewLogParser.Snapshot snapshot, DateTimeOffset? collectedAt = null)
+    public void Save(GameOverviewSnapshot snapshot, DateTimeOffset? collectedAt = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(snapshot.Account);
         var directory = Path.Combine(configDirectory, "honmaru", "extension");

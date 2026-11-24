@@ -20,7 +20,7 @@ public static class GameItemNames
 
     public static string? Find(string? type, string? id) => type == null ? null
         : Catalog["typeNames"]?[type]?.ToString()
-          ?? (id == null ? null : Catalog["names"]?[$"{type}:{id}"]?.ToString());
+          ?? (id == null ? null : Catalog["names"]?[ $"{type}:{id}"]?.ToString());
 
     public static string DisplayName(string name)
     {

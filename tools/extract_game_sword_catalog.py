@@ -25,7 +25,7 @@ def read_table(directory, name):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cfg-dir", required=True, type=Path)
-    parser.add_argument("--output", default="_src/MATR.DefaultExtensions/Resources/GameSwordCatalog.json", type=Path)
+    parser.add_argument("--output", default="_src/MFAAvalonia/Assets/GameSwordCatalog.json", type=Path)
     args = parser.parse_args()
     fields = "sword_id name symbol type type_real max_level max_ranbu_level hp hp_up atk atk_up def def_up mobile mobile_up back back_up scout scout_up hide hide_up loyalties grow_type".split()
     swords = {str(row["sword_id"]): {key: row[key] for key in fields} for row in read_table(args.cfg_dir, "sword_master")}

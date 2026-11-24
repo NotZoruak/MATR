@@ -10,6 +10,8 @@ using Avalonia.Threading;
 using MFAAvalonia.Services;
 using MFAAvalonia.Views.Pages;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -22,10 +24,10 @@ public sealed class TeamStatusWrappingTests
         {
             var view = new TeamStatusView(Path.GetTempPath());
             view.Tick(new DateTimeOffset(2026, 11, 23, 14, 0, 0, TimeSpan.FromHours(8)));
-            var snapshot = new GameOverviewLogParser.Snapshot();
-            snapshot.Teams["1"] = new GameOverviewLogParser.TeamEntry("3", null, SortieMap: "活动 18505-1");
-            snapshot.Teams["2"] = new GameOverviewLogParser.TeamEntry("2", "2026-11-23 16:00:00", "2-1");
-            snapshot.Teams["3"] = new GameOverviewLogParser.TeamEntry("2", "2026-11-23 13:00:00", "4-2");
+            var snapshot = new GameOverviewSnapshot();
+            snapshot.Teams["1"] = new GameOverviewTeamEntry("3", null, SortieMap: "活动 18505-1");
+            snapshot.Teams["2"] = new GameOverviewTeamEntry("2", "2026-11-23 16:00:00", "2-1");
+            snapshot.Teams["3"] = new GameOverviewTeamEntry("2", "2026-11-23 13:00:00", "4-2");
             view.SetSnapshot(snapshot);
             var window = new Window { Width = 680, Height = 500, Content = view };
             try

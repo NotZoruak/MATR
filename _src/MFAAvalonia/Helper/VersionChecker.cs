@@ -1207,7 +1207,7 @@ public static class VersionChecker
                     throw new InvalidDataException($"增量更新包含越界删除目录：{relativePath}");
                 return (relativePath, fullPath);
             })
-            .Where(item => !UpdatePathProtection.IsProtected(AppPaths.InstallRoot, item.fullPath) && Directory.Exists(item.fullPath))
+            .Where(item => Directory.Exists(item.fullPath))
             .OrderByDescending(item => item.fullPath.Count(c => c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar));
 
         foreach (var (relativePath, fullPath) in directories)
@@ -1221,9 +1221,6 @@ public static class VersionChecker
             if (!TryGetSafeUpdateTargetPath(relativePath, out var fullPath))
                 throw new InvalidDataException($"增量更新包含越界新增目录：{relativePath}");
 
-            if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, fullPath))
-                continue;
-
             LoggerHelper.Info($"准备创建增量更新中标记为 added_dir 的目录：相对路径={relativePath}，目录={fullPath}");
             Directory.CreateDirectory(fullPath);
         }
@@ -1235,7 +1232,7 @@ public static class VersionChecker
         {
             if (!TryGetSafeUpdateTargetPath(relativePath, out var fullPath))
                 throw new InvalidDataException($"增量更新包含越界{changeType}路径：{relativePath}");
-            if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, fullPath) || !File.Exists(fullPath))
+            if (!File.Exists(fullPath))
                 continue;
 
             LoggerHelper.Info($"准备删除增量更新中标记为 {changeType} 的文件：文件={fullPath}");
@@ -1247,9 +1244,6 @@ public static class VersionChecker
 
     private static void DeleteDirectoryForUpdate(string relativePath, string directoryPath)
     {
-        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, directoryPath))
-            return;
-
         const int maxRetries = 5;
         for (var attempt = 1; attempt <= maxRetries; attempt++)
         {
@@ -1468,8 +1462,6 @@ public static class VersionChecker
             })
             .Where(item =>
             {
-                if (UpdatePathProtection.IsProtectedRelativePath(item.RelativePath))
-                    return false;
                 var isDataFile = IsDataRootRelativePath(item.RelativePath);
                 return (copyDataFiles && isDataFile) || (copyInstallFiles && !isDataFile);
             })
@@ -1646,10 +1638,6 @@ public static class VersionChecker
         ProgressCounter progressCounter,
         bool skipCoreApplicationFiles)
     {
-        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, targetDir)
-            || UpdatePathProtection.IsProtectedRelativePath(Path.GetRelativePath(sourceRootDir, sourceDir)))
-            return;
-
         // 响应取消请求
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -1672,9 +1660,6 @@ public static class VersionChecker
                 continue;
             }
             string targetFile = Path.Combine(targetDir, fileName);
-            if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, targetFile))
-                continue;
-
             // 9. 公告文件特殊处理（仅当 saveAnnouncement 为 true 时执行）
             if (saveAnnouncement
                 && targetFile.Contains(AnnouncementViewModel.AnnouncementFolder, StringComparison.OrdinalIgnoreCase)
@@ -1809,7 +1794,7 @@ public static class VersionChecker
 
         public void DeleteFile(string targetPath)
         {
-            if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, targetPath) || !File.Exists(targetPath))
+            if (!File.Exists(targetPath))
                 return;
 
             var backupPath = NextBackupPath();
@@ -1821,8 +1806,6 @@ public static class VersionChecker
         public void ReplaceFile(string sourcePath, string targetPath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, targetPath))
-                return;
             var targetDirectory = Path.GetDirectoryName(targetPath);
             if (!string.IsNullOrWhiteSpace(targetDirectory))
                 Directory.CreateDirectory(targetDirectory);
@@ -2373,9 +2356,6 @@ public static class VersionChecker
         {
             var relativePath = Path.GetRelativePath(sourceDir, file);
             var targetPath = Path.Combine(AppContext.BaseDirectory, relativePath);
-            if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, targetPath)
-                || UpdatePathProtection.IsProtectedRelativePath(relativePath))
-                continue;
             var backupPath = Path.Combine(backupDir, relativePath);
 
             for (int i = 0; i < maxRetry; i++)
@@ -4018,8 +3998,6 @@ public static class VersionChecker
 
     private static void CopyFolder(string sourceFolder, string destinationFolder)
     {
-        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, destinationFolder))
-            return;
         if (!Directory.Exists(destinationFolder))
         {
             Directory.CreateDirectory(destinationFolder);

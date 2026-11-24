@@ -11,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using MFAAvalonia.Helper;
 using MFAAvalonia.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,15 +22,17 @@ namespace MFAAvalonia.Views.Pages;
 public partial class DutyRecordsView : UserControl
 {
     private sealed record Settlement(string Text, bool IsMaximum, bool Increased);
-    private sealed record Row(GameOverviewLogParser.DutyRecord Record, string Name, Settlement First, Settlement Second);
+    private sealed record Row(GameOverviewDutyRecord Record, string Name, Settlement First, Settlement Second);
     public sealed record DutySummary(int RecordCount, int DateCount, int NoGrowthCount, IReadOnlyDictionary<string, long> Gains);
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
     private readonly string _directory;
-    private readonly List<GameOverviewLogParser.DutyRecord> _records = [];
+    private readonly List<GameOverviewDutyRecord> _records = [];
     private string _account = "";
     private string _search = "";
     private DateTime? _startDate;
     private DateTime? _endDate;
+
+    public DutyRecordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "duty")) { }
 
     public DutyRecordsView(string directory)
     {
@@ -37,7 +40,7 @@ public partial class DutyRecordsView : UserControl
         InitializeComponent();
     }
 
-    public void AddRecords(string account, IEnumerable<GameOverviewLogParser.DutyRecord> records)
+    public void AddRecords(string account, IEnumerable<GameOverviewDutyRecord> records)
     {
         if (string.IsNullOrWhiteSpace(account)) return;
         var accountChanged = account != _account;
@@ -48,7 +51,7 @@ public partial class DutyRecordsView : UserControl
             try
             {
                 var path = StorePath();
-                if (File.Exists(path)) _records.AddRange(JsonConvert.DeserializeObject<List<GameOverviewLogParser.DutyRecord>>(File.ReadAllText(path)) ?? []);
+                if (File.Exists(path)) _records.AddRange(JsonConvert.DeserializeObject<List<GameOverviewDutyRecord>>(File.ReadAllText(path)) ?? []);
             }
             catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { }
         }
@@ -178,7 +181,7 @@ public partial class DutyRecordsView : UserControl
         return true;
     }
 
-    private static Row BuildRow(GameOverviewLogParser.DutyRecord record)
+    private static Row BuildRow(GameOverviewDutyRecord record)
     {
         var sword = SwordCatalog["swords"]?[record.SwordId] as JObject;
         var name = sword?["name"]?.ToString() ?? "刀剑 ID：" + record.SwordId;
@@ -195,7 +198,7 @@ public partial class DutyRecordsView : UserControl
             BuildSettlement(record, sword, attributes[1].Item1, attributes[1].Item2));
     }
 
-    private static Settlement BuildSettlement(GameOverviewLogParser.DutyRecord record, JObject? sword, string key, string label)
+    private static Settlement BuildSettlement(GameOverviewDutyRecord record, JObject? sword, string key, string label)
     {
         var isGrowthAttribute = GrowthAttribute(record.UpType).Key == key;
         var increased = isGrowthAttribute && record.Success && record.UpValue > 0;

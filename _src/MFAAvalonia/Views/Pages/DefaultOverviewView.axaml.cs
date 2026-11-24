@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
@@ -12,29 +13,30 @@ using Avalonia.Layout;
 
 namespace MFAAvalonia.Views.Pages;
 
-/// <summary>默认扩展状态总览界面，仅显示宿主提供的游戏状态。</summary>
+/// <summary>本丸状态总览界面。</summary>
 public partial class DefaultOverviewView : UserControl
 {
     private static readonly string[] OverviewKeys = ["PlayerName", "Country", "Level", "Charcoal", "Steel", "Coolant", "File", "Money", "Bill", "Accelerator", "Team1", "Team2", "Team3", "Team4", "Team5", "Duty", "Forge", "Repair"];
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
 
     private string _paletteKey = "";
-    private GameOverviewLogParser.Snapshot? _snapshot;
-    private readonly MATR.ExtensionSdk.IExtensionContext _context;
+    private GameOverviewSnapshot? _snapshot;
+    private readonly Func<Task> _syncWarehouse;
     private DateTimeOffset _now = DateTimeOffset.UtcNow;
     private bool _syncingWarehouse;
-    public DefaultOverviewView(MATR.ExtensionSdk.IExtensionContext context)
+    public DefaultOverviewView() : this(() => Task.CompletedTask) { }
+
+    public DefaultOverviewView(Func<Task> syncWarehouse)
     {
-        _context = context;
+        _syncWarehouse = syncWarehouse;
         InitializeComponent();
         AttachedToVisualTree += (_, _) => UpdatePalette();
         ActualThemeVariantChanged += (_, _) => UpdatePalette();
     }
-    public void Update(MATR.ExtensionSdk.ExtensionState state)
+    public void Update(GameOverviewSnapshot? snapshot, string status)
     {
-        var snapshot = string.IsNullOrWhiteSpace(state.SnapshotJson) ? null : Newtonsoft.Json.JsonConvert.DeserializeObject<GameOverviewLogParser.Snapshot>(state.SnapshotJson);
         if (snapshot == null) ClearValues(); else ApplySnapshot(snapshot);
-        AccountReadStatus.Text = state.Status;
+        AccountReadStatus.Text = status;
     }
     public void Tick(DateTimeOffset now)
     {
@@ -48,7 +50,7 @@ public partial class DefaultOverviewView : UserControl
         if (_snapshot == null || _syncingWarehouse) return;
         _syncingWarehouse = true;
         WarehouseSyncButton.IsEnabled = false;
-        try { await _context.SyncWarehouseAsync(); }
+        try { await _syncWarehouse(); }
         catch (Exception exception)
         {
             ToastHelper.Warn("仓库同步失败", "未能保存，请检查本丸数据目录权限。");
@@ -108,7 +110,7 @@ public partial class DefaultOverviewView : UserControl
             }
     }
 
-    private void ApplySnapshot(GameOverviewLogParser.Snapshot snapshot)
+    private void ApplySnapshot(GameOverviewSnapshot snapshot)
     {
         ClearValues();
         foreach (var entry in snapshot.Values)
@@ -124,7 +126,7 @@ public partial class DefaultOverviewView : UserControl
         RenderTeamStatus();
     }
 
-    private void RenderDutyMembers(GameOverviewLogParser.Snapshot snapshot)
+    private void RenderDutyMembers(GameOverviewSnapshot snapshot)
     {
         foreach (var (job, panel, jobCard) in new[] { ("horse", DutyHorseMembers, DutyHorseCard), ("field", DutyFieldMembers, DutyFieldCard), ("bout", DutyBoutMembers, DutyBoutCard) })
         {
@@ -311,7 +313,7 @@ public partial class DefaultOverviewView : UserControl
         }
     }
 
-    private static readonly JArray SwordBook = JArray.Parse(MATR.DefaultExtensions.CatalogResources.Read("SwordBookCatalog.json"));
+    private static readonly JArray SwordBook = JArray.Parse(CatalogResources.Read("GameSwordBookCatalog.json"));
     private static string SecretaryName(string fallback)
     {
         var id = fallback.Replace("刀剑 ID：", "", StringComparison.Ordinal);

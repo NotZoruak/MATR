@@ -117,6 +117,11 @@ if (Test-Path "$SourceDir\runtimes\libs") {
 if (Test-Path "$SourceDir\plugins") {
     Copy-Item "$SourceDir\plugins" -Recurse -Destination "$TempDir\plugins"
 }
+# 游戏日志读取器由用户单独安装，不随 MATR Windows 安装包分发。
+$GameLogReader = Join-Path $TempDir 'plugins\win-x64\MATR.GameLogReader.dll'
+if (Test-Path -LiteralPath $GameLogReader -PathType Leaf) {
+    Remove-Item -LiteralPath $GameLogReader -Force
+}
 
 # 移除 libs 中与 win-x64/native 重复的原生库（如 libSkiaSharp.dll）。
 Get-ChildItem "$TempDir\runtimes\libs" -File | ForEach-Object {

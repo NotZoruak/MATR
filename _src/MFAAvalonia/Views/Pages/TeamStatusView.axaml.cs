@@ -42,7 +42,7 @@ public partial class TeamStatusView : UserControl
     private readonly Dictionary<string, DataGridColumn> _columns = new();
     private readonly string _layoutPath;
     private List<HeldSwordRow> _rows = [];
-    private GameOverviewLogParser.Snapshot? _snapshot;
+    private GameOverviewSnapshot? _snapshot;
     private string? _expandedTeam = "1";
     private string _signature = "";
     private bool _loadingLayout;
@@ -50,6 +50,8 @@ public partial class TeamStatusView : UserControl
     private DateTimeOffset _now = DateTimeOffset.UtcNow;
     private readonly Dictionary<string, TextBlock> _countdowns = new();
     private bool _experienceMode;
+
+    public TeamStatusView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "teams")) { }
 
     public TeamStatusView(string dataDirectory)
     {
@@ -78,7 +80,7 @@ public partial class TeamStatusView : UserControl
         };
     }
 
-    public void SetSnapshot(GameOverviewLogParser.Snapshot snapshot)
+    public void SetSnapshot(GameOverviewSnapshot snapshot)
     {
         var signature = snapshot.Account + JsonConvert.SerializeObject(snapshot.Teams)
             + JsonConvert.SerializeObject(snapshot.HeldSwords) + JsonConvert.SerializeObject(snapshot.SwordTeams)

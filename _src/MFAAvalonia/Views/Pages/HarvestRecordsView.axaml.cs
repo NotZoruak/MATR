@@ -1,6 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
+using System.Collections.Generic;
+using System;
+using System.IO;
+using System.Linq;
+using MFAAvalonia.Helper;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
@@ -19,7 +24,7 @@ public partial class HarvestRecordsView : UserControl
 {
     private readonly string _directory;
     private readonly DutyRecordsView _dutyRecordsView;
-    private readonly List<GameOverviewLogParser.HarvestEntry> _records = [];
+    private readonly List<GameOverviewHarvestEntry> _records = [];
     private readonly ObservableCollection<Row> _visibleRows = [];
     private string _account = "";
     private string _appliedSearch = "";
@@ -28,6 +33,8 @@ public partial class HarvestRecordsView : UserControl
     private bool? _columnsConfiguredForSwords;
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
     private static readonly string[] SwordTypes = ["未知", "短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
+
+    public HarvestRecordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "harvest")) { }
 
     public HarvestRecordsView(string directory)
     {
@@ -47,10 +54,10 @@ public partial class HarvestRecordsView : UserControl
         ShowTable();
     }
 
-    public void AddDutyRecords(string account, IEnumerable<GameOverviewLogParser.DutyRecord> records) =>
+    public void AddDutyRecords(string account, IEnumerable<GameOverviewDutyRecord> records) =>
         _dutyRecordsView.AddRecords(account, records);
 
-    public void AddRecords(string account, IEnumerable<GameOverviewLogParser.HarvestEntry> records)
+    public void AddRecords(string account, IEnumerable<GameOverviewHarvestEntry> records)
     {
         if (string.IsNullOrWhiteSpace(account)) return;
         var accountChanged = _account != account;
@@ -62,7 +69,7 @@ public partial class HarvestRecordsView : UserControl
             try
             {
                 var path = StorePath();
-                if (File.Exists(path)) _records.AddRange((JsonConvert.DeserializeObject<List<GameOverviewLogParser.HarvestEntry>>(File.ReadAllText(path)) ?? []).Where(record => !record.Id.Contains(":forge-history:", StringComparison.Ordinal)));
+                if (File.Exists(path)) _records.AddRange((JsonConvert.DeserializeObject<List<GameOverviewHarvestEntry>>(File.ReadAllText(path)) ?? []).Where(record => !record.Id.Contains(":forge-history:", StringComparison.Ordinal)));
             }
             catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { }
         }
@@ -94,7 +101,7 @@ public partial class HarvestRecordsView : UserControl
 
     private string StorePath() => Path.Combine(_directory, "harvest-" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(_account))).ToLowerInvariant() + ".json");
 
-    private static string EventIdentity(GameOverviewLogParser.HarvestEntry record)
+    private static string EventIdentity(GameOverviewHarvestEntry record)
     {
         if (record.Kind == "resource")
         {
@@ -312,7 +319,7 @@ public partial class HarvestRecordsView : UserControl
         .Where(row => MatchesDateRange(row.Time) && MatchesSearch(row, _appliedSearch))
         .OrderByDescending(row => row.Time).ToArray();
 
-    private static string FormatSource(GameOverviewLogParser.HarvestEntry record)
+    private static string FormatSource(GameOverviewHarvestEntry record)
     {
         var map = GameEventNames.FormatMap(record.Map);
         if (record.Source == "异去掉落" && map?.StartsWith("异去 ", StringComparison.Ordinal) == true)
@@ -398,7 +405,7 @@ public partial class HarvestRecordsView : UserControl
         Width = width
     });
 
-    private static string DisplayName(GameOverviewLogParser.HarvestEntry entry)
+    private static string DisplayName(GameOverviewHarvestEntry entry)
     {
         if (entry.Kind != "sword" || entry.SwordId == null) return GameItemNames.DisplayName(entry.Name);
         var definition = SwordCatalog["swords"]?[entry.SwordId] as JObject;
@@ -406,7 +413,7 @@ public partial class HarvestRecordsView : UserControl
         return definition?["symbol"]?.ToString() == "2" ? name + "·极" : name;
     }
 
-    private static string SwordType(GameOverviewLogParser.HarvestEntry entry)
+    private static string SwordType(GameOverviewHarvestEntry entry)
     {
         if (entry.SwordId == null || !int.TryParse(SwordCatalog["swords"]?[entry.SwordId]?["type"]?.ToString(), out var type)
             || type < 0 || type >= SwordTypes.Length) return "未知";

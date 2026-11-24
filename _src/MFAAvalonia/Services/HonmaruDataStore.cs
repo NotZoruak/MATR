@@ -117,7 +117,7 @@ public sealed class HonmaruDataStore
     }
 
     /// <summary>在同一保存锁内验证数据时间并原子写入扩展资源。</summary>
-    public GameOverviewWarehouseSync.Result SyncExtension(GameOverviewLogParser.Snapshot snapshot, DateTimeOffset? snapshotAt = null)
+    public GameOverviewWarehouseSync.Result SyncExtension(GameOverviewSnapshot snapshot, DateTimeOffset? snapshotAt = null)
     {
         lock (_syncRoot)
         {
@@ -421,7 +421,7 @@ public static class HonmaruDataStoreService
         }
     }
 
-    public static GameOverviewWarehouseSync.Result SyncExtension(GameOverviewLogParser.Snapshot snapshot, DateTimeOffset? snapshotAt = null)
+    public static GameOverviewWarehouseSync.Result SyncExtension(GameOverviewSnapshot snapshot, DateTimeOffset? snapshotAt = null)
     {
         lock (SyncRoot)
         {

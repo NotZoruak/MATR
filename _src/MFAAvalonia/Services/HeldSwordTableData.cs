@@ -14,7 +14,7 @@ public static class HeldSwordTableData
         ["1"] = "御守", ["2"] = "御守·极", ["3155"] = "御守·桃"
     };
 
-    public static List<HeldSwordRow> Build(GameOverviewLogParser.Snapshot snapshot, JObject catalog)
+    public static List<HeldSwordRow> Build(GameOverviewSnapshot snapshot, JObject catalog)
     {
         if (!snapshot.HasFullSwordPool) return [];
         return snapshot.HeldSwords.Select(pair =>
@@ -82,7 +82,7 @@ public static class HeldSwordTableData
         }).ToList();
     }
 
-    private static string FormatTeamPosition(GameOverviewLogParser.Snapshot snapshot, string serial)
+    private static string FormatTeamPosition(GameOverviewSnapshot snapshot, string serial)
     {
         if (!snapshot.SwordTeams.TryGetValue(serial, out var team)) return "未编队";
         if (!snapshot.SwordTeamPositions.TryGetValue(serial, out var position)
@@ -94,7 +94,7 @@ public static class HeldSwordTableData
         return ChineseNumbers[slotNumber] + "之" + ChineseNumbers[teamNumber];
     }
 
-    private static string FormatTeamFilter(GameOverviewLogParser.Snapshot snapshot, string serial)
+    private static string FormatTeamFilter(GameOverviewSnapshot snapshot, string serial)
     {
         if (!snapshot.SwordTeams.TryGetValue(serial, out var team)) return "未编队";
         return int.TryParse(team, out var teamNumber) && teamNumber > 0 && teamNumber < ChineseNumbers.Length
@@ -104,6 +104,6 @@ public static class HeldSwordTableData
 
     public static JObject LoadCatalog()
     {
-        return JObject.Parse(MATR.DefaultExtensions.CatalogResources.Read("GameSwordCatalog.json"));
+        return JObject.Parse(CatalogResources.Read("GameSwordCatalog.json"));
     }
 }

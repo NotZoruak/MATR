@@ -57,6 +57,8 @@ public partial class HeldSwordsView : UserControl
     private readonly string _dataDirectory;
     private string LayoutPath => Path.Combine(_dataDirectory, "held-swords-view.json");
 
+    public HeldSwordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "integrated", "swords")) { }
+
     public HeldSwordsView(string dataDirectory)
     {
         _dataDirectory = dataDirectory;
@@ -117,7 +119,7 @@ public partial class HeldSwordsView : UserControl
         CountText.Text = "尚未同步刀剑列表";
     }
 
-    public void SetSnapshot(GameOverviewLogParser.Snapshot snapshot)
+    public void SetSnapshot(GameOverviewSnapshot snapshot)
     {
         var signature = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
             snapshot.Account + snapshot.HasFullSwordPool + JsonConvert.SerializeObject(snapshot.HeldSwords) + JsonConvert.SerializeObject(snapshot.SwordTeams) + JsonConvert.SerializeObject(snapshot.SwordTeamPositions) + JsonConvert.SerializeObject(snapshot.EquipmentKinds))));

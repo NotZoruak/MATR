@@ -1,5 +1,7 @@
 using MFAAvalonia.Services;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -164,7 +166,7 @@ public class GameOverviewLogParserTests
     [InlineData("1", "2026-11-17 09:00:00", false)]
     public void 远征状态未变时到点显示已归来(string status, string? finish, bool returned)
     {
-        var team = new GameOverviewLogParser.TeamEntry(status, finish);
+        var team = new GameOverviewTeamEntry(status, finish);
         const string original = "远征中，2-1，11-17 10:00:00";
         var display = GameOverviewWorkStatus.FormatExpedition(team, original,
             new System.DateTimeOffset(2026, 11, 17, 10, 0, 0, System.TimeSpan.FromHours(8)));

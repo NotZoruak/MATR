@@ -3,13 +3,14 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using MATR.GameLogReaderSdk;
 
-namespace MFAAvalonia.Services;
+namespace MATR.GameLogReader;
 
 /// <summary>串行读取单个设备的日志，缓存仅驻留内存。</summary>
-public sealed class GameOverviewReader
+public sealed class GameOverviewReader : MATR.GameLogReaderSdk.IGameLogReader
 {
-    public static GameOverviewReader Instance { get; } = new();
+    public int ApiVersion => 1;
     private const string LogPath = "/data/data/com.youzu.djlw/files/userdata/HttpRequestCollect";
     private const int ReadChunkBytes = 4 * 1024 * 1024;
     private readonly SemaphoreSlim _gate = new(1);
@@ -22,7 +23,7 @@ public sealed class GameOverviewReader
     private long _offset;
     private string _prefix = "";
 
-    private GameOverviewReader()
+    public GameOverviewReader()
     {
         AppDomain.CurrentDomain.ProcessExit += (_, _) =>
         {
@@ -38,7 +39,7 @@ public sealed class GameOverviewReader
         };
     }
 
-    public async Task<GameOverviewLogParser.Snapshot> ReadAsync(string adb, string serial, bool keepRoot)
+    public async Task<GameOverviewSnapshot> ReadAsync(string adb, string serial, bool keepRoot)
     {
         await _gate.WaitAsync();
         try
@@ -122,6 +123,8 @@ public sealed class GameOverviewReader
         try { await ReleaseRootAsync(); }
         finally { _gate.Release(); }
     }
+
+    public ValueTask DisposeAsync() => new(StopAsync());
 
     private async Task ReleaseRootAsync()
     {

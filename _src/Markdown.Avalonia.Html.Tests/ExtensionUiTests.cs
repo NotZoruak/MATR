@@ -11,13 +11,13 @@ using Avalonia.Headless;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using MATR.DefaultExtensions;
-using MATR.ExtensionSdk;
+using MATR.GameLogReaderSdk;
 using MFAAvalonia.Services;
 using MFAAvalonia.Views.Pages;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -32,7 +32,7 @@ public sealed class ExtensionUiTests
         {
             var directory = Path.Combine(Path.GetTempPath(), "MATR-team-health-" + Guid.NewGuid().ToString("N"));
             var view = new TeamStatusView(directory);
-            var snapshot = new GameOverviewLogParser.Snapshot { HasFullSwordPool = true };
+            var snapshot = new GameOverviewSnapshot { HasFullSwordPool = true };
             foreach (var (serial, hp) in new[] { ("1", 30), ("2", 65), ("3", 100) })
             {
                 snapshot.HeldSwords[serial] = JObject.FromObject(new { sword_id = 3, hp, hp_max = 100 });
@@ -71,129 +71,62 @@ public sealed class ExtensionUiTests
     }
 
     [Fact]
-    public async Task 默认独立页面能够真实挂载且保护表头紧凑完整与满值金色生效()
+    public async Task 状态总览内番数据布局有效且显示倒计时()
     {
         await Session.Dispatch(() =>
         {
-            var directory = Path.Combine(Path.GetTempPath(), "MATR-ui-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            var context = new PackageTestContext(directory);
-            using var overview = new OverviewWorkspace();
-            using var swords = new SwordsWorkspace();
-            var snapshot = new GameOverviewLogParser.Snapshot { HasFullSwordPool = true, Account = "测试账号" };
-            snapshot.HeldSwords["1"] = JObject.Parse("{\"sword_id\":3,\"level\":99,\"exp\":1000,\"atk\":89,\"atk_up\":0,\"hp\":40,\"hp_max\":40,\"hp_up\":1,\"protect\":1}");
-            var state = new ExtensionState(JsonConvert.SerializeObject(snapshot), "测试状态");
-            var window = new Window { Width = 1400, Height = 700 };
-            try
-            {
-                window.Content = overview.CreateView(context);
-                overview.Update(state);
-                window.Show();
-                Dispatcher.UIThread.RunJobs();
-                overview.Tick(DateTimeOffset.UtcNow);
-                window.Content = swords.CreateView(context);
-                swords.Update(state);
-                window.UpdateLayout();
-                Dispatcher.UIThread.RunJobs();
-                var grid = ((Control)window.Content).GetVisualDescendants().OfType<DataGrid>().Single();
-                Assert.Equal(72, grid.Columns[0].ActualWidth);
-                var header = grid.GetVisualDescendants().OfType<DataGridColumnHeader>().First(x => x.Content?.ToString() == "保护 ▾");
-                Assert.False(header.GetVisualDescendants().OfType<global::Avalonia.Controls.Shapes.Path>().Single(x => x.Name == "SortIcon").IsVisible);
-                var cell = grid.GetVisualDescendants().OfType<Border>().First(x => Equals(x.Tag, "atk"));
-                Assert.Equal(Color.Parse("#F4E4AB"), Assert.IsAssignableFrom<ISolidColorBrush>(cell.Background).Color);
-                var view = Assert.IsType<HeldSwordsView>(window.Content);
-                var menu = (ContextMenu)typeof(HeldSwordsView).GetMethod("ColumnsMenu", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(view, null)!;
-                var ranbu = menu.Items.OfType<MenuItem>().Single(x => x.Header?.ToString() == "乱舞");
-                // 模拟模板复选框的双向绑定，不依赖 MenuItem.Click 事件。
-                ranbu.IsChecked = false;
-                Assert.False(grid.Columns.Single(x => x.SortMemberPath == "Ranbu").IsVisible);
-                ranbu.IsChecked = true;
-                Assert.True(grid.Columns.Single(x => x.SortMemberPath == "Ranbu").IsVisible);
-            }
-            finally { window.Close(); Directory.Delete(directory, true); }
-        }, CancellationToken.None);
-    }
-    [Fact]
-    public async Task 真正默认包在独立加载上下文内能够挂载编译界面并读取内嵌资料()
-    {
-        await Session.Dispatch(() =>
-        {
-            var directory = Path.Combine(Path.GetTempPath(), "MATR-default-package-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            foreach (var entry in new[] { "OverviewWorkspace", "SwordsWorkspace" })
-            {
-                using (var archive = System.IO.Compression.ZipFile.Open(Path.Combine(directory, entry + ".matrext"), System.IO.Compression.ZipArchiveMode.Create))
-                {
-                    using (var writer = new StreamWriter(archive.CreateEntry("manifest.json").Open()))
-                        writer.Write(System.Text.Json.JsonSerializer.Serialize(new { id = entry, name = entry, version = "1", apiVersion = 1, entryAssembly = "MATR.DefaultExtensions.dll", entryType = "MATR.DefaultExtensions." + entry }));
-                    using var input = File.OpenRead(typeof(OverviewWorkspace).Assembly.Location);
-                    using var output = archive.CreateEntry("MATR.DefaultExtensions.dll").Open();
-                    input.CopyTo(output);
-                }
-            }
-            var window = new Window { Width = 1200, Height = 650 };
+            var view = new DefaultOverviewView(() => Task.CompletedTask);
+            var snapshot = new GameOverviewSnapshot();
+            snapshot.DutyMembers["horse"] = ["3", "3"];
+            snapshot.DutyMemberSerials["horse"] = ["101", "102"];
+            snapshot.DutyMembers["field"] = ["3", "3"];
+            snapshot.DutyMemberSerials["field"] = ["101", "102"];
+            snapshot.DutyMembers["bout"] = [null, null];
+            foreach (var serial in new[] { "101", "102" })
+                snapshot.HeldSwords[serial] = JObject.Parse("{\"sword_id\":3,\"def\":56,\"def_up\":10,\"mobile\":74,\"mobile_up\":0,\"hp_max\":94,\"hp_up\":2,\"scout\":28,\"scout_up\":1}");
+            var now = new DateTimeOffset(2026, 11, 23, 14, 0, 0, TimeSpan.FromHours(8));
+            snapshot.WorkItems["Duty"] = [new GameOverviewWorkEntry("", "2026-11-24 00:43:26")];
+            view.Update(snapshot, "测试数据");
+            view.Tick(now);
+            foreach (var name in new[] { "AccountCardBody", "ResourcesCardBody", "TeamsCardBody" })
+                view.FindControl<StackPanel>(name)!.IsVisible = false;
+            var window = new Window { Width = 760, Height = 1100, Content = view };
             try
             {
                 window.Show();
-                foreach (var package in ExtensionPackageLoader.Scan(directory).Packages)
+                foreach (var width in new[] { 620, 760, 900 })
                 {
-                    using var loaded = ExtensionPackageLoader.Load(package, Path.Combine(directory, "cache"));
-                    var page = loaded.Workspace.CreateView(new PackageTestContext(directory));
-                    loaded.Workspace.Update(new ExtensionState("{\"Account\":\"测试\",\"HasFullSwordPool\":true,\"HeldSwords\":{\"1\":{\"sword_id\":3,\"level\":1,\"exp\":0}}}", "测试包加载"));
-                    window.Content = page;
+                    window.Width = width;
+                    window.UpdateLayout();
                     Dispatcher.UIThread.RunJobs();
-                    loaded.Workspace.Tick(DateTimeOffset.UtcNow);
-                    Assert.True(page.IsAttachedToVisualTree());
-                    window.Content = null;
+                    Assert.Equal(2, view.FindControl<global::Avalonia.Controls.Primitives.UniformGrid>("DutyJobs")!.Columns);
+                    var horse = view.FindControl<StackPanel>("DutyHorseMembers")!;
+                    foreach (var card in horse.Children.OfType<Border>())
+                    foreach (var text in card.GetVisualDescendants().OfType<TextBlock>())
+                    {
+                        var point = text.TranslatePoint(default, card)!.Value;
+                        Assert.True(point.X >= 0 && point.X + text.Bounds.Width <= card.Bounds.Width + 1);
+                    }
+                    var texts = horse.GetVisualDescendants().OfType<TextBlock>().Select(x => x.Text).ToArray();
+                    Assert.Contains("0/0", texts);
+                    Assert.Contains("4/14", texts);
+                    Assert.DoesNotContain("74/74", texts);
+                    Assert.Contains("MAX", texts);
+                    Assert.Contains("防御", texts);
+                    Assert.Contains("机动", texts);
+                    Assert.DoesNotContain("侦察", texts);
+                    var field = view.FindControl<StackPanel>("DutyFieldMembers")!;
+                    var progress = field.GetVisualDescendants().OfType<Grid>().First(grid => grid.Height == 3);
+                    Assert.Equal(5d / 7, progress.ColumnDefinitions[0].Width.Value, 6);
+                    Assert.Empty(view.FindControl<StackPanel>("DutyBoutMembers")!.Children);
+                    Assert.False(view.FindControl<Border>("DutyBoutCard")!.IsVisible);
                 }
+                var schedule = GameOverviewWorkStatus.FormatSchedule("2026-11-24 00:43:26", now);
+                Assert.Equal("结束：11-24 00:43:26，剩余：10:43:26", schedule.Text);
             }
             finally { window.Close(); }
         }, CancellationToken.None);
     }
-
-    [Theory]
-    [InlineData("attach")]
-    [InlineData("update")]
-    [InlineData("tick")]
-    public async Task 单个扩展创建后挂载或回调失败不妨碍另一个工作区(string mode)
-    {
-        await Session.Dispatch(() =>
-        {
-            var directory = Path.Combine(Path.GetTempPath(), "MATR-fault-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(directory);
-            void Package(string id, Type entry)
-            {
-                using var archive = System.IO.Compression.ZipFile.Open(Path.Combine(directory, id + ".matrext"), System.IO.Compression.ZipArchiveMode.Create);
-                using (var writer = new StreamWriter(archive.CreateEntry("manifest.json").Open()))
-                    writer.Write(System.Text.Json.JsonSerializer.Serialize(new { id, name = id, version = "1", apiVersion = 1, entryAssembly = "Example.dll", entryType = entry.FullName }));
-                using var input = File.OpenRead(entry.Assembly.Location);
-                using var output = archive.CreateEntry("Example.dll").Open();
-                input.CopyTo(output);
-            }
-            Package("bad-" + mode, typeof(PackageFaultWorkspace));
-            Package("good", typeof(PackageTestWorkspace));
-            var catalog = ExtensionPackageLoader.Scan(directory);
-            Assert.Equal(2, catalog.Packages.Count);
-            var host = new ExtensionOverviewView(catalog, directory);
-            var window = new Window { Width = 1000, Height = 700, Content = host };
-            try
-            {
-                window.Show();
-                Dispatcher.UIThread.RunJobs();
-                typeof(ExtensionOverviewView).GetMethod("SelectWorkspace", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, new object[] { catalog.Packages.Single(x => x.Manifest.Id == "good") });
-                typeof(ExtensionOverviewView).GetMethod("TickWorkspaces", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
-                typeof(ExtensionOverviewView).GetMethod("PublishState", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, new object[] { "另一个页面仍正常" });
-                var content = host.FindControl<Grid>("WorkspaceContent")!.Children.Single();
-                Assert.Equal("另一个页面仍正常", Assert.IsType<TextBlock>(content).Text);
-            }
-            finally
-            {
-                window.Close();
-                typeof(ExtensionOverviewView).GetMethod("ReleaseWorkspaces", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(host, null);
-            }
-        }, CancellationToken.None);
-    }
-
 }
 
 public sealed class ExtensionTestApplication : Application
@@ -204,28 +137,8 @@ public sealed class ExtensionTestApplication : Application
         Styles.Add(new SukiUI.SukiTheme());
     }
 }
+
 public static class ExtensionTestAppBuilder
 {
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<ExtensionTestApplication>().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).UseSkia().WithInterFont();
-}
-
-public sealed class PackageFaultWorkspace : IExtensionWorkspace
-{
-    private string _mode = "";
-    public Control CreateView(IExtensionContext context)
-    {
-        _mode = Path.GetFileName(context.DataDirectory);
-        return _mode.EndsWith("attach", StringComparison.Ordinal) ? new FaultyAttachControl() : new TextBlock();
-    }
-    public void Update(ExtensionState state) { if (_mode.EndsWith("update", StringComparison.Ordinal)) throw new InvalidOperationException("测试更新失败"); }
-    public void Tick(DateTimeOffset now) { if (_mode.EndsWith("tick", StringComparison.Ordinal)) throw new InvalidOperationException("测试刷新失败"); }
-    public void Dispose() { }
-}
-public sealed class FaultyAttachControl : Border
-{
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        base.OnAttachedToVisualTree(e);
-        throw new InvalidOperationException("测试首次挂载失败");
-    }
 }

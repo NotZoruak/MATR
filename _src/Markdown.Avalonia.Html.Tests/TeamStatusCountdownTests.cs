@@ -7,6 +7,8 @@ using Avalonia.Controls;
 using MFAAvalonia.Services;
 using MFAAvalonia.Views.Pages;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -20,8 +22,8 @@ public sealed class TeamStatusCountdownTests
             var view = new TeamStatusView(Path.GetTempPath());
             var now = new DateTimeOffset(2026, 11, 23, 14, 0, 0, TimeSpan.FromHours(8));
             view.Tick(now);
-            var snapshot = new GameOverviewLogParser.Snapshot();
-            snapshot.Teams["2"] = new GameOverviewLogParser.TeamEntry("2", "2026-11-23 16:00:00", "2-1");
+            var snapshot = new GameOverviewSnapshot();
+            snapshot.Teams["2"] = new GameOverviewTeamEntry("2", "2026-11-23 16:00:00", "2-1");
             view.SetSnapshot(snapshot);
             var cards = view.FindControl<Grid>("TeamCards")!;
             var button = Assert.IsType<Button>(cards.Children[1]);

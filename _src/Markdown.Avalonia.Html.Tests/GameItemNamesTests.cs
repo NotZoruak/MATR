@@ -1,5 +1,7 @@
 using MFAAvalonia.Services;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 

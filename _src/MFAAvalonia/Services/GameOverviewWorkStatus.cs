@@ -9,7 +9,7 @@ public static class GameOverviewWorkStatus
     public sealed record Display(string Text, bool Completed);
 
     /// <summary>远征期限已到仅改变显示，不篡改日志中的部队状态。</summary>
-    public static Display FormatExpedition(GameOverviewLogParser.TeamEntry team, string text, DateTimeOffset now)
+    public static Display FormatExpedition(GameOverviewTeamEntry team, string text, DateTimeOffset now)
     {
         var returned = team.Status == "2" && Format(team.FinishedAt, now).Completed;
         return new Display(returned && text.StartsWith("远征中", StringComparison.Ordinal)

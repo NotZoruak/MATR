@@ -7,7 +7,7 @@ namespace MFAAvalonia.Services;
 /// <summary>仅在展示时转换活动编号，保留快照和历史记录中的原始编号。</summary>
 public static class GameEventNames
 {
-    private static readonly JObject Catalog = JObject.Parse(MATR.DefaultExtensions.CatalogResources.Read("GameEventCatalog.json"));
+    private static readonly JObject Catalog = JObject.Parse(CatalogResources.Read("GameEventCatalog.json"));
 
     public static string? FormatMap(string? raw)
     {

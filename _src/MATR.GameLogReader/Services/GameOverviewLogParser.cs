@@ -4,8 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using MATR.GameLogReaderSdk;
 
-namespace MFAAvalonia.Services;
+namespace MATR.GameLogReader;
 
 /// <summary>仅提取已核对的总览字段，不保存凭据或原始响应。</summary>
 public static class GameOverviewLogParser
@@ -21,38 +22,11 @@ public static class GameOverviewLogParser
         ["6111"] = "三所物·菊碎片",
         ["6113"] = "三所物·狮子碎片"
     };
-    public sealed record Value(string Text, string ObservedAt);
-    public sealed record TeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
-    public sealed record WorkEntry(string Label, string? FinishedAt);
-    public sealed record HarvestEntry(string Id, string Kind, string Time, string Name, int Amount, string? SwordId, string? Map, string? Point, string Source);
-    public sealed record DutyRecord(string Id, string Time, string DutyType, string SwordSerial, string SwordId, int UpType, int UpValue, bool Success, bool IsMaximum, JObject SwordData);
-    public sealed class Snapshot
-    {
-        public string Account { get; set; } = "";
-        public Dictionary<string, Value> Values { get; } = new();
-        public Dictionary<string, List<WorkEntry>> WorkItems { get; } = new();
-        public Dictionary<string, List<string?>> DutyMembers { get; } = new();
-        public Dictionary<string, List<string?>> DutyMemberSerials { get; } = new();
-        public Dictionary<string, TeamEntry> Teams { get; } = new();
-        public Dictionary<string, JObject> HeldSwords { get; } = new();
-        public Dictionary<string, string> SwordTeams { get; } = new();
-        public Dictionary<string, string> SwordTeamPositions { get; } = new();
-        public Dictionary<string, string> EquipmentKinds { get; } = new();
-        public Dictionary<string, Value> InventoryItems { get; } = new(StringComparer.Ordinal);
-        public bool HasInventorySnapshot { get; set; }
-        public DateTimeOffset? LatestResponseAt { get; set; }
-        public List<HarvestEntry> HarvestRecords { get; } = new();
-        public List<DutyRecord> DutyRecords { get; } = new();
-        public bool HasFullSwordPool { get; set; }
-        public string SwordObservedAt { get; set; } = "";
-        public int Responses { get; set; }
-    }
-
-    public static Snapshot Parse(string log) => new IncrementalParser().Append(log, flushIncompleteLine: true);
+    public static GameOverviewSnapshot Parse(string log) => new IncrementalParser().Append(log, flushIncompleteLine: true);
 
     public sealed class IncrementalParser
     {
-        private Snapshot result = new();
+        private GameOverviewSnapshot result = new();
         private readonly Dictionary<string, (string Status, string? Finish, string Time)> teams = new();
         private readonly Dictionary<string, string> maps = new();
         private readonly Dictionary<string, string> sortieMaps = new();
@@ -68,7 +42,7 @@ public static class GameOverviewLogParser
         private string pendingLine = "";
         private int nextLineIndex;
 
-        public Snapshot Append(string log, bool flushIncompleteLine = false)
+        public GameOverviewSnapshot Append(string log, bool flushIncompleteLine = false)
         {
             var combined = pendingLine + log;
             if (flushIncompleteLine && combined.Length > 0 && combined[^1] != '\n')
@@ -147,7 +121,7 @@ public static class GameOverviewLogParser
             }
             if (result.Account != account)
             {
-                result = new Snapshot { Account = account };
+                result = new GameOverviewSnapshot { Account = account };
                 teams.Clear();
                 maps.Clear();
                 sortieMaps.Clear();
@@ -179,7 +153,7 @@ public static class GameOverviewLogParser
                         || !long.TryParse(serial, out var serialNumber) || serialNumber <= 0) return;
                     var id = $"{account}:forge:{serial}";
                     if (result.HarvestRecords.Any(entry => entry.Id == id)) return;
-                    result.HarvestRecords.Add(new HarvestEntry(id, "sword", time,
+                    result.HarvestRecords.Add(new GameOverviewHarvestEntry(id, "sword", time,
                         GameItemNames.Find("2", swordId) ?? "刀剑 ID：" + swordId, 1, swordId, null, null, "锻刀"));
                 }
                 RecordForgedSword(data);
@@ -227,7 +201,7 @@ public static class GameOverviewLogParser
                 && int.TryParse(droppedSwordId?.ToString(), out var getSwordId) && getSwordId > 0)
             {
                 var dropMap = currentSortieMap;
-                result.HarvestRecords.Add(new HarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
+                result.HarvestRecords.Add(new GameOverviewHarvestEntry($"{account}:{lineIndex}:battle:{getSwordId}", "sword", time, "刀剑 ID：" + getSwordId,
                     1, getSwordId.ToString(CultureInfo.InvariantCulture), dropMap,
                     currentSortiePoint, dropMap?.StartsWith("异去 ", StringComparison.Ordinal) == true ? "异去掉落" : "过去掉落"));
             }
@@ -306,12 +280,12 @@ public static class GameOverviewLogParser
                         : source;
                     var sourceKind = recordSource.Split(" · ", 2, StringSplitOptions.None)[0];
                     var id = $"{account}:{sourceIndex}:{rewardIndex}:{sourceKind}:{itemId ?? "未知"}:{itemType ?? "未知"}:{name}";
-                    result.HarvestRecords.Add(new HarvestEntry(id, "resource", observedAt, name, amount, null, map, point, recordSource));
+                    result.HarvestRecords.Add(new GameOverviewHarvestEntry(id, "resource", observedAt, name, amount, null, map, point, recordSource));
                 }
             }
             void Set(string key, string? value)
             {
-                if (value != null) result.Values[key] = new Value(value, time);
+                if (value != null) result.Values[key] = new GameOverviewValue(value, time);
             }
             if (int.TryParse((data["repair_slot_max"] ?? data["repair_slot"])?.ToString(), out var capacity) && capacity is >= 0 and <= 100)
                 repairCapacity = capacity;
@@ -390,7 +364,7 @@ public static class GameOverviewLogParser
                     if (result.InventoryItems.TryGetValue(name, out var previous)
                         && int.TryParse(previous.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var previousCount))
                         total = (int)Math.Min(int.MaxValue, (long)previousCount + count);
-                    result.InventoryItems[name] = new Value(total.ToString(CultureInfo.InvariantCulture), time);
+                    result.InventoryItems[name] = new GameOverviewValue(total.ToString(CultureInfo.InvariantCulture), time);
                 }
             }
             if (data["assist_item_id"]?.ToString() == "8" && long.TryParse(data["assist_item_num"]?.ToString(), out var remaining))
@@ -483,7 +457,7 @@ public static class GameOverviewLogParser
                             var serial = sword["serial_id"]?.ToString() ?? pair.Name;
                             var swordId = sword["sword_id"]!.ToString();
                             var timeKey = data["now"]?.ToString() ?? time;
-                            result.DutyRecords.Add(new DutyRecord(
+                            result.DutyRecords.Add(new GameOverviewDutyRecord(
                                 $"{account}:{timeKey}:{serial}", timeKey, dutyKinds.GetValueOrDefault(pair.Name, "内番"),
                                 serial, swordId, upType, upValue, growth.Value<bool?>("success") ?? false,
                                 growth.Value<bool?>("is_max") ?? false, (JObject)sword.DeepClone()));
@@ -496,7 +470,7 @@ public static class GameOverviewLogParser
                 else if (data["duty"] is JObject duty)
                 {
                     dutyDetails = duty;
-                    result.WorkItems["Duty"] = [new WorkEntry("", duty["finished_at"]?.ToString())];
+                    result.WorkItems["Duty"] = [new GameOverviewWorkEntry("", duty["finished_at"]?.ToString())];
                     Set("Duty", "已读取");
                 }
                 foreach (var pair in new[] { ("forge", "Forge"), ("repair", "Repair") })
@@ -504,7 +478,7 @@ public static class GameOverviewLogParser
                     {
                         var entries = slots is JObject obj ? obj.Properties().Select(x => x.Value).ToArray() : slots.Children().ToArray();
                         result.WorkItems[pair.Item2] = entries.OfType<JObject>().Select((x, i) =>
-                            new WorkEntry("锻冶所 " + (x["slot_no"]?.ToString() ?? (i + 1).ToString()), x["finished_at"]?.ToString())).ToList();
+                            new GameOverviewWorkEntry("锻冶所 " + (x["slot_no"]?.ToString() ?? (i + 1).ToString()), x["finished_at"]?.ToString())).ToList();
                         Set(pair.Item2, entries.Length == 0 ? "未使用" : "已读取");
                     }
             }
@@ -532,7 +506,7 @@ public static class GameOverviewLogParser
                 var numbered = entries.Select(x => (Entry: x, Number: SlotNumber(x.Label))).GroupBy(x => x.Number).ToDictionary(x => x.Key, x => x.Last().Entry);
                 if (key == "Repair" && repairCapacity is { } count)
                     for (var number = 1; number <= count; number++)
-                        numbered.TryAdd(number, new WorkEntry("工坊 " + number, null));
+                        numbered.TryAdd(number, new GameOverviewWorkEntry("工坊 " + number, null));
                 result.WorkItems[key] = numbered.OrderBy(x => x.Key)
                     .Select(x => key == "Repair" ? x.Value with { Label = "工坊 " + x.Key } : x.Value).ToList();
             }
@@ -555,15 +529,15 @@ public static class GameOverviewLogParser
                 label += "，" + (sortieMap ?? "地图未知");
                 if (sortiePoint != null) label += "，点位 " + sortiePoint;
             }
-            result.Teams[pair.Key] = new TeamEntry(status, finish, expeditionMap, sortieMap, sortiePoint);
-            result.Values["Team" + pair.Key] = new Value(label, time);
+            result.Teams[pair.Key] = new GameOverviewTeamEntry(status, finish, expeditionMap, sortieMap, sortiePoint);
+            result.Values["Team" + pair.Key] = new GameOverviewValue(label, time);
         }
         return CopySnapshot();
         }
 
-        private Snapshot CopySnapshot()
+        private GameOverviewSnapshot CopySnapshot()
         {
-            var copy = new Snapshot
+            var copy = new GameOverviewSnapshot
             {
                 Account = result.Account,
                 HasFullSwordPool = result.HasFullSwordPool,

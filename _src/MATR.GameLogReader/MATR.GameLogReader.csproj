@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>MATR.GameLogReader</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../MATR.GameLogReaderSdk/MATR.GameLogReaderSdk.csproj" />
+    <EmbeddedResource Include="Assets/GameItemCatalog.json" LogicalName="MATR.GameLogReader.GameItemCatalog.json" />
+  </ItemGroup>
+</Project>

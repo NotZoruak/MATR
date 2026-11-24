@@ -8,6 +8,8 @@ using MFAAvalonia.Services;
 using MFAAvalonia.Views.Pages;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -27,7 +29,7 @@ public sealed class DutyRecordsSettlementTests
                 var scoutTotal = sword.Value<int>("scout_up");
                 var view = new DutyRecordsView(directory);
                 var data = new JObject { ["hp_up"] = hpTotal - 3, ["scout_up"] = scoutTotal - 1 };
-                var record = new GameOverviewLogParser.DutyRecord("test", "2026-11-23 15:59:57", "耕作", "1", "3", 4, 1, true, false, data);
+                var record = new GameOverviewDutyRecord("test", "2026-11-23 15:59:57", "耕作", "1", "3", 4, 1, true, false, data);
                 view.AddRecords("测试账号", [record]);
                 var grid = view.FindControl<StackPanel>("GroupsPanel")!.Children.OfType<StackPanel>().Single().Children.OfType<DataGrid>().Single();
                 Assert.Contains(grid.Columns, column => Equals(column.Header, "结算结果 1"));
