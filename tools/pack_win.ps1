@@ -52,6 +52,30 @@ if ($SourceFrameworkHash -notin @('434809C1F4504D3A39B4E24C609A4F1DAD502418AAF30
     throw '发布目录不是预期的官方 5.16.0 或当前四线程补丁构建，拒绝混入其他版本控制器。'
 }
 
+# 核心程序集必须由宿主依赖清单绑定到依赖目录，禁止打出仍会探测根目录的旧宿主包。
+$CoreLibraryRelativePath = 'runtimes/libs/MFAAvalonia.Core.dll'
+if (-not (Test-Path -LiteralPath (Join-Path $SourceDir $CoreLibraryRelativePath) -PathType Leaf)) {
+    throw "发布目录缺少 $CoreLibraryRelativePath，请重新发布。"
+}
+$SourceDependencies = Get-Content -LiteralPath (Join-Path $SourceDir 'MATR.deps.json') -Raw | ConvertFrom-Json -AsHashtable
+$CoreEntryCount = 0
+foreach ($target in $SourceDependencies['targets'].Values) {
+    foreach ($library in $target.Values) {
+        $runtime = $library['runtime']
+        if ($runtime -and $runtime.ContainsKey('MFAAvalonia.Core.dll')) {
+            if ($runtime['MFAAvalonia.Core.dll']['localPath'] -ne $CoreLibraryRelativePath) {
+                throw '发布产物尚未固定核心程序集加载路径，请从当前源码重新发布。'
+            }
+            $CoreEntryCount++
+        }
+    }
+}
+if ($CoreEntryCount -eq 0) { throw '发布依赖清单缺少核心程序集，请重新发布。' }
+$SourceRuntimeConfig = Get-Content -LiteralPath (Join-Path $SourceDir 'MATR.runtimeconfig.json') -Raw | ConvertFrom-Json -AsHashtable
+if ($SourceRuntimeConfig['runtimeOptions']['configProperties']['NetBeautyLibsDir'] -ne 'runtimes/libs') {
+    throw '发布加载器仍有旧的依赖搜索配置，请从当前源码重新发布。'
+}
+
 # Clean old temp dir and zip
 if (Test-Path $TempBase) { Remove-Item -Recurse -Force $TempBase }
 if (Test-Path $ZipFile) { Remove-Item -Force $ZipFile }
@@ -94,6 +118,13 @@ Get-ChildItem "$TempDir\runtimes" -Directory | ForEach-Object {
     if ($KeepDirs -notcontains $_.Name) { Remove-Item -Recurse -Force $_.FullName }
 }
 
+# 某些根级同步产物会把 win-x64 运行时重复嵌套到 runtimes\win-x64\win-x64；
+# 包内只保留标准的 runtimes\win-x64\native 布局，避免重复分发原生库。
+$NestedPlatform = Join-Path "$TempDir\runtimes\$Platform" $Platform
+if (Test-Path -LiteralPath $NestedPlatform) {
+    Remove-Item -LiteralPath $NestedPlatform -Recurse -Force
+}
+
 # 发布目录中的根级 libs 是兼容输入；发布包统一使用 runtimes/libs 布局。
 if (Test-Path "$SourceDir\libs") {
     New-Item -ItemType Directory -Force -Path "$TempDir\runtimes\libs" | Out-Null
@@ -109,10 +140,11 @@ if (Test-Path "$SourceDir\libs") {
 }
 
 # 发布目录 runtimes/libs 由本次构建生成，优先级高于兼容输入的根级 libs。
-# 否则根级目录残留的旧 MFAAvalonia.Core.dll 会覆盖刚构建的程序集。
+# 否则兼容输入 libs 中残留的旧 MFAAvalonia.Core.dll 会覆盖刚构建的程序集。
 if (Test-Path "$SourceDir\runtimes\libs") {
     Copy-Item "$SourceDir\runtimes\libs\*" -Recurse -Destination "$TempDir\runtimes\libs" -Force
 }
+
 # 保留 MaaAgentBinary，其中包含 maatouch、minitouch 与 minicap 等设备代理。
 if (Test-Path "$SourceDir\plugins") {
     Copy-Item "$SourceDir\plugins" -Recurse -Destination "$TempDir\plugins"

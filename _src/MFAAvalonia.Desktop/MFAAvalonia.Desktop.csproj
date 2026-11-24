@@ -46,6 +46,7 @@
         <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.12"/>
         <PackageReference Include="nulastudio.NetBeauty" Version="2.1.5" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" GeneratePathProperty="true" />
     </ItemGroup>
 
     <ItemGroup>
@@ -112,4 +113,5 @@
 
         <Delete Files="@(PdbFilesToDelete);@(XmlFilesToDelete);@(RuntimeConfigFilesToDelete)" ContinueOnError="true"/>
     </Target>
+    <Import Project="CoreLibraryLayout.targets" />
 </Project>
