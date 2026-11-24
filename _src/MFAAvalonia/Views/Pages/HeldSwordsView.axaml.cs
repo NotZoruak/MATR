@@ -54,14 +54,13 @@ public partial class HeldSwordsView : UserControl
     private string _observedAt = "";
     private (Column Column, Control Target, Point Position)? _filterPress;
     private ContextMenu? _headerMenu;
-    private readonly string _dataDirectory;
-    private string LayoutPath => Path.Combine(_dataDirectory, "held-swords-view.json");
+    private readonly HonmaruUiSettings _uiSettings;
 
-    public HeldSwordsView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "ui")) { }
+    public HeldSwordsView() : this(AppPaths.ConfigDirectory) { }
 
-    public HeldSwordsView(string dataDirectory)
+    public HeldSwordsView(string configDirectory)
     {
-        _dataDirectory = dataDirectory;
+        _uiSettings = new HonmaruUiSettings(configDirectory);
         InitializeComponent();
         BuildColumns();
         SwordGrid.AddHandler(PointerPressedEvent, (_, e) =>
@@ -435,13 +434,10 @@ public partial class HeldSwordsView : UserControl
         if (_loadingLayout) return;
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(LayoutPath)!);
             var data = _columns.ToDictionary(x => x.Key, x => new ColumnLayout(x.Value.IsVisible, x.Value.DisplayIndex, x.Value.ActualWidth >= 62 ? x.Value.ActualWidth : x.Value.Width.Value));
-            var temporary = LayoutPath + ".tmp";
-            File.WriteAllText(temporary, JsonConvert.SerializeObject(new { Version = 2, Columns = data }, Formatting.Indented), new UTF8Encoding(false));
-            File.Move(temporary, LayoutPath, true);
+            _uiSettings.Write("SwordColumns", data);
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         { LoggerHelper.Warning("所持刀剑列设置保存失败：" + exception.GetType().Name); }
     }
 
@@ -450,16 +446,13 @@ public partial class HeldSwordsView : UserControl
         _loadingLayout = true;
         try
         {
-            if (!File.Exists(LayoutPath)) return;
-            var document = JObject.Parse(File.ReadAllText(LayoutPath));
-            var legacy = document["Columns"] == null;
-            var settings = (legacy ? document : document["Columns"])?.ToObject<Dictionary<string, ColumnLayout>>();
+            var settings = _uiSettings.Read<Dictionary<string, ColumnLayout>>("SwordColumns");
             if (settings == null) return;
             foreach (var item in settings.OrderBy(x => x.Value.Order))
                 if (_columns.TryGetValue(item.Key, out var column))
                 {
                     column.IsVisible = item.Key == "Name" || item.Value.Visible;
-                    if (!legacy && double.IsFinite(item.Value.Width) && item.Value.Width >= 56)
+                    if (double.IsFinite(item.Value.Width) && item.Value.Width >= 56)
                     {
                         column.Width = new DataGridLength(Math.Clamp(item.Value.Width, column.MinWidth, 800));
                     }

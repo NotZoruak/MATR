@@ -40,7 +40,7 @@ public partial class TeamStatusView : UserControl
         new("loyalties", "必杀", 58, false), new("Serial", "唯一 ID", 120, false), new("Type", "刀种", 72, false)
     ];
     private readonly Dictionary<string, DataGridColumn> _columns = new();
-    private readonly string _layoutPath;
+    private readonly HonmaruUiSettings _uiSettings;
     private List<HeldSwordRow> _rows = [];
     private GameOverviewSnapshot? _snapshot;
     private string? _expandedTeam = "1";
@@ -51,11 +51,11 @@ public partial class TeamStatusView : UserControl
     private readonly Dictionary<string, TextBlock> _countdowns = new();
     private bool _experienceMode;
 
-    public TeamStatusView() : this(Path.Combine(AppPaths.ConfigDirectory, "honmaru", "ui")) { }
+    public TeamStatusView() : this(AppPaths.ConfigDirectory) { }
 
-    public TeamStatusView(string dataDirectory)
+    public TeamStatusView(string configDirectory)
     {
-        _layoutPath = Path.Combine(dataDirectory, "team-status-view.json");
+        _uiSettings = new HonmaruUiSettings(configDirectory);
         InitializeComponent();
         BuildColumns();
         BuildCards();
@@ -380,14 +380,11 @@ public partial class TeamStatusView : UserControl
         if (_loadingLayout) return;
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_layoutPath)!);
             var layout = _columns.ToDictionary(pair => pair.Key, pair => new ColumnLayout(pair.Value.IsVisible,
                 pair.Value.DisplayIndex, pair.Value.ActualWidth >= 48 ? pair.Value.ActualWidth : pair.Value.Width.Value));
-            var temporary = _layoutPath + ".tmp";
-            File.WriteAllText(temporary, JsonConvert.SerializeObject(layout, Formatting.Indented));
-            File.Move(temporary, _layoutPath, true);
+            _uiSettings.Write("TeamColumns", layout);
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
             LoggerHelper.Warning("部队状况列设置保存失败：" + exception.GetType().Name);
         }
@@ -398,8 +395,7 @@ public partial class TeamStatusView : UserControl
         _loadingLayout = true;
         try
         {
-            if (!File.Exists(_layoutPath)) return;
-            var settings = JObject.Parse(File.ReadAllText(_layoutPath)).ToObject<Dictionary<string, ColumnLayout>>();
+            var settings = _uiSettings.Read<Dictionary<string, ColumnLayout>>("TeamColumns");
             if (settings == null) return;
             foreach (var item in settings.OrderBy(pair => pair.Value.Order))
                 if (_columns.TryGetValue(item.Key, out var column))
