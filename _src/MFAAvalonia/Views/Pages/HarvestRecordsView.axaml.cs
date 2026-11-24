@@ -49,6 +49,14 @@ public partial class HarvestRecordsView : UserControl
         {
             if (e.NameScope.Find<Control>("border")?.GetVisualParent() is Border wrapper)
                 wrapper.Padding = new Avalonia.Thickness(0);
+            // 选中文字跨越箭头所在列，并移除主题的左偏移，按整个选择框居中。
+            if (e.NameScope.Find<Control>("toggle")?.GetVisualParent() is Grid grid
+                && grid.Children.OfType<ContentControl>().FirstOrDefault(control => control.Name != "toggle") is { } selection)
+            {
+                Grid.SetColumnSpan(selection, 2);
+                selection.Margin = new Avalonia.Thickness(0);
+                selection.HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+            }
         };
         RecordsGrid.ItemsSource = _visibleRows;
         ShowTable();

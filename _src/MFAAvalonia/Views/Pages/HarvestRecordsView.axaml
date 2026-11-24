@@ -52,7 +52,7 @@
   <Border Background="{DynamicResource SukiCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,8,0">
     <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,100" RowSpacing="10" ColumnSpacing="8">
       <Grid ColumnDefinitions="100,*" ColumnSpacing="8">
-        <ComboBox x:Name="HarvestKindPicker" Classes="harvest-filter" Padding="6,2" HorizontalAlignment="Stretch" VerticalContentAlignment="Center">
+        <ComboBox x:Name="HarvestKindPicker" Classes="harvest-filter" Padding="6,2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
           <ComboBoxItem Content="刀剑" />
           <ComboBoxItem Content="物品" />
           <ComboBoxItem Content="内番" />

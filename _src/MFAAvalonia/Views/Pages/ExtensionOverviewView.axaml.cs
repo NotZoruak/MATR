@@ -171,8 +171,12 @@ public partial class ExtensionOverviewView : UserControl
 
     private async Task PollAsync()
     {
+        var now = DateTimeOffset.UtcNow;
         foreach (var view in _views.Values)
-            if (view is TeamStatusView teams) teams.Tick(DateTimeOffset.UtcNow);
+        {
+            if (view is DefaultOverviewView overview) overview.Tick(now);
+            else if (view is TeamStatusView teams) teams.Tick(now);
+        }
 
         var enabled = bool.TryParse(GlobalConfiguration.GetValue("Extension.AutoReadEnabled", "False"), out var readEnabled) && readEnabled;
         var device = CurrentDeviceKey();

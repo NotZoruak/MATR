@@ -298,14 +298,15 @@ public partial class DefaultOverviewView : UserControl
             text.Inlines ??= new InlineCollection();
             text.Inlines.Clear();
             if (group.Value.Count == 0)
-                text.Inlines.Add(new Run("未使用"));
+                text.Inlines.Add(new Run(group.Key == "Duty" ? "待机中" : "未使用"));
             for (var index = 0; index < group.Value.Count; index++)
             {
                 if (index > 0) text.Inlines.Add(new LineBreak());
                 var entry = group.Value[index];
                 if (entry.Label.Length > 0) text.Inlines.Add(new Run(entry.Label + "　"));
                 var status = GameOverviewWorkStatus.FormatSchedule(entry.FinishedAt, _now);
-                var run = new Run(status.Text);
+                var statusText = group.Key == "Duty" && status.Text == "未使用" ? "待机中" : status.Text;
+                var run = new Run(statusText);
                 run.Bind(Run.ForegroundProperty, new DynamicResourceExtension(status.Completed ? "OverviewSuccessBrush" :
                     status.Text.Contains("剩余：", StringComparison.Ordinal) ? "OverviewAccentBrush" : "OverviewMutedBrush"));
                 text.Inlines.Add(run);

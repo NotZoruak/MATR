@@ -112,22 +112,9 @@ public partial class DutyRecordsView : UserControl
             .Where(MatchesFilters)
             .OrderByDescending(x => x.Record.Time, StringComparer.Ordinal)
             .ThenBy(x => x.Name, StringComparer.CurrentCulture).ToArray();
-        if (rows.Length == 0)
-        {
-            var emptyGrid = CreateGrid();
-            emptyGrid.ItemsSource = Array.Empty<Row>();
-            GroupsPanel.Children.Add(emptyGrid);
-        }
-        foreach (var group in rows.GroupBy(x => DateOnly.TryParse(x.Record.Time[..Math.Min(10, x.Record.Time.Length)], CultureInfo.InvariantCulture, out var day) ? day : DateOnly.MinValue)
-                     .OrderByDescending(x => x.Key))
-        {
-            var card = new StackPanel { Spacing = 6, HorizontalAlignment = HorizontalAlignment.Stretch };
-            card.Children.Add(new TextBlock { Text = group.Key == DateOnly.MinValue ? "日期未知" : group.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), FontSize = 16, FontWeight = FontWeight.SemiBold, Margin = new Thickness(4, 4) });
-            var grid = CreateGrid();
-            grid.ItemsSource = group.OrderByDescending(x => x.Record.Time, StringComparer.Ordinal).ToArray();
-            card.Children.Add(grid);
-            GroupsPanel.Children.Add(card);
-        }
+        var grid = CreateGrid();
+        grid.ItemsSource = rows;
+        GroupsPanel.Children.Add(grid);
         EmptyText.IsVisible = rows.Length == 0;
     }
 
