@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,9 @@ public partial class ExtensionOverviewView : UserControl
 
     private readonly Dictionary<string, Control> _views = new(StringComparer.Ordinal);
     private readonly List<TextBlock> _navigationLabels = [];
+    private readonly ObservableCollection<ListBoxItem> _navigationItems = [];
+    private bool _navigationOrderPending;
+    private HonmaruUiSettings UiSettings => new(_configDirectory);
     private readonly IGameLogReader? _reader;
     private readonly string _configDirectory = AppPaths.ConfigDirectory;
     private readonly DispatcherTimer _readTimer = new() { Interval = TimeSpan.FromSeconds(1) };
@@ -52,20 +56,24 @@ public partial class ExtensionOverviewView : UserControl
         InitializeComponent();
         _reader = GameLogReaderPluginService.GetReader();
         if (_reader == null) return;
-        foreach (var entry in Entries)
+        LoadPausedPages();
+        foreach (var entry in LoadNavigationOrder())
         {
             var label = new TextBlock { Text = entry.Name, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
             _navigationLabels.Add(label);
             var content = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 10 };
             content.Children.Add(new FluentIcons.Avalonia.Fluent.FluentIcon { Icon = entry.Icon, IconSize = FluentIcons.Common.IconSize.Size20 });
             content.Children.Add(label);
-            var button = new RadioButton { Content = content, GroupName = "ExtensionNavigation" };
+            var button = new ListBoxItem { Content = content, Tag = entry.Id };
             button.Classes.Add("extension-navigation");
             Avalonia.Automation.AutomationProperties.SetName(button, entry.Name);
-            button.Click += (_, _) => SelectPage(entry.Id);
-            WorkspaceNavigation.Children.Add(button);
+            ToolTip.SetTip(button, entry.Name + "（拖动调整顺序）");
+            ConfigurePageContextMenu(button, entry);
+            _navigationItems.Add(button);
         }
 
+        WorkspaceNavigation.ItemsSource = _navigationItems;
+        _navigationItems.CollectionChanged += (_, _) => ScheduleNavigationOrderSave();
         SelectPage(Entries[0].Id);
         LoadSavedSnapshot();
         _readTimer.Tick += async (_, _) => await PollAsync();
@@ -75,6 +83,16 @@ public partial class ExtensionOverviewView : UserControl
     }
 
     private void SelectPage(string id)
+    {
+        var view = GetOrCreatePage(id);
+
+        _selected = id;
+        WorkspaceContent.Children.Clear();
+        WorkspaceContent.Children.Add(view);
+        WorkspaceNavigation.SelectedItem = _navigationItems.FirstOrDefault(item => Equals(item.Tag, id));
+    }
+
+    private Control GetOrCreatePage(string id)
     {
         if (!_views.TryGetValue(id, out var view))
         {
@@ -87,40 +105,86 @@ public partial class ExtensionOverviewView : UserControl
                 _ => throw new InvalidOperationException("未知的本丸扩展页面：" + id)
             };
             _views[id] = view;
-            UpdatePage(view, "等待读取游戏数据");
+            UpdatePage(id, view, "等待读取游戏数据");
         }
-
-        _selected = id;
-        WorkspaceContent.Children.Clear();
-        WorkspaceContent.Children.Add(view);
-        var index = Array.FindIndex(Entries, entry => entry.Id == id);
-        if (index >= 0 && WorkspaceNavigation.Children[index] is RadioButton button)
-            button.IsChecked = true;
+        return view;
     }
 
-    private void UpdatePage(Control view, string status)
+    private void NavigationSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
+        // 拖动排序先移除再插入，暂时缺项时保留当前页面，待列表稳定后恢复选中。
+        if (_navigationOrderPending || (_selected.Length > 0 && !_navigationItems.Any(item => Equals(item.Tag, _selected)))) return;
+        if (WorkspaceNavigation.SelectedItem is ListBoxItem { Tag: string id } && id != _selected)
+            SelectPage(id);
+    }
+
+    private IEnumerable<Entry> LoadNavigationOrder()
+    {
+        try
+        {
+            var ids = UiSettings.Read<string[]>("NavigationOrder") ?? [];
+            return ids.Distinct(StringComparer.Ordinal)
+                .Select(id => Entries.FirstOrDefault(entry => entry.Id == id))
+                .OfType<Entry>()
+                .Concat(Entries.Where(entry => !ids.Contains(entry.Id, StringComparer.Ordinal)))
+                .ToArray();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            LoggerHelper.Warning("本丸导航顺序读取失败：" + exception.GetType().Name);
+        }
+        return Entries;
+    }
+
+    private void ScheduleNavigationOrderSave()
+    {
+        if (_navigationOrderPending) return;
+        _navigationOrderPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _navigationOrderPending = false;
+            WorkspaceNavigation.SelectedItem = _navigationItems.FirstOrDefault(item => Equals(item.Tag, _selected));
+            try
+            {
+                UiSettings.Write("NavigationOrder", _navigationItems.Select(item => (string)item.Tag!).ToArray());
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+            {
+                LoggerHelper.Warning("本丸导航顺序保存失败：" + exception.GetType().Name);
+            }
+        });
+    }
+
+    private void UpdatePage(string id, Control view, string status)
+    {
+        var paused = _pausedPages.Contains(id);
+        var snapshot = paused ? _pausedPageSnapshots.GetValueOrDefault(id)?.Snapshot : _snapshot;
+        if (paused) status = "已停用同步，显示已保存的数据";
+        else if (view is not HarvestRecordsView || snapshot != null)
+            _latestPageSnapshots[id] = new PausedPageSnapshot(snapshot, _snapshotCollectedAt);
         switch (view)
         {
             case DefaultOverviewView overview:
-                overview.Update(_snapshot, status);
+                overview.Update(snapshot, status);
                 break;
             case TeamStatusView teams:
-                if (_snapshot == null) teams.ClearSnapshot(); else teams.SetSnapshot(_snapshot);
+                if (snapshot == null) teams.ClearSnapshot(); else teams.SetSnapshot(snapshot);
                 break;
             case HeldSwordsView swords:
-                if (_snapshot == null) swords.ClearSnapshot(); else swords.SetSnapshot(_snapshot);
+                if (snapshot == null) swords.ClearSnapshot(); else swords.SetSnapshot(snapshot);
                 break;
-            case HarvestRecordsView harvest when _snapshot != null:
-                harvest.AddRecords(_snapshot.Account, _snapshot.HarvestRecords);
-                harvest.AddDutyRecords(_snapshot.Account, _snapshot.DutyRecords);
+            case HarvestRecordsView harvest when snapshot != null:
+                // 停用后只加载记录文件，不能从旧快照重新导入已被用户清除的记录。
+                harvest.AddRecords(snapshot.Account, paused ? [] : snapshot.HarvestRecords);
+                harvest.AddDutyRecords(snapshot.Account, paused ? [] : snapshot.DutyRecords);
                 break;
         }
     }
 
     private void UpdatePages(string status)
     {
-        foreach (var view in _views.Values) UpdatePage(view, status);
+        foreach (var (id, view) in _views)
+            if (!_pausedPages.Contains(id)) UpdatePage(id, view, status);
     }
 
     private async Task SyncWarehouseAsync(bool automatic)
@@ -238,7 +302,7 @@ public partial class ExtensionOverviewView : UserControl
                 await Task.Run(() => new GameOverviewDataStore(_configDirectory).Save(snapshot, _snapshotCollectedAt));
                 ReadStatusText.Text = "";
             }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
             {
                 ReadStatusText.Text = "读取成功，但保存失败，请检查本丸数据目录权限。";
                 LoggerHelper.Warning("本丸快照保存失败，类型：" + exception.GetType().Name);
