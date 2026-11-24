@@ -80,7 +80,7 @@
       </Grid>
       <Button x:Name="SummaryButton" Classes="harvest-filter" Grid.Row="1" Grid.Column="1" Content="数据汇总" Click="SummaryClicked" />
       <Grid Grid.Row="2" Grid.ColumnSpan="3">
-        <DataGrid x:Name="RecordsGrid" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="True" CanUserReorderColumns="True" CanUserResizeColumns="True" GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" RowHeight="40" ColumnHeaderHeight="36" FontSize="14" />
+        <DataGrid x:Name="RecordsGrid" AutoGenerateColumns="False" IsReadOnly="True" CanUserSortColumns="True" CanUserReorderColumns="True" CanUserResizeColumns="True" GridLinesVisibility="All" HeadersVisibility="Column" SelectionMode="Single" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" RowHeight="40" ColumnHeaderHeight="36" FontSize="14" />
         <TextBlock x:Name="EmptyText" IsVisible="False" Text="当前视图暂无记录" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource SukiLowText}" IsHitTestVisible="False" />
         <ContentControl x:Name="DutyContent" IsVisible="False" />
       </Grid>
