@@ -1960,7 +1960,28 @@
       "time": 200,
       "target": [789, 512, 1, 4]
     },
-    "next": ["FC_BackToHome", "FC_UseRecord_Step4"],
+    "next": ["FC_UseRecord_Step5", "FC_BackToHome", "FC_UseRecord_Step4"],
+    "on_error": ["FC_DetectWhereAmI"]
+  },
+  "FC_UseRecord_Step5": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [568, 34, 142, 35],
+        "expected": "记录确认"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [1045, 524, 64, 43]
+      }
+    },
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [1045, 524, 64, 43]
+    },
+    "next": ["FC_BackToHome", "FC_UseRecord_Step5"],
     "on_error": ["FC_DetectWhereAmI"]
   },
   "FC_BackToHome": {
