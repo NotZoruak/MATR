@@ -20,7 +20,7 @@ public partial class SettingsView : UserControl
         {
             SettingsLayout.Items.Insert(8, new SettingsLayoutItem
             {
-                Header = "本丸数据设置",
+                Header = "本丸数据",
                 Content = new ExtensionSettingsUserControl()
             });
         }
