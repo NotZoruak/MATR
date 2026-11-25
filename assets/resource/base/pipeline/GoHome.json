@@ -18,6 +18,7 @@
       "G_RBRoundDone",
       "G_ECRoundDone",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",

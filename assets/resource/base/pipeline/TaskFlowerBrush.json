@@ -25,6 +25,7 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",

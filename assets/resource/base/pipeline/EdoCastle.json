@@ -34,6 +34,7 @@
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",

@@ -19,6 +19,7 @@
       "D_IsInMailbox",
       "D_CloseRewardPump",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsInternalReport",

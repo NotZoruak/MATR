@@ -36,6 +36,7 @@
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",

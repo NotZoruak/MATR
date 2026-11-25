@@ -67,6 +67,7 @@
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",

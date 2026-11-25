@@ -27,6 +27,7 @@
       "FB_IsMenuDirectory",
       "FB_CheckHomeBrightness",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",

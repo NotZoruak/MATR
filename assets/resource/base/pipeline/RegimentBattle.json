@@ -25,6 +25,7 @@
       "[JumpBack]IsInSortie",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
