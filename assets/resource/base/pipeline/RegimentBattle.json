@@ -25,6 +25,7 @@
       "[JumpBack]IsInSortie",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -676,6 +677,7 @@
     "next": ["RB_DetectWhereAmI"]
   },
   "RB_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

@@ -26,6 +26,7 @@
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -461,6 +462,7 @@
     }
   },
   "HP_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

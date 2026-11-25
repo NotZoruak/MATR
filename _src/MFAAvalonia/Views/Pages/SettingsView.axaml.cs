@@ -15,12 +15,12 @@ public partial class SettingsView : UserControl
     {
         DataContext = Instances.SettingsViewModel;
         InitializeComponent();
-        // 无扩展时不加入设置项，避免设置目录残留空白入口。
-        if (ExtensionContentService.HasContent())
+        // 读取器不可用时不显示扩展设置。
+        if (GameLogReaderPluginService.IsAvailable)
         {
             SettingsLayout.Items.Insert(8, new SettingsLayoutItem
             {
-                Header = "扩展设置",
+                Header = "本丸数据",
                 Content = new ExtensionSettingsUserControl()
             });
         }

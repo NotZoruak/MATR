@@ -24,6 +24,21 @@
     "action": {"type": "Click"},
     "post_wait_freezes": {"time": 200}
   },
+  "IsConfirmPopup": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [609, 494, 62, 33],
+        "expected": "确定"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [609, 494, 62, 33]
+      }
+    }
+  },
   "IsTrainingLetter": {
     "recognition": {
       "type": "TemplateMatch",

@@ -1570,6 +1570,7 @@ public partial class TaskQueueView : UserControl
                 {
                     MinWidth = 120,
                     Margin = new Thickness(0, 2, 0, 2),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
                     Text = displayValue
                 };
                 Grid.SetColumn(textBox, 1);

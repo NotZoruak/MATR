@@ -3,11 +3,41 @@ using MFAAvalonia.Services;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Linq;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class HeldSwordTests
 {
+    [Fact]
+    public void 部队机动合计刀装马匹和强化后的宝物且不改写本体()
+    {
+        var snapshot = new GameOverviewSnapshot { HasFullSwordPool = true };
+        snapshot.HeldSwords["1"] = JObject.Parse("{\"sword_id\":3,\"mobile\":74,\"equip_serial_id1\":11,\"equip_serial_id2\":12,\"horse_serial_id\":20,\"artifact_serial_id1\":30}");
+        snapshot.EquipmentKinds["equip:11"] = "9";
+        snapshot.EquipmentKinds["equip:12"] = "9";
+        snapshot.EquipmentKinds["equip:20"] = "10008";
+        snapshot.EquipmentKinds["mobile:artifact:30"] = "9";
+        var row = Assert.Single(HeldSwordTableData.Build(snapshot, HeldSwordTableData.LoadCatalog()));
+        Assert.Equal(110, row.EquippedMobility);
+        Assert.Equal(74, row.Number("mobile"));
+        Assert.Contains("刀装：10", row.MobilityTip);
+        Assert.Contains("马匹：17", row.MobilityTip);
+        snapshot.EquipmentKinds.Remove("mobile:artifact:30");
+        Assert.Null(Assert.Single(HeldSwordTableData.Build(snapshot, HeldSwordTableData.LoadCatalog())).EquippedMobility);
+        snapshot.HeldSwords["1"]["artifact_serial_id1"] = 0;
+        Assert.Equal(101, Assert.Single(HeldSwordTableData.Build(snapshot, HeldSwordTableData.LoadCatalog())).EquippedMobility);
+    }
+
+    [Fact]
+    public void 宝物机动响应保留强化数值且不保存备注()
+    {
+        var snapshot = GameOverviewLogParser.Parse("2026-11-23 14:00:00 S->C /sally?uid=1 status:200 data: {\"status\":0,\"artifact\":{\"30\":{\"artifact_id\":1,\"level\":5,\"mobile\":9,\"comment\":\"不应保存\"}}}");
+        Assert.Equal("9", snapshot.EquipmentKinds["mobile:artifact:30"]);
+        Assert.DoesNotContain("comment", string.Join(" ", snapshot.EquipmentKinds.Keys));
+    }
+
     [Fact]
     public void 等级降序按累计经验排列而不优先等级()
     {
@@ -61,7 +91,7 @@ public class HeldSwordTests
     [Fact]
     public void 升级经验使用静态累计经验阈值()
     {
-        var snapshot = new GameOverviewLogParser.Snapshot { HasFullSwordPool = true };
+        var snapshot = new GameOverviewSnapshot { HasFullSwordPool = true };
         snapshot.HeldSwords["1"] = JObject.Parse("{\"sword_id\":3,\"level\":1,\"exp\":40}");
         var catalog = JObject.Parse("{\"swords\":{\"3\":{\"name\":\"测试\",\"grow_type\":0,\"max_level\":99}},\"levels\":{\"0:2\":100}}");
         var row = Assert.Single(HeldSwordTableData.Build(snapshot, catalog));

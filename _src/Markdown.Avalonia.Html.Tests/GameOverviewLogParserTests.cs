@@ -1,10 +1,33 @@
 using MFAAvalonia.Services;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class GameOverviewLogParserTests
 {
+    [Theory]
+    [InlineData("field_id")]
+    [InlineData("event_field_id")]
+    public void 活动出阵识别事件编号且单场结算与待命补丁不结束活动(string fieldKey)
+    {
+        var start = $"【2026-11-23 14:51:44】【C->S】[POST] https://example.test/sally/eventsally?uid=1 Data:[item_id=&event_id=18505&panel_id=851&party_no=1&{fieldKey}=1]\n" +
+            "2026-11-23 14:51:44 S->C /sally/eventsally?uid=1 status:200 data:{\"status\":0}\n";
+        var singleBattle = start + "2026-11-23 14:51:45 S->C /battle/battle?uid=1 status:200 data:{\"status\":0,\"finish\":{\"is_finish\":true,\"is_event_finish\":false}}\n" +
+            "2026-11-23 14:51:46 S->C /party/list?uid=1 status:200 data:{\"status\":0,\"party\":{\"1\":{\"status\":1}}}\n";
+        singleBattle += "2026-11-23 14:51:46 S->C /sally?uid=1 status:200 data:{\"status\":0,\"party\":{\"1\":{\"status\":1}}}\n";
+        var active = GameOverviewLogParser.Parse(singleBattle);
+        Assert.Equal("3", active.Teams["1"].Status);
+        Assert.Equal("活动 18505-1", active.Teams["1"].SortieMap);
+        var home = GameOverviewLogParser.Parse(singleBattle + "2026-11-23 14:51:47 S->C /home?uid=1 status:200 data:{\"status\":0}\n");
+        Assert.Equal("1", home.Teams["1"].Status);
+        var completed = GameOverviewLogParser.Parse(singleBattle + "2026-11-23 14:51:47 S->C /battle/battle?uid=1 status:200 data:{\"status\":0,\"finish\":{\"is_finish\":true,\"is_event_finish\":true}}\n");
+        Assert.Equal("1", completed.Teams["1"].Status);
+        var failed = GameOverviewLogParser.Parse(start.Replace("\"status\":0", "\"status\":1"));
+        Assert.False(failed.Teams.ContainsKey("1"));
+    }
+
     [Fact]
     public void 失败响应不能覆盖成功资源()
     {
@@ -143,12 +166,12 @@ public class GameOverviewLogParserTests
     [InlineData("1", "2026-11-17 09:00:00", false)]
     public void 远征状态未变时到点显示已归来(string status, string? finish, bool returned)
     {
-        var team = new GameOverviewLogParser.TeamEntry(status, finish);
+        var team = new GameOverviewTeamEntry(status, finish);
         const string original = "远征中，2-1，11-17 10:00:00";
         var display = GameOverviewWorkStatus.FormatExpedition(team, original,
             new System.DateTimeOffset(2026, 11, 17, 10, 0, 0, System.TimeSpan.FromHours(8)));
         Assert.Equal(returned, display.Completed);
-        Assert.Equal(returned ? "远征已归来，2-1，11-17 10:00:00" : original, display.Text);
+        Assert.Equal(returned ? "远征归来，2-1，11-17 10:00:00" : original, display.Text);
         Assert.Equal(status, team.Status);
     }
 

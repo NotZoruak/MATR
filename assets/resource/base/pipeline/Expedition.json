@@ -12,6 +12,7 @@
       "E_CheckHomeBrightness",
       "[JumpBack]E_IsSwordDropColor",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -1449,6 +1450,7 @@
     "next": ["Expedition"]
   },
   "E_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
@@ -1713,6 +1715,7 @@
       "E_FlowerTeamSelect",
       "E_FlowerHomeBrightness",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "[JumpBack]IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -1861,6 +1864,7 @@
     "next": ["E_FlowerBattleHub"]
   },
   "E_FlowerRestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

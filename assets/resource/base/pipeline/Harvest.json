@@ -1389,6 +1389,7 @@
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -3546,6 +3547,7 @@
     "on_error": "HV_DetectWhereAmI"
   },
   "HV_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

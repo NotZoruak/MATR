@@ -4,6 +4,8 @@ using System.Linq;
 using MFAAvalonia.Services;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
@@ -14,7 +16,7 @@ public class GameOverviewDataStoreTests
     {
         var root = Path.Combine(Path.GetTempPath(), "MATR-overview-store-" + Guid.NewGuid().ToString("N"));
         var store = new GameOverviewDataStore(root);
-        var first = new GameOverviewLogParser.Snapshot { Account = "1" };
+        var first = new GameOverviewSnapshot { Account = "1" };
         first.Values["Charcoal"] = new("100", "2026-11-17 10:00:00");
         store.Save(first);
         store.Save(first);

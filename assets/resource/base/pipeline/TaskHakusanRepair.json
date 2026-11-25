@@ -67,6 +67,7 @@
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsInMenu",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -666,6 +667,16 @@
       }
     },
     "post_delay": 500,
+    "next": ["THR_ClickHakusanTypeFilter"]
+  },
+  "THR_ClickHakusanTypeFilter": {
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [242, 436, 70, 35]
+      }
+    },
+    "post_delay": 500,
     "next": ["THR_ClickFavoriteFilter"]
   },
   "THR_ClickFavoriteFilter": {
@@ -1075,6 +1086,7 @@
     "next": ["[Anchor]PublicFlowDone"]
   },
   "THR_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

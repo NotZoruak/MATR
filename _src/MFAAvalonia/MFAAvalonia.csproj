@@ -33,7 +33,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../MATR.ExtensionSdk/MATR.ExtensionSdk.csproj" />
+        <ProjectReference Include="../MATR.GameLogReaderSdk/MATR.GameLogReaderSdk.csproj" />
     </ItemGroup>
 
     <!-- Version -->
@@ -162,6 +162,10 @@
             <LastGenOutput>Strings.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Remove="%(_MaaFrameworkRuntime.DestinationFolder)AnyCPU\**" />
+        <EmbeddedResource Include="Assets/GameItemCatalog.json" LogicalName="MFAAvalonia.GameItemCatalog.json" />
+        <EmbeddedResource Include="Assets/GameSwordBookCatalog.json" LogicalName="MFAAvalonia.Assets.GameSwordBookCatalog.json" />
+        <EmbeddedResource Include="Assets/GameSwordCatalog.json" LogicalName="MFAAvalonia.Assets.GameSwordCatalog.json" />
+        <EmbeddedResource Include="Assets/GameEventCatalog.json" LogicalName="MFAAvalonia.Assets.GameEventCatalog.json" />
     </ItemGroup>
 
     <ItemGroup>

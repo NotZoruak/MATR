@@ -1,4 +1,3 @@
-using MFAAvalonia.Helper;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -156,16 +155,11 @@ public class Program
     /// </summary>
     private static void CopyDirectoryContents(string sourceDir, string destDir)
     {
-        if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destDir))
-            return;
         // 复制所有文件
         foreach (string sourceFile in Directory.GetFiles(sourceDir, "*", SearchOption.TopDirectoryOnly))
         {
             string fileName = Path.GetFileName(sourceFile);
             string destFile = Path.Combine(destDir, fileName);
-            if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destFile))
-                continue;
-
             try
             {
                 File.Copy(sourceFile, destFile, true);
@@ -183,9 +177,6 @@ public class Program
         {
             string dirName = Path.GetFileName(sourceSubDir);
             string destSubDir = Path.Combine(destDir, dirName);
-            if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destSubDir))
-                continue;
-
             try
             {
                 // 确保目标子目录存在
@@ -207,8 +198,6 @@ public class Program
     /// </summary>
     private static void CopyDirectoryContentsRecursive(string sourceDir, string destDir)
     {
-        if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destDir))
-            return;
         // 确保目标目录存在
         Directory.CreateDirectory(destDir);
 
@@ -217,9 +206,6 @@ public class Program
         {
             string fileName = Path.GetFileName(sourceFile);
             string destFile = Path.Combine(destDir, fileName);
-            if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destFile))
-                continue;
-
             try
             {
                 File.Copy(sourceFile, destFile, true);
@@ -236,8 +222,6 @@ public class Program
         {
             string dirName = Path.GetFileName(sourceSubDir);
             string destSubDir = Path.Combine(destDir, dirName);
-            if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destSubDir))
-                continue;
             CopyDirectoryContentsRecursive(sourceSubDir, destSubDir);
         }
     }
@@ -425,8 +409,6 @@ public class Program
 
     private static void HandleFileTransfer(string source, string dest)
     {
-        if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, dest))
-            return;
         int maxRetries = 5;
         for (int i = 0; i < maxRetries; i++)
         {
@@ -462,8 +444,6 @@ public class Program
 
     private static void HandleDirectoryTransfer(string source, string dest)
     {
-        if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, dest))
-            return;
         try
         {
             Log($"开始迁移目录: {source} -> {dest}");
@@ -473,9 +453,6 @@ public class Program
             foreach (string sourceDir in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
             {
                 string destDir = Path.Combine(dest, Path.GetRelativePath(source, sourceDir));
-                if (UpdatePathProtection.IsProtected(AppContext.BaseDirectory, destDir)
-                    || UpdatePathProtection.IsProtectedRelativePath(Path.GetRelativePath(source, sourceDir)))
-                    continue;
                 Directory.CreateDirectory(destDir);
                 Log($"创建子目录: {destDir}");
             }
@@ -484,8 +461,6 @@ public class Program
             foreach (string sourceFile in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
             {
                 string relativePath = Path.GetRelativePath(source, sourceFile);
-                if (UpdatePathProtection.IsProtectedRelativePath(relativePath))
-                    continue;
                 string destFile = Path.Combine(dest, relativePath);
                 HandleFileTransfer(sourceFile, destFile);
             }
@@ -501,8 +476,6 @@ public class Program
 
     private static void HandleDeleteDirectoryTransfer(string source)
     {
-        if (UpdatePathProtection.ContainsProtectedDirectory(AppContext.BaseDirectory, source))
-            return;
         try
         {
             if (Directory.Exists(source))

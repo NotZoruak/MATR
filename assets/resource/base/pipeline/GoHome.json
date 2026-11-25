@@ -18,6 +18,7 @@
       "G_RBRoundDone",
       "G_ECRoundDone",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
       "[JumpBack]IsAdvertisementPopup",
@@ -204,6 +205,7 @@
     "next": ["G_DetectWhereAmI"]
   },
   "G_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

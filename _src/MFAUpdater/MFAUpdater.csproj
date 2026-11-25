@@ -28,7 +28,4 @@
 	    <Version>0.1.232</Version>
 	  </PackageReference>
 	</ItemGroup>
-  <ItemGroup>
-    <Compile Include="../MFAAvalonia/Helper/UpdatePathProtection.cs" Link="UpdatePathProtection.cs" />
-  </ItemGroup>
 </Project>

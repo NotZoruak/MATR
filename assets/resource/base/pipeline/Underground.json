@@ -34,6 +34,7 @@
       "[JumpBack]IsExpeditionReturn_Exp",
       "[JumpBack]IsExpeditionReturn_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -826,6 +827,7 @@
     }
   },
   "U_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"

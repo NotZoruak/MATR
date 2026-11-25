@@ -4,14 +4,16 @@ using System.Linq;
 using MFAAvalonia.Models;
 using MFAAvalonia.Services;
 using Xunit;
+using MATR.GameLogReader;
+using MATR.GameLogReaderSdk;
 
 namespace Markdown.Avalonia.Html.Tests;
 
 public class GameOverviewWarehouseSyncTests
 {
-    private static GameOverviewLogParser.Snapshot Snapshot(string time = "2026-11-17 12:00:00")
+    private static GameOverviewSnapshot Snapshot(string time = "2026-11-17 12:00:00")
     {
-        var snapshot = new GameOverviewLogParser.Snapshot { Account = "1" };
+        var snapshot = new GameOverviewSnapshot { Account = "1" };
         snapshot.Values["Charcoal"] = new("1,040", time);
         return snapshot;
     }

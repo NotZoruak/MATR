@@ -26,9 +26,6 @@ public static class PendingUpdateDeletionHelper
     {
         var normalizedPath = NormalizeRelativePath(relativePath);
         var root = IsDataRootRelativePath(normalizedPath) ? "data" : "install";
-        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, ResolveSafePath(new PendingDeletionEntry { Root = root, RelativePath = normalizedPath })))
-            return;
-
         lock (SyncRoot)
         {
             var entries = LoadEntries();
@@ -59,8 +56,6 @@ public static class PendingUpdateDeletionHelper
                     try
                     {
                         var directoryPath = ResolveSafePath(entry);
-                        if (UpdatePathProtection.IsProtected(AppPaths.InstallRoot, directoryPath))
-                            continue;
                         // Only remove an empty directory. The update may have written new files to
                         // the same path after this entry was queued; recursively deleting here
                         // would remove those new files on the next launch.

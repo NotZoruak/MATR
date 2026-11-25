@@ -1,0 +1,106 @@
+<Project>
+    <!-- 依赖清单必须在宿主解析程序集前绑定核心库的固定位置。 -->
+    <UsingTask TaskName="ConfigureCoreLibraryLayout"
+               TaskFactory="RoslynCodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <OutputDirectories ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <CoreLibraries ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="$(PkgNewtonsoft_Json)/lib/netstandard2.0/Newtonsoft.Json.dll" />
+            <Using Namespace="System" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Linq" />
+            <Using Namespace="System.Text" />
+            <Using Namespace="Newtonsoft.Json" />
+            <Using Namespace="Newtonsoft.Json.Linq" />
+            <Code Type="Fragment" Language="cs"><![CDATA[
+                const string coreName = "MFAAvalonia.Core.dll";
+                const string relativePath = "runtimes/libs/MFAAvalonia.Core.dll";
+                var source = CoreLibraries.Select(item => item.GetMetadata("FullPath"))
+                    .FirstOrDefault(File.Exists);
+                if (source == null)
+                {
+                    Log.LogError("构建引用中缺少核心程序集，无法配置固定加载路径。");
+                    return false;
+                }
+
+                foreach (var directory in OutputDirectories.Select(item => item.GetMetadata("FullPath")).Distinct())
+                {
+                    var depsPath = Path.Combine(directory, "MATR.deps.json");
+                    if (!File.Exists(depsPath)) continue;
+                    var manifest = JObject.Parse(File.ReadAllText(depsPath));
+                    var targets = (JObject)manifest["targets"];
+                    var matches = 0;
+                    foreach (var target in targets.Properties())
+                    {
+                        foreach (var library in ((JObject)target.Value).Properties())
+                        {
+                            // 同时处理项目依赖与构建工具生成的额外核心引用。
+                            var runtime = library.Value["runtime"] as JObject;
+                            // 自包含发布可能移除已搬迁的条目，恢复固定路径条目供宿主直接解析。
+                            if (library.Name.StartsWith("MFAAvalonia.Core/", StringComparison.Ordinal))
+                            {
+                                if (runtime == null)
+                                {
+                                    runtime = new JObject();
+                                    library.Value["runtime"] = runtime;
+                                }
+                                if (runtime[coreName] == null) runtime[coreName] = new JObject();
+                            }
+                            if (runtime == null) continue;
+                            foreach (var asset in runtime.Properties())
+                            {
+                                if (!string.Equals(Path.GetFileName(asset.Name.Replace('/', Path.DirectorySeparatorChar)),
+                                    coreName, StringComparison.OrdinalIgnoreCase)) continue;
+                                asset.Value["localPath"] = relativePath;
+                                matches++;
+                            }
+                        }
+                    }
+                    if (matches == 0)
+                    {
+                        Log.LogError("依赖清单缺少核心程序集条目：{0}", depsPath);
+                        return false;
+                    }
+
+                    var destination = Path.Combine(directory, "runtimes", "libs", coreName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                    File.Copy(source, destination, true);
+                    File.WriteAllText(depsPath, manifest.ToString(Formatting.Indented),
+                        new UTF8Encoding(false));
+
+                    // 发布加载器默认还会搜索根目录，需同时关闭其回退路径。
+                    var configPath = Path.Combine(directory, "MATR.runtimeconfig.json");
+                    if (File.Exists(configPath))
+                    {
+                        var config = JObject.Parse(File.ReadAllText(configPath));
+                        var properties = (JObject)config["runtimeOptions"]["configProperties"];
+                        properties["NetBeautyLibsDir"] = "runtimes/libs";
+                        properties["SubdirectoriesToProbe"] = "runtimes/libs";
+                        File.WriteAllText(configPath, config.ToString(Formatting.Indented), new UTF8Encoding(false));
+                    }
+                    var rootCopy = Path.Combine(directory, coreName);
+                    if (File.Exists(rootCopy)) File.Delete(rootCopy);
+                }
+            ]]></Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="CollectCoreLibrarySource">
+        <ItemGroup>
+            <_CoreLibrarySource Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Filename)' == 'MFAAvalonia.Core'" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="ApplyCoreLibraryBuildLayout" AfterTargets="Build" DependsOnTargets="CollectCoreLibrarySource">
+        <ConfigureCoreLibraryLayout OutputDirectories="$(TargetDir)" CoreLibraries="@(_CoreLibrarySource)" />
+    </Target>
+
+    <!-- 发布工具会重写依赖清单，必须等其处理完成后再应用发布规则。 -->
+    <Target Name="ApplyCoreLibraryPublishLayout" AfterTargets="Publish"
+            DependsOnTargets="NetBeautyOnPublish;CollectCoreLibrarySource">
+        <ConfigureCoreLibraryLayout OutputDirectories="$(PublishDir)" CoreLibraries="@(_CoreLibrarySource)" />
+    </Target>
+</Project>

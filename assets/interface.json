@@ -1,10 +1,10 @@
 {
   "name": "MATR",
-  "version": "v1.0.0-beta.4",
+  "version": "v1.0.0-beta.5",
   "mirrorchyan_rid": "MATR",
   "mirrorchyan_multiplatform": true,
   "icon": "resource/logo/MATR.ico",
-  "custom_title": "MATR v1.0.0-beta.4 | 刀剑乱舞小助手",
+  "custom_title": "MATR v1.0.0-beta.5 | 刀剑乱舞小助手",
   "Github": "https://github.com/NotZoruak/MATR",
   "controller": [
     {
@@ -290,6 +290,7 @@
       "repeatable": false,
       "repeat_count": 0,
       "option": [
+        "D_OnlyAllowedSwords",
         "短",
         "胁",
         "打",
@@ -299,7 +300,7 @@
         "薙"
       ],
       "label": "刀解清仓",
-      "description": "自动刀解 + 收邮箱循环，邮箱清空后任务终止。"
+      "description": "自动刀解 + 邮箱领取循环。可开启「仅刀解许可名单内刀剑」，先按刀种筛选，再按全局「刀解/合成许可名单」选刀；上锁刀剑始终排除。没有可刀解对象时，仅在有空刀位的情况下继续领取邮箱，刀位已满时正常结束。邮箱领取范围保持所选刀种。关闭该选项时保持原有全选流程。"
     },
     {
       "name": "习合",
@@ -5121,12 +5122,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "S_StopOnDamagePopup": {"enabled": false}
+            "S_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "S_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
@@ -5499,12 +5518,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "U_StopOnDamagePopup": {"enabled": false}
+            "U_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "U_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
@@ -7867,6 +7904,31 @@
       ],
       "default_case": []
     },
+    "D_OnlyAllowedSwords": {
+      "name": "D_OnlyAllowedSwords",
+      "label": "仅刀解许可名单内刀剑",
+      "description": "使用设置中的「刀解/合成许可名单」，在当前刀种筛选结果中逐把选刀，不改变邮箱领取范围。没有可刀解对象且无空刀位时正常结束任务。",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "D_SelectAllowedSwords": {"enabled": true},
+            "D_ClickDisassembleSelectAll": {"enabled": false}
+          }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "D_SelectAllowedSwords": {"enabled": false},
+            "D_ClickDisassembleSelectAll": {"enabled": true}
+          }
+        }
+      ]
+    },
     "短": {
       "name": "短",
       "type": "checkbox",
@@ -8233,11 +8295,11 @@
       "name": "其它客户端包名",
       "label": "其它客户端包名",
       "type": "input",
-      "description": "如何获取包名：在模拟器中右键游戏图标，选择“发送到桌面”。在桌面右键快捷方式，打开“属性”，复制目标栏中 -p 与 -v 之间的内容。",
       "inputs": [
         {
           "name": "package_name",
           "label": "包名",
+          "inline_label": true,
           "default": "",
           "pipeline_type": "string"
         }
@@ -8633,12 +8695,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "FB_StopOnDamagePopup": {"enabled": false}
+            "FB_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "FB_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {
@@ -10388,12 +10468,30 @@
           }
         },
         {
-          "name": "白山修刀",
-          "DisplayName": "白山修刀",
+          "name": "普白山修刀",
+          "DisplayName": "普白山修刀",
           "pipeline_override": {
             "IsPreDamage": {"enabled": false},
             "THR_IsPreDamage": {"enabled": true},
-            "HV_StopOnDamagePopup": {"enabled": false}
+            "HV_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {"enabled": true}
+          }
+        },
+        {
+          "name": "极白山修刀",
+          "DisplayName": "极白山修刀",
+          "pipeline_override": {
+            "IsPreDamage": {"enabled": false},
+            "THR_IsPreDamage": {"enabled": true},
+            "HV_StopOnDamagePopup": {"enabled": false},
+            "THR_ClickHakusanTypeFilter": {
+              "enabled": true,
+              "action": {
+                "param": {
+                  "target": [414, 435, 70, 34]
+                }
+              }
+            }
           }
         },
         {

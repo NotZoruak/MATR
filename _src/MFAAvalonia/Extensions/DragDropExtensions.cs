@@ -401,7 +401,7 @@ public class DragDropExtensions
 
     private static void OnDragOver(object? sender, DragEventArgs e)
     {
-        if (sender is not ListBox listBox || listBox.ItemsSource is not IList items || !e.DataTransfer.TryGetText(out string sourceIndexStr) || !int.TryParse(sourceIndexStr, out int sourceIndex))
+        if (sender is not ListBox listBox || !GetIsDragging(listBox) || listBox.ItemsSource is not IList items || !e.DataTransfer.TryGetText(out string sourceIndexStr) || !int.TryParse(sourceIndexStr, out int sourceIndex))
             return;
         var position = e.GetPosition(listBox);
         var targetIndex = GetTargetIndex(listBox, position);
@@ -425,7 +425,7 @@ public class DragDropExtensions
 
     private static void OnDrop(object? sender, DragEventArgs e)
     {
-        if (sender is not ListBox listBox || listBox.ItemsSource is not IList items || !e.DataTransfer.TryGetText(out string sourceIndexStr) || !int.TryParse(sourceIndexStr, out int sourceIndex))
+        if (sender is not ListBox listBox || !GetIsDragging(listBox) || listBox.ItemsSource is not IList items || !e.DataTransfer.TryGetText(out string sourceIndexStr) || !int.TryParse(sourceIndexStr, out int sourceIndex))
             return;
         var position = e.GetPosition(listBox);
         var targetIndex = GetTargetIndex(listBox, position);

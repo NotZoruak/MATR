@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="clr-namespace:MFAAvalonia.Views.Pages"
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:extensions="clr-namespace:MFAAvalonia.Extensions"
              xmlns:icons="clr-namespace:FluentIcons.Avalonia.Fluent;assembly=FluentIcons.Avalonia.Fluent" x:Class="MFAAvalonia.Views.Pages.ExtensionOverviewView" Foreground="{DynamicResource OverviewBodyBrush}" FontSize="14">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -67,7 +67,7 @@
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="12,10" />
         </Style>
-        <Style Selector="RadioButton.extension-navigation">
+        <Style Selector="ListBoxItem.extension-navigation">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="MinHeight" Value="42" />
@@ -76,29 +76,29 @@
                     <Border Name="NavigationBackground" Background="Transparent" CornerRadius="6" MinHeight="42">
                         <Grid ColumnDefinitions="3,*">
                             <Border Name="SelectionIndicator" Background="Transparent" CornerRadius="2" Height="22" VerticalAlignment="Center" />
-                            <ContentPresenter Grid.Column="1" Margin="9,8" VerticalAlignment="Center" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}" />
+                            <ContentPresenter Name="PART_ContentPresenter" Grid.Column="1" Margin="9,8" VerticalAlignment="Center" Background="Transparent" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}" />
                         </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter>
         </Style>
-        <Style Selector="RadioButton.extension-navigation:pointerover /template/ Border#NavigationBackground">
+        <Style Selector="ListBoxItem.extension-navigation:pointerover /template/ Border#NavigationBackground">
             <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor5}" />
         </Style>
-        <Style Selector="RadioButton.extension-navigation:checked">
+        <Style Selector="ListBoxItem.extension-navigation:selected">
             <Setter Property="Foreground" Value="{DynamicResource SukiPrimaryColor}" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
-        <Style Selector="RadioButton.extension-navigation:checked /template/ Border#NavigationBackground">
+        <Style Selector="ListBoxItem.extension-navigation:selected /template/ Border#NavigationBackground">
             <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor15}" />
         </Style>
-        <Style Selector="RadioButton.extension-navigation:checked /template/ Border#SelectionIndicator">
+        <Style Selector="ListBoxItem.extension-navigation:selected /template/ Border#SelectionIndicator">
             <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor}" />
         </Style>
-        <Style Selector="RadioButton.extension-navigation:disabled">
+        <Style Selector="ListBoxItem.extension-navigation:disabled">
             <Setter Property="Opacity" Value="0.45" />
         </Style>
-        <Style Selector="RadioButton.extension-navigation.inactive">
+        <Style Selector="ListBoxItem.extension-navigation.inactive">
             <Setter Property="Opacity" Value="0.45" />
             <Setter Property="Foreground" Value="{DynamicResource OverviewMutedBrush}" />
         </Style>
@@ -134,7 +134,19 @@
                             <Border x:Name="SyncDivider" Classes="overview-header-divider" Margin="0,8,0,8" />
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel x:Name="WorkspaceNavigation" Spacing="4" />
+                    <ListBox x:Name="WorkspaceNavigation" SelectionChanged="NavigationSelectionChanged"
+                             DragDrop.AllowDrop="True" extensions:DragDropExtensions.EnableDragDrop="True"
+                             extensions:DragDropExtensions.DragStartThreshold="2" extensions:DragDropExtensions.EnableAnimation="True"
+                             Background="Transparent" BorderThickness="0" Padding="0,2" FontSize="14">
+                        <ListBox.Template>
+                            <ControlTemplate>
+                                <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" Margin="{TemplateBinding Padding}" />
+                            </ControlTemplate>
+                        </ListBox.Template>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate><StackPanel Spacing="4" /></ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
                 </StackPanel>
             </ScrollViewer>
         </Border>

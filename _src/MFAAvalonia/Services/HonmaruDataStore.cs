@@ -117,7 +117,7 @@ public sealed class HonmaruDataStore
     }
 
     /// <summary>在同一保存锁内验证数据时间并原子写入扩展资源。</summary>
-    public GameOverviewWarehouseSync.Result SyncExtension(GameOverviewLogParser.Snapshot snapshot)
+    public GameOverviewWarehouseSync.Result SyncExtension(GameOverviewSnapshot snapshot, DateTimeOffset? snapshotAt = null)
     {
         lock (_syncRoot)
         {
@@ -128,7 +128,7 @@ public sealed class HonmaruDataStore
             if (existing.ExtensionFingerprint == fingerprint) return new(GameOverviewWarehouseSync.State.Unchanged);
             var lastTime = DateTimeOffset.TryParse(existing.LastUpdatedAt, out var parsed)
                 ? parsed.ToOffset(TimeSpan.FromHours(8)).DateTime : (DateTime?)null;
-            var result = GameOverviewWarehouseSync.Prepare(snapshot, existing.Data ?? new WarehouseData(), lastTime);
+            var result = GameOverviewWarehouseSync.Prepare(snapshot, existing.Data ?? new WarehouseData(), lastTime, snapshotAt);
             if (result.Status == GameOverviewWarehouseSync.State.Saved)
                 WriteJsonAtomically(WarehousePath, new WarehouseDocument
                 {
@@ -421,12 +421,12 @@ public static class HonmaruDataStoreService
         }
     }
 
-    public static GameOverviewWarehouseSync.Result SyncExtension(GameOverviewLogParser.Snapshot snapshot)
+    public static GameOverviewWarehouseSync.Result SyncExtension(GameOverviewSnapshot snapshot, DateTimeOffset? snapshotAt = null)
     {
         lock (SyncRoot)
         {
             if (!Initialize() || _store == null) throw new IOException("本丸仓库未能初始化。");
-            return _store.SyncExtension(snapshot);
+            return _store.SyncExtension(snapshot, snapshotAt);
         }
     }
 

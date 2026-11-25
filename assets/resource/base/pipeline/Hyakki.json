@@ -27,6 +27,7 @@
       "[JumpBack]IsBattleResult_Exp",
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsAnnouncementPopup",
+      "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",
       "[JumpBack]IsTrainingLetter",
       "[JumpBack]IsLoginReward",
@@ -479,6 +480,7 @@
     }
   },
   "HK_RestartGame": {
+    "max_hit": 3,
     "action": {
       "type": "Custom",
       "custom_action": "RestartGameAction"
@@ -543,12 +545,12 @@
   },
   "HK_IsEventPage1": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "ColorMatch",
       "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
       }
     },
     "action": {
