@@ -12,7 +12,7 @@ namespace MFAAvalonia.Services;
 /// <summary>按固定路径加载用户自行安装的 Windows x64 游戏日志读取器。</summary>
 public static class GameLogReaderPluginService
 {
-    public const int CurrentApiVersion = 1;
+    public const int CurrentApiVersion = 2;
     private static readonly Lazy<IGameLogReader?> Reader = new(LoadReader);
 
     public static bool IsAvailable => Reader.Value != null;

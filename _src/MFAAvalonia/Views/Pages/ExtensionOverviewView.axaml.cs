@@ -281,10 +281,19 @@ public partial class ExtensionOverviewView : UserControl
             var device = taskQueue.Processor.Config.AdbDevice;
             if (device == null || string.IsNullOrWhiteSpace(device.AdbSerial) || string.IsNullOrWhiteSpace(device.AdbPath)) throw new InvalidOperationException("请先在主页选择 ADB 设备。");
             var key = CurrentDeviceKey();
+            var globalOptions = taskQueue.Processor.InstanceConfiguration.GetValue(
+                ConfigurationKeys.GlobalOptionItems,
+                new List<MaaInterface.MaaInterfaceSelectOption>());
+            var clientTypeOption = globalOptions.FirstOrDefault(option => option.Name == "客户端类型");
+            var customPackageOption = clientTypeOption?.SubOptions?.FirstOrDefault(option => option.Name == "其它客户端包名");
+            string? customPackageName = null;
+            customPackageOption?.Data?.TryGetValue("package_name", out customPackageName);
+            var packageType = clientTypeOption?.Index == 1 ? ClientPackageType.Other : ClientPackageType.Official;
+            var packageName = ClientPackageSettings.ResolvePackageName(packageType, customPackageName);
             var keepRoot = bool.TryParse(GlobalConfiguration.GetValue("Extension.AutoReadEnabled", "False"), out var enabled) && enabled;
             _automaticWasEnabled |= keepRoot;
             var snapshot = await (_reader ?? throw new InvalidOperationException("游戏日志读取器不可用。"))
-                .ReadAsync(device.AdbPath, device.AdbSerial, keepRoot);
+                .ReadAsync(device.AdbPath, device.AdbSerial, packageName, keepRoot);
             if (key != CurrentDeviceKey())
             {
                 _snapshot = null;
@@ -310,7 +319,7 @@ public partial class ExtensionOverviewView : UserControl
         }
         catch (Exception exception)
         {
-            ReadStatusText.Text = exception is InvalidOperationException ? exception.Message : "读取失败，请检查模拟器连接。";
+            ReadStatusText.Text = exception is InvalidOperationException or ArgumentException ? exception.Message : "读取失败，请检查模拟器连接。";
             UpdatePages("读取失败，保留上次结果");
             LoggerHelper.Warning("游戏数据读取失败，类型：" + exception.GetType().Name);
         }

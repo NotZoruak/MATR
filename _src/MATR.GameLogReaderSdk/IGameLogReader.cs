@@ -4,6 +4,6 @@ namespace MATR.GameLogReaderSdk;
 public interface IGameLogReader : IAsyncDisposable
 {
     int ApiVersion { get; }
-    Task<GameOverviewSnapshot> ReadAsync(string adbPath, string serial, bool keepRoot);
+    Task<GameOverviewSnapshot> ReadAsync(string adbPath, string serial, string packageName, bool keepRoot);
     Task StopAsync();
 }
