@@ -308,7 +308,7 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
         throw new InvalidOperationException("刀剑选择状态或数量未按预期变化");
     }
 
-    /// <summary>定位截图中现有的滚动条滑块，将其拖至顶部后确认，不以固定次数滑动猜测位置。</summary>
+    /// <summary>定位现有滚动条滑块，执行一次回顶手势后直接进入选刀。</summary>
     private static void ResetClearanceListToTop<T>(T context, IMaaImageBuffer image) where T : IMaaContext
     {
         var column = ReadClearancePixels(image, new Avalonia.PixelRect(78, ClearanceListTop, 1, ClearanceListHeight));
@@ -322,28 +322,6 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
         if (top <= 4)
             return;
         context.SwipeWithProgress(1115, ClearanceListTop + top + 5, 1115, ClearanceListTop + 6, 500);
-        var updatedTop = -1;
-        if (!ConfirmClearanceListTop(() =>
-            {
-                using var updated = GetClearanceImage(context);
-                var updatedThumb = ReadClearancePixels(updated, new Avalonia.PixelRect(1115, ClearanceListTop, 1, ClearanceListHeight));
-                updatedTop = FindClearanceThumbTop(updatedThumb);
-                return updatedTop;
-            }, () => ActionParamHelper.SleepWithStopCheck(context, 100)))
-            throw new InvalidOperationException($"刀解列表未能回到顶部，滑块偏移：{updatedTop}");
-    }
-
-    /// <summary>手势只执行一次，随后确认到顶结果；不比较连续帧，也不重复输入。</summary>
-    internal static bool ConfirmClearanceListTop(Func<int> readThumbTop, Action nextObservation)
-    {
-        for (var observation = 0; observation < 12; observation++)
-        {
-            if (readThumbTop() is >= 0 and <= 4)
-                return true;
-            if (observation < 11)
-                nextObservation();
-        }
-        return false;
     }
 
     private static int FindClearanceThumbTop(byte[] column)

@@ -10,28 +10,6 @@ namespace Markdown.Avalonia.Html.Tests;
 
 public class DisassembleAllowListTests
 {
-    [Fact]
-    public void 回顶手势后的过渡帧不能直接判定失败()
-    {
-        var positions = new Queue<int>([10, 6, 2]);
-        var observations = 0;
-        Assert.True(ForgeDisassembleSelectAction.ConfirmClearanceListTop(
-            () => positions.Dequeue(), () => observations++));
-        Assert.Equal(2, observations);
-        Assert.Empty(positions);
-    }
-
-    [Fact]
-    public void 已经回顶时立即继续而真正未回顶时有限观察后失败()
-    {
-        Assert.True(ForgeDisassembleSelectAction.ConfirmClearanceListTop(
-            () => 2, () => throw new InvalidOperationException("已到顶部不应额外等待")));
-        var observations = 0;
-        Assert.False(ForgeDisassembleSelectAction.ConfirmClearanceListTop(
-            () => 10, () => observations++));
-        Assert.Equal(11, observations);
-    }
-
     [Theory]
     [InlineData("short", 3, 0, true)]
     [InlineData("selected", 5, 3, false)]
