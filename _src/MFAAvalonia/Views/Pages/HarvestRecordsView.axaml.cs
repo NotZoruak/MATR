@@ -88,6 +88,18 @@ public partial class HarvestRecordsView : UserControl
         {
             var record = incoming;
             var identity = EventIdentity(record);
+            // 来源修正会改变记录标识，将同一响应的旧未知记录替换为已确认的任务奖励。
+            if (record.Source == "任务奖励")
+            {
+                var unknown = record with { Id = record.Id.Replace(":任务奖励:", ":未知:", StringComparison.Ordinal), Source = "未知" };
+                var unknownIdentity = EventIdentity(unknown);
+                if (!known.ContainsKey(identity) && known.TryGetValue(unknownIdentity, out var unknownIndex)
+                    && _records[unknownIndex].Source == "未知" && _records[unknownIndex].Time == record.Time)
+                {
+                    known.Remove(unknownIdentity);
+                    known[identity] = unknownIndex;
+                }
+            }
             if (known.TryGetValue(identity, out var index))
             {
                 if (_records[index] != record)

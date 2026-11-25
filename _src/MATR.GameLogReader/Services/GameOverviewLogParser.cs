@@ -212,7 +212,7 @@ public static class GameOverviewLogParser
             {
                 var rewardSource = path switch
                 {
-                    "/mission/rewards" => "任务奖励",
+                    "/mission/reward" or "/mission/rewards" => "任务奖励",
                     "/startdash/rewards" or "/startdash/reward" => "活动奖励",
                     "/receive/get" => "活动/邮件奖励",
                     "/sally/forward" => "过去掉落",
