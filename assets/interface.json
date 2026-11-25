@@ -8269,11 +8269,11 @@
       "name": "其它客户端包名",
       "label": "其它客户端包名",
       "type": "input",
-      "description": "如何获取包名：在模拟器中右键游戏图标，选择“发送到桌面”。在桌面右键快捷方式，打开“属性”，复制目标栏中 -p 与 -v 之间的内容。",
       "inputs": [
         {
           "name": "package_name",
           "label": "包名",
+          "inline_label": true,
           "default": "",
           "pipeline_type": "string"
         }

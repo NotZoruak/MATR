@@ -1591,7 +1591,6 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             grid.ColumnDefinitions.Clear();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
-            labelPanel.Width = ExpeditionInlineLabelColumnWidth;
         }
 
         if (useCompactLabelColumn)
