@@ -37,6 +37,7 @@ public static class GameOverviewLogParser
         private string? activeSortieTeam;
         private readonly Dictionary<string, string> swords = new();
         private JObject? dutyDetails;
+        private int? forgeCapacity;
         private int? repairCapacity;
         private readonly Dictionary<string, JObject> requests = new();
         private string pendingLine = "";
@@ -135,6 +136,7 @@ public static class GameOverviewLogParser
                 }
                 swords.Clear();
                 dutyDetails = null;
+                forgeCapacity = null;
                 repairCapacity = null;
             }
             result.Responses++;
@@ -287,8 +289,10 @@ public static class GameOverviewLogParser
             {
                 if (value != null) result.Values[key] = new GameOverviewValue(value, time);
             }
-            if (int.TryParse((data["repair_slot_max"] ?? data["repair_slot"])?.ToString(), out var capacity) && capacity is >= 0 and <= 100)
-                repairCapacity = capacity;
+            if (int.TryParse((data["forge_slot_max"] ?? data["forge_slot"])?.ToString(), out var forgeCount) && forgeCount is >= 0 and <= 100)
+                forgeCapacity = forgeCount;
+            if (int.TryParse((data["repair_slot_max"] ?? data["repair_slot"])?.ToString(), out var repairCount) && repairCount is >= 0 and <= 100)
+                repairCapacity = repairCount;
             var fullPool = path == "/sally" ? data["sword_all"] as JObject
                 : path == "/party/list" ? data["sword"] as JObject : null;
             if (fullPool != null)
@@ -504,9 +508,10 @@ public static class GameOverviewLogParser
             if (result.WorkItems.TryGetValue(key, out var entries))
             {
                 var numbered = entries.Select(x => (Entry: x, Number: SlotNumber(x.Label))).GroupBy(x => x.Number).ToDictionary(x => x.Key, x => x.Last().Entry);
-                if (key == "Repair" && repairCapacity is { } count)
+                var capacity = key == "Forge" ? forgeCapacity : repairCapacity;
+                if (capacity is { } count)
                     for (var number = 1; number <= count; number++)
-                        numbered.TryAdd(number, new GameOverviewWorkEntry("工坊 " + number, null));
+                        numbered.TryAdd(number, new GameOverviewWorkEntry((key == "Forge" ? "锻冶所 " : "工坊 ") + number, null));
                 result.WorkItems[key] = numbered.OrderBy(x => x.Key)
                     .Select(x => key == "Repair" ? x.Value with { Label = "工坊 " + x.Key } : x.Value).ToList();
             }
