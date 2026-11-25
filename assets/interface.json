@@ -290,6 +290,7 @@
       "repeatable": false,
       "repeat_count": 0,
       "option": [
+        "D_OnlyAllowedSwords",
         "短",
         "胁",
         "打",
@@ -299,7 +300,7 @@
         "薙"
       ],
       "label": "刀解清仓",
-      "description": "自动刀解 + 收邮箱循环，邮箱清空后任务终止。"
+      "description": "自动刀解 + 邮箱领取循环。可开启「仅刀解许可名单内刀剑」，先按刀种筛选，再按全局「刀解/合成许可名单」选刀；上锁刀剑始终排除。没有可刀解对象时，仅在有空刀位的情况下继续领取邮箱，刀位已满时正常结束。邮箱领取范围保持所选刀种。关闭该选项时保持原有全选流程。"
     },
     {
       "name": "习合",
@@ -7902,6 +7903,31 @@
         }
       ],
       "default_case": []
+    },
+    "D_OnlyAllowedSwords": {
+      "name": "D_OnlyAllowedSwords",
+      "label": "仅刀解许可名单内刀剑",
+      "description": "使用设置中的「刀解/合成许可名单」，在当前刀种筛选结果中逐把选刀，不改变邮箱领取范围。没有可刀解对象且无空刀位时正常结束任务。",
+      "type": "switch",
+      "default_case": "No",
+      "cases": [
+        {
+          "name": "Yes",
+          "label": "开启",
+          "pipeline_override": {
+            "D_SelectAllowedSwords": {"enabled": true},
+            "D_ClickDisassembleSelectAll": {"enabled": false}
+          }
+        },
+        {
+          "name": "No",
+          "label": "关闭",
+          "pipeline_override": {
+            "D_SelectAllowedSwords": {"enabled": false},
+            "D_ClickDisassembleSelectAll": {"enabled": true}
+          }
+        }
+      ]
     },
     "短": {
       "name": "短",
