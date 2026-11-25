@@ -304,19 +304,19 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [597, 54, 82, 38],
+        "roi": [600, 36, 83, 39],
         "expected": "出阵"
       }
     },
     "action": {
       "type": "Click",
       "param": {
-        "target": [565, 578, 151, 48]
+        "target": [568, 603, 152, 49]
       }
     },
     "post_wait_freezes": {
       "time": 100,
-      "target": [565, 578, 151, 48]
+      "target": [568, 603, 152, 49]
     },
     "next": ["HE_SortieSuccess", "HE_IsTicketConfirm"]
   },
