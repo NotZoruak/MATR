@@ -196,12 +196,12 @@
   },
   "HE_IsEventPage": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "ColorMatch",
       "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
       }
     },
     "next": ["[Anchor]HE_RoundDone", "HE_CheckGoalPt", "HE_SelectDifficulty", "HE_DetectWhereAmI"]
@@ -225,12 +225,12 @@
   },
   "HE_SelectDifficulty": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "ColorMatch",
       "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
       }
     },
     "action": {
@@ -284,12 +284,12 @@
   },
   "HE_TerminateRound": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "ColorMatch",
       "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
       }
     },
     "anchor": {"HE_RoundDone": ""},
@@ -406,24 +406,24 @@
   },
   "HE_SortieSuccess": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "ColorMatch",
       "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
       }
     },
     "next": ["HE_SortieSuccessDone"]
   },
   "HE_SortieSuccessDone": {
     "recognition": {
-      "type": "TemplateMatch",
+      "type": "ColorMatch",
       "param": {
-        "roi": [427, 69, 388, 52],
-        "template": "Activity/秘宝之里.png",
-        "green_mask": true,
-        "threshold": [0.97]
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
       }
     },
     "inverse": true,
