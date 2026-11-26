@@ -229,6 +229,7 @@
         "HK_敌人部队难度",
         "HK_疲劳处理",
         "HK_换队长",
+        "HK_速刷",
         "HK_购买门票",
         "HK_同步远征"
       ],
@@ -11211,6 +11212,27 @@
           "option": ["HK_跳过位置"],
           "pipeline_override": {
             "HK_DragCaptain": {"enabled": true}
+          }
+        }
+      ],
+      "default_case": []
+    },
+    "HK_速刷": {
+      "name": "HK_速刷",
+      "label": "重启速刷",
+      "type": "checkbox",
+      "description": "出阵成功后自动重启游戏，以实现百鬼迎击速刷。",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HK_SortieSuccess": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "RestartGameAction",
+                "custom_action_param": {"log_auto_recovery": false}
+              }
+            }
           }
         }
       ],
