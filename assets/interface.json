@@ -209,6 +209,7 @@
         "HE_选择难度",
         "HE_疲劳处理",
         "HE_换队长",
+        "HE_速刷",
         "HE_购买门票",
         "HE_同步远征"
       ],
@@ -11567,10 +11568,10 @@
     "HE_选择难度": {
       "name": "HE_选择难度",
       "label": "选择难度",
-      "default_case": "超难",
+      "default_case": "特级",
       "cases": [
         {
-          "name": "易",
+          "name": "初级",
           "pipeline_override": {
             "HE_SelectDifficulty": {
               "target": [191, 308, 62, 3]
@@ -11578,7 +11579,7 @@
           }
         },
         {
-          "name": "普",
+          "name": "中级",
           "pipeline_override": {
             "HE_SelectDifficulty": {
               "target": [495, 307, 42, 3]
@@ -11586,7 +11587,7 @@
           }
         },
         {
-          "name": "难",
+          "name": "上级",
           "pipeline_override": {
             "HE_SelectDifficulty": {
               "target": [804, 307, 53, 3]
@@ -11594,7 +11595,7 @@
           }
         },
         {
-          "name": "超难",
+          "name": "特级",
           "pipeline_override": {
             "HE_SelectDifficulty": {
               "target": [984, 307, 48, 3]
@@ -11602,6 +11603,27 @@
           }
         }
       ]
+    },
+    "HE_速刷": {
+      "name": "HE_速刷",
+      "label": "重启速刷",
+      "type": "checkbox",
+      "description": "出阵成功后自动重启游戏，以实现百鬼强化速刷。",
+      "cases": [
+        {
+          "name": "",
+          "pipeline_override": {
+            "HE_SortieSuccessDone": {
+              "action": {
+                "type": "Custom",
+                "custom_action": "RestartGameAction",
+                "custom_action_param": {"log_auto_recovery": false}
+              }
+            }
+          }
+        }
+      ],
+      "default_case": []
     },
     "HE_选择部队": {
       "name": "HE_选择部队",
