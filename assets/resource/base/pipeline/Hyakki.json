@@ -372,7 +372,8 @@
       "time": 100,
       "target": [568, 603, 152, 49]
     },
-    "next": ["HK_SortieSuccess", "HK_IsTicketConfirm"]
+    "next": ["HK_SortieSuccess", "HK_IsTicketConfirm"],
+    "on_error": ["HK_DetectWhereAmI"]
   },
   "HK_IsTicketShortagePopup": {
     "recognition": {
@@ -411,8 +412,7 @@
     },
     "repeat": 2,
     "repeat_delay": 500,
-    "next": ["HK_ClickTicketConfirm"],
-    "on_error": ["HK_DetectWhereAmI"]
+    "next": ["HK_ClickTicketConfirm"]
   },
   "HK_ClickTicketConfirm": {
     "action": {
@@ -459,7 +459,14 @@
   },
   "HK_PostSortieHub": {
     "timeout": 30000,
-    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HK_IsTicketConfirm", "HK_IsTicketShortagePopup", "HK_SortieSuccess"],
+    "next": [
+      "IsPreDamage", 
+      "IsEquipmentShortagePopup", 
+      "HK_IsTicketConfirm", 
+      "HK_IsTicketShortagePopup", 
+      "HK_SortieSuccess", 
+      "HK_IsPreSortieConfirm"
+    ],
     "on_error": ["HK_DetectWhereAmI"]
   },
   "HK_SortieSuccess": {
@@ -538,8 +545,7 @@
     },
     "pre_delay": 500,
     "post_delay": 500,
-    "next": ["HK_DetectWhereAmI"],
-    "on_error": ["HK_DetectWhereAmI"]
+    "next": ["HK_DetectWhereAmI"]
   },
   "HK_NavigateToActivity": {
     "next": ["HK_ClickMenu", "HK_DetectWhereAmI"]

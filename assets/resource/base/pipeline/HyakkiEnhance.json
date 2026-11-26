@@ -13,6 +13,7 @@
     },
     "timeout": 120000,
     "next": [
+      "HE_IsTicketConfirm",
       "HE_IsMarching",
       "HE_IsEventPage",
       "HE_CheckHomeBrightness",
@@ -164,7 +165,8 @@
       "time": 100,
       "target": [1176, 390, 1, 2]
     },
-    "next": ["HE_ClickAutoMarchNoOrYesDelegate"]
+    "next": ["HE_ClickAutoMarchNoOrYesDelegate"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_ClickAutoMarchNoOrYesDelegate": {
     "recognition": {
@@ -193,7 +195,8 @@
       "time": 100,
       "target": [1024, 30, 35, 36]
     },
-    "next": ["HE_IsTeamSelect"]
+    "next": ["HE_IsTeamSelect"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_IsEventPage": {
     "recognition": {
@@ -319,7 +322,8 @@
       "time": 100,
       "target": [568, 603, 152, 49]
     },
-    "next": ["HE_SortieSuccess", "HE_IsTicketConfirm"]
+    "next": ["HE_SortieSuccess", "HE_IsTicketConfirm"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_IsTicketShortagePopup": {
     "recognition": {
@@ -339,7 +343,8 @@
       "time": 100,
       "target": [750, 448, 75, 40]
     },
-    "next": ["HE_CompleteCurrentTaskAfterNoTicket", "HE_ReplenishTicket"]
+    "next": ["HE_CompleteCurrentTaskAfterNoTicket", "HE_ReplenishTicket"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_ReplenishTicket": {
     "recognition": {
@@ -370,7 +375,8 @@
       "time": 100,
       "target": [604, 588, 66, 42]
     },
-    "next": ["HE_IsConfirmPurchase"]
+    "next": ["HE_IsConfirmPurchase"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_IsConfirmPurchase": {
     "recognition": {
@@ -403,7 +409,14 @@
   },
   "HE_PostSortieHub": {
     "timeout": 30000,
-    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HE_IsTicketConfirm", "HE_IsTicketShortagePopup"]
+    "next": [
+      "IsPreDamage", 
+      "IsEquipmentShortagePopup", 
+      "HE_IsTicketConfirm", 
+      "HE_IsTicketShortagePopup", 
+      "HE_IsPreSortieConfirm"
+    ],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_SortieSuccess": {
     "recognition": {
@@ -455,7 +468,8 @@
       "time": 200,
       "target": [301, 169, 115, 50]
     },
-    "next": ["HE_FatigueCheck", "HE_IsPreSortieConfirm"]
+    "next": ["HE_FatigueCheck", "HE_IsPreSortieConfirm"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_CompleteCurrentTaskAfterFatigue": {
     "enabled": false,
@@ -477,7 +491,8 @@
         }
       }
     },
-    "next": ["HE_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"]
+    "next": ["HE_CompleteCurrentTaskAfterFatigue", "TF_EnterFromTeamSelect"],
+    "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_WaitRefresh": {
     "enabled": false,
