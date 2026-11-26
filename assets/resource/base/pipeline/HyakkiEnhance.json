@@ -42,6 +42,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["HE_RestartGame"]
@@ -196,12 +197,12 @@
   },
   "HE_IsEventPage": {
     "recognition": {
-      "type": "ColorMatch",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [2, 280, 29, 36],
-        "lower": [179, 179, 179],
-        "upper": [199, 199, 199],
-        "count": 1044
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/百鬼强化.png",
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "next": ["[Anchor]HE_RoundDone", "HE_CheckGoalPt", "HE_SelectDifficulty", "HE_DetectWhereAmI"]
@@ -213,7 +214,7 @@
       "param": {
         "custom_recognition": "GoalPtCheckRecognition",
         "custom_recognition_param": {
-          "roi": [888, 198, 184, 32]
+          "roi": [891, 153, 185, 30]
         }
       }
     },
@@ -225,12 +226,12 @@
   },
   "HE_SelectDifficulty": {
     "recognition": {
-      "type": "ColorMatch",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [2, 280, 29, 36],
-        "lower": [179, 179, 179],
-        "upper": [199, 199, 199],
-        "count": 1044
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/百鬼强化.png",
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "action": {
@@ -284,12 +285,12 @@
   },
   "HE_TerminateRound": {
     "recognition": {
-      "type": "ColorMatch",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [2, 280, 29, 36],
-        "lower": [179, 179, 179],
-        "upper": [199, 199, 199],
-        "count": 1044
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/百鬼强化.png",
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "anchor": {"HE_RoundDone": ""},
@@ -304,19 +305,19 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [597, 54, 82, 38],
+        "roi": [600, 36, 83, 39],
         "expected": "出阵"
       }
     },
     "action": {
       "type": "Click",
       "param": {
-        "target": [565, 578, 151, 48]
+        "target": [568, 603, 152, 49]
       }
     },
     "post_wait_freezes": {
       "time": 100,
-      "target": [565, 578, 151, 48]
+      "target": [568, 603, 152, 49]
     },
     "next": ["HE_SortieSuccess", "HE_IsTicketConfirm"]
   },
@@ -406,24 +407,24 @@
   },
   "HE_SortieSuccess": {
     "recognition": {
-      "type": "ColorMatch",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [2, 280, 29, 36],
-        "lower": [179, 179, 179],
-        "upper": [199, 199, 199],
-        "count": 1044
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/百鬼强化.png",
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "next": ["HE_SortieSuccessDone"]
   },
   "HE_SortieSuccessDone": {
     "recognition": {
-      "type": "ColorMatch",
+      "type": "TemplateMatch",
       "param": {
-        "roi": [2, 280, 29, 36],
-        "lower": [179, 179, 179],
-        "upper": [199, 199, 199],
-        "count": 1044
+        "roi": [427, 69, 388, 52],
+        "template": "Activity/百鬼强化.png",
+        "green_mask": true,
+        "threshold": [0.97]
       }
     },
     "inverse": true,

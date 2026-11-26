@@ -10,13 +10,15 @@ namespace MATR.GameLogReader;
 /// <summary>串行读取单个设备的日志，缓存仅驻留内存。</summary>
 public sealed class GameOverviewReader : MATR.GameLogReaderSdk.IGameLogReader
 {
-    public int ApiVersion => 1;
-    private const string LogPath = "/data/data/com.youzu.djlw/files/userdata/HttpRequestCollect";
+    public int ApiVersion => 2;
+    private const string LogPathFormat = "/data/data/{0}/files/userdata/HttpRequestCollect";
     private const int ReadChunkBytes = 4 * 1024 * 1024;
     private readonly SemaphoreSlim _gate = new(1);
     private GameOverviewLogParser.IncrementalParser _parser = new();
     private string _adb = "";
     private string _serial = "";
+    private string _packageName = "";
+    private string _logPath = "";
     private bool _ownsRoot;
     private byte[] _boundaryBytes = [];
     private byte[] _pendingBytes = [];
@@ -39,16 +41,22 @@ public sealed class GameOverviewReader : MATR.GameLogReaderSdk.IGameLogReader
         };
     }
 
-    public async Task<GameOverviewSnapshot> ReadAsync(string adb, string serial, bool keepRoot)
+    public async Task<GameOverviewSnapshot> ReadAsync(string adb, string serial, string packageName, bool keepRoot)
     {
+        if (string.IsNullOrWhiteSpace(packageName)
+            || !System.Text.RegularExpressions.Regex.IsMatch(packageName, @"^[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+$"))
+            throw new ArgumentException("游戏包名格式无效。", nameof(packageName));
+
         await _gate.WaitAsync();
         try
         {
-            if (_adb != adb || _serial != serial)
+            if (_adb != adb || _serial != serial || _packageName != packageName)
             {
                 await ReleaseRootAsync();
                 _adb = adb;
                 _serial = serial;
+                _packageName = packageName;
+                _logPath = string.Format(System.Globalization.CultureInfo.InvariantCulture, LogPathFormat, packageName);
                 _parser = new GameOverviewLogParser.IncrementalParser();
                 _boundaryBytes = [];
                 _pendingBytes = [];
@@ -65,16 +73,16 @@ public sealed class GameOverviewReader : MATR.GameLogReaderSdk.IGameLogReader
                 if (!identity.Contains("uid=0", StringComparison.Ordinal))
                     throw new InvalidOperationException("模拟器未允许 ADB root，无法读取游戏日志。");
             }
-            var sizeText = await RunAsync("shell", "wc -c < " + LogPath);
+            var sizeText = await RunAsync("shell", "wc -c < " + _logPath);
             if (!long.TryParse(sizeText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var size) || size < 0)
                 throw new InvalidOperationException("无法确认游戏日志大小。");
-            var prefix = await RunAsync("shell", "head -c 256 " + LogPath);
+            var prefix = await RunAsync("shell", "head -c 256 " + _logPath);
             // 头部变化或文件缩短视为新会话，重建基线。
             var rebuild = size < _offset || prefix != _prefix;
             if (!rebuild && _offset > 0)
             {
                 var count = (int)Math.Min(128, _offset);
-                var boundary = await RunAsync("exec-out", "sh", "-c", "tail -c +" + (_offset - count + 1).ToString(CultureInfo.InvariantCulture) + " " + LogPath + " | head -c " + count + " | base64");
+                var boundary = await RunAsync("exec-out", "sh", "-c", "tail -c +" + (_offset - count + 1).ToString(CultureInfo.InvariantCulture) + " " + _logPath + " | head -c " + count + " | base64");
                 rebuild = !Convert.FromBase64String(boundary).AsSpan().SequenceEqual(_boundaryBytes.AsSpan(_boundaryBytes.Length - count, count));
             }
             if (rebuild)
@@ -87,7 +95,7 @@ public sealed class GameOverviewReader : MATR.GameLogReaderSdk.IGameLogReader
             while (_offset < size)
             {
                 var count = (int)Math.Min(ReadChunkBytes, size - _offset);
-                var chunk = await RunBytesAsync("exec-out", "sh", "-c", "tail -c +" + (_offset + 1).ToString(CultureInfo.InvariantCulture) + " " + LogPath + " | head -c " + count.ToString(CultureInfo.InvariantCulture));
+                var chunk = await RunBytesAsync("exec-out", "sh", "-c", "tail -c +" + (_offset + 1).ToString(CultureInfo.InvariantCulture) + " " + _logPath + " | head -c " + count.ToString(CultureInfo.InvariantCulture));
                 if (chunk.Length == 0) break;
 
                 var combined = new byte[_pendingBytes.Length + chunk.Length];

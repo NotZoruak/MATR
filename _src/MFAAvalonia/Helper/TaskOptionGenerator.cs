@@ -1166,7 +1166,27 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             }
             else
             {
-                container.Children.Add(checkBox);
+                var description = GetTooltipText(interfaceOption.Description, interfaceOption.Document);
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    container.Children.Add(checkBox);
+                }
+                else
+                {
+                    var checkBoxRow = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Spacing = 4,
+                    };
+                    checkBoxRow.Children.Add(checkBox);
+
+                    var tooltip = new TooltipBlock();
+                    tooltip.Bind(TooltipBlock.TooltipTextProperty, new ResourceBinding(description));
+                    tooltip.Margin = new Thickness(4, 0, 0, 0);
+                    checkBoxRow.Children.Add(tooltip);
+                    container.Children.Add(checkBoxRow);
+                }
             }
 
             casesPanel = new UniformGrid { Columns = 2 };

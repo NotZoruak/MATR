@@ -51,6 +51,7 @@
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["S_RestartGame"]

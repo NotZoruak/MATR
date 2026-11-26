@@ -21,6 +21,7 @@
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "Warehouse_ClickMenu",
       "Warehouse_ClickForge",
       "[JumpBack]FallbackWait"
