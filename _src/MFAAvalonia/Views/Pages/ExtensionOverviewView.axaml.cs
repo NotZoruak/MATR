@@ -223,7 +223,7 @@ public partial class ExtensionOverviewView : UserControl
         }
         finally
         {
-            var seconds = int.TryParse(GlobalConfiguration.GetValue("Extension.WarehouseIntervalSeconds", "60"), out var interval) ? Math.Clamp(interval, 1, 86400) : 60;
+            var seconds = int.TryParse(GlobalConfiguration.GetValue("Extension.WarehouseIntervalSeconds", "3600"), out var interval) ? Math.Clamp(interval, 1800, 86400) : 3600;
             _nextWarehouseSync = DateTime.UtcNow.AddSeconds(seconds);
             _syncingWarehouse = false;
         }

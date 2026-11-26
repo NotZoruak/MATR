@@ -23,13 +23,18 @@ public partial class ExtensionSettingsViewModel : ViewModelBase
     private bool _autoWarehouseSyncEnabled = ReadFlag(WarehouseEnabledKey);
 
     [ObservableProperty]
-    private decimal _warehouseIntervalMinutes = decimal.Round(ReadInterval(WarehouseIntervalKey, 60) / 60, 3);
+    private decimal _warehouseIntervalHours = ReadWarehouseIntervalHours();
 
     partial void OnAutoReadEnabledChanged(bool value) => GlobalConfiguration.SetValue(ReadEnabledKey, value.ToString());
     partial void OnAutoWarehouseSyncEnabledChanged(bool value) => GlobalConfiguration.SetValue(WarehouseEnabledKey, value.ToString());
     partial void OnReadIntervalSecondsChanged(decimal value) => SaveInterval(ReadIntervalKey, value);
-    partial void OnWarehouseIntervalMinutesChanged(decimal value) =>
-        SaveInterval(WarehouseIntervalKey, decimal.Round(value * 60, MidpointRounding.AwayFromZero));
+    partial void OnWarehouseIntervalHoursChanged(decimal value)
+    {
+        var normalized = decimal.Clamp(decimal.Round(value * 2, MidpointRounding.AwayFromZero) / 2, 0.5m, 24m);
+        if (value != normalized) WarehouseIntervalHours = normalized;
+        var seconds = decimal.ToInt32(normalized * 3600);
+        GlobalConfiguration.SetValue(WarehouseIntervalKey, seconds.ToString(CultureInfo.InvariantCulture));
+    }
 
     private static bool ReadFlag(string key) => bool.TryParse(GlobalConfiguration.GetValue(key, "False"), out var value) && value;
 
@@ -37,6 +42,16 @@ public partial class ExtensionSettingsViewModel : ViewModelBase
         decimal.TryParse(GlobalConfiguration.GetValue(key, ""), NumberStyles.Number, CultureInfo.InvariantCulture, out var value)
             ? Math.Clamp(decimal.Truncate(value), 1, 86400)
             : fallback;
+
+    private static decimal ReadWarehouseIntervalHours()
+    {
+        var configured = decimal.TryParse(GlobalConfiguration.GetValue(WarehouseIntervalKey, ""), NumberStyles.Number, CultureInfo.InvariantCulture, out var value)
+            ? decimal.Truncate(value)
+            : 3600m;
+        var seconds = decimal.Clamp(decimal.Round(configured / 1800, MidpointRounding.AwayFromZero) * 1800, 1800, 86400);
+        GlobalConfiguration.SetValue(WarehouseIntervalKey, seconds.ToString(CultureInfo.InvariantCulture));
+        return seconds / 3600;
+    }
 
     private static void SaveInterval(string key, decimal value) =>
         GlobalConfiguration.SetValue(key, Math.Clamp(decimal.Truncate(value), 1, 86400).ToString(CultureInfo.InvariantCulture));
