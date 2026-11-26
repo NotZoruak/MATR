@@ -505,16 +505,24 @@ public static class GameOverviewLogParser
                 result.DutyMemberSerials[job] = serials;
             }
         foreach (var key in new[] { "Forge", "Repair" })
-            if (result.WorkItems.TryGetValue(key, out var entries))
+        {
+            var capacity = key == "Forge" ? forgeCapacity : repairCapacity;
+            if (!result.WorkItems.TryGetValue(key, out var entries))
             {
-                var numbered = entries.Select(x => (Entry: x, Number: SlotNumber(x.Label))).GroupBy(x => x.Number).ToDictionary(x => x.Key, x => x.Last().Entry);
-                var capacity = key == "Forge" ? forgeCapacity : repairCapacity;
-                if (capacity is { } count)
-                    for (var number = 1; number <= count; number++)
-                        numbered.TryAdd(number, new GameOverviewWorkEntry((key == "Forge" ? "锻冶所 " : "工坊 ") + number, null));
-                result.WorkItems[key] = numbered.OrderBy(x => x.Key)
-                    .Select(x => key == "Repair" ? x.Value with { Label = "工坊 " + x.Key } : x.Value).ToList();
+                if (capacity is null)
+                {
+                    result.WorkItems[key] = [];
+                    continue;
+                }
+                entries = [];
             }
+            var numbered = entries.Select(x => (Entry: x, Number: SlotNumber(x.Label))).GroupBy(x => x.Number).ToDictionary(x => x.Key, x => x.Last().Entry);
+            if (capacity is { } count)
+                for (var number = 1; number <= count; number++)
+                    numbered.TryAdd(number, new GameOverviewWorkEntry((key == "Forge" ? "锻冶所 " : "工坊 ") + number, null));
+            result.WorkItems[key] = numbered.OrderBy(x => x.Key)
+                .Select(x => key == "Repair" ? x.Value with { Label = "工坊 " + x.Key } : x.Value).ToList();
+        }
         foreach (var pair in teams)
         {
             var (status, finish, time) = pair.Value;
