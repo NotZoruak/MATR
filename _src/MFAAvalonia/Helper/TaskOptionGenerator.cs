@@ -1183,6 +1183,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
 
                     var tooltip = new TooltipBlock();
                     tooltip.Bind(TooltipBlock.TooltipTextProperty, new ResourceBinding(description));
+                    tooltip.Margin = new Thickness(4, 0, 0, 0);
                     checkBoxRow.Children.Add(tooltip);
                     container.Children.Add(checkBoxRow);
                 }
