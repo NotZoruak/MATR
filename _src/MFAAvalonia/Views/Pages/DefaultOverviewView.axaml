@@ -183,6 +183,12 @@
                             </StackPanel>
                         </StackPanel>
                     </Border>
+                    <Border x:Name="TrainingSection" Classes="overview-section">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <TextBlock Text="修行" Classes="section-title" VerticalAlignment="Center" />
+                                <TextBlock x:Name="ValueTrainingSummary" Grid.Column="1" Text="未读取" Classes="overview-detail" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
                     <Border x:Name="DutySection" Classes="overview-section">
                         <StackPanel Spacing="14">
                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
