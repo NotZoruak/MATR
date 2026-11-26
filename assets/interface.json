@@ -5375,6 +5375,7 @@
           "name": "异去",
           "DisplayName": "异去",
           "pipeline_override": {
+            "S_CompleteCurrentTaskAfterIsekaiBlocked": {"enabled": true},
             "S_IsPastEraSelect": {
               "next": ["S_ClickIsekaiTab"]
             },
