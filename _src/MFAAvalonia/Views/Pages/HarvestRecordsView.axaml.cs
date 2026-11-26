@@ -7,8 +7,11 @@ using System.IO;
 using System.Linq;
 using MFAAvalonia.Helper;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.Input;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
@@ -31,6 +34,10 @@ public partial class HarvestRecordsView : UserControl
     private bool _swords;
     private bool _duties;
     private bool? _columnsConfiguredForSwords;
+    private Popup? _startDatePopup;
+    private Popup? _endDatePopup;
+    private Popup? _startTimePopup;
+    private Popup? _endTimePopup;
     private static readonly JObject SwordCatalog = HeldSwordTableData.LoadCatalog();
     private static readonly string[] SwordTypes = ["未知", "短刀", "胁差", "打刀", "太刀", "大太刀", "枪", "薙刀", "剑"];
 
@@ -40,10 +47,34 @@ public partial class HarvestRecordsView : UserControl
     {
         _directory = directory;
         InitializeComponent();
+        StartDatePicker.TemplateApplied += (_, e) => _startDatePopup = e.NameScope.Find<Popup>("PART_Popup");
+        EndDatePicker.TemplateApplied += (_, e) => _endDatePopup = e.NameScope.Find<Popup>("PART_Popup");
+        StartTimePicker.TemplateApplied += (_, e) => _startTimePopup = e.NameScope.Find<Popup>("PART_Popup");
+        EndTimePicker.TemplateApplied += (_, e) => _endTimePopup = e.NameScope.Find<Popup>("PART_Popup");
+        StartDatePicker.CalendarClosed += (_, _) =>
+        {
+            if (StartDatePicker.SelectedDate.HasValue)
+                Dispatcher.UIThread.Post(() => OpenTimePicker(StartTimePicker, StartDateTimeInput));
+        };
+        EndDatePicker.CalendarClosed += (_, _) =>
+        {
+            if (EndDatePicker.SelectedDate.HasValue)
+                Dispatcher.UIThread.Post(() => OpenTimePicker(EndTimePicker, EndDateTimeInput));
+        };
         _dutyRecordsView = new DutyRecordsView(directory);
         DutyContent.Content = _dutyRecordsView;
         HarvestKindPicker.SelectedIndex = 1;
         HarvestKindPicker.SelectionChanged += HarvestKindChanged;
+        StartTimePicker.SelectedTimeChanged += (_, _) =>
+        {
+            UpdateDateTimeDisplays();
+            ShowTable();
+        };
+        EndTimePicker.SelectedTimeChanged += (_, _) =>
+        {
+            UpdateDateTimeDisplays();
+            ShowTable();
+        };
         // 主题下拉框外层额外留有五像素内边距，移除后与同高输入框的边框对齐。
         HarvestKindPicker.TemplateApplied += (_, e) =>
         {
@@ -59,6 +90,7 @@ public partial class HarvestRecordsView : UserControl
             }
         };
         RecordsGrid.ItemsSource = _visibleRows;
+        UpdateDateTimeDisplays();
         ShowTable();
     }
 
@@ -165,12 +197,117 @@ public partial class HarvestRecordsView : UserControl
         _appliedSearch = SearchBox.Text ?? "";
         ShowTable();
     }
-    private void DateFilterChanged(object? sender, SelectionChangedEventArgs e) => ShowTable();
+    private void DateFilterChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender == StartDatePicker)
+        {
+            if (StartDatePicker.SelectedDate == null)
+            {
+                StartTimePicker.Clear();
+                if (_startTimePopup != null) _startTimePopup.IsOpen = false;
+            }
+        }
+        else if (sender == EndDatePicker && EndDatePicker.SelectedDate == null)
+        {
+            EndTimePicker.Clear();
+            if (_endTimePopup != null) _endTimePopup.IsOpen = false;
+        }
+        UpdateDateTimeDisplays();
+        ShowTable();
+    }
+
+    private void StartDateFilterPressed(object? sender, PointerPressedEventArgs e)
+    {
+        OpenDatePicker(StartDatePicker, StartDateTimeInput, _startDatePopup);
+        e.Handled = true;
+    }
+
+    private void StartDateFilterClicked(object? sender, RoutedEventArgs e) =>
+        OpenDatePicker(StartDatePicker, StartDateTimeInput, _startDatePopup);
+
+    private void EndDateFilterPressed(object? sender, PointerPressedEventArgs e)
+    {
+        OpenDatePicker(EndDatePicker, EndDateTimeInput, _endDatePopup);
+        e.Handled = true;
+    }
+
+    private void EndDateFilterClicked(object? sender, RoutedEventArgs e) =>
+        OpenDatePicker(EndDatePicker, EndDateTimeInput, _endDatePopup);
+
     private void ClearDateFilter(object? sender, RoutedEventArgs e)
     {
         StartDatePicker.SelectedDate = null;
         EndDatePicker.SelectedDate = null;
+        StartTimePicker.Clear();
+        EndTimePicker.Clear();
+        if (_startTimePopup != null) _startTimePopup.IsOpen = false;
+        if (_endTimePopup != null) _endTimePopup.IsOpen = false;
+        UpdateDateTimeDisplays();
         ShowTable();
+    }
+
+    private void OpenDatePicker(CalendarDatePicker picker, Control display, Popup? popup)
+    {
+        picker.ApplyTemplate();
+        popup ??= picker == StartDatePicker ? _startDatePopup : _endDatePopup;
+        if (popup != null)
+        {
+            popup.PlacementTarget = display;
+            popup.Placement = PlacementMode.Bottom;
+        }
+        picker.IsDropDownOpen = true;
+    }
+
+    private void OpenTimePicker(TimePicker picker, Control display)
+    {
+        picker.ApplyTemplate();
+        var popup = picker == StartTimePicker ? _startTimePopup : _endTimePopup;
+        if (popup != null)
+        {
+            popup.PlacementTarget = display;
+            popup.Placement = PlacementMode.Right;
+            popup.IsOpen = true;
+        }
+    }
+
+    private void UpdateDateTimeDisplays()
+    {
+        StartDateTimeText.Text = FormatDateTimeDisplay(StartDatePicker, StartTimePicker);
+        EndDateTimeText.Text = FormatDateTimeDisplay(EndDatePicker, EndTimePicker);
+    }
+
+    private static string FormatDateTimeDisplay(CalendarDatePicker datePicker, TimePicker timePicker)
+    {
+        if (datePicker.SelectedDate is not { } date) return "";
+        return timePicker.SelectedTime is { } time
+            ? $"{date:yyyy-MM-dd} {time.Hours:00}:{time.Minutes:00}"
+            : date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    }
+
+    private static DateTime? FilterBoundary(CalendarDatePicker datePicker, TimePicker timePicker, bool endBoundary)
+    {
+        if (datePicker.SelectedDate is not { } selectedDate) return null;
+        var date = selectedDate.Date;
+        if (timePicker.SelectedTime is { } selectedTime)
+        {
+            var minute = new TimeSpan(selectedTime.Hours, selectedTime.Minutes, 0);
+            var boundary = date + minute;
+            return endBoundary ? boundary.AddMinutes(1).AddTicks(-1) : boundary;
+        }
+        return endBoundary ? date.AddDays(1).AddTicks(-1) : date;
+    }
+
+    private string FormatSelectedRange()
+    {
+        static string FormatBoundary(CalendarDatePicker datePicker, TimePicker timePicker)
+        {
+            if (datePicker.SelectedDate is not { } date) return "不限";
+            return timePicker.SelectedTime is { } time
+                ? $"{date:yyyy-MM-dd} {time.Hours:00}:{time.Minutes:00}"
+                : date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        }
+
+        return $"时间：{FormatBoundary(StartDatePicker, StartTimePicker)} 至 {FormatBoundary(EndDatePicker, EndTimePicker)}";
     }
 
     private async void SummaryClicked(object? sender, RoutedEventArgs e)
@@ -182,7 +319,7 @@ public partial class HarvestRecordsView : UserControl
         {
             var summary = _dutyRecordsView.CreateSummary();
             var dutyContent = new StackPanel { Width = 620, Spacing = 10 };
-            var dutySubtitle = $"时间：{StartDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"} 至 {EndDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"}";
+            var dutySubtitle = FormatSelectedRange();
             if (!string.IsNullOrWhiteSpace(_appliedSearch)) dutySubtitle += $"\n搜索：{_appliedSearch}";
             dutyContent.Children.Add(new TextBlock { Text = dutySubtitle, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
             dutyContent.Children.Add(new TextBlock
@@ -220,7 +357,7 @@ public partial class HarvestRecordsView : UserControl
             .ThenBy(group => group.Name, StringComparer.Ordinal)
             .ToArray();
         var total = _swords ? rows.Length : rows.Sum(row => row.Amount);
-        var subtitle = $"时间：{StartDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"} 至 {EndDatePicker.SelectedDate?.ToString("yyyy-MM-dd") ?? "不限"}";
+        var subtitle = FormatSelectedRange();
         if (!string.IsNullOrWhiteSpace(_appliedSearch)) subtitle += $"\n搜索：{_appliedSearch}";
 
         var detailRows = new StackPanel { Spacing = 12 };
@@ -304,7 +441,9 @@ public partial class HarvestRecordsView : UserControl
         AllTimeButton.IsVisible = true;
         SummaryButton.IsVisible = true;
         SearchBox.Watermark = _duties ? "搜索刀剑、内番、属性或日期" : "搜索名称、来源、地图或点位";
-        _dutyRecordsView.SetFilters(_appliedSearch, StartDatePicker.SelectedDate?.Date, EndDatePicker.SelectedDate?.Date);
+        _dutyRecordsView.SetFilters(_appliedSearch,
+            FilterBoundary(StartDatePicker, StartTimePicker, endBoundary: false),
+            FilterBoundary(EndDatePicker, EndTimePicker, endBoundary: true));
         if (_duties) return;
         if (_columnsConfiguredForSwords != _swords)
         {
@@ -351,10 +490,10 @@ public partial class HarvestRecordsView : UserControl
     {
         if (!DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture,
                 DateTimeStyles.None, out var timestamp)) return false;
-        var start = StartDatePicker.SelectedDate?.Date;
-        var end = EndDatePicker.SelectedDate?.Date;
-        return (start == null || timestamp.Date >= start.Value)
-            && (end == null || timestamp.Date <= end.Value);
+        var start = FilterBoundary(StartDatePicker, StartTimePicker, endBoundary: false);
+        var end = FilterBoundary(EndDatePicker, EndTimePicker, endBoundary: true);
+        return (start == null || timestamp >= start.Value)
+            && (end == null || timestamp <= end.Value);
     }
 
     private static bool MatchesSearch(Row row, string? search)
