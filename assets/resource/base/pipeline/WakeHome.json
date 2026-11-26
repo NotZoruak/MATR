@@ -38,6 +38,7 @@
       "[JumpBack]IsInGameUpdatePopup",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]WH_OpenMenu",
       "WH_IsInMenu"

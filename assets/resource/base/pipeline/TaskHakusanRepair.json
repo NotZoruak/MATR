@@ -82,6 +82,7 @@
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["THR_RestartGame"]

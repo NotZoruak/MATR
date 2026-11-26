@@ -43,6 +43,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["HK_RestartGame"]

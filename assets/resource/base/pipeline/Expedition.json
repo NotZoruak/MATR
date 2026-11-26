@@ -30,6 +30,7 @@
       "E_LeaveTroopRecord",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_RestartGame"]
@@ -1731,6 +1732,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["E_FlowerRestartGame"]

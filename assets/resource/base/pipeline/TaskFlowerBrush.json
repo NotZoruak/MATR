@@ -24,6 +24,7 @@
       "[JumpBack]IsBattleResult_Title",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]IsAnnouncementPopup",
       "[JumpBack]IsConfirmPopup",
       "IsTeamStatusPanel",

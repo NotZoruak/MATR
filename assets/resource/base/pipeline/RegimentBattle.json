@@ -45,6 +45,7 @@
       "[JumpBack]IsTrainingApplication",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "RB_HalfRoundDone",
       "[JumpBack]FallbackWait"
     ],

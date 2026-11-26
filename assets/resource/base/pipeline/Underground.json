@@ -49,6 +49,7 @@
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[Anchor]U_MoreClick",
       "[JumpBack]FallbackWait"
     ],

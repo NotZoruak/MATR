@@ -31,6 +31,7 @@
       "[JumpBack]IsInGameUpdatePopup",
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
+      "[JumpBack]IsSettlementPrompt",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["D_RestartGame"]

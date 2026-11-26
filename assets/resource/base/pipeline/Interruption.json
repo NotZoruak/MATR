@@ -355,7 +355,7 @@
     "recognition": {
       "type": "OCR",
       "param": {
-        "roi": [588, 274, 96, 25],
+        "roi": [588, 274, 96, 39],
         "expected": "连接中断"
       }
     },
@@ -363,6 +363,21 @@
       "type": "Click",
       "param": {
         "target": [738, 449, 100, 39]
+      }
+    }
+  },
+  "IsSettlementPrompt": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [544, 334, 185, 24],
+        "expected": "点击确定进行结算"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [600, 450, 79, 36]
       }
     }
   },
