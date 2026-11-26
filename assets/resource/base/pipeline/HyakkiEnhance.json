@@ -44,6 +44,7 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsSettlementPrompt",
+      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["HE_RestartGame"]
@@ -409,13 +410,7 @@
   },
   "HE_PostSortieHub": {
     "timeout": 30000,
-    "next": [
-      "IsPreDamage", 
-      "IsEquipmentShortagePopup", 
-      "HE_IsTicketConfirm", 
-      "HE_IsTicketShortagePopup", 
-      "HE_IsPreSortieConfirm"
-    ],
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HE_IsTicketConfirm", "HE_IsTicketShortagePopup", "HE_IsPreSortieConfirm"],
     "on_error": ["HE_DetectWhereAmI"]
   },
   "HE_SortieSuccess": {

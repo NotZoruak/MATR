@@ -47,6 +47,7 @@
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsSettlementPrompt",
       "RB_HalfRoundDone",
+      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["RB_RestartGame"]

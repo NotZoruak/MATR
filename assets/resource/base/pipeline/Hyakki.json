@@ -44,6 +44,7 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsSettlementPrompt",
+      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["HK_RestartGame"]
@@ -460,11 +461,11 @@
   "HK_PostSortieHub": {
     "timeout": 30000,
     "next": [
-      "IsPreDamage", 
-      "IsEquipmentShortagePopup", 
-      "HK_IsTicketConfirm", 
-      "HK_IsTicketShortagePopup", 
-      "HK_SortieSuccess", 
+      "IsPreDamage",
+      "IsEquipmentShortagePopup",
+      "HK_IsTicketConfirm",
+      "HK_IsTicketShortagePopup",
+      "HK_SortieSuccess",
       "HK_IsPreSortieConfirm"
     ],
     "on_error": ["HK_DetectWhereAmI"]

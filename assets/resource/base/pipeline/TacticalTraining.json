@@ -42,6 +42,7 @@
       "[JumpBack]IsInGameUpdatePopup",
       "[JumpBack]IsInternalReport",
       "[JumpBack]IsTrainingApplication",
+      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["TT_RestartGame"]

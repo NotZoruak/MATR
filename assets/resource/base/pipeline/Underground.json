@@ -51,6 +51,7 @@
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsSettlementPrompt",
       "[Anchor]U_MoreClick",
+      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["U_RestartGame"]

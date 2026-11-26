@@ -411,5 +411,21 @@
       }
     }
   },
-  "FallbackWait": {}
+  "FallbackWait": {},
+  "IsOtherEventPage": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [2, 280, 29, 36],
+        "lower": [179, 179, 179],
+        "upper": [199, 199, 199],
+        "count": 1044
+      }
+    },
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "目标活动未开启"}
+    }
+  }
 }
