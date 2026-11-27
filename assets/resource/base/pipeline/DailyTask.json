@@ -1287,6 +1287,9 @@
       "DT_DrillIsInMenu",
       "DT_DrillIsInOpponentSelect",
       "DT_DrillOpponentInfo",
+      "DT_DrillIsInTeamSelect",
+      "DT_DrillIsInFormationSelect",
+      "DT_DrillIsBattleResult",
       "[JumpBack]DT_EnterMenu",
       "[JumpBack]FallbackWait"
     ]
@@ -1783,7 +1786,7 @@
         "expected": "演练对手选择"
       }
     },
-    "next": ["DT_DrillIsInOpponentSelect", "DT_DrillEntry"]
+    "next": ["DT_DrillIsInOpponentSelect", "DT_DrillBattleHub"]
   },
   "DT_DrillIsBattleResult": {
     "recognition": {
