@@ -1688,16 +1688,8 @@ public sealed class DashboardCardGrid : Panel
             Math.Max(0, Bounds.Height - Padding.Top - Padding.Bottom));
 
         _suppressLayoutSave = false;
-        StartRectTransition(card, fromRect, toRect, () =>
-        {
-            foreach (var other in Children.OfType<DashboardCard>())
-            {
-                if (!ReferenceEquals(other, card))
-                {
-                    other.IsVisible = false;
-                }
-            }
-        });
+        // 最大化由视觉遮罩隐藏其他卡片，保留实际显示状态与网格占位。
+        StartRectTransition(card, fromRect, toRect);
         InvalidateMeasure();
         InvalidateArrange();
     }
@@ -1716,14 +1708,6 @@ public sealed class DashboardCardGrid : Panel
             card.ExpandedColumnSpan = Math.Max(1, _maximizedLayout.ExpandedColSpan);
             card.ExpandedRowSpan = Math.Max(1, _maximizedLayout.ExpandedRowSpan);
             card.IsCollapsed = _maximizedLayout.IsCollapsed;
-        }
-
-        foreach (var other in Children.OfType<DashboardCard>())
-        {
-            if (!ReferenceEquals(other, card))
-            {
-                other.IsVisible = true;
-            }
         }
 
         card.IsMaximizeTransitionActive = true;
