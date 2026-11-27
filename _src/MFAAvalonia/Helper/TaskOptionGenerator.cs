@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
@@ -1035,18 +1035,18 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         presetList.Children.Add(addButton);
     }
 
-    /// <summary>读取全部编队预设并补齐固定槽位。</summary>
-    private static List<FormationPreset> LoadFormationPresets()
+    /// <summary>从设置面板所属实例读取全部编队预设并补齐固定槽位。</summary>
+    private List<FormationPreset> LoadFormationPresets()
     {
-        var presets = ConfigurationManager.CurrentInstance.GetValue<List<FormationPreset>>(ConfigurationKeys.FormationPresets, []);
+        var presets = viewModel.Processor.InstanceConfiguration.GetValue<List<FormationPreset>>(ConfigurationKeys.FormationPresets, []);
         presets ??= [];
         foreach (var preset in presets) preset.EnsureSlots();
         return presets;
     }
 
-    /// <summary>保存全部编队预设。</summary>
-    private static void SaveFormationPresets(List<FormationPreset> presets)
-        => ConfigurationManager.CurrentInstance.SetValue(ConfigurationKeys.FormationPresets, presets);
+    /// <summary>将全部编队预设保存到设置面板所属实例，避免实例切换后写入其他实例。</summary>
+    private void SaveFormationPresets(List<FormationPreset> presets)
+        => viewModel.Processor.InstanceConfiguration.SetValue(ConfigurationKeys.FormationPresets, presets);
 
     /// <summary>按显示顺序重编号预设，并同步更新所有任务中的预设引用。</summary>
     private void ReindexFormationPresets(List<FormationPreset> presets)
