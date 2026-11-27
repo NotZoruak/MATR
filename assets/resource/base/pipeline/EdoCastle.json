@@ -83,26 +83,13 @@
       }
     },
     "pre_delay": 0,
-    "post_delay": 0,
-    "timeout": 2500,
-    "next": ["EC_RecognizeResourcePoint"],
-    "on_error": ["IsTrainingApplication", "EC_DetectWhereAmI"]
-  },
-  "EC_RecognizeResourcePoint": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [112, 594, 196, 30],
-        "expected": "获得"
-      }
-    },
-    "pre_delay": 0,
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
-      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"江户潜入\"}"
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"detect_timeout\":2500,\"timeout\":120000,\"poll_interval\":200,\"task\":\"江户潜入\"}"
     },
-    "next": ["EC_DetectWhereAmI"],
+    "post_delay": 0,
+    "next": ["IsTrainingApplication", "EC_DetectWhereAmI"],
     "on_error": ["EC_RestartGame"]
   },
   "EC_CheckHomeBrightness": {

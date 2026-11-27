@@ -176,26 +176,13 @@
       }
     },
     "pre_delay": 0,
-    "post_delay": 0,
-    "timeout": 2500,
-    "next": ["U_RecognizeResourcePoint"],
-    "on_error": ["IsTrainingApplication", "U_DetectWhereAmI"]
-  },
-  "U_RecognizeResourcePoint": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [112, 594, 196, 30],
-        "expected": "获得"
-      }
-    },
-    "pre_delay": 0,
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
-      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"地下城\"}"
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"detect_timeout\":2500,\"timeout\":120000,\"poll_interval\":200,\"task\":\"地下城\"}"
     },
-    "next": ["U_DetectWhereAmI"],
+    "post_delay": 0,
+    "next": ["IsTrainingApplication", "U_DetectWhereAmI"],
     "on_error": ["U_RestartGame"]
   },
   "U_IsFormationSelect": {

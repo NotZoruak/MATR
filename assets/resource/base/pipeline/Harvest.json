@@ -1419,25 +1419,13 @@
         "threshold": [0.97]
       }
     },
-    "timeout": 2500,
-    "next": ["HV_RecognizeResourcePoint"],
-    "on_error": "HV_IsTrainingApplication"
-  },
-  "HV_RecognizeResourcePoint": {
-    "recognition": {
-      "type": "OCR",
-      "param": {
-        "roi": [112, 594, 196, 30],
-        "expected": "获得"
-      }
-    },
     "pre_delay": 0,
     "action": {
       "type": "Custom",
       "custom_action": "ResourcePointLogAction",
-      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"timeout\":120000,\"poll_interval\":200,\"task\":\"刷收获物\"}"
+      "custom_action_param": "{\"roi\":[112,594,196,30],\"expected\":\"获得\",\"detect_timeout\":2500,\"timeout\":120000,\"poll_interval\":200,\"task\":\"刷收获物\"}"
     },
-    "next": ["HV_DetectWhereAmI"],
+    "next": ["HV_IsTrainingApplication", "HV_DetectWhereAmI"],
     "on_error": ["HV_RestartGame"]
   },
   "HV_IsMarching": {
@@ -3074,6 +3062,15 @@
     "next": ["HV_DetectWhereAmI"]
   },
   "HV_IsTrainingApplication": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "roi": [1125, 577, 33, 26],
+        "template": "Common/资源点.png",
+        "green_mask": true,
+        "threshold": [0.97]
+      }
+    },
     "action": {
       "type": "Click",
       "param": {
