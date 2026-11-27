@@ -55,7 +55,7 @@ public static class ConfigurationKeys
     /// <summary>更新数据任务最近一次成功完成时间。</summary>
     public const string UpdateDataLastSucceededAt = "UpdateData.LastSucceededAt";
 
-    /// <summary>刀解/合成许可名单（全局配置，刀剑基础名称列表）。</summary>
+    /// <summary>刀解/合成许可名单（实例配置，刀剑基础名称列表）。</summary>
     public const string AllowListSwords = "AllowListSwords";
 
     /// <summary>刀剑掉落播报总开关。</summary>
@@ -257,6 +257,9 @@ public static class ConfigurationKeys
 
     public static readonly HashSet<string> InstanceScopedKeys = new()
     {
+        AllowListSwords,
+        SwordDropNotificationEnabled,
+        SwordDropNotificationSwords,
         TaskItems,
         CurrentTasks,
         InstancePresetKey,

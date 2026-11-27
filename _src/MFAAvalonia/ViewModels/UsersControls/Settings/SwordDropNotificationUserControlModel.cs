@@ -33,7 +33,7 @@ public partial class SwordDropNotificationUserControlModel : ViewModelBase
 
     private void LoadList()
     {
-        if (ConfigurationManager.Current.TryGetValue(
+        if (ConfigurationManager.CurrentInstance.TryGetValue(
                 ConfigurationKeys.SwordDropNotificationSwords, out List<string>? saved))
         {
             foreach (var name in saved ?? [])
@@ -90,7 +90,7 @@ public partial class SwordDropNotificationUserControlModel : ViewModelBase
         RefreshCandidates();
     }
 
-    private void Persist() => ConfigurationManager.Current.SetValue(
+    private void Persist() => ConfigurationManager.CurrentInstance.SetValue(
         ConfigurationKeys.SwordDropNotificationSwords, SortedSelected().Select(entry => entry.BaseName).ToList());
 }
 

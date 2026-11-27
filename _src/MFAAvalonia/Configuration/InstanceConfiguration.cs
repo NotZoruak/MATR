@@ -139,7 +139,7 @@ public sealed class InstanceConfiguration
         }
 
         // 回退：从全局 config.json 的无前缀 key 读取（最早版本兼容）
-        if (GlobalConfig.ContainsKey(key))
+        if ((_instanceId == "default" || !IsLegacyInstanceSetting(key)) && GlobalConfig.ContainsKey(key))
         {
             var value = GlobalConfig.GetValue<T>(key, defaultValue);
             PersistFallbackValue(key, value);
@@ -185,7 +185,7 @@ public sealed class InstanceConfiguration
             }
         }
 
-        if (GlobalConfig.ContainsKey(key))
+        if ((_instanceId == "default" || !IsLegacyInstanceSetting(key)) && GlobalConfig.ContainsKey(key))
         {
             var value = GlobalConfig.GetValue<T>(key, defaultValue, options);
             PersistFallbackValue(key, value);
@@ -234,7 +234,7 @@ public sealed class InstanceConfiguration
             }
         }
 
-        if (GlobalConfig.ContainsKey(key))
+        if ((_instanceId == "default" || !IsLegacyInstanceSetting(key)) && GlobalConfig.ContainsKey(key))
         {
             var value = GlobalConfig.GetValue<T>(key, defaultValue, noValue, valueConverters);
             PersistFallbackValue(key, value);
@@ -283,7 +283,7 @@ public sealed class InstanceConfiguration
             }
         }
 
-        if (GlobalConfig.ContainsKey(key))
+        if ((_instanceId == "default" || !IsLegacyInstanceSetting(key)) && GlobalConfig.ContainsKey(key))
         {
             var value = GlobalConfig.GetValue<T>(key, defaultValue, noValue, valueConverters);
             PersistFallbackValue(key, value);
@@ -329,7 +329,8 @@ public sealed class InstanceConfiguration
             }
         }
 
-        if (GlobalConfig.TryGetValue(key, out output, valueConverters))
+        if ((_instanceId == "default" || !IsLegacyInstanceSetting(key))
+            && GlobalConfig.TryGetValue(key, out output, valueConverters))
         {
             PersistFallbackValue(key, output);
             return true;
@@ -338,6 +339,12 @@ public sealed class InstanceConfiguration
         output = default!;
         return false;
     }
+
+    /// <summary>判断该设置的旧版无实例归属值是否只应迁移到默认实例。</summary>
+    private static bool IsLegacyInstanceSetting(string key) =>
+        key == ConfigurationKeys.AllowListSwords
+        || key == ConfigurationKeys.SwordDropNotificationEnabled
+        || key == ConfigurationKeys.SwordDropNotificationSwords;
 
     /// <summary>
     /// 从实例配置文件中快速读取指定 key 的字符串值（不创建完整实例）

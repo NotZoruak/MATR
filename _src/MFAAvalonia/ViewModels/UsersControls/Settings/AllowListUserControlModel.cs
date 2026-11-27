@@ -12,7 +12,7 @@ using System.Linq;
 namespace MFAAvalonia.ViewModels.UsersControls.Settings;
 
 /// <summary>
-/// 刀解/合成许可名单：供日课合成、锻刀前刀解等消耗刀剑功能共同使用的全局名单。
+/// 刀解/合成许可名单：供日课合成、锻刀前刀解等消耗刀剑功能共同使用的实例名单。
 /// 名称只允许来自刀剑名册，上锁刀剑始终排除，普通与极化形态按名称共享许可状态。
 /// </summary>
 public partial class AllowListUserControlModel : ViewModelBase
@@ -48,10 +48,10 @@ public partial class AllowListUserControlModel : ViewModelBase
     /// <summary>读取许可名单；首次初始化时写入默认名单。</summary>
     private void LoadAllowList()
     {
-        if (!ConfigurationManager.Current.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? saved))
+        if (!ConfigurationManager.CurrentInstance.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? saved))
         {
             saved = DefaultSwords.Where(name => _catalog.Any(entry => entry.BaseName == name)).ToList();
-            ConfigurationManager.Current.SetValue(ConfigurationKeys.AllowListSwords, saved);
+            ConfigurationManager.CurrentInstance.SetValue(ConfigurationKeys.AllowListSwords, saved);
         }
 
         foreach (var name in saved ?? [])
@@ -112,7 +112,7 @@ public partial class AllowListUserControlModel : ViewModelBase
 
     private void Persist()
     {
-        ConfigurationManager.Current.SetValue(ConfigurationKeys.AllowListSwords, SortedSelected().Select(entry => entry.BaseName).ToList());
+        ConfigurationManager.CurrentInstance.SetValue(ConfigurationKeys.AllowListSwords, SortedSelected().Select(entry => entry.BaseName).ToList());
     }
 }
 
