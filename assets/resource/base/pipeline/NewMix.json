@@ -624,8 +624,8 @@
       }
     },
     "post_wait_freezes": {
-      "time": 200,
-      "target": [609, 124, 505, 562]
+      "time": 800,
+      "target": [415, 124, 699, 562]
     },
     "next": ["NM_CloseProtectedSwordDisplay", "NM_SortMixMaterialAscending", "NM_IsMixLevelCompleted", "NM_IsNoMixMaterial", "NM_HasMixMaterial"]
   },
