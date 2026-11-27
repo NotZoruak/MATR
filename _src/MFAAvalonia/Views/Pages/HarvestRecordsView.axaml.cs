@@ -109,7 +109,10 @@ public partial class HarvestRecordsView : UserControl
             try
             {
                 var path = StorePath();
-                if (File.Exists(path)) _records.AddRange((JsonConvert.DeserializeObject<List<GameOverviewHarvestEntry>>(File.ReadAllText(path)) ?? []).Where(record => !record.Id.Contains(":forge-history:", StringComparison.Ordinal)));
+                if (File.Exists(path))
+                    _records.AddRange((JsonConvert.DeserializeObject<List<GameOverviewHarvestEntry>>(File.ReadAllText(path)) ?? [])
+                        .Where(record => !record.Id.Contains(":forge-history:", StringComparison.Ordinal))
+                        .Select(NormalizeSwordReward));
             }
             catch (Exception exception) when (exception is IOException or JsonException or UnauthorizedAccessException) { }
         }
@@ -118,7 +121,7 @@ public partial class HarvestRecordsView : UserControl
             known.TryAdd(EventIdentity(_records[index]), index);
         foreach (var incoming in records)
         {
-            var record = incoming;
+            var record = NormalizeSwordReward(incoming);
             var identity = EventIdentity(record);
             // 来源修正会改变记录标识，将同一响应的旧未知记录替换为已确认的任务奖励。
             if (record.Source == "任务奖励")
@@ -149,6 +152,14 @@ public partial class HarvestRecordsView : UserControl
         Directory.CreateDirectory(_directory);
         File.WriteAllText(StorePath(), JsonConvert.SerializeObject(_records));
         ShowTable(preservePosition: !accountChanged);
+    }
+
+    private static GameOverviewHarvestEntry NormalizeSwordReward(GameOverviewHarvestEntry record)
+    {
+        if (record.Kind != "resource") return record;
+        var parts = record.Id.Split(':');
+        if (parts.Length < 7 || parts[5] != "2" || string.IsNullOrWhiteSpace(parts[4])) return record;
+        return record with { Kind = "sword", SwordId = parts[4] };
     }
 
     private string StorePath() => Path.Combine(_directory, "harvest-" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(_account))).ToLowerInvariant() + ".json");
@@ -352,7 +363,13 @@ public partial class HarvestRecordsView : UserControl
 
         var rows = FilteredRows();
         var groups = rows.GroupBy(row => row.Name, StringComparer.Ordinal)
-            .Select(group => new { Name = group.Key, Count = _swords ? group.Count() : group.Sum(row => row.Amount), Type = group.First().Type })
+            .Select(group => new
+            {
+                Name = group.Key,
+                Count = _swords ? group.Count() : group.Sum(row => row.Amount),
+                RecordCount = group.Count(),
+                Type = group.First().Type,
+            })
             .OrderByDescending(group => group.Count)
             .ThenBy(group => group.Name, StringComparer.Ordinal)
             .ToArray();
@@ -373,7 +390,12 @@ public partial class HarvestRecordsView : UserControl
                 sectionRow.Children.Add(new TextBlock { Text = section.Key + "：", FontWeight = Avalonia.Media.FontWeight.Bold });
             var items = new WrapPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, ItemSpacing = 14, LineSpacing = 6 };
             foreach (var (group, index) in section.Select((group, index) => (group, index)))
-                items.Children.Add(new TextBlock { Text = _swords ? $"{group.Name}（x{group.Count}）" + (index < section.Count() - 1 ? "，" : "") : $"{group.Name} × {group.Count:N0}" });
+                items.Children.Add(new TextBlock
+                {
+                    Text = _swords
+                        ? $"{group.Name}（x{group.Count}）" + (index < section.Count() - 1 ? "，" : "")
+                        : $"{group.Name} × {group.Count:N0}（{group.RecordCount}次）",
+                });
             Grid.SetColumn(items, _swords ? 1 : 0);
             sectionRow.Children.Add(items);
             detailRows.Children.Add(sectionRow);
