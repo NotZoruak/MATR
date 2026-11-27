@@ -443,13 +443,13 @@ public partial class WorkRecordsViewModel : ViewModelBase
         }
     }
 
-    /// <summary>资源收获文本：木炭x240 玉钢x60 小判箱x3</summary>
+    /// <summary>资源收获文本：木炭x240（3次） 玉钢x60（2次）</summary>
     public string SelectedResourcesText =>
         SelectedRecord is null
             ? ""
             : string.Join("  ", SelectedRecord.ResourceGains
                 .OrderBy(kv => Array.IndexOf(ResourceOrder, kv.Key) is var i && i < 0 ? int.MaxValue : i)
-                .Select(kv => $"{kv.Key}x{kv.Value}"));
+                .Select(kv => FormatResourceItem(SelectedRecord, kv.Key, kv.Value)));
 
     /// <summary>资源收获条目，供窄宽度下按完整条目自动换行显示</summary>
     public IReadOnlyList<string> SelectedResourceItems =>
@@ -457,8 +457,13 @@ public partial class WorkRecordsViewModel : ViewModelBase
             ? []
             : SelectedRecord.ResourceGains
                 .OrderBy(kv => Array.IndexOf(ResourceOrder, kv.Key) is var i && i < 0 ? int.MaxValue : i)
-                .Select(kv => $"{kv.Key}x{kv.Value}")
+                .Select(kv => FormatResourceItem(SelectedRecord, kv.Key, kv.Value))
                 .ToList();
+
+    private static string FormatResourceItem(WorkRecord record, string name, int amount) =>
+        record.ResourceGainCounts.TryGetValue(name, out var count)
+            ? $"{name}x{amount}（{count}次）"
+            : $"{name}x{amount}（次数未知）";
 
     /// <summary>是否有资源收获</summary>
     public bool SelectedHasResources => SelectedRecord?.ResourceGains.Count > 0;

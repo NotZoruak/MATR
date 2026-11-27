@@ -84,6 +84,8 @@ public static class SavedWorkRecordService
         {
             foreach (var item in record.ResourceGains)
                 result.ResourceGains[item.Key] = result.ResourceGains.GetValueOrDefault(item.Key) + item.Value;
+            foreach (var item in record.ResourceGainCounts)
+                result.ResourceGainCounts[item.Key] = result.ResourceGainCounts.GetValueOrDefault(item.Key) + item.Value;
             result.SwordDrops.AddRange(record.SwordDrops);
             result.SkippedSilhouettes.AddRange(record.SkippedSilhouettes);
             foreach (var item in record.LogisticsCounts)

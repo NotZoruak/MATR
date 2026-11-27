@@ -122,6 +122,9 @@ public sealed class WorkRecord
     /// <summary>资源收获：资源名 → 累计数量（小判箱掉落按次数计入）</summary>
     public Dictionary<string, int> ResourceGains { get; } = [];
 
+    /// <summary>资源收获：资源名 → 被日志记录的次数。</summary>
+    public Dictionary<string, int> ResourceGainCounts { get; } = [];
+
     /// <summary>刀剑掉落明细</summary>
     public List<SwordDrop> SwordDrops { get; } = [];
 

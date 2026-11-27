@@ -28,6 +28,7 @@ public sealed class SavedWorkRecord
     public int ReturnHomeCount { get; set; }
     public bool HasInterrupt { get; set; }
     public Dictionary<string, int> ResourceGains { get; set; } = [];
+    public Dictionary<string, int> ResourceGainCounts { get; set; } = [];
     public List<SwordDrop> SwordDrops { get; set; } = [];
     public List<string> SkippedSilhouettes { get; set; } = [];
     public Dictionary<string, int> LogisticsCounts { get; set; } = [];
@@ -68,6 +69,7 @@ public sealed class SavedWorkRecord
             ReturnHomeCount = source.ReturnHomeCount,
             HasInterrupt = source.HasInterrupt,
             ResourceGains = new Dictionary<string, int>(source.ResourceGains),
+            ResourceGainCounts = new Dictionary<string, int>(source.ResourceGainCounts),
             SwordDrops = source.SwordDrops.ToList(),
             SkippedSilhouettes = source.SkippedSilhouettes.ToList(),
             LogisticsCounts = new Dictionary<string, int>(source.LogisticsCounts),
@@ -101,6 +103,8 @@ public sealed class SavedWorkRecord
         };
         foreach (var item in ResourceGains)
             result.ResourceGains[item.Key] = item.Value;
+        foreach (var item in ResourceGainCounts)
+            result.ResourceGainCounts[item.Key] = item.Value;
         result.SwordDrops.AddRange(SwordDrops);
         result.SkippedSilhouettes.AddRange(SkippedSilhouettes);
         foreach (var item in LogisticsCounts)
