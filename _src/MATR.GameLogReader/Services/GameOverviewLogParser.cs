@@ -263,6 +263,7 @@ public static class GameOverviewLogParser
                     var itemId = reward["item_id"]?.ToString() ?? reward["consumable_id"]?.ToString()
                         ?? reward["sword_id"]?.ToString() ?? reward["artifact_id"]?.ToString();
                     var mappedItemName = GameItemNames.Find(itemType, itemId);
+                    var isSwordReward = itemType == "2" && itemId != null;
                     var amountText = reward["item_num"]?.ToString() ?? reward["num"]?.ToString() ?? reward["amount"]?.ToString();
                     _ = int.TryParse(amountText, out var amount);
                     if (includeBattleBonus)
@@ -273,6 +274,8 @@ public static class GameOverviewLogParser
                     if (amount <= 0) continue;
                     var name = (mappedItemName != null
                         ? mappedItemName
+                        : isSwordReward
+                        ? "刀剑 ID：" + itemId
                         : itemId == null
                         ? $"未知物品（类型 {itemType ?? "未知"}）"
                         : $"未知物品（类型 {itemType ?? "未知"}，ID {itemId}）");
@@ -282,7 +285,8 @@ public static class GameOverviewLogParser
                         : source;
                     var sourceKind = recordSource.Split(" · ", 2, StringSplitOptions.None)[0];
                     var id = $"{account}:{sourceIndex}:{rewardIndex}:{sourceKind}:{itemId ?? "未知"}:{itemType ?? "未知"}:{name}";
-                    result.HarvestRecords.Add(new GameOverviewHarvestEntry(id, "resource", observedAt, name, amount, null, map, point, recordSource));
+                    result.HarvestRecords.Add(new GameOverviewHarvestEntry(id, isSwordReward ? "sword" : "resource", observedAt,
+                        name, amount, isSwordReward ? itemId : null, map, point, recordSource));
                 }
             }
             void Set(string key, string? value)

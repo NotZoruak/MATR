@@ -34,7 +34,7 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
             if ((string?)parameters["mode"] == "clearance")
                 return RunClearance(context, args.NodeName);
 
-            if (!ConfigurationManager.Current.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? allowList)
+            if (!ConfigurationManager.CurrentInstance.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? allowList)
                 || allowList is not { Count: > 0 })
             {
                 LoggerHelper.Warning("[日课 锻刀] 刀解/合成许可名单为空");
@@ -184,7 +184,7 @@ public class ForgeDisassembleSelectAction : IMaaCustomAction
     /// <summary>清仓模式只选择许可名单内的刀剑，不读取日课腾位数量。</summary>
     private static bool RunClearance<T>(T context, string nodeName) where T : IMaaContext
     {
-        if (!ConfigurationManager.Current.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? allowList)
+        if (!ConfigurationManager.CurrentInstance.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? allowList)
             || allowList is not { Count: > 0 })
         {
             LoggerHelper.Info("[刀解清仓] 许可名单为空，正常结束任务");

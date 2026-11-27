@@ -24,20 +24,32 @@ public class ResourcePointLogAction : IMaaCustomAction
         var json = ActionParamHelper.Parse(args.ActionParam);
         var roi = ParseRoi(json["roi"] as JArray ?? throw new System.Exception("资源点 OCR ROI 缺失"));
         var expected = (string?)json["expected"] ?? "获得";
+        var detectTimeout = Math.Max(0, (int?)json["detect_timeout"] ?? 2500);
         var timeout = Math.Max(1000, (int?)json["timeout"] ?? DefaultWaitTimeout);
         var pollInterval = Math.Max(50, (int?)json["poll_interval"] ?? 200);
         // task 参数决定打点前缀（合战场/地下城）；缺省回退旧前缀 [资源点]
         var task = (string?)json["task"] ?? string.Empty;
         var prefix = string.IsNullOrWhiteSpace(task) ? "[资源点]" : $"[{task}]";
 
-        // 奖励文本直接取本 node 识别命中的结果：识别读不到 expected 时不会执行 action。
-        // 命中气泡的那一帧弹窗文字常常只渲染出资源名（如「获得木炭」），
-        // 数量（「×50」）要再过一两百毫秒才出现，因此识别结果只作初值，后面继续读完整文本。
+        // OCR node 命中时优先保留其原始结果，避免弹窗转场导致二次截图错过文字。
         var text = ReadRecognitionText(args);
         if (!ContainsExpected(text, expected))
-        {
-            // 兜底：识别详情缺失（旧管道）时才重新读屏一次
             text = ReadText(context, roi);
+
+        // 共有模板命中后，奖励文字可能稍晚出现；在限定窗口内持续 OCR。
+        var detectStart = System.DateTime.UtcNow;
+        while (!ContainsExpected(text, expected) &&
+               (System.DateTime.UtcNow - detectStart).TotalMilliseconds < detectTimeout)
+        {
+            ActionParamHelper.ThrowIfStopping(context);
+            ActionParamHelper.SleepWithStopCheck(context, pollInterval);
+            text = ReadText(context, roi);
+        }
+
+        if (!ContainsExpected(text, expected))
+        {
+            LoggerHelper.Info($"[资源点] {detectTimeout}ms 内未识别到“{expected}”，交由后续识别处理");
+            return true;
         }
 
         var bestText = ContainsExpected(text, expected) ? text : string.Empty;
@@ -106,16 +118,37 @@ public class ResourcePointLogAction : IMaaCustomAction
     private static bool ContainsExpected(string text, string expected) =>
         text.Replace(" ", string.Empty).Contains(expected, System.StringComparison.Ordinal);
 
-    // 取本 node 识别结果里的文本。OCR 的 best 只保留命中 expected 的那一条，
-    // 因此识别命中时 best.text 就是弹窗文字（弹窗刚出现时可能只有资源名）。
+    // OCR node 的识别详情能保留触发动作的那一帧；模板入口则没有 OCR 结果。
     private static string ReadRecognitionText(in RunArgs args)
     {
         var detail = args.RecognitionDetail;
         if (detail?.Detail is not { Length: > 0 } raw)
             return string.Empty;
 
-        var query = JsonConvert.DeserializeObject<MaaExtensions.RecognitionQuery>(raw);
-        return query?.Best?.Text ?? string.Empty;
+        try
+        {
+            var token = JToken.Parse(raw);
+            if (token is JArray results)
+            {
+                foreach (var result in results)
+                {
+                    if (!string.Equals((string?)result["algorithm"], "OCR", StringComparison.Ordinal))
+                        continue;
+
+                    var text = (string?)result.SelectToken("detail.best.text");
+                    if (!string.IsNullOrWhiteSpace(text))
+                        return text;
+                }
+
+                return string.Empty;
+            }
+
+            return (string?)token.SelectToken("best.text") ?? string.Empty;
+        }
+        catch (JsonException)
+        {
+            return string.Empty;
+        }
     }
 
     // 把 OCR 文本（如「获得木炭×20」）转成打点格式「木炭x20」，多个资源以空格分隔

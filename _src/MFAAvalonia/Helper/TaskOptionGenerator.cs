@@ -322,10 +322,10 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
         var toggle = new ToggleSwitch
         {
             Classes = { "Switch" },
-            IsChecked = ConfigurationManager.Current.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false),
+            IsChecked = ConfigurationManager.CurrentInstance.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false),
             VerticalAlignment = VerticalAlignment.Top,
         };
-        toggle.IsCheckedChanged += (_, _) => ConfigurationManager.Current.SetValue(
+        toggle.IsCheckedChanged += (_, _) => ConfigurationManager.CurrentInstance.SetValue(
             ConfigurationKeys.SwordDropNotificationEnabled, toggle.IsChecked == true);
         Grid.SetColumn(toggle, 2);
         grid.Children.Add(toggle);

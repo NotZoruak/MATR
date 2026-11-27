@@ -387,10 +387,12 @@ public static class WorkRecordBuilder
                         continue;
                     var name = part[..idx];
                     record.ResourceGains[name] = record.ResourceGains.GetValueOrDefault(name) + amount;
+                    record.ResourceGainCounts[name] = record.ResourceGainCounts.GetValueOrDefault(name) + 1;
                 }
                 break;
             case "小判箱掉落":
                 record.ResourceGains["小判箱"] = record.ResourceGains.GetValueOrDefault("小判箱") + 1;
+                record.ResourceGainCounts["小判箱"] = record.ResourceGainCounts.GetValueOrDefault("小判箱") + 1;
                 break;
             case "刀剑掉落":
                 // 附加信息形如 太刀 狮子王（多空格）

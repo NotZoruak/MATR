@@ -30,7 +30,7 @@ public class MixFindAllowedMaterialAction : IMaaCustomAction
     {
         try
         {
-            if (!ConfigurationManager.Current.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? allowList)
+            if (!ConfigurationManager.CurrentInstance.TryGetValue(ConfigurationKeys.AllowListSwords, out List<string>? allowList)
                 || allowList is not { Count: > 0 })
             {
                 LoggerHelper.Warning("[日课 合成] 刀解/合成许可名单为空");
