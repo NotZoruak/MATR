@@ -623,7 +623,11 @@
         "expected": "成果"
       }
     },
-    "next": ["NM_CloseProtectedSwordDisplay", "NM_SortMixMaterialAscending", "NM_IsMixLevelCompleted", "NM_HasMixMaterial", "NM_LeaveMixWithoutMaterial"]
+    "post_wait_freezes": {
+      "time": 200,
+      "target": [609, 124, 505, 562]
+    },
+    "next": ["NM_CloseProtectedSwordDisplay", "NM_SortMixMaterialAscending", "NM_IsMixLevelCompleted", "NM_IsNoMixMaterial", "NM_HasMixMaterial"]
   },
   "NM_CloseProtectedSwordDisplay": {
     "recognition": {
@@ -659,6 +663,16 @@
       "param": {
         "roi": [415, 299, 20, 24],
         "expected": ["7", "8", "9", "10"]
+      }
+    },
+    "next": ["NM_LeaveMixWithoutMaterial"]
+  },
+  "NM_IsNoMixMaterial": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [748, 385, 209, 46],
+        "expected": "没有习合对象"
       }
     },
     "next": ["NM_LeaveMixWithoutMaterial"]
