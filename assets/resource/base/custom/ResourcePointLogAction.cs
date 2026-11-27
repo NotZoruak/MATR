@@ -31,8 +31,12 @@ public class ResourcePointLogAction : IMaaCustomAction
         var task = (string?)json["task"] ?? string.Empty;
         var prefix = string.IsNullOrWhiteSpace(task) ? "[资源点]" : $"[{task}]";
 
+        // OCR node 命中时优先保留其原始结果，避免弹窗转场导致二次截图错过文字。
+        var text = ReadRecognitionText(args);
+        if (!ContainsExpected(text, expected))
+            text = ReadText(context, roi);
+
         // 共有模板命中后，奖励文字可能稍晚出现；在限定窗口内持续 OCR。
-        var text = ReadText(context, roi);
         var detectStart = System.DateTime.UtcNow;
         while (!ContainsExpected(text, expected) &&
                (System.DateTime.UtcNow - detectStart).TotalMilliseconds < detectTimeout)
@@ -113,6 +117,39 @@ public class ResourcePointLogAction : IMaaCustomAction
     // 奖励文字是否已经读到；expected 为识别判据，与识别 node 的 expected 必须一致
     private static bool ContainsExpected(string text, string expected) =>
         text.Replace(" ", string.Empty).Contains(expected, System.StringComparison.Ordinal);
+
+    // OCR node 的识别详情能保留触发动作的那一帧；模板入口则没有 OCR 结果。
+    private static string ReadRecognitionText(in RunArgs args)
+    {
+        var detail = args.RecognitionDetail;
+        if (detail?.Detail is not { Length: > 0 } raw)
+            return string.Empty;
+
+        try
+        {
+            var token = JToken.Parse(raw);
+            if (token is JArray results)
+            {
+                foreach (var result in results)
+                {
+                    if (!string.Equals((string?)result["algorithm"], "OCR", StringComparison.Ordinal))
+                        continue;
+
+                    var text = (string?)result.SelectToken("detail.best.text");
+                    if (!string.IsNullOrWhiteSpace(text))
+                        return text;
+                }
+
+                return string.Empty;
+            }
+
+            return (string?)token.SelectToken("best.text") ?? string.Empty;
+        }
+        catch (JsonException)
+        {
+            return string.Empty;
+        }
+    }
 
     // 把 OCR 文本（如「获得木炭×20」）转成打点格式「木炭x20」，多个资源以空格分隔
     private static void LogGained<T>(T context, string prefix, string text) where T : IMaaContext
