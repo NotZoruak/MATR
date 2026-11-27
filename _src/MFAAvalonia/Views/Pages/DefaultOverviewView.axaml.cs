@@ -44,6 +44,7 @@ public partial class DefaultOverviewView : UserControl
         UpdatePalette();
         RenderWorkStatus();
         RenderTeamStatus();
+        RenderTrainingStatus();
     }
     private async void SyncWarehouse(object? sender, RoutedEventArgs e)
     {
@@ -98,6 +99,8 @@ public partial class DefaultOverviewView : UserControl
         DutyHorseMembers.Children.Clear();
         DutyFieldMembers.Children.Clear();
         DutyBoutMembers.Children.Clear();
+        ValueTrainingSummary.Text = "未读取";
+        ToolTip.SetTip(ValueTrainingSummary, null);
         ForgeSlots.Children.Clear();
         RepairSlots.Children.Clear();
         foreach (var key in OverviewKeys)
@@ -124,6 +127,7 @@ public partial class DefaultOverviewView : UserControl
         RenderDutyMembers(snapshot);
         RenderWorkStatus();
         RenderTeamStatus();
+        RenderTrainingStatus();
     }
 
     private void RenderDutyMembers(GameOverviewSnapshot snapshot)
@@ -312,6 +316,45 @@ public partial class DefaultOverviewView : UserControl
                 text.Inlines.Add(run);
             }
         }
+    }
+
+    private void RenderTrainingStatus()
+    {
+        if (_snapshot == null)
+        {
+            ValueTrainingSummary.Text = "未读取";
+            ToolTip.SetTip(ValueTrainingSummary, null);
+            return;
+        }
+        if (_snapshot.TrainingItems.Count == 0)
+        {
+            ValueTrainingSummary.Text = "当前没有修行中的刀剑";
+            ToolTip.SetTip(ValueTrainingSummary, null);
+            return;
+        }
+
+        var summaries = _snapshot.TrainingItems.Select(entry =>
+        {
+            var swordId = _snapshot.HeldSwords.TryGetValue(entry.SwordSerial, out var swordData)
+                ? swordData["sword_id"]?.ToString()
+                : null;
+            var definition = swordId == null ? null : SwordCatalog["swords"]?[swordId] as JObject;
+            var name = definition?["name"]?.ToString() ?? "未知刀剑";
+            if (definition?["symbol"]?.ToString() == "2") name += "·极";
+
+            var schedule = GameOverviewWorkStatus.FormatSchedule(entry.FinishedAt, _now);
+            if (schedule.Completed)
+            {
+                var end = entry.FinishedAt is { Length: >= 5 } finishedAt ? finishedAt[5..] : "未读取";
+                return $"{name}，结束时间：{end}，剩余：已完成";
+            }
+            if (schedule.Text == "未使用") return $"{name}，结束时间未读取";
+            var split = schedule.Text.Split("，剩余：", 2, StringSplitOptions.None);
+            var finish = split[0].Replace("结束：", "结束时间：", StringComparison.Ordinal);
+            return split.Length > 1 ? $"{name}，{finish}，剩余：{split[1]}" : $"{name}，{finish}";
+        }).ToArray();
+        ValueTrainingSummary.Text = string.Join("；", summaries);
+        ToolTip.SetTip(ValueTrainingSummary, summaries.Length > 1 ? string.Join(Environment.NewLine, summaries) : null);
     }
 
     private static readonly JArray SwordBook = JArray.Parse(CatalogResources.Read("GameSwordBookCatalog.json"));

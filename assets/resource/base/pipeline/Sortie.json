@@ -13,6 +13,7 @@
     },
     "timeout": 120000,
     "next": [
+      "S_IsIsekaiBlocked",
       "S_ConfirmRetreat",
       "S_IsMarching",
       "S_IsSwordDropColor",
@@ -55,6 +56,30 @@
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["S_RestartGame"]
+  },
+  "S_IsIsekaiBlocked": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "roi": [581, 150, 118, 36],
+        "expected": "异去封锁"
+      }
+    },
+    "action": {
+      "type": "Click",
+      "param": {
+        "target": [605, 490, 68, 40]
+      }
+    },
+    "next": ["S_CompleteCurrentTaskAfterIsekaiBlocked", "S_DetectWhereAmI"]
+  },
+  "S_CompleteCurrentTaskAfterIsekaiBlocked": {
+    "enabled": false,
+    "action": {
+      "type": "Custom",
+      "custom_action": "CompleteCurrentTaskAction",
+      "custom_action_param": {"reason": "异去封锁"}
+    }
   },
   "S_IsResourcePoint": {
     "recognition": {

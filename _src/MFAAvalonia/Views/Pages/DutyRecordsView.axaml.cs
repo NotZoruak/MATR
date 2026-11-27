@@ -88,8 +88,8 @@ public partial class DutyRecordsView : UserControl
     public void SetFilters(string search, DateTime? startDate, DateTime? endDate)
     {
         _search = search;
-        _startDate = startDate?.Date;
-        _endDate = endDate?.Date;
+        _startDate = startDate;
+        _endDate = endDate;
         Render();
     }
 
@@ -153,8 +153,8 @@ public partial class DutyRecordsView : UserControl
     private bool MatchesFilters(Row row)
     {
         if (!DateTime.TryParseExact(row.Record.Time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp)) return false;
-        if (_startDate.HasValue && timestamp.Date < _startDate.Value) return false;
-        if (_endDate.HasValue && timestamp.Date > _endDate.Value) return false;
+        if (_startDate.HasValue && timestamp < _startDate.Value) return false;
+        if (_endDate.HasValue && timestamp > _endDate.Value) return false;
         if (string.IsNullOrWhiteSpace(_search)) return true;
         var searchable = string.Join(" ", row.Record.Time, row.Record.DutyType, row.Name, row.First.Text, row.Second.Text);
         foreach (var token in _search.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))

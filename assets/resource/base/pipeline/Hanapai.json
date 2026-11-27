@@ -43,6 +43,7 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsSettlementPrompt",
+      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["HP_RestartGame"]
@@ -294,8 +295,7 @@
         "expected": "即刻"
       }
     },
-    "next": ["HP_ClickSortieNow"],
-    "on_error": ["HP_DetectWhereAmI"]
+    "next": ["HP_ClickSortieNow"]
   },
   "HP_ClickSortieNow": {
     "pre_delay": 100,
@@ -427,7 +427,7 @@
   },
   "HP_PostSortieHub": {
     "timeout": 30000,
-    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HP_IsTicketConfirm", "HP_IsTicketShortagePopup"],
+    "next": ["IsPreDamage", "IsEquipmentShortagePopup", "HP_IsTicketConfirm", "HP_IsTicketShortagePopup", "HP_IsPreSortieConfirm"],
     "on_error": ["HP_DetectWhereAmI"]
   },
   "HP_SortieSuccess": {

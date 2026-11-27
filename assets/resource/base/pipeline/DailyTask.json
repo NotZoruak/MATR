@@ -1287,6 +1287,9 @@
       "DT_DrillIsInMenu",
       "DT_DrillIsInOpponentSelect",
       "DT_DrillOpponentInfo",
+      "DT_DrillIsInTeamSelect",
+      "DT_DrillIsInFormationSelect",
+      "DT_DrillIsBattleResult",
       "[JumpBack]DT_EnterMenu",
       "[JumpBack]FallbackWait"
     ]
@@ -1653,7 +1656,7 @@
         "expected": "演练对手情报"
       }
     },
-    "next": ["DT_DrillDangerCheck", "DT_DrillEnterTraining"],
+    "next": ["DT_DrillDangerCheck", "DT_DrillEnterTraining", "DT_SortieSuccess"],
     "on_error": ["DT_DrillEntry"]
   },
   "DT_DrillDangerCheck": {
@@ -1663,7 +1666,7 @@
       "custom_action": "DrillDangerCheckAction",
       "custom_action_param": {"threshold": 6}
     },
-    "next": ["DT_DrillEnterTraining"],
+    "next": ["DT_DrillEnterTraining", "DT_SortieSuccess"],
     "on_error": ["DT_DrillLeaveStrong"]
   },
   "DT_DrillLeaveStrong": {
@@ -1706,8 +1709,25 @@
   },
   "DT_DrillBattleHub": {
     "timeout": 120000,
-    "next": ["DT_DrillIsInTeamSelect", "DT_DrillIsInFormationSelect", "DT_DrillBattleFinished", "DT_DrillIsBattleResult"],
+    "next": ["DT_DrillIsInTeamSelect", "DT_DrillIsInFormationSelect", "DT_DrillBattleFinished", "DT_DrillIsBattleResult", "DT_SortieSuccess"],
     "on_error": ["DT_DrillEntry"]
+  },
+  "DT_SortieSuccess": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "roi": [539, 3, 87, 6],
+        "lower": [172, 21, 21],
+        "upper": [178, 27, 27]
+      }
+    },
+    "next": ["DT_DrillBattleHub"],
+    "focus": {
+      "Node.Action.Succeeded": {
+        "content": "[一键日课] 出阵",
+        "display": "file"
+      }
+    }
   },
   "DT_DrillIsInTeamSelect": {
     "recognition": {
@@ -1783,7 +1803,7 @@
         "expected": "演练对手选择"
       }
     },
-    "next": ["DT_DrillIsInOpponentSelect", "DT_DrillEntry"]
+    "next": ["DT_DrillIsInOpponentSelect", "DT_DrillBattleHub"]
   },
   "DT_DrillIsBattleResult": {
     "recognition": {

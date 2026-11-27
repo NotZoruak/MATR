@@ -38,7 +38,9 @@ public static class GameOverviewWorkStatus
         var endText = time.ToString("MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         var remaining = deadline - now.ToOffset(TimeSpan.FromHours(8));
         if (remaining <= TimeSpan.Zero) return new Display("已完成", true);
-        var countdown = $"{(long)remaining.TotalHours:00}:{remaining.Minutes:00}:{remaining.Seconds:00}";
+        var countdown = remaining.TotalDays >= 1
+            ? $"{(int)remaining.TotalDays}天{remaining.Hours:00}:{remaining.Minutes:00}:{remaining.Seconds:00}"
+            : $"{(long)remaining.TotalHours:00}:{remaining.Minutes:00}:{remaining.Seconds:00}";
         return new Display($"结束：{endText}，剩余：{countdown}", false);
     }
 }

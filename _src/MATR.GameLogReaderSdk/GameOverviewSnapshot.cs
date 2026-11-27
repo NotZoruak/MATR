@@ -5,6 +5,7 @@ namespace MATR.GameLogReaderSdk;
 public sealed record GameOverviewValue(string Text, string ObservedAt);
 public sealed record GameOverviewTeamEntry(string Status, string? FinishedAt, string? ExpeditionMap = null, string? SortieMap = null, string? SortiePoint = null);
 public sealed record GameOverviewWorkEntry(string Label, string? FinishedAt);
+public sealed record GameOverviewTrainingEntry(string SwordSerial, string? FinishedAt);
 public sealed record GameOverviewHarvestEntry(string Id, string Kind, string Time, string Name, int Amount, string? SwordId, string? Map, string? Point, string Source);
 public sealed record GameOverviewDutyRecord(string Id, string Time, string DutyType, string SwordSerial, string SwordId, int UpType, int UpValue, bool Success, bool IsMaximum, JObject SwordData);
 
@@ -14,6 +15,7 @@ public sealed class GameOverviewSnapshot
     public string Account { get; set; } = "";
     public Dictionary<string, GameOverviewValue> Values { get; } = new();
     public Dictionary<string, List<GameOverviewWorkEntry>> WorkItems { get; } = new();
+    public List<GameOverviewTrainingEntry> TrainingItems { get; } = new();
     public Dictionary<string, List<string?>> DutyMembers { get; } = new();
     public Dictionary<string, List<string?>> DutyMemberSerials { get; } = new();
     public Dictionary<string, GameOverviewTeamEntry> Teams { get; } = new();

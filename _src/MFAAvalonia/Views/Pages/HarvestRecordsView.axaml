@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="MFAAvalonia.Views.Pages.HarvestRecordsView">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:icons="clr-namespace:SukiUI.Content;assembly=SukiUI" x:Class="MFAAvalonia.Views.Pages.HarvestRecordsView">
   <UserControl.Styles>
     <Style Selector=":is(Control).harvest-filter">
       <Setter Property="Height" Value="38" />
@@ -6,6 +6,20 @@
     </Style>
     <Style Selector="Button.harvest-filter">
       <Setter Property="Width" Value="100" />
+    </Style>
+    <Style Selector="TextBlock.harvest-date-range-text">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Foreground" Value="{DynamicResource SukiText}" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+      <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+    <Style Selector="Button.harvest-date-trigger">
+      <Setter Property="Width" Value="32" />
+      <Setter Property="MinWidth" Value="32" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="ComboBox#HarvestKindPicker">
       <Setter Property="FontSize" Value="15" />
@@ -71,12 +85,30 @@
         </TextBox>
       </Grid>
       <Button x:Name="ClearButton" Classes="harvest-filter" Grid.Column="1" Content="清除数据" Click="ClearClicked" />
-      <Grid x:Name="DateFilterGrid" Grid.Row="1" Column="0" ColumnDefinitions="Auto,Auto,*,Auto,*" ColumnSpacing="8">
+      <Grid x:Name="DateFilterGrid" Grid.Row="1" Grid.Column="0" ColumnDefinitions="Auto,Auto,2*,Auto,2*" ColumnSpacing="8">
         <Button x:Name="AllTimeButton" Classes="harvest-filter" Content="全部时间" Click="ClearDateFilter" />
         <TextBlock Grid.Column="1" Text="时间范围" VerticalAlignment="Center" />
-        <CalendarDatePicker Grid.Column="2" x:Name="StartDatePicker" Classes="harvest-filter" Watermark="开始日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
+        <Border x:Name="StartDateTimeInput" Grid.Column="2" Height="38" Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="1" CornerRadius="8">
+          <Grid ColumnDefinitions="*,32">
+            <Border Background="Transparent" PointerPressed="StartDateFilterPressed">
+              <TextBlock x:Name="StartDateTimeText" Classes="harvest-date-range-text" Margin="12,0,0,0" VerticalAlignment="Center" />
+            </Border>
+            <Button Grid.Column="1" Classes="harvest-date-trigger" Click="StartDateFilterClicked" ToolTip.Tip="选择开始日期和时间">
+              <PathIcon Width="16" Height="16" Data="{x:Static icons:Icons.Calendar}" Foreground="{DynamicResource SukiPrimaryColor}" />
+            </Button>
+          </Grid>
+        </Border>
         <TextBlock Grid.Column="3" Text="至" VerticalAlignment="Center" />
-        <CalendarDatePicker Grid.Column="4" x:Name="EndDatePicker" Classes="harvest-filter" Watermark="结束日期" SelectedDateChanged="DateFilterChanged" MinWidth="0" HorizontalAlignment="Stretch" />
+        <Border x:Name="EndDateTimeInput" Grid.Column="4" Height="38" Background="{DynamicResource SukiCardBackground}" BorderBrush="{DynamicResource SukiControlBorderBrush}" BorderThickness="1" CornerRadius="8">
+          <Grid ColumnDefinitions="*,32">
+            <Border Background="Transparent" PointerPressed="EndDateFilterPressed">
+              <TextBlock x:Name="EndDateTimeText" Classes="harvest-date-range-text" Margin="12,0,0,0" VerticalAlignment="Center" />
+            </Border>
+            <Button Grid.Column="1" Classes="harvest-date-trigger" Click="EndDateFilterClicked" ToolTip.Tip="选择结束日期和时间">
+              <PathIcon Width="16" Height="16" Data="{x:Static icons:Icons.Calendar}" Foreground="{DynamicResource SukiPrimaryColor}" />
+            </Button>
+          </Grid>
+        </Border>
       </Grid>
       <Button x:Name="SummaryButton" Classes="harvest-filter" Grid.Row="1" Grid.Column="1" Content="数据汇总" Click="SummaryClicked" />
       <Grid Grid.Row="2" Grid.ColumnSpan="3">
@@ -84,6 +116,10 @@
         <TextBlock x:Name="EmptyText" IsVisible="False" Text="当前视图暂无记录" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource SukiLowText}" IsHitTestVisible="False" />
         <ContentControl x:Name="DutyContent" IsVisible="False" />
       </Grid>
+      <CalendarDatePicker x:Name="StartDatePicker" SelectedDateChanged="DateFilterChanged" Width="0" Height="0" IsHitTestVisible="False" />
+      <CalendarDatePicker x:Name="EndDatePicker" SelectedDateChanged="DateFilterChanged" Width="0" Height="0" IsHitTestVisible="False" />
+      <TimePicker x:Name="StartTimePicker" ClockIdentifier="24HourClock" UseSeconds="False" MinuteIncrement="1" Width="0" Height="0" IsHitTestVisible="False" />
+      <TimePicker x:Name="EndTimePicker" ClockIdentifier="24HourClock" UseSeconds="False" MinuteIncrement="1" Width="0" Height="0" IsHitTestVisible="False" />
     </Grid>
   </Border>
 </UserControl>
