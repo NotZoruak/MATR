@@ -146,6 +146,15 @@ public partial class DutyRecordsView : UserControl
                 })
             });
         }
+        grid.Columns.Add(new DataGridTextColumn
+        {
+            Header = "",
+            Width = new DataGridLength(16),
+            IsReadOnly = true,
+            CanUserResize = false,
+            CanUserReorder = false,
+            CanUserSort = false
+        });
         return grid;
     }
 
