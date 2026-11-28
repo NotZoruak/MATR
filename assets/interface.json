@@ -8850,6 +8850,30 @@
               }
             }
           }
+        },
+        "HK_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
+        },
+        "HE_FatigueCheck": {
+          "recognition": {
+            "type": "Custom",
+            "param": {
+              "custom_recognition": "FatigueCheckRecognition",
+              "custom_recognition_param": {
+                "mode": "check_sortie_first",
+                "threshold": "{threshold}"
+              }
+            }
+          }
         }
       }
     },
