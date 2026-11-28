@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using Avalonia.Controls.Selection;
+using Avalonia.Interactivity;
 
 namespace MFAAvalonia.Views.Pages;
 
@@ -47,5 +48,11 @@ public partial class WorkRecordsView : UserControl
         LogRecordsList.SelectedItems.Clear();
         _syncingSelection = false;
         ViewModel.SetSelectedSavedRecords(listBox.SelectedItems.Cast<SavedWorkRecord>());
+    }
+
+    private void RemoveResourceGainClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: ResourceGainEditItem item })
+            ViewModel.RemoveResourceGainCommand.Execute(item);
     }
 }

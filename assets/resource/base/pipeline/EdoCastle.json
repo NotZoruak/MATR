@@ -51,7 +51,6 @@
       "[JumpBack]IsNetworkRequestTimeout",
       "[JumpBack]IsConnectionInterrupted",
       "[JumpBack]IsSettlementPrompt",
-      "IsOtherEventPage",
       "[JumpBack]FallbackWait"
     ],
     "on_error": ["EC_RestartGame"]
