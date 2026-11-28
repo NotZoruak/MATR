@@ -351,10 +351,13 @@ public static class GameOverviewLogParser
                         Set(pair.Item2, amount.ToString("N0", CultureInfo.InvariantCulture));
             if (data["currency"] is JObject currency && long.TryParse(currency["money"]?.ToString(), out var money))
                 Set("Money", money.ToString("N0", CultureInfo.InvariantCulture));
-            if (path == "/home" && data["item"] is JObject items)
+            if (data["item"] is JObject items)
             {
-                result.InventoryItems.Clear();
-                result.HasInventorySnapshot = true;
+                if (path == "/home")
+                {
+                    result.InventoryItems.Clear();
+                    result.HasInventorySnapshot = true;
+                }
                 foreach (var item in items.Properties().Select(x => x.Value).OfType<JObject>())
                 {
                     var itemId = item["consumable_id"]?.ToString();
@@ -368,6 +371,7 @@ public static class GameOverviewLogParser
                         Set("Accelerator", count.ToString("N0", CultureInfo.InvariantCulture));
                         continue;
                     }
+                    if (path != "/home") continue;
                     var total = count;
                     if (result.InventoryItems.TryGetValue(name, out var previous)
                         && int.TryParse(previous.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var previousCount))
