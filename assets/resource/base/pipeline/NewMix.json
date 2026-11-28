@@ -686,7 +686,7 @@
         "upper": [46, 46, 46]
       }
     },
-    "next": ["NM_HandleMixMaterialSelection"]
+    "next": ["NM_IsMixLevelCompleted", "NM_HandleMixMaterialSelection"]
   },
   "NM_HandleMixMaterialSelection": {
     "action": {
