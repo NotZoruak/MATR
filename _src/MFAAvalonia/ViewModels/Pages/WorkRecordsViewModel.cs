@@ -42,6 +42,8 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(CanMergeSavedRecords))]
     [NotifyPropertyChangedFor(nameof(CanRenameSavedRecord))]
     [NotifyPropertyChangedFor(nameof(CanDeleteSavedRecords))]
+    [NotifyPropertyChangedFor(nameof(CanEditResourceGains))]
+    [NotifyPropertyChangedFor(nameof(ShowEditResourceGainsButton))]
     [NotifyPropertyChangedFor(nameof(SelectedTimeText))]
     [NotifyPropertyChangedFor(nameof(ShowSelectedStatus))]
     private ObservableCollection<SavedWorkRecord> _selectedSavedRecords = [];
@@ -50,8 +52,10 @@ public partial class WorkRecordsViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SelectedDurationText))]
     [NotifyPropertyChangedFor(nameof(SelectedResourcesText))]
+    [NotifyPropertyChangedFor(nameof(SelectedResourceGainCountText))]
     [NotifyPropertyChangedFor(nameof(SelectedResourceItems))]
     [NotifyPropertyChangedFor(nameof(SelectedHasResources))]
+    [NotifyPropertyChangedFor(nameof(ShowResourceGainSection))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropsText))]
     [NotifyPropertyChangedFor(nameof(SelectedHasSwordDrops))]
     [NotifyPropertyChangedFor(nameof(SelectedSwordDropGroups))]
@@ -91,6 +95,21 @@ public partial class WorkRecordsViewModel : ViewModelBase
 
     /// <summary>任务收获卡片内容是否展开。</summary>
     [ObservableProperty] private bool _isTaskOutcomeExpanded = true;
+
+    /// <summary>资源收获是否处于页内编辑状态。</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEditResourceGains))]
+    [NotifyPropertyChangedFor(nameof(ShowResourceGainSection))]
+    [NotifyPropertyChangedFor(nameof(ShowEditResourceGainsButton))]
+    private bool _isEditingResourceGains;
+
+    /// <summary>当前编辑中的资源草稿。</summary>
+    [ObservableProperty] private ObservableCollection<ResourceGainEditItem> _resourceGainEditItems = [];
+
+    /// <summary>资源编辑校验提示。</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasResourceGainEditError))]
+    private string _resourceGainEditError = "";
 
     /// <summary>后勤记录卡片内容是否展开。</summary>
     [ObservableProperty] private bool _isLogisticsExpanded = true;
@@ -136,6 +155,11 @@ public partial class WorkRecordsViewModel : ViewModelBase
         && SelectedSavedRecords.Select(record => record.TaskName).Distinct(StringComparer.Ordinal).Count() == 1;
     public bool CanRenameSavedRecord => SelectedSavedRecords.Count == 1;
     public bool CanDeleteSavedRecords => SelectedSavedRecords.Count > 0;
+    public bool CanEditResourceGains => SelectedSavedRecords.Count == 1
+        && SelectedSavedRecords[0].Segments.Count <= 1;
+    public bool ShowEditResourceGainsButton => CanEditResourceGains && !IsEditingResourceGains;
+    public bool ShowResourceGainSection => SelectedHasResources || CanEditResourceGains;
+    public bool HasResourceGainEditError => !string.IsNullOrWhiteSpace(ResourceGainEditError);
     public bool ShowSelectedStatus => SelectedSavedRecords.Count == 0;
     public bool HasSelectionSummary => !string.IsNullOrWhiteSpace(SelectionSummary);
 
@@ -157,6 +181,8 @@ public partial class WorkRecordsViewModel : ViewModelBase
     {
         try
         {
+            if (IsEditingResourceGains)
+                CancelResourceGainEdit();
             var entries = new List<LogEntry>();
             var dir = AppPaths.LogsDirectory;
             if (Directory.Exists(dir))
@@ -209,6 +235,8 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>由页面同步日志记录的多选状态。</summary>
     public void SetSelectedLogRecords(IEnumerable<WorkRecord> records)
     {
+        if (IsEditingResourceGains)
+            CancelResourceGainEdit();
         SelectedSavedRecords.Clear();
         SelectedLogRecords = new ObservableCollection<WorkRecord>(records);
         if (SelectedLogRecords.Count == 1)
@@ -251,6 +279,8 @@ public partial class WorkRecordsViewModel : ViewModelBase
     /// <summary>由页面同步已保存记录的多选状态。</summary>
     public void SetSelectedSavedRecords(IEnumerable<SavedWorkRecord> records)
     {
+        if (IsEditingResourceGains)
+            CancelResourceGainEdit();
         SelectedLogRecords.Clear();
         SelectedSavedRecords = new ObservableCollection<SavedWorkRecord>(records);
         if (SelectedSavedRecords.Count == 1)
@@ -280,10 +310,126 @@ public partial class WorkRecordsViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanMergeSavedRecords));
         OnPropertyChanged(nameof(CanRenameSavedRecord));
         OnPropertyChanged(nameof(CanDeleteSavedRecords));
+        OnPropertyChanged(nameof(CanEditResourceGains));
         SaveCommand.NotifyCanExecuteChanged();
         MergeSavedCommand.NotifyCanExecuteChanged();
         RenameSavedCommand.NotifyCanExecuteChanged();
         DeleteSavedCommand.NotifyCanExecuteChanged();
+        EditResourceGainsCommand.NotifyCanExecuteChanged();
+        SaveResourceGainsCommand.NotifyCanExecuteChanged();
+        if (IsEditingResourceGains && !CanEditResourceGains)
+            CancelResourceGainEdit();
+    }
+
+    /// <summary>开始编辑单段已保存记录的资源收获。</summary>
+    [RelayCommand(CanExecute = nameof(CanEditResourceGains))]
+    private void EditResourceGains()
+    {
+        if (SelectedSavedRecords.Count != 1)
+            return;
+
+        var record = SelectedSavedRecords[0];
+        ResourceGainEditItems = new ObservableCollection<ResourceGainEditItem>(
+            record.ResourceGains
+                .OrderBy(item => Array.IndexOf(ResourceOrder, item.Key) is var i && i < 0 ? int.MaxValue : i)
+                .Select(item => new ResourceGainEditItem(
+                    item.Key,
+                    item.Value.ToString(),
+                    record.ResourceGainCounts.TryGetValue(item.Key, out var count) ? count.ToString() : "")));
+        ResourceGainEditError = "";
+        IsEditingResourceGains = true;
+    }
+
+    /// <summary>在资源草稿末尾新增一行。</summary>
+    [RelayCommand]
+    private void AddResourceGain() => ResourceGainEditItems.Add(new ResourceGainEditItem("", "", ""));
+
+    /// <summary>删除指定资源草稿行。</summary>
+    [RelayCommand]
+    private void RemoveResourceGain(ResourceGainEditItem? item)
+    {
+        if (item is not null)
+            ResourceGainEditItems.Remove(item);
+    }
+
+    /// <summary>校验并保存资源编辑结果。</summary>
+    [RelayCommand(CanExecute = nameof(CanEditResourceGains))]
+    private void SaveResourceGains()
+    {
+        var gains = new Dictionary<string, int>(StringComparer.Ordinal);
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var item in ResourceGainEditItems)
+        {
+            var name = item.Name.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                ResourceGainEditError = "资源名称不能为空。";
+                return;
+            }
+            if (!int.TryParse(item.Amount, out var amount) || amount <= 0)
+            {
+                ResourceGainEditError = $"“{name}”的总数量必须是大于 0 的整数。";
+                return;
+            }
+            if (gains.ContainsKey(name))
+            {
+                ResourceGainEditError = $"资源“{name}”重复，请合并到同一行。";
+                return;
+            }
+            gains[name] = amount;
+
+            if (!string.IsNullOrWhiteSpace(item.Count))
+            {
+                if (!int.TryParse(item.Count, out var count) || count <= 0)
+                {
+                    ResourceGainEditError = $"“{name}”的获取次数必须是大于 0 的整数，或留空。";
+                    return;
+                }
+                counts[name] = count;
+            }
+        }
+
+        if (SelectedSavedRecords.Count != 1 || !CanEditResourceGains)
+            return;
+
+        var record = SelectedSavedRecords[0];
+        if (record.Segments.Count == 0)
+            record.Segments.Add(SavedWorkRecordSegment.FromLegacyRecord(record));
+
+        var previousGains = record.ResourceGains;
+        var previousCounts = record.ResourceGainCounts;
+        var previousSegmentGains = record.Segments[0].ResourceGains;
+        var previousSegmentCounts = record.Segments[0].ResourceGainCounts;
+        record.ResourceGains = new Dictionary<string, int>(gains, StringComparer.Ordinal);
+        record.ResourceGainCounts = new Dictionary<string, int>(counts, StringComparer.Ordinal);
+        record.Segments[0].ResourceGains = new Dictionary<string, int>(gains, StringComparer.Ordinal);
+        record.Segments[0].ResourceGainCounts = new Dictionary<string, int>(counts, StringComparer.Ordinal);
+
+        try
+        {
+            PersistSavedRecords();
+            SelectedRecord = record.ToWorkRecord();
+            ResourceGainEditError = "";
+            IsEditingResourceGains = false;
+        }
+        catch (Exception ex)
+        {
+            record.ResourceGains = previousGains;
+            record.ResourceGainCounts = previousCounts;
+            record.Segments[0].ResourceGains = previousSegmentGains;
+            record.Segments[0].ResourceGainCounts = previousSegmentCounts;
+            LoggerHelper.Error($"保存资源收获修正失败：{ex.Message}");
+            ResourceGainEditError = "保存失败，请重试。";
+        }
+    }
+
+    /// <summary>取消资源编辑并丢弃草稿。</summary>
+    [RelayCommand]
+    private void CancelResourceGainEdit()
+    {
+        IsEditingResourceGains = false;
+        ResourceGainEditError = "";
+        ResourceGainEditItems.Clear();
     }
 
     [RelayCommand(CanExecute = nameof(CanSaveSelectedRecords))]
@@ -424,7 +570,7 @@ public partial class WorkRecordsViewModel : ViewModelBase
         }
     }
 
-    /// <summary>详情中的时间文本，已保存记录只显示日期范围。</summary>
+    /// <summary>详情中的时间文本：单段保存记录显示具体开始和结束时间。</summary>
     public string SelectedTimeText
     {
         get
@@ -435,6 +581,9 @@ public partial class WorkRecordsViewModel : ViewModelBase
                 return SelectedRecord.DurationText;
             if (SelectedSavedRecords.Count > 0)
             {
+                if (SelectedSavedRecords[0].Segments.Count == 1)
+                    return SelectedRecord.ListTimeText;
+
                 var start = SelectedRecord.StartTime.ToString("yyyy-MM-dd");
                 var end = SelectedRecord.EndTime.ToString("yyyy-MM-dd");
                 return $"{start}—{end} · {SelectedRecord.DurationText}";
@@ -450,6 +599,10 @@ public partial class WorkRecordsViewModel : ViewModelBase
             : string.Join("  ", SelectedRecord.ResourceGains
                 .OrderBy(kv => Array.IndexOf(ResourceOrder, kv.Key) is var i && i < 0 ? int.MaxValue : i)
                 .Select(kv => FormatResourceItem(SelectedRecord, kv.Key, kv.Value)));
+
+    /// <summary>资源获取次数汇总。</summary>
+    public string SelectedResourceGainCountText =>
+        $"资源收获（{SelectedRecord?.ResourceGainCounts.Values.Sum() ?? 0}次）";
 
     /// <summary>资源收获条目，供窄宽度下按完整条目自动换行显示</summary>
     public IReadOnlyList<string> SelectedResourceItems =>

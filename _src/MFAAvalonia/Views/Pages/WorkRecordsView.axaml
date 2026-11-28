@@ -431,9 +431,33 @@
                             <Border Classes="RecordCardHeaderDivider"
                                     Margin="0,-4,0,0" />
                             <StackPanel Spacing="6"
-                                        IsVisible="{Binding SelectedHasResources}">
-                                <TextBlock Classes="RecordSectionTitle" Text="资源收获" />
-                                <ItemsControl ItemsSource="{Binding SelectedResourceItems}">
+                                        IsVisible="{Binding ShowResourceGainSection}">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                    <TextBlock Classes="RecordSectionTitle"
+                                               Text="{Binding SelectedResourceGainCountText}"
+                                               VerticalAlignment="Center" />
+                                    <Button Grid.Column="1"
+                                            Classes="BasicTight"
+                                            Content="保存"
+                                            Padding="8,2"
+                                            IsVisible="{Binding IsEditingResourceGains}"
+                                            Command="{Binding SaveResourceGainsCommand}" />
+                                    <Button Grid.Column="2"
+                                            Classes="BasicTight"
+                                            Padding="8,2"
+                                            IsVisible="{Binding IsEditingResourceGains}"
+                                            Command="{Binding CancelResourceGainEditCommand}">
+                                        <TextBlock Text="取消" />
+                                    </Button>
+                                    <Button Grid.Column="2"
+                                            Classes="BasicTight"
+                                            Content="编辑"
+                                            Padding="8,2"
+                                            IsVisible="{Binding ShowEditResourceGainsButton}"
+                                            Command="{Binding EditResourceGainsCommand}" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding SelectedResourceItems}"
+                                              IsVisible="{Binding !IsEditingResourceGains}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Horizontal"
@@ -448,6 +472,40 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <StackPanel Spacing="6"
+                                            IsVisible="{Binding IsEditingResourceGains}">
+                                    <ItemsControl ItemsSource="{Binding ResourceGainEditItems}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="pages:ResourceGainEditItem">
+                                                <Grid ColumnDefinitions="Auto,*,110,100" ColumnSpacing="6">
+                                                    <Button Content="×"
+                                                            Width="28"
+                                                            Height="30"
+                                                            Padding="0"
+                                                            Click="RemoveResourceGainClicked" />
+                                                    <TextBox Grid.Column="1"
+                                                             Watermark="资源名称"
+                                                             Text="{Binding Name, Mode=TwoWay}" />
+                                                    <TextBox Grid.Column="2"
+                                                             Watermark="总数量"
+                                                             Text="{Binding Amount, Mode=TwoWay}" />
+                                                    <TextBox Grid.Column="3"
+                                                             Watermark="获取次数"
+                                                             Text="{Binding Count, Mode=TwoWay}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Button HorizontalAlignment="Left"
+                                            Classes="BasicTight"
+                                            Content="＋ 添加资源"
+                                            Padding="8,2"
+                                            Command="{Binding AddResourceGainCommand}" />
+                                    <TextBlock Text="{Binding ResourceGainEditError}"
+                                               Foreground="#B42318"
+                                               TextWrapping="Wrap"
+                                               IsVisible="{Binding HasResourceGainEditError}" />
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel Spacing="6"
                                         IsVisible="{Binding SelectedHasSwordDrops}"
