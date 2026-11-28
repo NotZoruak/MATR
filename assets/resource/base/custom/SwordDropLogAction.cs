@@ -280,10 +280,11 @@ public class SwordDropLogAction : IMaaCustomAction
         var processor = ActionParamHelper.ResolveOwnerProcessor(context);
         processor?.RecordExternalNotificationSwordDrop(swordType, swordName);
 
-        if (!ConfigurationManager.Current.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false))
+        var instanceConfiguration = ConfigurationManager.CurrentInstance;
+        if (!instanceConfiguration.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false))
             return;
 
-        if (!ConfigurationManager.Current.TryGetValue(
+        if (!instanceConfiguration.TryGetValue(
                 ConfigurationKeys.SwordDropNotificationSwords, out List<string>? swords)
             || !SwordDropNotificationMatcher.ShouldNotify(true, swords, swordName))
         {
