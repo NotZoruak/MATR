@@ -325,6 +325,7 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
             IsChecked = ConfigurationManager.CurrentInstance.GetValue(ConfigurationKeys.SwordDropNotificationEnabled, false),
             VerticalAlignment = VerticalAlignment.Top,
         };
+        toggle.Bind(Control.IsEnabledProperty, new Binding("Idle") { Source = Instances.RootViewModel });
         toggle.IsCheckedChanged += (_, _) => ConfigurationManager.CurrentInstance.SetValue(
             ConfigurationKeys.SwordDropNotificationEnabled, toggle.IsChecked == true);
         Grid.SetColumn(toggle, 2);
@@ -2311,6 +2312,8 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
                 double inputWidth = input.MinWidth + input.Margin.Left + input.Margin.Right;
                 requiredWidth = labelWidth + inputWidth;
             }
+
+            requiredWidth = Math.Min(requiredWidth, 440);
 
              // Responsive Switch
             if (availableWidth < requiredWidth)
