@@ -120,7 +120,7 @@ public partial class DutyRecordsView : UserControl
 
     private static DataGrid CreateGrid()
     {
-        var grid = new DataGrid { Name = "RecordsGrid", AutoGenerateColumns = false, IsReadOnly = true, CanUserSortColumns = false, CanUserReorderColumns = false, CanUserResizeColumns = true, GridLinesVisibility = DataGridGridLinesVisibility.All, HeadersVisibility = DataGridHeadersVisibility.Column, RowHeight = 40, ColumnHeaderHeight = 36, MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+        var grid = new DataGrid { Name = "RecordsGrid", AutoGenerateColumns = false, IsReadOnly = true, CanUserSortColumns = false, CanUserReorderColumns = false, CanUserResizeColumns = true, GridLinesVisibility = DataGridGridLinesVisibility.All, HeadersVisibility = DataGridHeadersVisibility.Column, RowHeight = 40, ColumnHeaderHeight = 36, MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
         grid.Columns.Add(new DataGridTextColumn { Header = "时间", Binding = new Avalonia.Data.Binding(nameof(Row.Record) + ".Time"), Width = new DataGridLength(164) });
         grid.Columns.Add(new DataGridTemplateColumn { Header = "刀剑名", Width = new DataGridLength(1, DataGridLengthUnitType.Star), CellTemplate = new FuncDataTemplate<Row>((row, _) => {
             var name = new TextBlock { Text = row?.Name ?? "未知刀剑", VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
@@ -146,7 +146,6 @@ public partial class DutyRecordsView : UserControl
                 })
             });
         }
-        grid.Columns.Add(new DataGridTextColumn { Header = "", Width = new DataGridLength(16), IsReadOnly = true, CanUserResize = false, CanUserReorder = false, CanUserSort = false });
         return grid;
     }
 

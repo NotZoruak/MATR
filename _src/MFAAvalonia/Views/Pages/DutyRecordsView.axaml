@@ -39,9 +39,7 @@
     </ResourceDictionary>
   </UserControl.Resources>
   <Grid>
-      <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel x:Name="GroupsPanel" Spacing="12" HorizontalAlignment="Stretch" />
-      </ScrollViewer>
+      <Grid x:Name="GroupsPanel" />
       <TextBlock x:Name="EmptyText" Text="暂无内番结算记录" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource SukiLowText}" IsHitTestVisible="False" />
   </Grid>
 </UserControl>
